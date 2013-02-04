@@ -6,7 +6,7 @@ lib_LTLIBRARIES = libspfextr.la
 # Build information for libspfextr.la
 
 # Source files
-libspfextr_la_SOURCES =
+libspfextr_la_SOURCES = api.cc buffers.cc parameters.cc transform.cc transform_registry.cc transform_tree.cc
 
 # Linker options
 libspfextr_la_LDFLAGS = 

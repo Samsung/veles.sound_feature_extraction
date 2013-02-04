@@ -58,8 +58,8 @@ dnl Enable pkg-config
 PKG_PROG_PKG_CONFIG
 EMBEDDED_LIBS=
 
-dnl Check Zlib
-PKG_CHECK_MODULES([ZLIB], [zlib >= 1.2.3])  
+dnl Check FFTF
+PKG_CHECK_MODULES([FFTF], [fftf >= 1.0])  
 
 dnl Check for Doxygen
 AC_ARG_ENABLE([doxygen],
