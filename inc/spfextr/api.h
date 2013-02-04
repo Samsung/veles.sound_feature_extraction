@@ -23,6 +23,8 @@ extern "C" {
 #pragma GCC visibility push (default)
 #endif
 
+#define MAX_FEATURES_COUNT 256
+
 typedef enum {
   FEATURE_EXTRACTION_RESULT_OK,
   FEATURE_EXTRACTION_RESULT_ERROR

@@ -18,14 +18,14 @@ namespace SpeechFeatureExtraction {
 
 const std::unordered_map<std::string,
                          std::function<bool(const std::string&)>>&
-Transform::DependencyParametersCheck() const throw() {
+Transform::DependencyParametersCheck() const noexcept {
   static const std::unordered_map<std::string,
                                   std::function<bool(const std::string&)>> m;
   return m;
 }
 
 const std::unordered_map<std::string, std::string>&
-Transform::DependencyParameters() const throw() {
+Transform::DependencyParameters() const noexcept {
   static const std::unordered_map<std::string, std::string> m;
   return m;
 }

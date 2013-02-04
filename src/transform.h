@@ -41,30 +41,30 @@ class Transform {
  public:
   virtual ~Transform();
 
-  virtual const std::string& Name() const throw() = 0;
+  virtual const std::string& Name() const noexcept = 0;
 
-  virtual const std::string& DependencyName() const throw() = 0;
+  virtual const std::string& DependencyName() const noexcept = 0;
 
   virtual const std::unordered_map<std::string,
                              std::function<bool(const std::string&)>>&
-  DependencyParametersCheck() const throw();
+  DependencyParametersCheck() const noexcept;
 
   virtual const std::unordered_map<std::string, std::string>&
-  DependencyParameters() const throw();
+  DependencyParameters() const noexcept;
 
   virtual const std::unordered_map<std::string, ParameterTraits>&
-  SupportedParameters() const throw() = 0;
+  SupportedParameters() const noexcept = 0;
 
   virtual const std::unordered_map<std::string, std::string>&
-  CurrentParameters() const throw() = 0;
+  CurrentParameters() const noexcept = 0;
 
   virtual void SetParameters(
       const std::unordered_map<std::string, std::string>& parameters)
   throw(InvalidParameterNameException, InvalidParameterValueException) = 0;
 
-  virtual void Initialize() const throw() = 0;
+  virtual void Initialize() const noexcept = 0;
 
-  virtual void Do(const Buffers& in, Buffers *out) const throw() = 0;
+  virtual void Do(const Buffers& in, Buffers *out) const noexcept = 0;
 
   std::shared_ptr<Transform> Clone() const;
 

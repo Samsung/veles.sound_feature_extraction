@@ -12,26 +12,91 @@
 
 #include <spfextr/api.h>
 #include <stddef.h>
+#include "src/speech_features.h"
+#include "src/transform_tree.h"
+
+using SpeechFeatureExtraction::ChainNameAlreadyExistsException;
+using SpeechFeatureExtraction::TransformNotRegisteredException;
+using SpeechFeatureExtraction::ChainAlreadyExistsException;
+using SpeechFeatureExtraction::RawFeaturesMap;
+using SpeechFeatureExtraction::Features::ParseFeaturesException;
+using SpeechFeatureExtraction::TransformTree;
 
 extern "C" {
 
 struct FeaturesConfiguration {
-
+  std::shared_ptr<TransformTree> Tree;
 };
 
-FeaturesConfiguration *setup_features(const char *const *features,
+FeaturesConfiguration* setup_features(const char* const* features,
                                       int featuresCount) {
-  return NULL;
+  if (features == nullptr) {
+    fprintf(stderr, "features is null");
+    return nullptr;
+  }
+  if (featuresCount < 0) {
+    fprintf(stderr, "featuresCount is negative (%i)\n", featuresCount);
+    return nullptr;
+  }
+  if (featuresCount > MAX_FEATURES_COUNT) {
+    fprintf(stderr, "featuresCount is too big (%i > MAX_FEATURES_COUNT=%i)\n",
+            featuresCount, MAX_FEATURES_COUNT);
+    return nullptr;
+  }
+  std::vector<std::string> lines;
+  for (int i = 0; i < featuresCount; i++) {
+    if (features[i] == nullptr) {
+      fprintf(stderr, "features[%i] is null", i);
+      return nullptr;
+    }
+    lines.push_back(features[i]);
+  }
+  RawFeaturesMap featmap;
+  try {
+    featmap = SpeechFeatureExtraction::Features::Parse(lines);
+  }
+  catch(ParseFeaturesException* pfe) {
+    fprintf(stderr, "Failed to parse features. %s\n", pfe->what());
+    delete pfe;
+    return nullptr;
+  }
+  auto fconfig = new FeaturesConfiguration();
+  fconfig->Tree = std::make_shared<TransformTree>();
+  for (auto featpair : featmap) {
+    try {
+      fconfig->Tree->AddChain(featpair.first, featpair.second);
+    }
+    catch (ChainNameAlreadyExistsException* cnaee) {
+      fprintf(stderr, "Failed to construct the transform tree. %s\n",
+              cnaee->what());
+      delete cnaee;
+      return nullptr;
+    }
+    catch (TransformNotRegisteredException* tnre) {
+      fprintf(stderr, "Failed to construct the transform tree. %s\n",
+              tnre->what());
+      delete tnre;
+      return nullptr;
+    }
+    catch (ChainAlreadyExistsException* caee) {
+      fprintf(stderr, "Failed to construct the transform tree. %s\n",
+              caee->what());
+      delete caee;
+      return nullptr;
+    }
+  }
+  fconfig->Tree->PrepareForExecution();
+  return fconfig;
 }
 
 FeatureExtractionResult extract_speech_features(
-    const int16_t *const *buffers, int buffersCount, int sizeEach,
-    int samplingRate, const FeaturesConfiguration *fc, void *const *results) {
+    const int16_t* const* buffers, int buffersCount, int sizeEach,
+    int samplingRate, const FeaturesConfiguration *fc, void* const* results) {
   return FEATURE_EXTRACTION_RESULT_OK;
 }
 
-void destroy_features_configuration(FeaturesConfiguration *fc) {
-
+void destroy_features_configuration(FeaturesConfiguration* fc) {
+  delete fc;
 }
 
 }

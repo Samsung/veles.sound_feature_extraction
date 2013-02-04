@@ -45,31 +45,56 @@ TransformTree::Node::FindIdenticalChildTransform(
   return nullptr;
 }
 
-void TransformTree::Node::Execute(
-    const Buffers& in,
-    std::unordered_map<std::string, std::shared_ptr<Buffers>>* results) {
+void TransformTree::Node::ExecuteOwn(
+        const Buffers& in,
+        std::unordered_map<std::string, std::shared_ptr<Buffers>>* results,
+        std::shared_ptr<Buffers> *out) {
   auto myOutBuffers = std::make_shared<Buffers>(in.Size());
   BoundTransform->Do(in, myOutBuffers.get());
   if (ChainName != "") {
     (*results)[ChainName] = myOutBuffers;
   }
+  *out = std::move(myOutBuffers);
+}
+
+void TransformTree::Node::ExecuteChildren(
+    const Buffers& in,
+    std::unordered_map<std::string, std::shared_ptr<Buffers>>* results) {
   for (auto tnodepair : Children) {
     for (auto tnode : tnodepair.second) {
       auto buf = std::make_shared<Buffers>(in.Size());
-      tnode->Execute(*myOutBuffers, results);
+      tnode->Execute(in, results);
     }
   }
 }
 
-TransformTree::TransformTree()
+void TransformTree::Node::Execute(
+    const Buffers& in,
+    std::unordered_map<std::string, std::shared_ptr<Buffers>>* results) {
+  std::shared_ptr<Buffers> myOutBuffers = nullptr;
+  ExecuteOwn(in, results, &myOutBuffers);
+  if (Children.size() == 1 && Children.begin()->second.size() == 1) {
+    // Memory optimization - free myOutBuffers in consecutive case
+    std::shared_ptr<Buffers> nextBuffers = nullptr;
+    auto childNodePtr = *Children.begin()->second.begin();
+    childNodePtr->ExecuteOwn(*myOutBuffers, results, &nextBuffers);
+    myOutBuffers.reset();
+    childNodePtr->ExecuteChildren(*nextBuffers, results);
+  } else {
+    ExecuteChildren(*myOutBuffers, results);
+  }
+}
+
+TransformTree::TransformTree() noexcept
 : treeIsPrepared_(false) {
 }
 
-TransformTree::~TransformTree() {
+TransformTree::~TransformTree() noexcept {
 }
 
 bool TransformTree::ParametersAreCompatible(const Transform& parent,
-                                            const Transform& child) {
+                                            const Transform& child)
+noexcept {
   for (auto p : child.DependencyParametersCheck()) {
     auto ppi = parent.CurrentParameters().find(p.first);
     if (ppi == parent.CurrentParameters().end()) {
@@ -87,7 +112,7 @@ bool TransformTree::ParametersAreCompatible(const Transform& parent,
 
 void TransformTree::AddChain(
     const std::string& name,
-    const std::unordered_map<std::string, std::string>& transforms)
+    const std::vector<std::pair<std::string, std::string>>& transforms)
 throw (ChainNameAlreadyExistsException, TransformNotRegisteredException,
        ChainAlreadyExistsException) {
   if (treeIsPrepared_) {
@@ -98,7 +123,7 @@ throw (ChainNameAlreadyExistsException, TransformNotRegisteredException,
   }
   chains_.insert(name);
 
-  auto currentNode = root_;
+  auto currentNode = root_;/*
   for (auto tpair : transforms) {
     auto tname = tpair.first;
     // Search for the factory of transform "tname"
@@ -138,10 +163,10 @@ throw (ChainNameAlreadyExistsException, TransformNotRegisteredException,
   if (currentNode->ChainName != "") {
     throw new ChainAlreadyExistsException(currentNode->ChainName, name);
   }
-  currentNode->ChainName = name;
+  currentNode->ChainName = name;*/
 }
 
-void TransformTree::PrepareForExecution() {
+void TransformTree::PrepareForExecution() noexcept {
   treeIsPrepared_ = true;
   root_->Apply([](const Transform& t) {
     t.Initialize();

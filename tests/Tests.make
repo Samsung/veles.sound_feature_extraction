@@ -36,4 +36,4 @@ tests:
 	fi; \
 	done
 	
-ALL_LIBS = @ZLIB_LIBS@	
+ALL_LIBS = @FFTF_LIBS@ -lboost_regex

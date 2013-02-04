@@ -33,7 +33,7 @@ const void* Buffers::operator[](int index) const {
 }
 
 void Buffers::Set(int index, void* buffer) {
-  assert(index >= 0 && index < buffers_.size());
+  assert(index >= 0 && static_cast<size_t>(index) < buffers_.size());
   buffers_[index] = buffer;
 }
 

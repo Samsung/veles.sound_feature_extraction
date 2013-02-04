@@ -83,21 +83,31 @@ class TransformTree {
 
     void Apply(const std::function<void(const Transform&)> action);
 
+    void ExecuteOwn(
+        const Buffers& in,
+        std::unordered_map<std::string, std::shared_ptr<Buffers>>* results,
+        std::shared_ptr<Buffers> *out);
+
+    void ExecuteChildren(
+        const Buffers& in,
+        std::unordered_map<std::string, std::shared_ptr<Buffers>>* results);
+
     void Execute(
         const Buffers& in,
         std::unordered_map<std::string, std::shared_ptr<Buffers>>* results);
   };
 
  public:
-  TransformTree();
-  virtual ~TransformTree();
+  TransformTree() noexcept;
+  virtual ~TransformTree() noexcept;
 
-  void AddChain(const std::string& name,
-                const std::unordered_map<std::string, std::string>& transforms)
+  void AddChain(
+      const std::string& name,
+      const std::vector<std::pair<std::string, std::string>>& transforms)
   throw (ChainNameAlreadyExistsException, TransformNotRegisteredException,
          ChainAlreadyExistsException);
 
-  void PrepareForExecution();
+  void PrepareForExecution() noexcept;
 
   std::unordered_map<std::string, std::shared_ptr<Buffers>> Execute(
       const Buffers& in)
@@ -109,7 +119,8 @@ class TransformTree {
   std::set<std::string> chains_;
 
   static bool ParametersAreCompatible(const Transform& parent,
-                                      const Transform& child);
+                                      const Transform& child)
+  noexcept;
 };
 
 }  // namespace SpeechFeatureExtraction

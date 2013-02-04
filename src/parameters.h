@@ -30,7 +30,7 @@ namespace Parameters {
 class ParseParametersException : public ExceptionBase {
  public:
   ParseParametersException(const std::string& text, int column)
-  : ExceptionBase("Error on symbol at index " + std::to_string(column) +
+  : ExceptionBase("Syntax error on symbol at index " + std::to_string(column) +
                     ": \"..." + text.substr(column, 20) +
                     (static_cast<size_t>(column) + 10 >= text.size()?
                         "\"." : "...\" .")

@@ -9,7 +9,7 @@ AC_CANONICAL_HOST
 AC_CANONICAL_BUILD
 AC_CANONICAL_SYSTEM
 
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADERS([inc/spfextr/config.h])
 
 AC_GNU_SOURCE
 AC_C_BIGENDIAN
@@ -110,12 +110,15 @@ AC_ARG_ENABLE([tests],
 	AS_HELP_STRING([--disable-tests], [Disable building tests])
 )
 AM_CONDITIONAL(TESTS, test x$enable_tests != xno)
-AM_COND_IF([TESTS], [
+AM_COND_IF([TESTS], [	
 	TESTS_DIR=tests
 	AC_CONFIG_FILES(tests/Makefile
                 	tests/google/Makefile
                 	)
 
+], [
+	dnl Default visibility of symbols is hidden
+	CPPFLAGS="$CPPFLAGS -fvisibility=hidden"
 ])
 AC_SUBST([TESTS_DIR])
 
@@ -142,9 +145,6 @@ CXXFLAGS="$CXXFLAGS -Winvalid-pch"
 
 dnl Use the modern C standard
 CFLAGS="$CFLAGS -std=c99"
-
-dnl Default visibility of symbols is hidden
-CPPFLAGS="$CPPFLAGS -fvisibility=hidden"
 
 dnl All include paths should be relative to source root or includes directory
 CPPFLAGS="$CPPFLAGS -I\$(top_srcdir) -I\$(top_srcdir)/inc -I\$(top_builddir)/inc"
