@@ -17,24 +17,32 @@ namespace SpeechFeatureExtraction {
 
 namespace Features {
 
-void AddToTransformsList(const std::string& str, size_t index,
+void AddToTransformsList(const std::string& str, size_t featureIndex,
                          RawTransformsList* transforms) {
+  static const boost::regex nameRegex("(^\\w+\\d*)");
+  static const boost::regex parametersRegex("\\(([^\\)]*)\\)");
   static const boost::sregex_token_iterator empty;
-  boost::regex transformRegex("(\\w+\\d*)\\s*(\\([^\\)]\\)|)\\s*,?\\s*");
-  boost::sregex_token_iterator transformNameIterator(
-      str.begin(), str.end(), transformRegex, 1);
-  if (transformNameIterator == empty) {
-    throw new ParseFeaturesException(index);
+
+  boost::sregex_token_iterator nameIterator(
+      str.begin(), str.end(), nameRegex, 1);
+  if (nameIterator == empty) {
+    throw new ParseFeaturesException(featureIndex);
   }
-  while (transformNameIterator != empty) {
-    transforms->push_back(std::make_pair(
-        *transformNameIterator++, ""));
+  transforms->push_back(std::make_pair(
+      *nameIterator++, ""));
+  if (nameIterator != empty) {
+    throw new ParseFeaturesException(featureIndex);
   }
-  boost::sregex_token_iterator transformParametersIterator(
-      str.begin(), str.end(), transformRegex, 2);
-  int i = 0;
-  while (transformParametersIterator != empty) {
-      (*transforms)[i++].second = *transformParametersIterator++;
+  boost::sregex_token_iterator parametersIterator(
+      str.begin(), str.end(), parametersRegex, 1);
+  if (parametersIterator != empty) {
+    std::string pvalue = *parametersIterator++;
+    if (pvalue.size() > 0) {
+      (*transforms)[transforms->size() - 1].second = pvalue;
+    }
+    if (parametersIterator != empty) {
+      throw new ParseFeaturesException(featureIndex);
+    }
   }
 }
 
@@ -42,39 +50,53 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures)
 throw (ParseFeaturesException) {
   RawFeaturesMap ret;
 
-  boost::regex featuresRegex("(\\w+\\d*)\\["
-                             "(\\w+\\d*\\s*(\\([^\\)]\\))?\\s*,\\s*)+"
-                               "(\\w+\\d*\\s*(\\([^\\)]\\))?)\\s*"
-                             "\\])\\s*");
+  static const boost::regex featureRegex(
+      "(^\\w+\\d*)\\[([^\\]]+)\\]\\s*");
+  static const boost::regex transformsRegex(
+      "(\\w+\\d*\\s*(\\([^\\)]*\\))?)\\s*,\\s*");
+  static const boost::regex transformsEndRegex(
+      "(\\w+\\d*\\s*(\\([^\\)]*\\))?)\\s*$");
   static const boost::sregex_token_iterator empty;
 
   for (size_t index = 0; index < rawFeatures.size(); index++) {
     auto str = rawFeatures[index];
+
     boost::sregex_token_iterator featureNameIterator(
-        str.begin(), str.end(), featuresRegex, 1);
+        str.begin(), str.end(), featureRegex, 1);
     if (featureNameIterator == empty) {
       throw new ParseFeaturesException(index);
     }
-    auto fname = *featureNameIterator++;
+    std::string fname = *featureNameIterator++;
     if (featureNameIterator != empty) {
       throw new ParseFeaturesException(index);
     }
     ret.insert(std::make_pair(fname, RawTransformsList()));
+
     boost::sregex_token_iterator featureTransformsIterator(
-        str.begin(), str.end(), featuresRegex, 2);
-    while (featureTransformsIterator != empty) {
-      auto transformStr = *featureTransformsIterator++;
-      AddToTransformsList(transformStr, index, &ret[fname]);
-    }
-    boost::sregex_token_iterator featureTransformsIteratorEnd(
-        str.begin(), str.end(), featuresRegex, 3);
-    if (featureTransformsIteratorEnd == empty) {
+        str.begin(), str.end(), featureRegex, 2);
+    if (featureTransformsIterator == empty) {
       throw new ParseFeaturesException(index);
     }
-    AddToTransformsList(*featureTransformsIteratorEnd++,
+    std::string transformsStr = *featureTransformsIterator++;
+    if (featureTransformsIterator != empty) {
+      throw new ParseFeaturesException(index);
+    }
+
+    boost::sregex_token_iterator featureEachTransformIterator(
+        transformsStr.begin(), transformsStr.end(), transformsRegex, 1);
+    while (featureEachTransformIterator != empty) {
+      AddToTransformsList(*featureEachTransformIterator++, index, &ret[fname]);
+    }
+
+    boost::sregex_token_iterator featureTransformsEndIterator(
+        transformsStr.begin(), transformsStr.end(), transformsEndRegex, 1);
+    if (featureTransformsEndIterator == empty) {
+      throw new ParseFeaturesException(index);
+    }
+    AddToTransformsList(*featureTransformsEndIterator++,
                         index,
                         &ret[fname]);
-    if (featureTransformsIteratorEnd != empty) {
+    if (featureTransformsEndIterator != empty) {
       throw new ParseFeaturesException(index);
     }
   }

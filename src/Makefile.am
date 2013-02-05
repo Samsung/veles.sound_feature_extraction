@@ -15,7 +15,7 @@ libspfextr_la_LDFLAGS =
 libspfextr_la_CPPFLAGS =
 
 # Used libraries
-libspfextr_la_LIBADD = 
+libspfextr_la_LIBADD = -lboost_regex
 
 SUBDIRS = $(BOOST_DIR)
 

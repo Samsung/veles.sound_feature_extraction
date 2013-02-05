@@ -123,7 +123,7 @@ throw (ChainNameAlreadyExistsException, TransformNotRegisteredException,
   }
   chains_.insert(name);
 
-  auto currentNode = root_;/*
+  auto currentNode = root_;
   for (auto tpair : transforms) {
     auto tname = tpair.first;
     // Search for the factory of transform "tname"
@@ -163,7 +163,7 @@ throw (ChainNameAlreadyExistsException, TransformNotRegisteredException,
   if (currentNode->ChainName != "") {
     throw new ChainAlreadyExistsException(currentNode->ChainName, name);
   }
-  currentNode->ChainName = name;*/
+  currentNode->ChainName = name;
 }
 
 void TransformTree::PrepareForExecution() noexcept {
