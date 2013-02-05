@@ -16,6 +16,43 @@
 
 namespace SpeechFeatureExtraction {
 
+class RootTransform : public Transform {
+ public:
+  virtual const std::string& Name() const noexcept {
+   static const std::string name("!ROOT!");
+   return name;
+  }
+
+  virtual const std::string& DependencyName() const noexcept {
+    static const std::string empty("");
+    return empty;
+  }
+
+  virtual const std::unordered_map<std::string, ParameterTraits>&
+  SupportedParameters() const noexcept {
+    static const std::unordered_map<std::string, ParameterTraits> p;
+    return p;
+  }
+
+  virtual const std::unordered_map<std::string, std::string>&
+  CurrentParameters() const noexcept {
+    static const std::unordered_map<std::string, std::string> p;
+    return p;
+  }
+
+  virtual void SetParameters(
+      const std::unordered_map<std::string, std::string>&)
+  throw(InvalidParameterNameException, InvalidParameterValueException) {
+  }
+
+  virtual void Initialize() const noexcept {
+  }
+
+  virtual void Do(const Buffers& in, Buffers *out) const noexcept {
+    CopyInToOut(in, out);
+  }
+};
+
 TransformTree::Node::Node(Node* parent,
                           const std::shared_ptr<Transform>& boundTransform)
 : Parent(parent),
@@ -86,7 +123,9 @@ void TransformTree::Node::Execute(
 }
 
 TransformTree::TransformTree() noexcept
-: treeIsPrepared_(false) {
+: root_(std::make_shared<Node>(nullptr,
+                               std::make_shared<RootTransform>())),
+  treeIsPrepared_(false) {
 }
 
 TransformTree::~TransformTree() noexcept {

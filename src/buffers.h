@@ -30,6 +30,8 @@ class Buffers {
   void Set(int index, void* buffer);
   void CopyPointersFrom(const void *const *array);
 
+  const void *const *Data() const;
+
  private:
   std::vector<void*> buffers_;
 };

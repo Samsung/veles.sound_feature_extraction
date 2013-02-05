@@ -39,7 +39,7 @@ class InvalidParameterValueException : public ExceptionBase {
 
 class Transform {
  public:
-  virtual ~Transform();
+  virtual ~Transform() {}
 
   virtual const std::string& Name() const noexcept = 0;
 
@@ -69,6 +69,9 @@ class Transform {
   std::shared_ptr<Transform> Clone() const;
 
   bool operator==(const Transform& other) const;
+
+ protected:
+  void CopyInToOut(const Buffers& in, Buffers *out) const noexcept;
 };
 
 }  // namespace SpeechFeatureExtraction

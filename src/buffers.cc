@@ -41,4 +41,8 @@ void Buffers::CopyPointersFrom(const void *const *array) {
   memcpy(&buffers_[0], array, sizeof(void *) * buffers_.size());
 }
 
+const void *const *Buffers::Data() const {
+  return reinterpret_cast<const void *const *>(&buffers_[0]);
+}
+
 } /* namespace SpeechFeatureExtraction */
