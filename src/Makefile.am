@@ -12,12 +12,12 @@ libspfextr_la_SOURCES = api.cc buffers.cc speech_features.cc parameters.cc trans
 libspfextr_la_LDFLAGS = 
 
 # Compiler options
-libspfextr_la_CPPFLAGS = 
+libspfextr_la_CPPFLAGS =
 
 # Used libraries
 libspfextr_la_LIBADD = 
 
-SUBDIRS =
+SUBDIRS = $(BOOST_DIR)
 
 
 #######################################

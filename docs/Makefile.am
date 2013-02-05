@@ -12,7 +12,7 @@ CLEANFILES = doxyfile.stamp
 all-local: $(directory)index.html doxyfile.stamp
 
 install-data-local: doxyfile.stamp
-	$(AM_V_GEN$(MKDIR_P) $(DESTDIR)$(htmldir)/search && \
+	$(AM_V_GEN)$(MKDIR_P) $(DESTDIR)$(htmldir)/search && \
 	for file in $$(find $(top_builddir)/docs/html -maxdepth 1 -type f); do \
 		$(INSTALL_DATA) $$file $(DESTDIR)$(htmldir); \
 	done && \

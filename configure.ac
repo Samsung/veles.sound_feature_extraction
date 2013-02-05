@@ -66,6 +66,22 @@ AC_ARG_ENABLE([doxygen],
 	AS_HELP_STRING([--disable-doxygen], [Disable building HTML documentation with Doxygen])
 )
 
+dnl Check whether to use the built-in Boost
+AC_ARG_WITH([built-in-boost],
+	AS_HELP_STRING([--with-built-in-boost], [Use statically linked embedded Boost parts]), [
+	BOOST_DIR="boost"
+	LDFLAGS="$LDFLAGS -L\$(abs_top_builddir)/src/boost/stage/lib"
+	dnl Set path to bjam
+	AC_ARG_VAR(BJAM, Path to bjam Boost builder)
+	
+	AC_PATH_PROG(BJAM, [bjam], "")
+	
+	AS_IF([test -z "$BJAM"],
+		AC_MSG_ERROR([Building Boost requires a working bjam. You can obtain it via bootstrapping the Boost package.])
+	)]
+)
+AC_SUBST([BOOST_DIR])
+
 AS_IF([test "x$enable_doxygen" != "xno"], [
 	
 	dnl If Doxygen is enabled...
@@ -125,7 +141,8 @@ AC_SUBST([TESTS_DIR])
 dnl Link with Makefile.am in source directories
 AC_CONFIG_FILES(Makefile $PACKAGE.pc
 				inc/Makefile
-                src/Makefile         
+                src/Makefile  
+                src/boost/Makefile       
                 )           
 
 dnl Security xFLAGS
