@@ -16,20 +16,6 @@
 
 namespace SpeechFeatureExtraction {
 
-const std::unordered_map<std::string,
-                         std::function<bool(const std::string&)>>&
-Transform::DependencyParametersCheck() const noexcept {
-  static const std::unordered_map<std::string,
-                                  std::function<bool(const std::string&)>> m;
-  return m;
-}
-
-const std::unordered_map<std::string, std::string>&
-Transform::DependencyParameters() const noexcept {
-  static const std::unordered_map<std::string, std::string> m;
-  return m;
-}
-
 std::shared_ptr<Transform> Transform::Clone() const {
   auto copy = TransformFactory[this->Name()]();
   copy->SetParameters(this->CurrentParameters());

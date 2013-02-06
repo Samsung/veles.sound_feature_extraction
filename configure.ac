@@ -142,7 +142,8 @@ dnl Link with Makefile.am in source directories
 AC_CONFIG_FILES(Makefile $PACKAGE.pc
 				inc/Makefile
                 src/Makefile  
-                src/boost/Makefile   
+                src/boost/Makefile
+                src/formats/Makefile   
                 src/transforms/Makefile    
                 )           
 

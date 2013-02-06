@@ -15,6 +15,7 @@
 
 #include <string>
 #include <unordered_map>
+#include "src/buffer_format.h"
 #include "src/buffers.h"
 #include "src/parameters.h"
 
@@ -43,14 +44,9 @@ class Transform {
 
   virtual const std::string& Name() const noexcept = 0;
 
-  virtual const std::string& DependencyName() const noexcept = 0;
+  virtual BufferFormat* InputFormat() noexcept = 0;
 
-  virtual const std::unordered_map<std::string,
-                             std::function<bool(const std::string&)>>&
-  DependencyParametersCheck() const noexcept;
-
-  virtual const std::unordered_map<std::string, std::string>&
-  DependencyParameters() const noexcept;
+  virtual const BufferFormat& OutputFormat() const noexcept = 0;
 
   virtual const std::unordered_map<std::string, ParameterTraits>&
   SupportedParameters() const noexcept = 0;

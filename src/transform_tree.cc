@@ -12,20 +12,28 @@
 
 #include "src/transform_tree.h"
 #include <assert.h>
+#include "src/formats/raw_format.h"
 #include "src/transform_registry.h"
 
 namespace SpeechFeatureExtraction {
 
 class RootTransform : public Transform {
  public:
+  explicit RootTransform(const Formats::RawFormat& format) noexcept
+  : format_(format) {
+  }
+
   virtual const std::string& Name() const noexcept {
    static const std::string name("!ROOT!");
    return name;
   }
 
-  virtual const std::string& DependencyName() const noexcept {
-    static const std::string empty("");
-    return empty;
+  virtual BufferFormat* InputFormat() noexcept {
+    return &format_;
+  }
+
+  virtual const BufferFormat& OutputFormat() const noexcept {
+    return format_;
   }
 
   virtual const std::unordered_map<std::string, ParameterTraits>&
@@ -51,6 +59,9 @@ class RootTransform : public Transform {
   virtual void Do(const Buffers& in, Buffers *out) const noexcept {
     CopyInToOut(in, out);
   }
+
+ private:
+  Formats::RawFormat format_;
 };
 
 TransformTree::Node::Node(Node* parent,
@@ -122,31 +133,13 @@ void TransformTree::Node::Execute(
   }
 }
 
-TransformTree::TransformTree() noexcept
+TransformTree::TransformTree(const Formats::RawFormat& rootFormat) noexcept
 : root_(std::make_shared<Node>(nullptr,
-                               std::make_shared<RootTransform>())),
+                               std::make_shared<RootTransform>(rootFormat))),
   treeIsPrepared_(false) {
 }
 
 TransformTree::~TransformTree() noexcept {
-}
-
-bool TransformTree::ParametersAreCompatible(const Transform& parent,
-                                            const Transform& child)
-noexcept {
-  for (auto p : child.DependencyParametersCheck()) {
-    auto ppi = parent.CurrentParameters().find(p.first);
-    if (ppi == parent.CurrentParameters().end()) {
-      throw new DependencyParameterUnknownException(p.first,
-                                                    parent.Name(),
-                                                    child.Name());
-    }
-    auto compatible = p.second(ppi->second);
-    if (!compatible) {
-      return false;
-    }
-  }
-  return true;
 }
 
 void TransformTree::AddChain(
@@ -181,18 +174,8 @@ throw (ChainNameAlreadyExistsException, TransformNotRegisteredException,
     if (reusedTransform != nullptr) {
       currentNode = reusedTransform;
     } else {
-      // If the parent node's transform is not compatible, duplicate parent.
-      // We assume here that no side effects appear on parent's parent.
-      // Otherwise, the algorithm would become more complicated.
-      if (!ParametersAreCompatible(*currentNode->BoundTransform, *t)) {
-        auto parentCopy = currentNode->BoundTransform->Clone();
-        parentCopy->SetParameters(t->DependencyParameters());
-        assert(currentNode->Parent != NULL);
-        auto parentCopyNode = std::make_shared<Node>(
-            currentNode->Parent, parentCopy);
-        currentNode->Parent->Children[parentCopy->Name()].push_back(parentCopyNode);
-        currentNode = parentCopyNode;
-      }
+      // Set the input format
+      *t->InputFormat() = currentNode->BoundTransform->OutputFormat();
       // Append the newly created transform
       auto newNode = std::make_shared<Node>(currentNode.get(), t);
       currentNode->Children[tname].push_back(newNode);

@@ -21,6 +21,8 @@ using SpeechFeatureExtraction::ChainAlreadyExistsException;
 using SpeechFeatureExtraction::RawFeaturesMap;
 using SpeechFeatureExtraction::Features::ParseFeaturesException;
 using SpeechFeatureExtraction::TransformTree;
+using SpeechFeatureExtraction::Formats::RawFormat;
+
 
 extern "C" {
 
@@ -28,8 +30,9 @@ struct FeaturesConfiguration {
   std::shared_ptr<TransformTree> Tree;
 };
 
-FeaturesConfiguration* setup_features(const char* const* features,
-                                      int featuresCount) {
+FeaturesConfiguration *setup_features_extraction(
+    const char *const *features, int featuresCount,
+    int buffersCount, size_t sizeEach, int samplingRate) {
   if (features == nullptr) {
     fprintf(stderr, "features is null");
     return nullptr;
@@ -60,8 +63,11 @@ FeaturesConfiguration* setup_features(const char* const* features,
     delete pfe;
     return nullptr;
   }
+
+  RawFormat format(sizeEach, samplingRate);
+
   auto fconfig = new FeaturesConfiguration();
-  fconfig->Tree = std::make_shared<TransformTree>();
+  fconfig->Tree = std::make_shared<TransformTree>(format);
   for (auto featpair : featmap) {
     try {
       fconfig->Tree->AddChain(featpair.first, featpair.second);
@@ -90,8 +96,8 @@ FeaturesConfiguration* setup_features(const char* const* features,
 }
 
 FeatureExtractionResult extract_speech_features(
-    const int16_t* const* buffers, int buffersCount, int sizeEach,
-    int samplingRate, const FeaturesConfiguration *fc, void* const* results) {
+    const FeaturesConfiguration *fc, const int16_t *const *buffers,
+    void *const *results) {
   return FEATURE_EXTRACTION_RESULT_OK;
 }
 

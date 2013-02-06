@@ -13,6 +13,8 @@
 #ifndef WINDOWTRANSFORM_H_
 #define WINDOWTRANSFORM_H_
 
+#include "src/formats/raw_format.h"
+#include "src/formats/raw_window_format.h"
 #include "src/transform.h"
 
 namespace SpeechFeatureExtraction {
@@ -27,9 +29,12 @@ class WindowTransform : public Transform {
    return name;
   }
 
-  virtual const std::string& DependencyName() const noexcept {
-    static const std::string empty("");
-    return empty;
+  virtual BufferFormat* InputFormat() noexcept {
+    return &inFormat_;
+  }
+
+  virtual const BufferFormat& OutputFormat() const noexcept {
+    return outFormat_;
   }
 
   virtual const std::unordered_map<std::string, ParameterTraits>&
@@ -55,6 +60,10 @@ class WindowTransform : public Transform {
   virtual void Do(const Buffers& in, Buffers *out) const noexcept {
     CopyInToOut(in, out);
   }
+
+ private:
+  Formats::RawFormat inFormat_;
+  Formats::RawWindowFormat outFormat_;
 };
 
 }  // namespace SpeechFeatureExtraction

@@ -15,8 +15,9 @@
 
 #include <vector>
 #include <set>
+#include "src/formats/raw_format.h"
 #include "src/exceptions.h"
-#include <src/transform.h>
+#include "src/transform.h"
 
 namespace SpeechFeatureExtraction {
 
@@ -98,7 +99,7 @@ class TransformTree {
   };
 
  public:
-  TransformTree() noexcept;
+  explicit TransformTree(const Formats::RawFormat& rootFormat) noexcept;
   virtual ~TransformTree() noexcept;
 
   void AddChain(
@@ -117,10 +118,6 @@ class TransformTree {
   std::shared_ptr<Node> root_;
   bool treeIsPrepared_;
   std::set<std::string> chains_;
-
-  static bool ParametersAreCompatible(const Transform& parent,
-                                      const Transform& child)
-  noexcept;
 };
 
 }  // namespace SpeechFeatureExtraction

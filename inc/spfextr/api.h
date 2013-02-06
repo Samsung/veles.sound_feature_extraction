@@ -13,6 +13,7 @@
 #ifndef API_H_
 #define API_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -32,12 +33,13 @@ typedef enum {
 
 typedef struct FeaturesConfiguration FeaturesConfiguration;
 
-FeaturesConfiguration *setup_features(const char *const *features,
-                                      int featuresCount);
+FeaturesConfiguration *setup_features_extraction(
+    const char *const *features, int featuresCount,
+    int buffersCount, size_t sizeEach, int samplingRate);
 
 FeatureExtractionResult extract_speech_features(
-    const int16_t *const *buffers, int buffersCount, int sizeEach,
-    int samplingRate, const FeaturesConfiguration *fc, void *const *results);
+    const FeaturesConfiguration *fc, const int16_t *const *buffers,
+    void *const *results);
 
 void destroy_features_configuration(FeaturesConfiguration *fc);
 
