@@ -174,8 +174,15 @@ throw (ChainNameAlreadyExistsException, TransformNotRegisteredException,
     if (reusedTransform != nullptr) {
       currentNode = reusedTransform;
     } else {
-      // Set the input format
-      *t->InputFormat() = currentNode->BoundTransform->OutputFormat();
+      try {
+        // Set the input format
+        *t->InputFormat() = currentNode->BoundTransform->OutputFormat();
+      }
+      catch(Formats::InvalidRawFormatParametersException *irfpe) {
+         delete irfpe;
+         throw new IncompatibleTransformFormatException(
+             *currentNode->BoundTransform, *t);
+      }
       // Append the newly created transform
       auto newNode = std::make_shared<Node>(currentNode.get(), t);
       currentNode->Children[tname].push_back(newNode);

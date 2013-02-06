@@ -16,6 +16,10 @@
 
 namespace SpeechFeatureExtraction {
 
+const BufferFormat* Transform::InputFormat() const noexcept {
+  return const_cast<Transform *>(this)->InputFormat();
+}
+
 std::shared_ptr<Transform> Transform::Clone() const {
   auto copy = TransformFactory[this->Name()]();
   copy->SetParameters(this->CurrentParameters());

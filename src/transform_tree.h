@@ -41,6 +41,17 @@ class TransformNotRegisteredException : public ExceptionBase {
   : ExceptionBase("Transform \"" + name + "\" is not registered.") {}
 };
 
+class IncompatibleTransformFormatException : public ExceptionBase {
+ public:
+  IncompatibleTransformFormatException(const Transform& parent,
+                                       const Transform& child)
+  : ExceptionBase("Transform \"" + child.Name() + "\" has input format \"" +
+                  child.InputFormat()->Id() +
+                  "\", while the previous transform \"" +
+                  parent.Name() + "\" has output format \"" +
+                  parent.OutputFormat().Id() + "\".") {}
+};
+
 class TreeIsEmptyException : public ExceptionBase {
  public:
   TreeIsEmptyException()

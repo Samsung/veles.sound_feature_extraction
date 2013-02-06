@@ -46,6 +46,8 @@ class Transform {
 
   virtual BufferFormat* InputFormat() noexcept = 0;
 
+  const BufferFormat* InputFormat() const noexcept;
+
   virtual const BufferFormat& OutputFormat() const noexcept = 0;
 
   virtual const std::unordered_map<std::string, ParameterTraits>&

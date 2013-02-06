@@ -18,6 +18,7 @@
 using SpeechFeatureExtraction::ChainNameAlreadyExistsException;
 using SpeechFeatureExtraction::TransformNotRegisteredException;
 using SpeechFeatureExtraction::ChainAlreadyExistsException;
+using SpeechFeatureExtraction::IncompatibleTransformFormatException;
 using SpeechFeatureExtraction::RawFeaturesMap;
 using SpeechFeatureExtraction::Features::ParseFeaturesException;
 using SpeechFeatureExtraction::TransformTree;
@@ -88,6 +89,12 @@ FeaturesConfiguration *setup_features_extraction(
       fprintf(stderr, "Failed to construct the transform tree. %s\n",
               caee->what());
       delete caee;
+      return nullptr;
+    }
+    catch (IncompatibleTransformFormatException* itfe) {
+      fprintf(stderr, "Failed to construct the transform tree. %s\n",
+              itfe->what());
+      delete itfe;
       return nullptr;
     }
   }
