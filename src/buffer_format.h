@@ -19,6 +19,9 @@
 
 namespace SpeechFeatureExtraction {
 
+namespace Formats {
+}  // namespace Formats
+
 class InvalidFormatException : public ExceptionBase {
  public:
   InvalidFormatException(const std::string& idMine,

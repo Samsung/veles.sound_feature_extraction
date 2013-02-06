@@ -25,16 +25,16 @@ extern std::unordered_map<std::string,
     TransformFactory;
 
 template<class T>
-class TransformRegister {
+class RegisterTransform {
  public:
-  TransformRegister() {
+  RegisterTransform() {
     T t;
     TransformFactory.insert(
         std::make_pair(t.Name(), []() { return std::make_shared<T>(); }));
   }
 };
 
-#define REGISTER_TRANSFORM(T) TransformRegister<T> TransformRegisterInstance
+#define REGISTER_TRANSFORM(T) RegisterTransform<T> T##RegistryInstance
 
 }  // namespace SpeechFeatureExtraction
 #endif  // INCLUDE_TRANSFORM_REGISTER_H_

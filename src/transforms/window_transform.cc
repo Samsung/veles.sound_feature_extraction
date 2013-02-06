@@ -14,13 +14,9 @@
 
 namespace SpeechFeatureExtraction {
 
-WindowTransform::WindowTransform() {
-  // TODO Auto-generated constructor stub
-
-}
-
-WindowTransform::~WindowTransform() {
-  // TODO Auto-generated destructor stub
+void WindowTransform::SetParameter(const std::string& name, const std::string& value)
+throw(InvalidParameterValueException) {
+  parameters_[name] = value;
 }
 
 }  // namespace SpeechFeatureExtraction

@@ -15,44 +15,21 @@
 
 #include "src/formats/raw_format.h"
 #include "src/formats/raw_window_format.h"
-#include "src/transform.h"
+#include "src/transform_base.h"
 
 namespace SpeechFeatureExtraction {
 
-class WindowTransform : public Transform {
+class WindowTransform
+    : public TransformBase<Formats::RawFormat, Formats::RawWindowFormat> {
  public:
-  WindowTransform();
-  virtual ~WindowTransform();
+  WindowTransform() : TransformBase(SupportedParameters()) {}
 
-  virtual const std::string& Name() const noexcept {
-   static const std::string name("!ROOT!");
-   return name;
-  }
+  TRANSFORM_NAME("!Root")
 
-  virtual BufferFormat* InputFormat() noexcept {
-    return &inFormat_;
-  }
-
-  virtual const BufferFormat& OutputFormat() const noexcept {
-    return outFormat_;
-  }
-
-  virtual const std::unordered_map<std::string, ParameterTraits>&
-  SupportedParameters() const noexcept {
-    static const std::unordered_map<std::string, ParameterTraits> p;
-    return p;
-  }
-
-  virtual const std::unordered_map<std::string, std::string>&
-  CurrentParameters() const noexcept {
-    static const std::unordered_map<std::string, std::string> p;
-    return p;
-  }
-
-  virtual void SetParameters(
-      const std::unordered_map<std::string, std::string>&)
-  throw(InvalidParameterNameException, InvalidParameterValueException) {
-  }
+  TRANSFORM_PARAMETERS(
+      _TP_("length", "Window size in milliseconds", "25")
+      _TP_("step", "Distance between sequential windows in milliseconds", "10")
+  )
 
   virtual void Initialize() const noexcept {
   }
@@ -61,9 +38,9 @@ class WindowTransform : public Transform {
     CopyInToOut(in, out);
   }
 
- private:
-  Formats::RawFormat inFormat_;
-  Formats::RawWindowFormat outFormat_;
+ protected:
+  virtual void SetParameter(const std::string& name, const std::string& value)
+  throw(InvalidParameterValueException);
 };
 
 }  // namespace SpeechFeatureExtraction

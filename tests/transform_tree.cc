@@ -11,8 +11,8 @@
  */
 
 #include <gtest/gtest.h>
+#include "src/transform_base.h"
 #include "src/transform_tree.h"
-#include "src/transform_registry.h"
 
 using namespace SpeechFeatureExtraction;
 using namespace SpeechFeatureExtraction::Formats;
@@ -49,49 +49,14 @@ class ParentTestFormat : public BufferFormat {
   int samplesCount_;
 };
 
-class ParentTestTransform : public Transform {
+class ParentTestTransform
+    : public TransformBase<RawFormat, ParentTestFormat> {
  public:
-  ParentTestTransform() {
-    params_.insert(std::make_pair("AmplifyFactor", "1"));
-  }
+  ParentTestTransform() : TransformBase(SupportedParameters()) {}
 
-  virtual const std::string& Name() const noexcept {
-    static const std::string name("ParentTest");
-    return name;
-  }
+  TRANSFORM_NAME("ParentTest")
 
-  virtual BufferFormat* InputFormat() noexcept {
-    return &inputFormat_;
-  }
-
-  virtual const BufferFormat& OutputFormat() const noexcept {
-    return outputFormat_;
-  }
-
-  virtual const std::unordered_map<std::string, ParameterTraits>&
-  SupportedParameters() const noexcept {
-    static const std::unordered_map<std::string, ParameterTraits> sp = {
-        { "AmplifyFactor", { "Volume amplification factor", "1" } }
-    };
-    return sp;
-  }
-
-  virtual const std::unordered_map<std::string, std::string>&
-  CurrentParameters() const noexcept {
-    return params_;
-  }
-
-  virtual void SetParameters(
-      const std::unordered_map<std::string, std::string>& parameters)
-  throw(InvalidParameterNameException, InvalidParameterValueException) {
-    for (auto p : parameters) {
-      auto pvp = params_.find(p.first);
-      if (pvp == params_.end()) {
-        throw new InvalidParameterNameException(p.first, Name());
-      }
-      params_[pvp->second] = p.second;
-    }
-  }
+  TRANSFORM_PARAMETERS(_TP_("AmplifyFactor", "Volume amplification factor", "1"))
 
   virtual void Initialize() const noexcept {
 
@@ -101,16 +66,84 @@ class ParentTestTransform : public Transform {
 
   }
 
+ protected:
+  virtual void SetParameter(const std::string& name, const std::string& value)
+  throw(InvalidParameterValueException) {
+    parameters_[name] = value;
+  }
+};
+
+class ChildTestFormat : public BufferFormat {
+ public:
+  ChildTestFormat()
+  : BufferFormat("ChildTestFormat")
+  , analysisLength_(1024) {
+  }
+
+  ChildTestFormat(int analysisLength)
+  : BufferFormat("ChildTestFormat")
+  , analysisLength_(analysisLength) {
+  }
+
+ protected:
+  virtual bool EqualsTo(const BufferFormat& other) const noexcept {
+    CAST_FORMAT(other, ChildTestFormat, octf);
+    return analysisLength_ == octf.analysisLength_;
+  }
+
+  virtual void SetParametersFrom(const BufferFormat& other) noexcept {
+    CAST_FORMAT(other, ChildTestFormat, octf);
+    analysisLength_ = octf.analysisLength_;
+  }
+
  private:
-  RawFormat inputFormat_;
-  ParentTestFormat outputFormat_;
-  std::unordered_map<std::string, std::string> params_;
+  int analysisLength_;
+};
+
+class ChildTestTransform
+    : public TransformBase<ParentTestFormat, ChildTestFormat> {
+ public:
+  ChildTestTransform() : TransformBase(SupportedParameters()) {}
+
+  TRANSFORM_NAME("ChildTest")
+
+  TRANSFORM_PARAMETERS(
+      _TP_("AnalysisLength", "Length of the array with analyzed results",
+           "128"))
+
+  virtual void Initialize() const noexcept {
+
+  }
+
+  virtual void Do(const Buffers& in, Buffers *out) const noexcept {
+
+  }
+
+ protected:
+  virtual void SetParameter(const std::string& name, const std::string& value)
+  throw(InvalidParameterValueException) {
+    parameters_[name] = value;
+  }
 };
 
 REGISTER_TRANSFORM(ParentTestTransform);
+REGISTER_TRANSFORM(ChildTestTransform);
 
 TEST(TransformTree, AddChain) {
+  TransformTree tt({ 4096, 20000 });
 
+  tt.AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
+
+  EXPECT_DEATH({
+    tt.AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
+  }, ".*Chain name \"One\" already exists.*");
+
+  EXPECT_DEATH({
+    tt.AddChain("Two", { {"ParentTest", "" }, { "ChildTest", "" } });
+  }, ".*Chain \"Two\" is identical to previously added \"One\".*");
+
+  tt.AddChain("Two", { {"ParentTest", "" }, { "ChildTest", "256" } });
+  tt.PrepareForExecution();
 }
 
 #include "tests/google/src/gtest_main.cc"

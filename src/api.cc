@@ -66,7 +66,6 @@ FeaturesConfiguration *setup_features_extraction(
   }
 
   RawFormat format(sizeEach, samplingRate);
-
   auto fconfig = new FeaturesConfiguration();
   fconfig->Tree = std::make_shared<TransformTree>(format);
   for (auto featpair : featmap) {
