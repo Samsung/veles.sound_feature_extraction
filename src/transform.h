@@ -46,8 +46,6 @@ class Transform {
 
   virtual BufferFormat* InputFormat() noexcept = 0;
 
-  const BufferFormat* InputFormat() const noexcept;
-
   virtual const BufferFormat& OutputFormat() const noexcept = 0;
 
   virtual const std::unordered_map<std::string, ParameterTraits>&
@@ -64,9 +62,13 @@ class Transform {
 
   virtual void Do(const Buffers& in, Buffers *out) const noexcept = 0;
 
-  std::shared_ptr<Transform> Clone() const;
+  // Non-virtual methods
 
-  bool operator==(const Transform& other) const;
+  const BufferFormat* InputFormat() const noexcept;
+
+  std::shared_ptr<Transform> Clone() const noexcept;
+
+  bool operator==(const Transform& other) const noexcept;
 
  protected:
   void CopyInToOut(const Buffers& in, Buffers *out) const noexcept;

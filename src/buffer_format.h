@@ -46,5 +46,8 @@ class BufferFormat {
   std::string id_;
 };
 
+#define CAST_FORMAT(other, sibling, var) \
+    const sibling& var = static_cast<const sibling&>(other)
+
 }  // namespace SpeechFeatureExtraction
 #endif  // INCLUDE_BUFFER_FORMAT_H_

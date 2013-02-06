@@ -20,13 +20,13 @@ const BufferFormat* Transform::InputFormat() const noexcept {
   return const_cast<Transform *>(this)->InputFormat();
 }
 
-std::shared_ptr<Transform> Transform::Clone() const {
+std::shared_ptr<Transform> Transform::Clone() const noexcept {
   auto copy = TransformFactory[this->Name()]();
   copy->SetParameters(this->CurrentParameters());
   return copy;
 }
 
-bool Transform::operator==(const Transform& other) const {
+bool Transform::operator==(const Transform& other) const noexcept {
   if (this->Name() != other.Name()) return false;
   assert(CurrentParameters().size() == other.CurrentParameters().size());
   for (auto p : CurrentParameters()) {

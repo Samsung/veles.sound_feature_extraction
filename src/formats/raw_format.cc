@@ -41,12 +41,12 @@ RawFormat::RawFormat(const RawFormat& other) noexcept
 }
 
 bool RawFormat::EqualsTo(const BufferFormat& other) const noexcept {
-  const RawFormat& orf = static_cast<const RawFormat&>(other);
+  CAST_FORMAT(other, RawFormat, orf);
   return (size_ == orf.size_ && samplingRate_ == orf.samplingRate_);
 }
 
 void RawFormat::SetParametersFrom(const BufferFormat& other) noexcept {
-  const RawFormat& orf = static_cast<const RawFormat&>(other);
+  CAST_FORMAT(other, RawFormat, orf);
   size_ = orf.size_;
   samplingRate_ = orf.samplingRate_;
 }

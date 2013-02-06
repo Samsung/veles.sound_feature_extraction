@@ -30,7 +30,7 @@ class TransformRegister {
   TransformRegister() {
     T t;
     TransformFactory.insert(
-        std::make_pair(t->Name(), []() { return std::make_shared<T>(); }));
+        std::make_pair(t.Name(), []() { return std::make_shared<T>(); }));
   }
 };
 
