@@ -33,7 +33,7 @@ struct FeaturesConfiguration {
 
 FeaturesConfiguration *setup_features_extraction(
     const char *const *features, int featuresCount,
-    int buffersCount, size_t sizeEach, int samplingRate) {
+    size_t sizeEach, int samplingRate) {
   if (features == nullptr) {
     fprintf(stderr, "features is null");
     return nullptr;
@@ -104,7 +104,7 @@ FeaturesConfiguration *setup_features_extraction(
 
 FeatureExtractionResult extract_speech_features(
     const FeaturesConfiguration *fc, const int16_t *const *buffers,
-    void *const *results) {
+    int buffersCount, void *const *results) {
   return FEATURE_EXTRACTION_RESULT_OK;
 }
 

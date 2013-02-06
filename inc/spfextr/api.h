@@ -35,11 +35,11 @@ typedef struct FeaturesConfiguration FeaturesConfiguration;
 
 FeaturesConfiguration *setup_features_extraction(
     const char *const *features, int featuresCount,
-    int buffersCount, size_t sizeEach, int samplingRate);
+    size_t sizeEach, int samplingRate);
 
 FeatureExtractionResult extract_speech_features(
     const FeaturesConfiguration *fc, const int16_t *const *buffers,
-    void *const *results);
+    int buffersCount, void *const *results);
 
 void destroy_features_configuration(FeaturesConfiguration *fc);
 
