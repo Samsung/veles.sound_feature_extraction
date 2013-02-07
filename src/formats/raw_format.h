@@ -31,8 +31,7 @@ class RawFormat : public BufferFormat {
  public:
   RawFormat() noexcept;
 
-  RawFormat(size_t size, int samplingRate)
-  throw(InvalidRawFormatParametersException);
+  RawFormat(size_t size, int samplingRate);
 
   explicit RawFormat(const RawFormat& other) noexcept;
 

@@ -39,8 +39,7 @@ class WindowTransform
   }
 
  protected:
-  virtual void SetParameter(const std::string& name, const std::string& value)
-  throw(InvalidParameterValueException);
+  virtual void SetParameter(const std::string& name, const std::string& value);
 };
 
 }  // namespace SpeechFeatureExtraction

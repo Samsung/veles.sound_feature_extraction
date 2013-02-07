@@ -49,8 +49,7 @@ class RootTransform : public Transform {
   }
 
   virtual void SetParameters(
-      const std::unordered_map<std::string, std::string>&)
-  throw(InvalidParameterNameException, InvalidParameterValueException) {
+      const std::unordered_map<std::string, std::string>&) {
   }
 
   virtual void Initialize() const noexcept {
@@ -203,8 +202,7 @@ void TransformTree::PrepareForExecution() noexcept {
 }
 
 std::unordered_map<std::string, std::shared_ptr<Buffers>>
-TransformTree::Execute(const Buffers& in)
-throw(TreeIsNotPreparedException, TreeIsEmptyException) {
+TransformTree::Execute(const Buffers& in) {
   if (!treeIsPrepared_) {
     throw new TreeIsNotPreparedException();
   }

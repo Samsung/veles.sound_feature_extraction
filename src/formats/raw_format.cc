@@ -24,7 +24,6 @@ RawFormat::RawFormat() noexcept
 }
 
 RawFormat::RawFormat(size_t size, int samplingRate)
-throw(InvalidRawFormatParametersException)
 : BufferFormat(ID_)
 , size_(size)
 , samplingRate_(samplingRate) {

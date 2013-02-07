@@ -122,8 +122,7 @@ class TransformTree {
   void PrepareForExecution() noexcept;
 
   std::unordered_map<std::string, std::shared_ptr<Buffers>> Execute(
-      const Buffers& in)
-  throw(TreeIsNotPreparedException, TreeIsEmptyException);
+      const Buffers& in);
 
  private:
   std::shared_ptr<Node> root_;

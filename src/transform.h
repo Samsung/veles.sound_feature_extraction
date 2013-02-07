@@ -55,8 +55,7 @@ class Transform {
   CurrentParameters() const noexcept = 0;
 
   virtual void SetParameters(
-      const std::unordered_map<std::string, std::string>& parameters)
-  throw(InvalidParameterNameException, InvalidParameterValueException) = 0;
+      const std::unordered_map<std::string, std::string>& parameters) = 0;
 
   virtual void Initialize() const noexcept = 0;
 

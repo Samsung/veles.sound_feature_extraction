@@ -67,8 +67,8 @@ class ParentTestTransform
   }
 
  protected:
-  virtual void SetParameter(const std::string& name, const std::string& value)
-  throw(InvalidParameterValueException) {
+  virtual void SetParameter(const std::string& name,
+                            const std::string& value){
     parameters_[name] = value;
   }
 };
@@ -120,8 +120,8 @@ class ChildTestTransform
   }
 
  protected:
-  virtual void SetParameter(const std::string& name, const std::string& value)
-  throw(InvalidParameterValueException) {
+  virtual void SetParameter(const std::string& name,
+                            const std::string& value) {
     parameters_[name] = value;
   }
 };

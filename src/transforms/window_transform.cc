@@ -14,8 +14,8 @@
 
 namespace SpeechFeatureExtraction {
 
-void WindowTransform::SetParameter(const std::string& name, const std::string& value)
-throw(InvalidParameterValueException) {
+void WindowTransform::SetParameter(const std::string& name,
+                                   const std::string& value){
   parameters_[name] = value;
 }
 

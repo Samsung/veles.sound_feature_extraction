@@ -52,8 +52,7 @@ class TransformBase : public Transform {
   }
 
   virtual void SetParameters(
-      const std::unordered_map<std::string, std::string>& parameters)
-  throw(InvalidParameterNameException, InvalidParameterValueException) {
+      const std::unordered_map<std::string, std::string>& parameters) {
     for (auto p : parameters) {
       if (parameters_.find(p.first) == parameters_.end()) {
         throw new InvalidParameterNameException(p.first, Name());
@@ -68,7 +67,7 @@ class TransformBase : public Transform {
   std::unordered_map<std::string, std::string> parameters_;
 
   virtual void SetParameter(const std::string& name, const std::string& value)
-  throw(InvalidParameterValueException) = 0;
+  = 0;
 };
 
 #define TRANSFORM_NAME(name) virtual const std::string& Name() const noexcept { \
