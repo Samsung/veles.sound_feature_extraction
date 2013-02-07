@@ -70,7 +70,7 @@ dnl Check whether to use the built-in Boost
 AC_ARG_WITH([built-in-boost],
 	AS_HELP_STRING([--with-built-in-boost], [Use statically linked embedded Boost parts]), [
 	BOOST_DIR="boost"
-	LDFLAGS="$LDFLAGS -L\$(abs_top_builddir)/src/boost/stage/lib"
+	LDFLAGS="$LDFLAGS -L\"\$(abs_top_builddir)/src/boost/stage/lib\""
 	dnl Set path to bjam
 	AC_ARG_VAR(BJAM, Path to bjam Boost builder)
 	
