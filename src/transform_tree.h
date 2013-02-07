@@ -117,7 +117,7 @@ class TransformTree {
       const std::string& name,
       const std::vector<std::pair<std::string, std::string>>& transforms)
   throw (ChainNameAlreadyExistsException, TransformNotRegisteredException,
-         ChainAlreadyExistsException);
+         ChainAlreadyExistsException, Parameters::ParseParametersException);
 
   void PrepareForExecution() noexcept;
 

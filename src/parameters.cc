@@ -19,8 +19,7 @@ namespace SpeechFeatureExtraction {
 
 namespace Parameters {
 
-std::unordered_map<std::string, std::string> Parse(const std::string& line)
-throw(ParseParametersException) {
+std::unordered_map<std::string, std::string> Parse(const std::string& line) {
   std::unordered_map<std::string, std::string> parameters;
   std::istringstream ss(line);
   std::string s;

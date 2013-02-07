@@ -37,8 +37,7 @@ class ParseParametersException : public ExceptionBase {
                   ) {}
 };
 
-std::unordered_map<std::string, std::string> Parse(const std::string& line)
-throw(ParseParametersException);
+std::unordered_map<std::string, std::string> Parse(const std::string& line);
 
 }  // namespace Parameters
 

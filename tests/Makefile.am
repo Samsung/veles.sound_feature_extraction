@@ -1,6 +1,6 @@
 include $(top_srcdir)/Makefile.common
 
-noinst_PROGRAMS = speech_features transform_tree
+noinst_PROGRAMS = speech_features parameters transform_tree
 
 GTEST_INCLUDE = -I$(top_srcdir)/tests/google
 
@@ -23,6 +23,17 @@ transform_tree_CPPFLAGS = $(GTEST_INCLUDE)
 
 # Used libraries
 transform_tree_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+parameters_SOURCES = parameters.cc
+
+# Compiler options
+parameters_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+parameters_LDADD = $(top_builddir)/src/libspfextr.la  \
 $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 
