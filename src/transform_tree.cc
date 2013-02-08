@@ -143,16 +143,13 @@ TransformTree::~TransformTree() noexcept {
 
 void TransformTree::AddChain(
     const std::string& name,
-    const std::vector<std::pair<std::string, std::string>>& transforms)
-throw (ChainNameAlreadyExistsException, TransformNotRegisteredException,
-       ChainAlreadyExistsException, Parameters::ParseParametersException) {
+    const std::vector<std::pair<std::string, std::string>>& transforms) {
   if (treeIsPrepared_) {
     throw new TreeIsPreparedException();
   }
   if (chains_.find(name) != chains_.end()) {
     throw new ChainNameAlreadyExistsException(name);
   }
-  chains_.insert(name);
 
   auto currentNode = root_;
   for (auto tpair : transforms) {
@@ -192,6 +189,7 @@ throw (ChainNameAlreadyExistsException, TransformNotRegisteredException,
     throw new ChainAlreadyExistsException(currentNode->ChainName, name);
   }
   currentNode->ChainName = name;
+  chains_.insert(name);
 }
 
 void TransformTree::PrepareForExecution() noexcept {

@@ -22,8 +22,7 @@ const std::string& BufferFormat::Id() const noexcept {
   return id_;
 }
 
-BufferFormat& BufferFormat::operator=(const BufferFormat& other)
-throw (InvalidFormatException) {
+BufferFormat& BufferFormat::operator=(const BufferFormat& other) {
   if (this->id_ != other.id_) {
     throw new InvalidFormatException(this->id_, other.id_);
   }

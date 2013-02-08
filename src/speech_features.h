@@ -48,8 +48,7 @@ class ParseFeaturesException : public ExceptionBase {
 /// @brief Splits a list of feature text descriptions to
 /// the name-parameters table. The syntax is as follows:
 /// <feature name>[<transform name>(<parameter name>=<value>, <parameter name>=<value>), <transform name>]
-RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures)
-throw (ParseFeaturesException);
+RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures);
 
 }  // namespace Features
 

@@ -46,8 +46,7 @@ void AddToTransformsList(const std::string& str, size_t featureIndex,
   }
 }
 
-RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures)
-throw (ParseFeaturesException) {
+RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures) {
   RawFeaturesMap ret;
 
   static const boost::regex featureRegex(

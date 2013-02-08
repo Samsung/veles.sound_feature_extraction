@@ -132,28 +132,28 @@ REGISTER_TRANSFORM(ChildTestTransform);
 TEST(TransformTree, AddChain) {
   TransformTree tt({ 4096, 20000 });
 
+  tt.AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
+
+  bool fail = false;
   try {
     tt.AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
   }
-  catch (...) {
-    FAIL();
+  catch (ChainNameAlreadyExistsException* e) {
+    fail = true;
   }
+  EXPECT_TRUE(fail);
 
-  EXPECT_DEATH({
-    tt.AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
-  }, ".*SpeechFeatureExtraction::ChainNameAlreadyExistsException.*");
-
-  EXPECT_DEATH({
+  fail = false;
+  try {
     tt.AddChain("Two", { {"ParentTest", "" }, { "ChildTest", "" } });
-  }, ".*SpeechFeatureExtraction::ChainAlreadyExistsException.*");
+  }
+  catch (ChainAlreadyExistsException* e) {
+    fail = true;
+  }
+  EXPECT_TRUE(fail);
 
-  try {
-    tt.AddChain("Two", { {"ParentTest", "" }, { "ChildTest", "256" } });
-    tt.PrepareForExecution();
-  }
-  catch (...) {
-    FAIL();
-  }
+  tt.AddChain("Two", { {"ParentTest", "" }, { "ChildTest", "AnalysisLength=256" } });
+  tt.PrepareForExecution();
 }
 
 #include "tests/google/src/gtest_main.cc"
