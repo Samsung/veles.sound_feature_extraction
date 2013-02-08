@@ -15,6 +15,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <spfextr/config.h>
 #include "src/buffer_format.h"
 #include "src/buffers.h"
 #include "src/parameters.h"
@@ -42,6 +43,8 @@ class Transform {
  public:
   virtual ~Transform() {}
 
+  // Pure virtual methods
+
   virtual const std::string& Name() const noexcept = 0;
 
   virtual BufferFormat* InputFormat() noexcept = 0;
@@ -60,6 +63,21 @@ class Transform {
   virtual void Initialize() const noexcept = 0;
 
   virtual void Do(const Buffers& in, Buffers* out) const noexcept = 0;
+
+  // Virtual methods which have defaults
+
+  virtual bool HasInverse() const noexcept {
+    return false;
+  }
+
+  virtual void DoInverse(const Buffers& in UNUSED,
+                         Buffers* out UNUSED) const {
+    std::unexpected();
+  }
+
+  virtual int BuffersCountMultiplier() const noexcept {
+    return 1;
+  }
 
   // Non-virtual methods
 

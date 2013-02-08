@@ -31,6 +31,15 @@ class RegisterTransform {
     T t;
     TransformFactory.insert(
         std::make_pair(t.Name(), []() { return std::make_shared<T>(); }));
+    if (t.HasInverse()) {
+      TransformFactory.insert(
+        std::make_pair(std::string("I") + t.Name(),
+                       []() {
+        auto ptr = std::make_shared<T>();
+        ptr->SetParameters({ {"inverse", "true"} });
+        return ptr;
+      }));
+    }
   }
 };
 

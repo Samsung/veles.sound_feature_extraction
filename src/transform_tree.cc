@@ -97,8 +97,10 @@ void TransformTree::Node::Execute(
     std::unordered_map<std::string, std::shared_ptr<Buffers>>* results) {
   if (Parent != nullptr) {
     if (BoundBuffers == nullptr) {
-      BoundBuffers = std::make_shared<Buffers>(Parent->BoundBuffers->Size(),
-                                               BoundTransform->OutputFormat());
+      BoundBuffers = std::make_shared<Buffers>(
+          Parent->BoundBuffers->Size() *
+              BoundTransform->BuffersCountMultiplier(),
+          BoundTransform->OutputFormat());
     }
     BoundTransform->Do(*Parent->BoundBuffers, BoundBuffers.get());
     if (ChainName != "") {

@@ -35,13 +35,15 @@ typedef struct FeaturesConfiguration FeaturesConfiguration;
 
 FeaturesConfiguration *setup_features_extraction(
     const char *const *features, int featuresCount,
-    size_t sizeEach, int samplingRate);
+    size_t bufferSize, int samplingRate);
 
 FeatureExtractionResult extract_speech_features(
-    const FeaturesConfiguration *fc, const int16_t *const *buffers,
-    int buffersCount, void *const *results);
+    const FeaturesConfiguration *fc, const int16_t *buffer,
+    void ***results);
 
 void destroy_features_configuration(FeaturesConfiguration *fc);
+
+void free_results(void **results, int featuresCount);
 
 #if __GNUC__ >= 4
 #pragma GCC visibility pop

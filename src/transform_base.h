@@ -79,29 +79,40 @@ SupportedParameters() const noexcept { \
 }
 
 template <typename FINT, typename FOUTT>
-class TransformAdvancedBase
+class TransformTypeSafeBase
 : public TransformBase<BuffersBase<FINT>, BuffersBase<FOUTT>> {
 
  private:
   typedef TransformBase<BuffersBase<FINT>, BuffersBase<FOUTT>> MyBase;
 
  public:
-  TransformAdvancedBase(const std::unordered_map<std::string, ParameterTraits>&
+  TransformTypeSafeBase(const std::unordered_map<std::string, ParameterTraits>&
                         supportedParameters)
   : MyBase(supportedParameters) {
   }
 
-  virtual ~TransformAdvancedBase() {}
+  virtual ~TransformTypeSafeBase() {}
 
   virtual void Do(const Buffers& in, Buffers* out) const noexcept {
     auto tin = reinterpret_cast<const BuffersBase<FINT>&>(in);
     auto tout = reinterpret_cast<BuffersBase<FOUTT>*>(out);
-    DoInternal(tin, tout);
+    TypeSafeDo(tin, tout);
+  }
+
+  virtual void DoInverse(const Buffers& in, Buffers* out) const noexcept {
+    auto tin = reinterpret_cast<const BuffersBase<FOUTT>&>(in);
+    auto tout = reinterpret_cast<BuffersBase<FINT>*>(out);
+    TypeSafeDoInverse(tin, tout);
   }
 
  protected:
-  virtual void DoInternal(const BuffersBase<FINT>& in,
+  virtual void TypeSafeDo(const BuffersBase<FINT>& in,
                           BuffersBase<FOUTT>* out) const noexcept = 0;
+
+  virtual void TypeSafeDoInverse(const BuffersBase<FOUTT>& in,
+                                 BuffersBase<FINT>* out) const {
+    std::unexpected();
+  }
 };
 
 }  // namespace SpeechFeatureExtraction

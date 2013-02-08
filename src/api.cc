@@ -33,7 +33,7 @@ struct FeaturesConfiguration {
 
 FeaturesConfiguration *setup_features_extraction(
     const char *const *features, int featuresCount,
-    size_t sizeEach, int samplingRate) {
+    size_t bufferSize, int samplingRate) {
   if (features == nullptr) {
     fprintf(stderr, "features is null");
     return nullptr;
@@ -65,7 +65,7 @@ FeaturesConfiguration *setup_features_extraction(
     return nullptr;
   }
 
-  RawFormat format(sizeEach, samplingRate);
+  RawFormat format(bufferSize, samplingRate);
   auto fconfig = new FeaturesConfiguration();
   fconfig->Tree = std::make_shared<TransformTree>(format);
   for (auto featpair : featmap) {
@@ -102,13 +102,20 @@ FeaturesConfiguration *setup_features_extraction(
 }
 
 FeatureExtractionResult extract_speech_features(
-    const FeaturesConfiguration *fc, const int16_t *const *buffers,
-    int buffersCount, void *const *results) {
+    const FeaturesConfiguration *fc, const int16_t *buffer,
+    void ***results) {
   return FEATURE_EXTRACTION_RESULT_OK;
 }
 
 void destroy_features_configuration(FeaturesConfiguration* fc) {
   delete fc;
+}
+
+void free_results(void **results, int featuresCount) {
+  for (int i = 0; i < featuresCount; i++) {
+    free(results[i]);
+  }
+  free(results);
 }
 
 }
