@@ -59,7 +59,7 @@ class Transform {
 
   virtual void Initialize() const noexcept = 0;
 
-  virtual void Do(const Buffers& in, Buffers *out) const noexcept = 0;
+  virtual void Do(const Buffers& in, Buffers* out) const noexcept = 0;
 
   // Non-virtual methods
 

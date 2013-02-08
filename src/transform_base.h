@@ -14,10 +14,11 @@
 #define TRANSFORM_BASE_H_
 
 #include "src/transform_registry.h"
+#include "src/buffers_base.h"
 
 namespace SpeechFeatureExtraction {
 
-template<typename FIN, typename FOUT>
+template <typename FINT, typename FOUTT>
 class TransformBase : public Transform {
  public:
   TransformBase(const std::unordered_map<std::string, ParameterTraits>&
@@ -28,15 +29,6 @@ class TransformBase : public Transform {
   }
 
   virtual ~TransformBase() {}
-
-  virtual const std::string& Name() const noexcept = 0;
-
-  virtual const std::unordered_map<std::string, ParameterTraits>&
-  SupportedParameters() const noexcept = 0;
-
-  virtual void Initialize() const noexcept = 0;
-
-  virtual void Do(const Buffers& in, Buffers *out) const noexcept = 0;
 
   virtual BufferFormat* InputFormat() noexcept {
     return &inputFormat_;
@@ -62,8 +54,8 @@ class TransformBase : public Transform {
   }
 
  protected:
-  FIN inputFormat_;
-  FOUT outputFormat_;
+  BufferFormatBase<FINT> inputFormat_;
+  FOUTT outputFormat_;
   std::unordered_map<std::string, std::string> parameters_;
 
   virtual void SetParameter(const std::string& name, const std::string& value)
@@ -85,6 +77,32 @@ SupportedParameters() const noexcept { \
   }; \
   return sp; \
 }
+
+template <typename FINT, typename FOUTT>
+class TransformAdvancedBase
+: public TransformBase<BuffersBase<FINT>, BuffersBase<FOUTT>> {
+
+ private:
+  typedef TransformBase<BuffersBase<FINT>, BuffersBase<FOUTT>> MyBase;
+
+ public:
+  TransformAdvancedBase(const std::unordered_map<std::string, ParameterTraits>&
+                        supportedParameters)
+  : MyBase(supportedParameters) {
+  }
+
+  virtual ~TransformAdvancedBase() {}
+
+  virtual void Do(const Buffers& in, Buffers* out) const noexcept {
+    auto tin = reinterpret_cast<const BuffersBase<FINT>&>(in);
+    auto tout = reinterpret_cast<BuffersBase<FOUTT>*>(out);
+    DoInternal(tin, tout);
+  }
+
+ protected:
+  virtual void DoInternal(const BuffersBase<FINT>& in,
+                          BuffersBase<FOUTT>* out) const noexcept = 0;
+};
 
 }  // namespace SpeechFeatureExtraction
 #endif  // INCLUDE_TRANSFORM_BASE_H_

@@ -85,6 +85,7 @@ class TransformTree {
   struct Node {
     Node* Parent;
     const std::shared_ptr<Transform> BoundTransform;
+    std::shared_ptr<Buffers> BoundBuffers;
     std::unordered_map<std::string, std::vector<std::shared_ptr<Node>>>
     Children;
     std::string ChainName;
@@ -95,17 +96,7 @@ class TransformTree {
 
     void Apply(const std::function<void(const Transform&)> action);
 
-    void ExecuteOwn(
-        const Buffers& in,
-        std::unordered_map<std::string, std::shared_ptr<Buffers>>* results,
-        std::shared_ptr<Buffers> *out);
-
-    void ExecuteChildren(
-        const Buffers& in,
-        std::unordered_map<std::string, std::shared_ptr<Buffers>>* results);
-
     void Execute(
-        const Buffers& in,
         std::unordered_map<std::string, std::shared_ptr<Buffers>>* results);
   };
 

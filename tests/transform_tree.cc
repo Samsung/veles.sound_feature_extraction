@@ -31,17 +31,8 @@ class ParentTestFormat : public BufferFormat {
   , samplesCount_(samplesCount) {
   }
 
- protected:
-  virtual bool EqualsTo(const BufferFormat& other) const noexcept {
-    CAST_FORMAT(other, ParentTestFormat, optf);
-    return samplingRate_ == optf.samplingRate_ &&
-        samplesCount_ == optf.samplesCount_;
-  }
-
-  virtual void SetParametersFrom(const BufferFormat& other) noexcept {
-    CAST_FORMAT(other, ParentTestFormat, optf);
-    samplingRate_ = optf.samplingRate_;
-    samplesCount_ = optf.samplesCount_;
+  virtual std::function<void(void*)> Destructor() const noexcept {
+    return [](void*){};
   }
 
  private:
@@ -85,15 +76,8 @@ class ChildTestFormat : public BufferFormat {
   , analysisLength_(analysisLength) {
   }
 
- protected:
-  virtual bool EqualsTo(const BufferFormat& other) const noexcept {
-    CAST_FORMAT(other, ChildTestFormat, octf);
-    return analysisLength_ == octf.analysisLength_;
-  }
-
-  virtual void SetParametersFrom(const BufferFormat& other) noexcept {
-    CAST_FORMAT(other, ChildTestFormat, octf);
-    analysisLength_ = octf.analysisLength_;
+  virtual std::function<void(void*)> Destructor() const noexcept {
+    return [](void*){};
   }
 
  private:

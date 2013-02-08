@@ -13,7 +13,7 @@
 #ifndef RAW_FORMAT_H_
 #define RAW_FORMAT_H_
 
-#include "src/buffer_format.h"
+#include "src/buffers_base.h"
 #include "src/exceptions.h"
 
 namespace SpeechFeatureExtraction {
@@ -27,24 +27,23 @@ class InvalidRawFormatParametersException : public ExceptionBase {
                   " are not supported or invalid.") {}
 };
 
-class RawFormat : public BufferFormat {
+struct Raw {
+  const void* const* Pointers;
+
+  Raw(const void* const* pointers)
+  : Pointers(pointers) {}
+};
+
+class RawFormat : public BufferFormatBase<Raw> {
  public:
   RawFormat() noexcept;
 
   RawFormat(size_t size, int samplingRate);
 
-  explicit RawFormat(const RawFormat& other) noexcept;
-
   int SamplingRate() const noexcept;
   size_t Size() const noexcept;
 
- protected:
-  virtual bool EqualsTo(const BufferFormat& other) const noexcept;
-  virtual void SetParametersFrom(const BufferFormat& other) noexcept;
-
  private:
-  static const std::string ID_;
-
   size_t size_;
   int samplingRate_;
 };

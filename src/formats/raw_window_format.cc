@@ -15,16 +15,7 @@
 namespace SpeechFeatureExtraction {
 namespace Formats {
 
-RawWindowFormat::RawWindowFormat()
-: BufferFormat("Window") {
-}
-
-bool RawWindowFormat::EqualsTo(const BufferFormat& other) const noexcept {
-  return true;
-}
-
-void RawWindowFormat::SetParametersFrom(const BufferFormat& other) noexcept {
-
+RawWindowFormat::RawWindowFormat() {
 }
 
 }  // namespace Formats

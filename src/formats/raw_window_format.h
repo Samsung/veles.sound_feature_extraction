@@ -13,18 +13,18 @@
 #ifndef RAW_WINDOW_FORMAT_H_
 #define RAW_WINDOW_FORMAT_H_
 
-#include "src/buffer_format.h"
+#include "src/buffers_base.h"
 
 namespace SpeechFeatureExtraction {
 namespace Formats {
 
-class RawWindowFormat : public BufferFormat {
+struct Window {
+
+};
+
+class RawWindowFormat : public BufferFormatBase<Window> {
  public:
   RawWindowFormat();
-
- protected:
-  virtual bool EqualsTo(const BufferFormat& other) const noexcept;
-  virtual void SetParametersFrom(const BufferFormat& other) noexcept;
 };
 
 }  // namespace Formats

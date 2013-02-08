@@ -1,5 +1,5 @@
 /*! @file buffer_format.h
- *  @brief Buffer format base class.
+ *  @brief Buffer format interface class.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,6 +13,7 @@
 #ifndef BUFFER_FORMAT_H_
 #define BUFFER_FORMAT_H_
 
+#include <functional>
 #include <set>
 #include <string>
 #include "src/exceptions.h"
@@ -33,23 +34,23 @@ class InvalidFormatException : public ExceptionBase {
 class BufferFormat {
  public:
   explicit BufferFormat(const std::string& id) noexcept;
-  explicit BufferFormat(const BufferFormat& other) = delete;
+  BufferFormat(const BufferFormat& other) noexcept;
+  BufferFormat& operator=(const BufferFormat& other) noexcept;
+
   virtual ~BufferFormat() noexcept {}
+
   const std::string& Id() const noexcept;
 
-  BufferFormat& operator=(const BufferFormat& other);
   bool operator==(const BufferFormat& other) const noexcept;
 
- protected:
-  virtual bool EqualsTo(const BufferFormat& other) const noexcept = 0;
-  virtual void SetParametersFrom(const BufferFormat& other) noexcept = 0;
+  virtual std::function<void(void*)> Destructor() const noexcept = 0;
 
  private:
   std::string id_;
 };
 
 #define CAST_FORMAT(other, sibling, var) \
-    const sibling& var = static_cast<const sibling&>(other)
+    const sibling& var = reinterpret_cast<const sibling&>(other)
 
 }  // namespace SpeechFeatureExtraction
 #endif  // INCLUDE_BUFFER_FORMAT_H_

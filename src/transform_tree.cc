@@ -65,8 +65,9 @@ class RootTransform : public Transform {
 
 TransformTree::Node::Node(Node* parent,
                           const std::shared_ptr<Transform>& boundTransform)
-: Parent(parent),
-  BoundTransform(boundTransform) {
+: Parent(parent)
+, BoundTransform(boundTransform)
+, BoundBuffers(nullptr) {
 }
 
 void TransformTree::Node::Apply(
@@ -85,50 +86,29 @@ TransformTree::Node::FindIdenticalChildTransform(
   auto tv = Children.find(base.Name());
   if (tv == Children.end()) return nullptr;
   for (auto node : tv->second) {
-    if (base == *node->BoundTransform.get()) {
+    if (base == *node->BoundTransform) {
       return node;
     }
   }
   return nullptr;
 }
 
-void TransformTree::Node::ExecuteOwn(
-        const Buffers& in,
-        std::unordered_map<std::string, std::shared_ptr<Buffers>>* results,
-        std::shared_ptr<Buffers> *out) {
-  auto myOutBuffers = std::make_shared<Buffers>(in.Size());
-  BoundTransform->Do(in, myOutBuffers.get());
-  if (ChainName != "") {
-    (*results)[ChainName] = myOutBuffers;
-  }
-  *out = std::move(myOutBuffers);
-}
-
-void TransformTree::Node::ExecuteChildren(
-    const Buffers& in,
+void TransformTree::Node::Execute(
     std::unordered_map<std::string, std::shared_ptr<Buffers>>* results) {
-  for (auto tnodepair : Children) {
-    for (auto tnode : tnodepair.second) {
-      auto buf = std::make_shared<Buffers>(in.Size());
-      tnode->Execute(in, results);
+  if (Parent != nullptr) {
+    if (BoundBuffers == nullptr) {
+      BoundBuffers = std::make_shared<Buffers>(Parent->BoundBuffers->Size(),
+                                               BoundTransform->OutputFormat());
+    }
+    BoundTransform->Do(*Parent->BoundBuffers, BoundBuffers.get());
+    if (ChainName != "") {
+      (*results)[ChainName] = BoundBuffers;
     }
   }
-}
-
-void TransformTree::Node::Execute(
-    const Buffers& in,
-    std::unordered_map<std::string, std::shared_ptr<Buffers>>* results) {
-  std::shared_ptr<Buffers> myOutBuffers = nullptr;
-  ExecuteOwn(in, results, &myOutBuffers);
-  if (Children.size() == 1 && Children.begin()->second.size() == 1) {
-    // Memory optimization - free myOutBuffers in consecutive case
-    std::shared_ptr<Buffers> nextBuffers = nullptr;
-    auto childNodePtr = *Children.begin()->second.begin();
-    childNodePtr->ExecuteOwn(*myOutBuffers, results, &nextBuffers);
-    myOutBuffers.reset();
-    childNodePtr->ExecuteChildren(*nextBuffers, results);
-  } else {
-    ExecuteChildren(*myOutBuffers, results);
+  for (auto tnodepair : Children) {
+    for (auto tnode : tnodepair.second) {
+      tnode->Execute(results);
+    }
   }
 }
 
@@ -211,7 +191,8 @@ TransformTree::Execute(const Buffers& in) {
   for (auto name : chains_) {
     results.insert(std::make_pair(name, nullptr));
   }
-  root_->Execute(in, &results);
+  root_->BoundBuffers = std::make_shared<Buffers>(in);
+  root_->Execute(&results);
   return std::move(results);
 }
 
