@@ -21,7 +21,7 @@ namespace SpeechFeatureExtraction {
 template <typename T>
 class BufferFormatBase : public BufferFormat {
  public:
-  typedef T ClassType;
+  typedef T BufferType;
 
   BufferFormatBase() noexcept
   : BufferFormat(typeid(T).name()) {
@@ -42,7 +42,7 @@ class BuffersBase : public Buffers {
   explicit BuffersBase(int size, TArgs... args) noexcept
   : Buffers(size, BufferFormatBase<T>()) {
     for (int i = 0; i < Size(); i++) {
-      Set(i, new T(args...));
+      Set(i, new T { args... });
     }
   }
 

@@ -130,6 +130,7 @@ AM_COND_IF([TESTS], [
 	TESTS_DIR=tests
 	AC_CONFIG_FILES(tests/Makefile
                 	tests/google/Makefile
+                	tests/primitives/Makefile
                 	)
 
 ], [
@@ -144,7 +145,8 @@ AC_CONFIG_FILES(Makefile $PACKAGE.pc
                 src/Makefile  
                 src/boost/Makefile
                 src/formats/Makefile   
-                src/transforms/Makefile    
+                src/transforms/Makefile  
+                src/primitives/Makefile  
                 )           
 
 dnl Security xFLAGS
@@ -170,6 +172,9 @@ CPPFLAGS="$CPPFLAGS -I\$(top_srcdir) -I\$(top_srcdir)/inc -I\$(top_builddir)/inc
          
 dnl Append debug flags             
 CFLAGS="$CFLAGS $DEBUG_FLAGS"
-CXXFLAGS="$CXXFLAGS $DEBUG_FLAGS"         
+CXXFLAGS="$CXXFLAGS $DEBUG_FLAGS"    
+
+dnl Use current arch
+CPPFLAGS="$CPPFLAGS -march=native"     
                 
 AC_OUTPUT

@@ -28,8 +28,12 @@ class RootTransform : public Transform {
    return name;
   }
 
-  virtual BufferFormat* InputFormat() noexcept {
-    return &format_;
+  virtual const BufferFormat& InputFormat() const noexcept {
+    return format_;
+  }
+
+  virtual void SetInputFormat(const BufferFormat& format) {
+    format_ = format;
   }
 
   virtual const BufferFormat& OutputFormat() const noexcept {
@@ -148,18 +152,25 @@ void TransformTree::AddChain(
       t->SetParameters(tparams);
     }
     // Try to reuse the already existing transform
-    auto reusedTransform = currentNode->FindIdenticalChildTransform(*t);
-    if (reusedTransform != nullptr) {
-      currentNode = reusedTransform;
+    auto reusedNode = currentNode->FindIdenticalChildTransform(*t);
+    if (reusedNode != nullptr) {
+      currentNode = reusedNode;
     } else {
-      try {
-        // Set the input format
-        *t->InputFormat() = currentNode->BoundTransform->OutputFormat();
-      }
-      catch(Formats::InvalidRawFormatParametersException *irfpe) {
-         delete irfpe;
-         throw new IncompatibleTransformFormatException(
-             *currentNode->BoundTransform, *t);
+      auto reusedTransform = FindIdenticalTransform(*t);
+      if (reusedTransform != nullptr &&
+          reusedTransform->InputFormat() ==
+              currentNode->BoundTransform->OutputFormat()) {
+        t = reusedTransform;
+      } else {
+        try {
+          // Set the input format
+          t->SetInputFormat(currentNode->BoundTransform->OutputFormat());
+        }
+        catch(Formats::InvalidRawFormatParametersException *irfpe) {
+           delete irfpe;
+           throw new IncompatibleTransformFormatException(
+               *currentNode->BoundTransform, *t);
+        }
       }
       // Append the newly created transform
       auto newNode = std::make_shared<Node>(currentNode.get(), t);
@@ -196,6 +207,29 @@ TransformTree::Execute(const Buffers& in) {
   root_->BoundBuffers = std::make_shared<Buffers>(in);
   root_->Execute(&results);
   return std::move(results);
+}
+
+std::shared_ptr<Transform> TransformTree::FindIdenticalTransform(
+    const Transform& base) {
+  std::string id = base.Name();
+  for (auto pp : base.CurrentParameters()) {
+    id += pp.first;
+    id += pp.second;
+  }
+  auto iti = transformsCache_.find(id);
+  if (iti != transformsCache_.end()) {
+    return iti->second;
+  }
+  return nullptr;
+}
+
+void TransformTree::SaveTransformToCache(const std::shared_ptr<Transform>& t) {
+  std::string id = t->Name();
+  for (auto pp : t->CurrentParameters()) {
+    id += pp.first;
+    id += pp.second;
+  }
+  transformsCache_.insert(std::make_pair(id, t));
 }
 
 }  // namespace SpeechFeatureExtraction

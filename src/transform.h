@@ -47,7 +47,9 @@ class Transform {
 
   virtual const std::string& Name() const noexcept = 0;
 
-  virtual BufferFormat* InputFormat() noexcept = 0;
+  virtual const BufferFormat& InputFormat() const noexcept = 0;
+
+  virtual void SetInputFormat(const BufferFormat& format) = 0;
 
   virtual const BufferFormat& OutputFormat() const noexcept = 0;
 
@@ -80,9 +82,6 @@ class Transform {
   }
 
   // Non-virtual methods
-
-  const BufferFormat* InputFormat() const noexcept;
-
   std::shared_ptr<Transform> Clone() const noexcept;
 
   bool operator==(const Transform& other) const noexcept;

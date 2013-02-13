@@ -17,27 +17,14 @@
 using namespace SpeechFeatureExtraction;
 using namespace SpeechFeatureExtraction::Formats;
 
-class ParentTestFormat : public BufferFormat {
+struct ParentChunk {
+};
+
+class ParentTestFormat : public BufferFormatBase<ParentChunk> {
  public:
-  ParentTestFormat()
-  : BufferFormat("ParentTestFormat")
-  , samplingRate_(16000)
-  , samplesCount_(1024) {
+  BufferFormat& operator=(const BufferFormat& other) {
+    return *this;
   }
-
-  ParentTestFormat(int samplingRate, int samplesCount)
-  : BufferFormat("ParentTestFormat")
-  , samplingRate_(samplingRate)
-  , samplesCount_(samplesCount) {
-  }
-
-  virtual std::function<void(void*)> Destructor() const noexcept {
-    return [](void*){};
-  }
-
- private:
-  int samplingRate_;
-  int samplesCount_;
 };
 
 class ParentTestTransform
@@ -53,35 +40,23 @@ class ParentTestTransform
 
   }
 
-  virtual void Do(const Buffers& in, Buffers *out) const noexcept {
-
+ protected:
+  virtual void SetParameter(const std::string&, const std::string&) {
   }
 
- protected:
-  virtual void SetParameter(const std::string& name,
-                            const std::string& value){
-    parameters_[name] = value;
+  virtual void TypeSafeDo(const BuffersBase<Raw>&, BuffersBase<ParentChunk> *)
+  const noexcept {
   }
 };
 
-class ChildTestFormat : public BufferFormat {
+struct ChildChunk {
+};
+
+class ChildTestFormat : public BufferFormatBase<ChildChunk> {
  public:
-  ChildTestFormat()
-  : BufferFormat("ChildTestFormat")
-  , analysisLength_(1024) {
+  BufferFormat& operator=(const BufferFormat& other) {
+    return *this;
   }
-
-  ChildTestFormat(int analysisLength)
-  : BufferFormat("ChildTestFormat")
-  , analysisLength_(analysisLength) {
-  }
-
-  virtual std::function<void(void*)> Destructor() const noexcept {
-    return [](void*){};
-  }
-
- private:
-  int analysisLength_;
 };
 
 class ChildTestTransform
@@ -99,14 +74,12 @@ class ChildTestTransform
 
   }
 
-  virtual void Do(const Buffers& in, Buffers *out) const noexcept {
-
+ protected:
+  virtual void SetParameter(const std::string&, const std::string&) {
   }
 
- protected:
-  virtual void SetParameter(const std::string& name,
-                            const std::string& value) {
-    parameters_[name] = value;
+  virtual void TypeSafeDo(const BuffersBase<ParentChunk>&,
+                          BuffersBase<ChildChunk> *) const noexcept {
   }
 };
 

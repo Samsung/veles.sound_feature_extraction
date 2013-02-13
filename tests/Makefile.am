@@ -37,6 +37,6 @@ parameters_LDADD = $(top_builddir)/src/libspfextr.la  \
 $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 
-SUBDIRS = google
+SUBDIRS = google primitives
 
 include $(top_srcdir)/tests/Tests.make

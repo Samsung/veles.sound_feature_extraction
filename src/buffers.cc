@@ -18,7 +18,7 @@ namespace SpeechFeatureExtraction {
 
 Buffers::Buffers(int size, const BufferFormat& format) noexcept
 : format_(format) {
-  assert(size > 0 && size < (1 << 20));
+  assert(size >= 1 && size <= (1 << 20));
   auto buffers = new std::vector<void*>();
   buffers->resize(size);
   buffers_ = std::shared_ptr<std::vector<void*>>(buffers,
@@ -41,7 +41,19 @@ Buffers::Buffers(const Buffers& other) noexcept
 int Buffers::Size() const noexcept {
   return buffers_->size();
 }
-
+/*
+void Buffers::SetSize(int size) noexcept {
+  if (size < buffers_->size()) {
+    auto destroy = format_.Destructor();
+    for (int i = size; i < buffers_->size(); i++) {
+      if (buffers_->at(i) != nullptr) {
+        destroy(buffers_->at(i));
+      }
+    }
+  }
+  buffers_->resize(size);
+}
+*/
 void* Buffers::operator[](int index) noexcept {
   assert(index >= 0 && index < Size());
   return buffers_->at(index);

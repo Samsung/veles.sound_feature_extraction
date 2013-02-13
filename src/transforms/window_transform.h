@@ -14,33 +14,42 @@
 #define WINDOWTRANSFORM_H_
 
 #include "src/formats/raw_format.h"
-#include "src/formats/raw_window_format.h"
+#include "src/formats/window_format.h"
 #include "src/transform_base.h"
 
 namespace SpeechFeatureExtraction {
+namespace Transforms {
 
-class WindowTransform
-    : public TransformBase<Formats::RawFormat, Formats::RawWindowFormat> {
+class Window
+    : public TransformBase<Formats::RawFormat, Formats::WindowFormat> {
  public:
-  WindowTransform() : TransformBase(SupportedParameters()) {}
+  Window();
 
-  TRANSFORM_NAME("!Root")
+  TRANSFORM_NAME("Window")
 
   TRANSFORM_PARAMETERS(
       _TP_("length", "Window size in milliseconds", "25")
       _TP_("step", "Distance between sequential windows in milliseconds", "10")
   )
 
-  virtual void Initialize() const noexcept {
-  }
+  virtual void Initialize() const noexcept;
 
-  virtual void Do(const Buffers& in, Buffers *out) const noexcept {
-    CopyInToOut(in, out);
-  }
+  virtual int BuffersCountMultiplier() const noexcept;
 
  protected:
+  virtual void OnInputFormatChanged();
+
   virtual void SetParameter(const std::string& name, const std::string& value);
+
+  virtual void TypeSafeDo(const BuffersBase<Formats::Raw>& in,
+                          BuffersBase<Formats::Window> *out) const noexcept;
+
+ private:
+  int step_;
+  mutable int outSizeEach_;
+  mutable int inDataStep_;
 };
 
+}  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
 #endif  // INCLUDE_WINDOWTRANSFORM_H_

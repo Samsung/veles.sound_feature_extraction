@@ -28,19 +28,19 @@ class InvalidRawFormatParametersException : public ExceptionBase {
 };
 
 struct Raw {
-  const void* const* Pointers;
-
-  Raw(const void* const* pointers)
-  : Pointers(pointers) {}
+  const int16_t* Data;
 };
 
 class RawFormat : public BufferFormatBase<Raw> {
  public:
   RawFormat() noexcept;
-
   RawFormat(size_t size, int samplingRate);
 
+  BufferFormat& operator=(const BufferFormat& other);
+
   int SamplingRate() const noexcept;
+
+  /// @brief Returns the raw buffer size in samples.
   size_t Size() const noexcept;
 
  private:

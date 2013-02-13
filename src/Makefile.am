@@ -16,6 +16,8 @@ libspfextr_la_LDFLAGS =
 libspfextr_la_CPPFLAGS =
 
 # Used libraries
-libspfextr_la_LIBADD = -lboost_regex transforms/lib_transforms.la formats/lib_formats.la
+libspfextr_la_LIBADD = -lboost_regex transforms/lib_transforms.la \
+formats/lib_formats.la \
+primitives/lib_primitives.la
 
-SUBDIRS = $(BOOST_DIR) transforms formats
+SUBDIRS = $(BOOST_DIR) transforms formats primitives

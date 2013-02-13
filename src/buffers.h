@@ -26,6 +26,7 @@ class Buffers {
   virtual ~Buffers() noexcept {}
 
   int Size() const noexcept;
+  //void SetSize(int size) noexcept;
 
   void* operator[](int index) noexcept;
   const void* operator[](int index) const noexcept;

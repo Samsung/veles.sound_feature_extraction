@@ -24,11 +24,31 @@
 							</tool>
 							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.autogen.653027348" name="autogen.sh" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.autogen"/>
 							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.181744012" name="GCC C Compiler" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc">
+								<option id="gnu.c.compiler.option.preprocessor.def.symbols.567810374" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="__MMX__"/>
+									<listOptionValue builtIn="false" value="__SSE4_1__"/>
+									<listOptionValue builtIn="false" value="__AVX__"/>
+									<listOptionValue builtIn="false" value="__ARM_NEON__"/>
+									<listOptionValue builtIn="false" value="__OPTIMIZE__"/>
+								</option>
+								<option id="gnu.c.compiler.option.include.paths.1859756436" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/home/markhor/Development/fftf/inc"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.616783180" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.843664370" name="GCC C++ Compiler" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp">
-								<option id="gnu.cpp.compiler.option.preprocessor.def.1153097267" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+								<option id="gnu.cpp.compiler.option.preprocessor.def.1153097267" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__GXX_EXPERIMENTAL_CXX0X__"/>
+									<listOptionValue builtIn="false" value="NEON"/>
+									<listOptionValue builtIn="false" value="AVX"/>
+									<listOptionValue builtIn="false" value="__MMX__"/>
+									<listOptionValue builtIn="false" value="__SSE4_1__"/>
+									<listOptionValue builtIn="false" value="__AVX__"/>
+									<listOptionValue builtIn="false" value="__ARM_NEON__"/>
+									<listOptionValue builtIn="false" value="__OPTIMIZE__"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.include.paths.1759399867" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/home/markhor/Development/fftf/inc"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1538616520" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>

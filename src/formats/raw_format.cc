@@ -20,6 +20,14 @@ RawFormat::RawFormat() noexcept
 , samplingRate_(16000) {
 }
 
+BufferFormat& RawFormat::operator=(const BufferFormat& other) {
+  if (other.Id() != Id()) {
+    throw new InvalidFormatException(Id(), other.Id());
+  }
+  *this = reinterpret_cast<const RawFormat&>(other);
+  return *this;
+}
+
 RawFormat::RawFormat(size_t size, int samplingRate)
 : size_(size)
 , samplingRate_(samplingRate) {

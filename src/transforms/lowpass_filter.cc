@@ -1,4 +1,4 @@
-/*! @file raw_window_format.cc
+/*! @file lowpass_filter.cc
  *  @brief New file description.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -10,13 +10,15 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/formats/raw_window_format.h"
+#include "src/transforms/lowpass_filter.h"
 
 namespace SpeechFeatureExtraction {
-namespace Formats {
+namespace Transforms {
 
-RawWindowFormat::RawWindowFormat() {
+LowpassFilter::LowpassFilter() {
+  // TODO Auto-generated constructor stub
+
 }
 
-}  // namespace Formats
+}  // namespace Transforms
 }  // namespace SpeechFeatureExtraction

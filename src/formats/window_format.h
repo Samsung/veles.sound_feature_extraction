@@ -1,5 +1,5 @@
-/*! @file raw_window_format.h
- *  @brief New file description.
+/*! @file window_format.h
+ *  @brief Raw data frame format.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -19,12 +19,25 @@ namespace SpeechFeatureExtraction {
 namespace Formats {
 
 struct Window {
-
+  const int16_t* Chunk;
 };
 
-class RawWindowFormat : public BufferFormatBase<Window> {
+class WindowFormat : public BufferFormatBase<Window> {
  public:
-  RawWindowFormat();
+  WindowFormat();
+  WindowFormat(size_t duration, int samplingRate);
+
+  BufferFormat& operator=(const BufferFormat& other);
+
+  size_t Duration() const;
+  void SetDuration(size_t value);
+
+  int SamplingRate() const;
+  void SetSamplingRate(int value);
+
+ private:
+  size_t duration_;
+  int samplingRate_;
 };
 
 }  // namespace Formats

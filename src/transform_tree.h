@@ -46,7 +46,7 @@ class IncompatibleTransformFormatException : public ExceptionBase {
   IncompatibleTransformFormatException(const Transform& parent,
                                        const Transform& child)
   : ExceptionBase("Transform \"" + child.Name() + "\" has input format \"" +
-                  child.InputFormat()->Id() +
+                  child.InputFormat().Id() +
                   "\", while the previous transform \"" +
                   parent.Name() + "\" has output format \"" +
                   parent.OutputFormat().Id() + "\".") {}
@@ -117,6 +117,10 @@ class TransformTree {
   std::shared_ptr<Node> root_;
   bool treeIsPrepared_;
   std::set<std::string> chains_;
+  std::unordered_map<std::string, std::shared_ptr<Transform>> transformsCache_;
+
+  std::shared_ptr<Transform> FindIdenticalTransform(const Transform& base);
+  void SaveTransformToCache(const std::shared_ptr<Transform>& t);
 };
 
 }  // namespace SpeechFeatureExtraction
