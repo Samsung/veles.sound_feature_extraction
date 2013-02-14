@@ -48,19 +48,20 @@ INLINE void memsetf(float *ptr, size_t length, float value) {
     ptr[i] = value;
   }
 
-  for (size_t i = startIndex; i < length; i += 8) {
+  for (int i = (int)startIndex; i < (int)length - 7; i += 8) {
     _mm256_store_ps(ptr + i, fillvec);
   }
 
-  for (size_t i = ((length << 3) >> 3); i < length; i++) {
+  for (size_t i = startIndex + (((length - startIndex) >> 3) << 3);
+      i < length; i++) {
     ptr[i] = value;
   }
 #elif defined(__ARM_NEON__)
   const float32x4_t fillvec = { value, value, value, value };
-  for (size_t i = 0; i < length; i += 4) {
+  for (size_t i = 0; i < length - 3; i += 4) {
     vst1q_f32(ptr + i, fillvec);
   }
-  for (size_t i = ((length << 2) >> 2); i < length; i++) {
+  for (size_t i = ((length >> 2) << 2); i < length; i++) {
     ptr[i] = value;
   }
 #else

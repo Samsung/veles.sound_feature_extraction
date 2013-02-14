@@ -13,6 +13,7 @@
 #include <gtest/gtest.h>
 #include "src/primitives/convolute.h"
 #include "src/primitives/memory.h"
+#include "src/primitives/arithmetic.h"
 
 #ifdef __AVX__
 
@@ -30,6 +31,7 @@ TEST(convolute, AVXComplexMultiplication) {
   float ar1[8] = { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f };
   float ar2[8] = { -1.5f, 1.0f, 3.5f, 3.0f, -5.5f, 6.5f, 2.0f, -9.0f };
   float res[8] = { 0.0f };
+  /*
   __m256 Xvec = _mm256_load_ps(ar1);
   DebugPrint__m256("Xvec\t", Xvec);
   __m256 Hvec = _mm256_load_ps(ar2);
@@ -47,6 +49,9 @@ TEST(convolute, AVXComplexMultiplication) {
   __m256 resVec = _mm256_addsub_ps(resHalf1, resHalf2);
   DebugPrint__m256("resVec\t", resVec);
   _mm256_store_ps(res, resVec);
+  */
+
+  complex_multiply(ar1, ar2, res);
 
   float verif[8];
   for (int cci = 0; cci < 8; cci += 2) {
@@ -57,9 +62,9 @@ TEST(convolute, AVXComplexMultiplication) {
     verif[cci] = re1 * re2 - im1 * im2;
     verif[cci + 1] = re1 * im2 + re2 * im1;
   }
-  printf("VERIFY\t\t{ %f\t%f\t%f\t%f\t%f\t%f\t%f\t%f }\n",
-         verif[0], verif[1], verif[2], verif[3],
-         verif[4], verif[5], verif[6], verif[7]);
+  // printf("VERIFY\t\t{ %f\t%f\t%f\t%f\t%f\t%f\t%f\t%f }\n",
+  //        verif[0], verif[1], verif[2], verif[3],
+  //        verif[4], verif[5], verif[6], verif[7]);
   ASSERT_EQ(0, memcmp(res, verif, 8 * sizeof(float)));
 }
 
@@ -80,6 +85,7 @@ TEST(convolute, NeonComplexMultiplication) {
   float res[4] = { 0.0f };
   const float32x4_t negVec = { 1.0f, -1.0f, 1.0f, -1.0f };
 
+  /*
   float32x4_t Xvec = vld1q_f32(ar1);
   DebugPrintFloat32x4_t("Xvec\t", Xvec);
   float32x4_t Hvec = vld1q_f32(ar2);
@@ -96,6 +102,9 @@ TEST(convolute, NeonComplexMultiplication) {
   float32x4_t resVec = vaddq_f32(resPair.val[0], resPair.val[1]);
   DebugPrintFloat32x4_t("resVec\t", resVec);
   vst1q_f32(res, resVec);
+  */
+
+  complex_multiply(ar1, ar2, res);
 
   float verif[4];
   for (int cci = 0; cci < 4; cci += 2) {
@@ -106,8 +115,8 @@ TEST(convolute, NeonComplexMultiplication) {
     verif[cci] = re1 * re2 - im1 * im2;
     verif[cci + 1] = re1 * im2 + re2 * im1;
   }
-  printf("VERIFY\t\t{ %f\t%f\t%f\t%f }\n",
-         verif[0], verif[1], verif[2], verif[3]);
+  // printf("VERIFY\t\t{ %f\t%f\t%f\t%f }\n",
+  //        verif[0], verif[1], verif[2], verif[3]);
   ASSERT_EQ(0, memcmp(res, verif, 4 * sizeof(float)));
 }
 
@@ -116,33 +125,50 @@ TEST(convolute, NeonComplexMultiplication) {
 void convolute_reference(const float *__restrict x, size_t xLength,
                          const float *__restrict h, size_t hLength,
                          float *__restrict result) {
-  for (int i = 0; i < (int)xLength; i++) {
+  for (int n = 0; n < (int)xLength; n++) {
     float sum = .0f;
-    for (int j = 0; j < (int)hLength; j++) {
-      sum += h[j] * x[i - j];
+    for (int m = 0; m < (int)hLength && m <= n; m++) {
+      sum += h[m] * x[n - m];
     }
-    result[i] = sum;
+    result[n] = sum;
   }
 }
 
+void DebugPrintConvolution(const char* name, const float* vec) {
+  printf("%s\t", name);
+  for (int i = 0; i < 10; i++) {
+    printf("%f  ", vec[i]);
+  }
+  printf("\n");
+}
+
 TEST(convolute, convolute) {
-  float x[1024] = { 1.0f };
+  float x[1024];
+  for (int i = 0; i < (int)(sizeof(x) / sizeof(float)); i++) {
+    x[i] = 1.0f;
+  }
   float h[50];
   for (int i = 0; i < (int)(sizeof(h) / sizeof(float)); i++) {
     h[i] = i / (sizeof(h) / sizeof(float) - 1.0f);
   }
-  float res[sizeof(x) / sizeof(float)];
-  convolute(x, sizeof(x) / sizeof(float), h, sizeof(h) / sizeof(float), res);
+
   float verif[sizeof(x) / sizeof(float)];
   convolute_reference(x, sizeof(x) / sizeof(float),
                       h, sizeof(h) / sizeof(float), verif);
+  DebugPrintConvolution("BRUTE-FORCE", verif);
 
-  float error = .0f;
+  float res[sizeof(x) / sizeof(float)];
+  convolute(x, sizeof(x) / sizeof(float), h, sizeof(h) / sizeof(float), res);
+  DebugPrintConvolution("OVERLAP-SAVE", res);
+
+  int firstDifferenceIndex = -1;
   for (int i = 0; i < (int)(sizeof(x) / sizeof(float)); i++) {
     float delta = res[i] - verif[i];
-    error += delta * delta;
+    if (delta * delta > 1E-10 && firstDifferenceIndex == -1) {
+      firstDifferenceIndex = i;
+    }
   }
-  printf("Error: %f\n", error);
+  ASSERT_EQ(-1, firstDifferenceIndex);
 }
 
 #include "tests/google/src/gtest_main.cc"

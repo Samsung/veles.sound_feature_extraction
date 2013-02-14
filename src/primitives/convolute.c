@@ -15,19 +15,34 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fftf/api.h>
-#ifdef __AVX__
-#include <immintrin.h>
-#elif defined(__ARM_NEON__)
-#include <arm_neon.h>
-#endif
-#include "src/primitives/memory.h"
 #include "src/primitives/arithmetic.h"
+
+/*
+static void convolute_circular(const float *__restrict x,
+                               const float *__restrict h,
+                               size_t N,
+                               float *__restrict result) {
+  for (int n = 0; n < (int)N; n++) {
+    float sum = .0f;
+    for (int m = 0; m <= n; m++) {
+      sum += x[m] * h[n - m];
+    }
+    for (int m = n + 1; m < (int)N; m++) {
+      sum += x[m] * h[N - m + n];
+    }
+    result[n] = sum;
+  }
+}
+*/
 
 void convolute(const float *x, size_t xLength, const float *h, size_t hLength,
                float *result) {
   assert(hLength <= xLength);
   assert(xLength > 0);
   assert(hLength > 0);
+  size_t M = hLength;  //  usual designation
+
+  // Using overlap-save algorithm here
 
   // Do zero padding of h to the next power of 2 + extra 2 float-s
   size_t L;
@@ -56,13 +71,24 @@ void convolute(const float *x, size_t xLength, const float *h, size_t hLength,
       fftBoilerPlate);
   assert(fftInversePlan);
 
-  int step = L - (hLength - 1);
+  int step = L - (M - 1);
   for (size_t i = 0; i < xLength; i += step) {
-    if (i > xLength - step) {
-      i = xLength - step;
+    if (i > 0) {
+      if (i + step <= xLength) {
+        memcpy(fftBoilerPlate, x + i - (M - 1), L * sizeof(float));
+      } else {
+        int cl = xLength - i + M - 1;
+        memcpy(fftBoilerPlate, x + i - (M - 1),
+               cl * sizeof(float));
+        memsetf(fftBoilerPlate + cl, L - cl, .0f);
+      }
+    } else {
+      memsetf(fftBoilerPlate, M - 1, .0f);
+      memcpy(fftBoilerPlate + M - 1, x, step * sizeof(float));
     }
-    memcpy(fftBoilerPlate, x + i, L * sizeof(float));
+
     fftf_calc(fftPlan);
+
     // fftBoilerPlate = fftBoilerPlate * H (complex arithmetic)
     int cciStart = 0;
 #ifdef __AVX__
@@ -72,7 +98,7 @@ void convolute(const float *x, size_t xLength, const float *h, size_t hLength,
     }
 #elif defined(__ARM_NEON__)
     cciStart = L;
-    for (int cci = 0; cci < L; cci += 4) {
+    for (int cci = 0; cci < (int)L; cci += 4) {
       complex_multiply(fftBoilerPlate + cci, H + cci, fftBoilerPlate + cci);
     }
 #endif
@@ -80,9 +106,15 @@ void convolute(const float *x, size_t xLength, const float *h, size_t hLength,
       complex_multiply_na(fftBoilerPlate + cci, H + cci, fftBoilerPlate + cci);
     }
     fftf_calc(fftInversePlan);
-    memcpy(result + i, fftBoilerPlate + hLength - 1, step * sizeof(float));
-  }
+    // Normalize
+    real_multiply_scalar(1.0 / L, step, fftBoilerPlate + M - 1);
 
+    if (i + step <= xLength) {
+      memcpy(result + i, fftBoilerPlate + M - 1, step * sizeof(float));
+    } else {
+      memcpy(result + i, fftBoilerPlate + M - 1, (xLength - i) * sizeof(float));
+    }
+  }
   free(H);
   free(fftBoilerPlate);
   fftf_free(fftPlan);
