@@ -20,9 +20,17 @@
 extern "C" {
 #endif
 
+/// @brief Calculates the linear convolution of two signals using
+/// the overlap-save method.
+/// @param x The first signal (long one).
+/// @param xLength The length of "x" array in float-s.
+/// @param h The second signal (short one).
+/// @param hLength The length of "h" array in float-s.
+/// @param result The resulting signal of length xLength.
+/// @note result and x may be the same arrays.
 void convolute(const float *__restrict x, size_t xLength,
                const float *__restrict h, size_t hLength,
-               float *__restrict result) NOTNULL((1, 3, 5));
+               float *result) NOTNULL((1, 3, 5));
 
 #ifdef __cplusplus
 }

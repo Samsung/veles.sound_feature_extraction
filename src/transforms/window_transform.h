@@ -34,12 +34,13 @@ class Window
 
   virtual void Initialize() const noexcept;
 
-  virtual int BuffersCountMultiplier() const noexcept;
-
  protected:
   virtual void OnInputFormatChanged();
 
   virtual void SetParameter(const std::string& name, const std::string& value);
+
+  virtual void TypeSafeInitializeBuffers(const BuffersBase<Formats::Raw>& in,
+        BuffersBase<Formats::Window>* buffers) const noexcept;
 
   virtual void TypeSafeDo(const BuffersBase<Formats::Raw>& in,
                           BuffersBase<Formats::Window> *out) const noexcept;

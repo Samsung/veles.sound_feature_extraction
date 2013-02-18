@@ -131,6 +131,7 @@ AM_COND_IF([TESTS], [
 	AC_CONFIG_FILES(tests/Makefile
                 	tests/google/Makefile
                 	tests/primitives/Makefile
+                	tests/transforms/Makefile
                 	)
 
 ], [

@@ -18,26 +18,44 @@
 namespace SpeechFeatureExtraction {
 namespace Formats {
 
+class InvalidWindowFormatDurationException : public ExceptionBase {
+ public:
+  InvalidWindowFormatDurationException(size_t duration)
+  : ExceptionBase("Duration " + std::to_string(duration) +
+                  " is not supported or invalid.") {}
+};
+
+class InvalidWindowFormatSamplingRateException : public ExceptionBase {
+ public:
+  InvalidWindowFormatSamplingRateException(int samplingRate)
+  : ExceptionBase("Sampling rate " + std::to_string(samplingRate) +
+                  " is not supported or invalid.") {}
+};
+
 struct Window {
   const int16_t* Chunk;
 };
 
 class WindowFormat : public BufferFormatBase<Window> {
  public:
-  WindowFormat();
+  WindowFormat() noexcept;
+  WindowFormat(const WindowFormat& other) noexcept;
   WindowFormat(size_t duration, int samplingRate);
 
   BufferFormat& operator=(const BufferFormat& other);
 
-  size_t Duration() const;
+  size_t Duration() const noexcept;
   void SetDuration(size_t value);
 
-  int SamplingRate() const;
+  int SamplingRate() const noexcept;
   void SetSamplingRate(int value);
 
  private:
   size_t duration_;
   int samplingRate_;
+
+  static void ValidateDuration(size_t value);
+  static void ValidateSamplingRate(int value);
 };
 
 }  // namespace Formats

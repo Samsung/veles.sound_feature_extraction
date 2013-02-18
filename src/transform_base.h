@@ -62,6 +62,14 @@ class TransformBase : public Transform {
   virtual void Initialize() const noexcept {
   }
 
+  virtual Buffers* CreateOutputBuffers(const Buffers& in) const noexcept {
+    auto buffers = new BuffersBase<typename FOUT::BufferType>();
+    auto tin = reinterpret_cast<const BuffersBase<
+        typename FIN::BufferType>&>(in);
+    TypeSafeInitializeBuffers(tin, buffers);
+    return buffers;
+  }
+
   virtual void Do(const Buffers& in, Buffers* out) const noexcept {
     auto tin = reinterpret_cast<const BuffersBase<
         typename FIN::BufferType>&>(in);
@@ -87,6 +95,10 @@ class TransformBase : public Transform {
 
   virtual void SetParameter(const std::string& name, const std::string& value)
   = 0;
+
+  virtual void TypeSafeInitializeBuffers(
+      const BuffersBase<typename FIN::BufferType>& in,
+      BuffersBase<typename FOUT::BufferType>* buffers) const noexcept = 0;
 
   virtual void TypeSafeDo(const BuffersBase<typename FIN::BufferType>& in,
                           BuffersBase<typename FOUT::BufferType>* out)
@@ -120,6 +132,18 @@ class TransformBase : public Transform {
     }
     return pv;
   }
+
+  size_t Parse(const std::string& name, const std::string& value,
+               identity<size_t>) {
+    int pv;
+    try {
+      pv = std::stoul(value);
+    }
+    catch (...) {
+      throw new InvalidParameterValueException(name, value, Name());
+    }
+    return pv;
+  }
 };
 
 #define TRANSFORM_NAME(name) virtual const std::string& Name() const noexcept { \
@@ -127,6 +151,8 @@ class TransformBase : public Transform {
     return str; \
 }
 
+
+#define FORWARD_MACROS(...) __VA_ARGS__
 #define _TP_(name, descr, defval) { name, { descr, defval } },
 
 #define TRANSFORM_PARAMETERS(init) \

@@ -15,6 +15,20 @@
 
 #include "src/primitives/memory.h"
 
+INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
+                                           size_t length, float *res) {
+  for (size_t i = 0; i < length; i++) {
+    res[i] = (float)data[i];
+  }
+}
+
+INLINE NOTNULL((1, 3)) void float_to_int16(const float *data,
+                                           size_t length, int16_t *res) {
+  for (size_t i = 0; i < length; i++) {
+    res[i] = (int16_t)data[i];
+  }
+}
+
 INLINE NOTNULL((1, 2, 3)) void complex_multiply_na(
     const float *a, const float *b, float *res) {
   float re1 = (a)[0];

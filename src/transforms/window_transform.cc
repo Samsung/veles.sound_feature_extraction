@@ -18,7 +18,9 @@ namespace Transforms {
 
 Window::Window()
 : TransformBase(SupportedParameters())
-, step_(0) {
+, step_(0)
+, outSizeEach_(0)
+, inDataStep_(0) {
 }
 
 void Window::OnInputFormatChanged() {
@@ -51,17 +53,18 @@ void Window::Initialize() const noexcept {
   }
 }
 
-int Window::BuffersCountMultiplier() const noexcept {
-  return outSizeEach_;
+void Window::TypeSafeInitializeBuffers(const BuffersBase<Formats::Raw>& in,
+    BuffersBase<Formats::Window>* buffers) const noexcept {
+  buffers->Initialize(in.Size() * outSizeEach_);
 }
 
 void Window::TypeSafeDo(const BuffersBase<Formats::Raw>& in,
-                                 BuffersBase<Formats::Window> *out)
+                        BuffersBase<Formats::Window> *out)
 const noexcept {
   BuffersBase<Formats::Window>& outref = *out;
-  for (int i = 0; i < in.Size(); i++) {
+  for (size_t i = 0; i < in.Size(); i++) {
     for (int step = 0; step < outSizeEach_; step++) {
-      *outref[step + i * outSizeEach_] = { in[i]->Data + step * inDataStep_ };
+      *outref[step + i * outSizeEach_] = { in[i]->Data.get() + step * inDataStep_ };
     }
   }
 }

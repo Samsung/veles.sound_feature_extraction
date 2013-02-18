@@ -33,10 +33,6 @@ bool Transform::operator==(const Transform& other) const noexcept {
   return true;
 }
 
-void Transform::CopyInToOut(const Buffers& in, Buffers *out) const noexcept {
-  out->CopyPointersFrom(in.Data());
-}
-
 }  // namespace SpeechFeatureExtraction
 
 

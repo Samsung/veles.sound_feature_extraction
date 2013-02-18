@@ -1,4 +1,4 @@
-/*! @file lowpass_filter.h
+/*! @file bandpass_filter.h
  *  @brief New file description.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -10,24 +10,26 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef LOWPASS_FILTER_H_
-#define LOWPASS_FILTER_H_
+#ifndef BANDPASS_FILTER_H_
+#define BANDPASS_FILTER_H_
 
 #include "src/transforms/hamming_window_filter.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-/// @brief Discards the frequencies which are higher than the threshold.
-class LowpassFilter : public HammingWindowFilter {
+/// @brief Discards the frequencies which are lower than the threshold.
+class BandpassFilter : public HammingWindowFilter {
  public:
-  LowpassFilter() noexcept;
+  BandpassFilter() noexcept;
 
-  TRANSFORM_NAME("Lowpass")
+  TRANSFORM_NAME("Bandpass")
 
   FIR_FILTER_PARAMETERS(
-      _TP_("frequency", "Cutoff frequency",
-                        std::to_string(DEFAULT_FILTER_HIGH_FREQUENCY))
+      _TP_("frequency_high", "All frequencies higher will be cut",
+                             std::to_string(DEFAULT_FILTER_HIGH_FREQUENCY))
+      _TP_("frequency_low", "All frequencies lower will be cut",
+                            std::to_string(DEFAULT_FILTER_LOW_FREQUENCY))
   )
 
  protected:
@@ -37,9 +39,10 @@ class LowpassFilter : public HammingWindowFilter {
   virtual void CalculateFilter(float *filter) const noexcept;
 
  private:
-  int frequency_;
+  int frequencyHigh_;
+  int frequencyLow_;
 };
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_LOWPASS_FILTER_H_
+#endif  // INCLUDE_BANDPASS_FILTER_H_

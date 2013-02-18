@@ -18,6 +18,7 @@
 #include "src/primitives/arithmetic.h"
 
 /*
+/// @brief Brute-force calculation method used for debugging FFT one.
 static void convolute_circular(const float *__restrict x,
                                const float *__restrict h,
                                size_t N,
@@ -35,9 +36,10 @@ static void convolute_circular(const float *__restrict x,
 }
 */
 
-void convolute(const float *x, size_t xLength, const float *h, size_t hLength,
+void convolute(const float *__restrict x, size_t xLength,
+               const float *__restrict h, size_t hLength,
                float *result) {
-  assert(hLength <= xLength);
+  assert(hLength < xLength / 2);
   assert(xLength > 0);
   assert(hLength > 0);
   size_t M = hLength;  //  usual designation
@@ -72,7 +74,12 @@ void convolute(const float *x, size_t xLength, const float *h, size_t hLength,
   assert(fftInversePlan);
 
   int step = L - (M - 1);
+  // Note: no "#pragma omp parallel for" here since
+  // fftBoilerPlate is shared AND FFTF should utilize all available resources.
   for (size_t i = 0; i < xLength; i += step) {
+    // X = [zeros(1, M - 1), x, zeros(1, L-1)];
+    // we must run FFT on X[i, i + L].
+    // No X is really needed, some index arithmetic is used.
     if (i > 0) {
       if (i + step <= xLength) {
         memcpy(fftBoilerPlate, x + i - (M - 1), L * sizeof(float));
@@ -86,7 +93,6 @@ void convolute(const float *x, size_t xLength, const float *h, size_t hLength,
       memsetf(fftBoilerPlate, M - 1, .0f);
       memcpy(fftBoilerPlate + M - 1, x, step * sizeof(float));
     }
-
     fftf_calc(fftPlan);
 
     // fftBoilerPlate = fftBoilerPlate * H (complex arithmetic)
@@ -105,6 +111,8 @@ void convolute(const float *x, size_t xLength, const float *h, size_t hLength,
     for (int cci = cciStart; cci < (int)L + 2; cci += 2) {
       complex_multiply_na(fftBoilerPlate + cci, H + cci, fftBoilerPlate + cci);
     }
+
+    // Return back from the Fourier representation
     fftf_calc(fftInversePlan);
     // Normalize
     real_multiply_scalar(1.0 / L, step, fftBoilerPlate + M - 1);
@@ -115,6 +123,8 @@ void convolute(const float *x, size_t xLength, const float *h, size_t hLength,
       memcpy(result + i, fftBoilerPlate + M - 1, (xLength - i) * sizeof(float));
     }
   }
+
+  // Release any resources allocated
   free(H);
   free(fftBoilerPlate);
   fftf_free(fftPlan);

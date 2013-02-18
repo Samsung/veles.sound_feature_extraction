@@ -23,18 +23,24 @@ class Buffers {
  public:
   Buffers(int size, const BufferFormat& format) noexcept;
   Buffers(const Buffers& other) noexcept;
-  virtual ~Buffers() noexcept {}
+  Buffers& operator=(const Buffers& other) noexcept;
 
-  int Size() const noexcept;
-  //void SetSize(int size) noexcept;
+  virtual ~Buffers() noexcept {
+  }
 
-  void* operator[](int index) noexcept;
-  const void* operator[](int index) const noexcept;
+  size_t Size() const noexcept;
 
-  void Set(int index, void* buffer) noexcept;
-  void CopyPointersFrom(const void *const *array) noexcept;
+  void* operator[](size_t index) noexcept;
+  const void* operator[](size_t index) const noexcept;
 
   const void *const *Data() const noexcept;
+
+ protected:
+  /// @defgroup TypeUnsafe Underlying type-unsafe operations
+  /// @{
+  void Set(size_t index, void* buffer) noexcept;
+  void SetSize(size_t size) noexcept;
+  /// @}
 
  private:
   const BufferFormat& format_;

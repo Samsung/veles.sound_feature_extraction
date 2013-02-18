@@ -1,4 +1,4 @@
-/*! @file lowpass_filter.h
+/*! @file highpass_filter.h
  *  @brief New file description.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -10,24 +10,24 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef LOWPASS_FILTER_H_
-#define LOWPASS_FILTER_H_
+#ifndef HIGHPASS_FILTER_H_
+#define HIGHPASS_FILTER_H_
 
 #include "src/transforms/hamming_window_filter.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-/// @brief Discards the frequencies which are higher than the threshold.
-class LowpassFilter : public HammingWindowFilter {
+/// @brief Discards the frequencies which are lower than the threshold.
+class HighpassFilter : public HammingWindowFilter {
  public:
-  LowpassFilter() noexcept;
+  HighpassFilter() noexcept;
 
-  TRANSFORM_NAME("Lowpass")
+  TRANSFORM_NAME("Highpass")
 
   FIR_FILTER_PARAMETERS(
       _TP_("frequency", "Cutoff frequency",
-                        std::to_string(DEFAULT_FILTER_HIGH_FREQUENCY))
+                        std::to_string(DEFAULT_FILTER_LOW_FREQUENCY))
   )
 
  protected:
@@ -42,4 +42,4 @@ class LowpassFilter : public HammingWindowFilter {
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_LOWPASS_FILTER_H_
+#endif  // INCLUDE_HIGHPASS_FILTER_H_

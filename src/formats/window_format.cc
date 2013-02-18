@@ -17,16 +17,20 @@
 namespace SpeechFeatureExtraction {
 namespace Formats {
 
-WindowFormat::WindowFormat()
-: duration_(0.025f * 16000), samplingRate_(16000) {
+WindowFormat::WindowFormat() noexcept
+: duration_(DEFAULT_WINDOW_DURATION)
+, samplingRate_(DEFAULT_SAMPLING_RATE) {
+}
+
+WindowFormat::WindowFormat(const WindowFormat& other) noexcept
+: duration_(other.duration_)
+, samplingRate_(samplingRate_) {
 }
 
 WindowFormat::WindowFormat(size_t duration, int samplingRate)
 : duration_(duration), samplingRate_(samplingRate) {
-  assert(duration_ >= MIN_WINDOW_DURATION &&
-         duration_ <= MAX_WINDOW_DURATION);
-  assert(samplingRate_ >= MIN_SAMPLING_RATE &&
-         samplingRate_ <= MAX_SAMPLING_RATE);
+  ValidateDuration(duration_);
+  ValidateSamplingRate(samplingRate_);
 }
 
 BufferFormat& WindowFormat::operator=(const BufferFormat& other) {
@@ -37,24 +41,34 @@ BufferFormat& WindowFormat::operator=(const BufferFormat& other) {
   return *this;
 }
 
-size_t WindowFormat::Duration() const {
+size_t WindowFormat::Duration() const noexcept {
   return duration_;
 }
 
-int WindowFormat::SamplingRate() const {
+int WindowFormat::SamplingRate() const noexcept {
   return samplingRate_;
 }
 
 void WindowFormat::SetDuration(size_t value) {
-  assert(duration_ >= MIN_WINDOW_DURATION &&
-         duration_ <= MAX_WINDOW_DURATION);
+  ValidateDuration(value);
   duration_ = value;
 }
 
 void WindowFormat::SetSamplingRate(int value) {
-  assert(samplingRate_ >= MIN_SAMPLING_RATE &&
-         samplingRate_ <= MAX_SAMPLING_RATE);
+  ValidateSamplingRate(value);
   samplingRate_ = value;
+}
+
+void WindowFormat::ValidateDuration(size_t value) {
+  if (value < MIN_WINDOW_DURATION || value > MAX_WINDOW_DURATION) {
+    throw new InvalidWindowFormatDurationException(value);
+  }
+}
+
+void WindowFormat::ValidateSamplingRate(int value) {
+  if (value < MIN_SAMPLING_RATE || value > MAX_SAMPLING_RATE) {
+    throw new InvalidWindowFormatSamplingRateException(value);
+  }
 }
 
 }  // namespace Formats

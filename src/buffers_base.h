@@ -38,12 +38,19 @@ class BufferFormatBase : public BufferFormat {
 template <typename T>
 class BuffersBase : public Buffers {
  public:
+  explicit BuffersBase() noexcept
+  : Buffers(0, BufferFormatBase<T>()) {
+  }
+
   template <typename... TArgs>
-  explicit BuffersBase(int size, TArgs... args) noexcept
-  : Buffers(size, BufferFormatBase<T>()) {
-    for (int i = 0; i < Size(); i++) {
-      Set(i, new T { args... });
+  void Initialize(size_t size, TArgs... args) noexcept {
+    Buffers::SetSize(size);
+    for (size_t i = 0; i < size; i++) {
+      Set(i, new T(args...));
     }
+  }
+
+  virtual ~BuffersBase() noexcept {
   }
 
   T* operator[](int index) noexcept {
@@ -54,7 +61,7 @@ class BuffersBase : public Buffers {
     return reinterpret_cast<const T*>(Buffers::operator [](index));
   }
 
-  const BufferFormat& Format() const {
+  const BufferFormat& Format() const noexcept {
     static const BufferFormatBase<T> bf;
     return bf;
   }

@@ -22,7 +22,7 @@ struct ParentChunk {
 
 class ParentTestFormat : public BufferFormatBase<ParentChunk> {
  public:
-  BufferFormat& operator=(const BufferFormat& other) {
+  BufferFormat& operator=(const BufferFormat&) {
     return *this;
   }
 };
@@ -44,6 +44,11 @@ class ParentTestTransform
   virtual void SetParameter(const std::string&, const std::string&) {
   }
 
+  virtual void TypeSafeInitializeBuffers(const BuffersBase<Raw>&,
+                                        BuffersBase<ParentChunk>*)
+  const noexcept {
+  }
+
   virtual void TypeSafeDo(const BuffersBase<Raw>&, BuffersBase<ParentChunk> *)
   const noexcept {
   }
@@ -54,7 +59,7 @@ struct ChildChunk {
 
 class ChildTestFormat : public BufferFormatBase<ChildChunk> {
  public:
-  BufferFormat& operator=(const BufferFormat& other) {
+  BufferFormat& operator=(const BufferFormat&) {
     return *this;
   }
 };
@@ -78,6 +83,11 @@ class ChildTestTransform
   virtual void SetParameter(const std::string&, const std::string&) {
   }
 
+  virtual void TypeSafeInitializeBuffers(const BuffersBase<ParentChunk>&,
+                                         BuffersBase<ChildChunk>*)
+  const noexcept {
+  }
+
   virtual void TypeSafeDo(const BuffersBase<ParentChunk>&,
                           BuffersBase<ChildChunk> *) const noexcept {
   }
@@ -86,14 +96,21 @@ class ChildTestTransform
 REGISTER_TRANSFORM(ParentTestTransform);
 REGISTER_TRANSFORM(ChildTestTransform);
 
-TEST(TransformTree, AddChain) {
-  TransformTree tt({ 4096, 20000 });
+class TransformTreeTest : public TransformTree, public testing::Test {
+ public:
+  TransformTreeTest() : TransformTree({ 4096, 20000 }) {
+  }
 
-  tt.AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
+  virtual ~TransformTreeTest() noexcept {
+  }
+};
+
+TEST_F(TransformTreeTest, AddChain) {
+  AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
 
   bool fail = false;
   try {
-    tt.AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
+    AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
   }
   catch (ChainNameAlreadyExistsException* e) {
     fail = true;
@@ -102,15 +119,15 @@ TEST(TransformTree, AddChain) {
 
   fail = false;
   try {
-    tt.AddChain("Two", { {"ParentTest", "" }, { "ChildTest", "" } });
+    AddChain("Two", { {"ParentTest", "" }, { "ChildTest", "" } });
   }
   catch (ChainAlreadyExistsException* e) {
     fail = true;
   }
   EXPECT_TRUE(fail);
 
-  tt.AddChain("Two", { {"ParentTest", "" }, { "ChildTest", "AnalysisLength=256" } });
-  tt.PrepareForExecution();
+  AddChain("Two", { {"ParentTest", "" }, { "ChildTest", "AnalysisLength=256" } });
+  PrepareForExecution();
 }
 
 #include "tests/google/src/gtest_main.cc"

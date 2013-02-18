@@ -38,40 +38,42 @@ Buffers::Buffers(const Buffers& other) noexcept
 , buffers_(other.buffers_) {
 }
 
-int Buffers::Size() const noexcept {
+Buffers& Buffers::operator=(const Buffers& other) noexcept {
+  assert(format_ == other.format_);
+  buffers_ = other.buffers_;
+  return *this;
+}
+
+size_t Buffers::Size() const noexcept {
   return buffers_->size();
 }
-/*
-void Buffers::SetSize(int size) noexcept {
+
+void Buffers::SetSize(size_t size) noexcept {
   if (size < buffers_->size()) {
     auto destroy = format_.Destructor();
-    for (int i = size; i < buffers_->size(); i++) {
+    for (size_t i = size; i < buffers_->size(); i++) {
       if (buffers_->at(i) != nullptr) {
         destroy(buffers_->at(i));
+        buffers_->assign(i, nullptr);
       }
     }
   }
   buffers_->resize(size);
 }
-*/
-void* Buffers::operator[](int index) noexcept {
-  assert(index >= 0 && index < Size());
+
+void* Buffers::operator[](size_t index) noexcept {
+  assert(index < Size());
   return buffers_->at(index);
 }
 
-const void* Buffers::operator[](int index) const noexcept {
-  assert(index >= 0 && index < Size());
+const void* Buffers::operator[](size_t index) const noexcept {
+  assert(index < Size());
   return buffers_->at(index);
 }
 
-void Buffers::Set(int index, void* buffer) noexcept {
-  assert(index >= 0 && static_cast<size_t>(index) < buffers_->size());
+void Buffers::Set(size_t index, void* buffer) noexcept {
+  assert(static_cast<size_t>(index) < buffers_->size());
   (*buffers_)[index] = buffer;
-}
-
-void Buffers::CopyPointersFrom(const void *const *array) noexcept {
-  assert(array != nullptr);
-  memcpy(&(*buffers_)[0], array, sizeof(void *) * buffers_->size());
 }
 
 const void *const *Buffers::Data() const noexcept {

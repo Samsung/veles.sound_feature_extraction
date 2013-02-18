@@ -1,5 +1,5 @@
-/*! @file parameters.cc
- *  @brief Tests for src/parameters.h.
+/*! @file convolute.cc
+ *  @brief Tests for src/primitives/convolute.cc.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

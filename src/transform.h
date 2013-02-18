@@ -43,8 +43,8 @@ class Transform {
  public:
   virtual ~Transform() {}
 
-  // Pure virtual methods
-
+  /// @defgroup PureVirt Pure virtual interface methods
+  /// @{
   virtual const std::string& Name() const noexcept = 0;
 
   virtual const BufferFormat& InputFormat() const noexcept = 0;
@@ -64,10 +64,13 @@ class Transform {
 
   virtual void Initialize() const noexcept = 0;
 
+  virtual Buffers* CreateOutputBuffers(const Buffers& in) const noexcept = 0;
+
   virtual void Do(const Buffers& in, Buffers* out) const noexcept = 0;
+  /// @}
 
-  // Virtual methods which have defaults
-
+  /// @defgroup DefVirt Virtual methods which have defaults
+  /// @{
   virtual bool HasInverse() const noexcept {
     return false;
   }
@@ -76,18 +79,14 @@ class Transform {
                          Buffers* out UNUSED) const {
     std::unexpected();
   }
+  /// @}
 
-  virtual int BuffersCountMultiplier() const noexcept {
-    return 1;
-  }
-
-  // Non-virtual methods
+  /// @defgroup NonVirt Non-virtual methods
+  /// @{
   std::shared_ptr<Transform> Clone() const noexcept;
 
   bool operator==(const Transform& other) const noexcept;
-
- protected:
-  void CopyInToOut(const Buffers& in, Buffers *out) const noexcept;
+  /// @}
 };
 
 }  // namespace SpeechFeatureExtraction

@@ -59,8 +59,12 @@ class RootTransform : public Transform {
   virtual void Initialize() const noexcept {
   }
 
+  virtual Buffers* CreateOutputBuffers(const Buffers& in) const noexcept {
+    return nullptr;
+  }
+
   virtual void Do(const Buffers& in, Buffers *out) const noexcept {
-    CopyInToOut(in, out);
+    *out = in;
   }
 
  private:
@@ -101,10 +105,15 @@ void TransformTree::Node::Execute(
     std::unordered_map<std::string, std::shared_ptr<Buffers>>* results) {
   if (Parent != nullptr) {
     if (BoundBuffers == nullptr) {
-      BoundBuffers = std::make_shared<Buffers>(
-          Parent->BoundBuffers->Size() *
-              BoundTransform->BuffersCountMultiplier(),
-          BoundTransform->OutputFormat());
+      if (BoundTransform->OutputFormat() ==
+            Parent->BoundTransform->InputFormat() &&
+          Parent->Children.size() == 1) {
+          BoundBuffers = Parent->BoundBuffers;
+      } else {
+          BoundBuffers = std::shared_ptr<Buffers>(
+              BoundTransform->CreateOutputBuffers(*Parent->BoundBuffers),
+              [](Buffers *ptr){ delete[] ptr; });
+      }
     }
     BoundTransform->Do(*Parent->BoundBuffers, BoundBuffers.get());
     if (ChainName != "") {
@@ -166,8 +175,13 @@ void TransformTree::AddChain(
           // Set the input format
           t->SetInputFormat(currentNode->BoundTransform->OutputFormat());
         }
-        catch(Formats::InvalidRawFormatParametersException *irfpe) {
-           delete irfpe;
+        catch(Formats::InvalidRawFormatSizeException *irfse) {
+           delete irfse;
+           throw new IncompatibleTransformFormatException(
+               *currentNode->BoundTransform, *t);
+        }
+        catch(Formats::InvalidRawFormatSamplingRateException *irfsre) {
+           delete irfsre;
            throw new IncompatibleTransformFormatException(
                *currentNode->BoundTransform, *t);
         }
