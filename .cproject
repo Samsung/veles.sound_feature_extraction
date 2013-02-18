@@ -30,6 +30,10 @@
 									<listOptionValue builtIn="false" value="__AVX__"/>
 									<listOptionValue builtIn="false" value="__ARM_NEON__"/>
 									<listOptionValue builtIn="false" value="__OPTIMIZE__"/>
+									<listOptionValue builtIn="false" value="__SSE__"/>
+									<listOptionValue builtIn="false" value="__SSE2__"/>
+									<listOptionValue builtIn="false" value="__SSE3__"/>
+									<listOptionValue builtIn="false" value="__SSSE3__"/>
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.1859756436" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/home/markhor/Development/fftf/inc"/>
@@ -46,6 +50,11 @@
 									<listOptionValue builtIn="false" value="__AVX__"/>
 									<listOptionValue builtIn="false" value="__ARM_NEON__"/>
 									<listOptionValue builtIn="false" value="__OPTIMIZE__"/>
+									<listOptionValue builtIn="false" value="SSE"/>
+									<listOptionValue builtIn="false" value="__SSE__"/>
+									<listOptionValue builtIn="false" value="__SSE2__"/>
+									<listOptionValue builtIn="false" value="__SSE3__"/>
+									<listOptionValue builtIn="false" value="__SSSE3__"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.1759399867" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/home/markhor/Development/fftf/inc"/>

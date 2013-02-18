@@ -22,8 +22,7 @@ using SpeechFeatureExtraction::IncompatibleTransformFormatException;
 using SpeechFeatureExtraction::RawFeaturesMap;
 using SpeechFeatureExtraction::Features::ParseFeaturesException;
 using SpeechFeatureExtraction::TransformTree;
-using SpeechFeatureExtraction::Formats::RawFormat;
-
+using SpeechFeatureExtraction::Formats::RawFormat16;
 
 extern "C" {
 
@@ -65,7 +64,7 @@ FeaturesConfiguration *setup_features_extraction(
     return nullptr;
   }
 
-  RawFormat format(bufferSize, samplingRate);
+  RawFormat16 format(bufferSize, samplingRate);
   auto fconfig = new FeaturesConfiguration();
   fconfig->Tree = std::make_shared<TransformTree>(format);
   for (auto featpair : featmap) {

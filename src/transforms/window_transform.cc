@@ -53,21 +53,24 @@ void Window::Initialize() const noexcept {
   }
 }
 
-void Window::TypeSafeInitializeBuffers(const BuffersBase<Formats::Raw>& in,
-    BuffersBase<Formats::Window>* buffers) const noexcept {
+void Window::TypeSafeInitializeBuffers(
+    const BuffersBase<Formats::Raw16>& in,
+    BuffersBase<Formats::Window16>* buffers) const noexcept {
   buffers->Initialize(in.Size() * outSizeEach_);
 }
 
-void Window::TypeSafeDo(const BuffersBase<Formats::Raw>& in,
-                        BuffersBase<Formats::Window> *out)
+void Window::TypeSafeDo(const BuffersBase<Formats::Raw16>& in,
+                        BuffersBase<Formats::Window16> *out)
 const noexcept {
-  BuffersBase<Formats::Window>& outref = *out;
+  BuffersBase<Formats::Window16>& outref = *out;
   for (size_t i = 0; i < in.Size(); i++) {
     for (int step = 0; step < outSizeEach_; step++) {
       *outref[step + i * outSizeEach_] = { in[i]->Data.get() + step * inDataStep_ };
     }
   }
 }
+
+REGISTER_TRANSFORM(Window);
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction

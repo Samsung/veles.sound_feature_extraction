@@ -20,21 +20,37 @@
 
 namespace SpeechFeatureExtraction {
 
+typedef std::function<std::shared_ptr<Transform>(void)> TransformConstructor;
+
 extern std::unordered_map<std::string,
-                          std::function<std::shared_ptr<Transform>(void)>>
-    TransformFactory;
+                          std::unordered_map<std::string,
+                                             TransformConstructor>>
+TransformFactory;
 
 template<class T>
 class RegisterTransform {
  public:
   RegisterTransform() {
     T t;
-    TransformFactory.insert(
-        std::make_pair(t.Name(), []() { return std::make_shared<T>(); }));
+    if (TransformFactory.find(t.Name()) == TransformFactory.end()) {
+      TransformFactory.insert(std::make_pair(
+          t.Name(),
+          std::unordered_map<std::string, TransformConstructor>()));
+      if (t.HasInverse()) {
+        TransformFactory.insert(std::make_pair(
+            std::string("I") + t.Name(),
+            std::unordered_map<std::string, TransformConstructor>()));
+      }
+    }
+    TransformFactory[t.Name()].insert(std::make_pair(
+        t.InputFormat().Id(), []() {
+      auto ptr = std::make_shared<T>();
+      ptr->SetParameters({ {"inverse", "false"} });
+      return ptr;
+    }));
     if (t.HasInverse()) {
-      TransformFactory.insert(
-        std::make_pair(std::string("I") + t.Name(),
-                       []() {
+      TransformFactory[std::string("I") + t.Name()].insert(std::make_pair(
+          t.OutputFormat().Id(), []() {
         auto ptr = std::make_shared<T>();
         ptr->SetParameters({ {"inverse", "true"} });
         return ptr;

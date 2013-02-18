@@ -21,7 +21,7 @@ namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 class Window
-    : public TransformBase<Formats::RawFormat, Formats::WindowFormat> {
+    : public TransformBase<Formats::RawFormat16, Formats::WindowFormat16> {
  public:
   Window();
 
@@ -39,11 +39,11 @@ class Window
 
   virtual void SetParameter(const std::string& name, const std::string& value);
 
-  virtual void TypeSafeInitializeBuffers(const BuffersBase<Formats::Raw>& in,
-        BuffersBase<Formats::Window>* buffers) const noexcept;
+  virtual void TypeSafeInitializeBuffers(const BuffersBase<Formats::Raw16>& in,
+        BuffersBase<Formats::Window16>* buffers) const noexcept;
 
-  virtual void TypeSafeDo(const BuffersBase<Formats::Raw>& in,
-                          BuffersBase<Formats::Window> *out) const noexcept;
+  virtual void TypeSafeDo(const BuffersBase<Formats::Raw16>& in,
+                          BuffersBase<Formats::Window16> *out) const noexcept;
 
  private:
   int step_;

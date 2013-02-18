@@ -86,6 +86,8 @@ class Transform {
   std::shared_ptr<Transform> Clone() const noexcept;
 
   bool operator==(const Transform& other) const noexcept;
+
+  bool IsInverse() const noexcept;
   /// @}
 };
 

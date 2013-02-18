@@ -21,12 +21,20 @@
 #include <string.h>
 
 #ifdef __AVX__
-int align_offset(float *ptr) {
+static int align_offset_internal(void *ptr) {
   uintptr_t addr = (uintptr_t)ptr;
   if ((addr & 31) != 0) {
-    return (32 - (addr % 32)) / sizeof(float);
+    return 32 - (addr % 32);
   }
   return 0;
+}
+
+int align_offsetf(float *ptr) {
+  return align_offset_internal(ptr) / sizeof(float);
+}
+
+int align_offset_i16(int16_t *ptr) {
+  return align_offset_internal(ptr) / 2;
 }
 #endif
 
@@ -42,7 +50,7 @@ INLINE void memsetf(float *ptr, size_t length, float value) {
 #ifdef __AVX__
   __m256 fillvec = _mm256_set_ps( value, value, value, value,
                                   value, value, value, value );
-  size_t startIndex = align_offset(ptr);
+  size_t startIndex = align_offsetf(ptr);
 
   for (size_t i = 0; i < startIndex; i++) {
     ptr[i] = value;

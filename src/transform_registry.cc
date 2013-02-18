@@ -16,7 +16,8 @@
 namespace SpeechFeatureExtraction {
 
 std::unordered_map<std::string,
-                   std::function<std::shared_ptr<Transform>(void)>>
-    TransformFactory;
+                   std::unordered_map<std::string,
+                                      TransformConstructor>>
+TransformFactory;
 
 }  // namespace SpeechFeatureExtraction

@@ -41,7 +41,7 @@ void BandpassFilter::CalculateFilter(float *filter) const noexcept {
 }
 
 void BandpassFilter::SetFilterParameter(const std::string& name,
-                                 const std::string& value) {
+                                        const std::string& value) {
   if (name == "frequency_high") {
     int pv = Parse<int>(name, value);
     if (pv < MIN_FILTER_FREQUENCY || pv > MAX_FILTER_FREQUENCY) {
@@ -56,6 +56,8 @@ void BandpassFilter::SetFilterParameter(const std::string& name,
     frequencyLow_ = pv;
   }
 }
+
+REGISTER_TRANSFORM(BandpassFilter);
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction

@@ -19,7 +19,7 @@ namespace SpeechFeatureExtraction {
 
 class RootTransform : public Transform {
  public:
-  explicit RootTransform(const Formats::RawFormat& format) noexcept
+  explicit RootTransform(const Formats::RawFormat16& format) noexcept
   : format_(format) {
   }
 
@@ -59,7 +59,7 @@ class RootTransform : public Transform {
   virtual void Initialize() const noexcept {
   }
 
-  virtual Buffers* CreateOutputBuffers(const Buffers& in) const noexcept {
+  virtual Buffers* CreateOutputBuffers(const Buffers&) const noexcept {
     return nullptr;
   }
 
@@ -68,7 +68,7 @@ class RootTransform : public Transform {
   }
 
  private:
-  Formats::RawFormat format_;
+  Formats::RawFormat16 format_;
 };
 
 TransformTree::Node::Node(Node* parent,
@@ -127,7 +127,7 @@ void TransformTree::Node::Execute(
   }
 }
 
-TransformTree::TransformTree(const Formats::RawFormat& rootFormat) noexcept
+TransformTree::TransformTree(const Formats::RawFormat16& rootFormat) noexcept
 : root_(std::make_shared<Node>(nullptr,
                                std::make_shared<RootTransform>(rootFormat))),
   treeIsPrepared_(false) {
@@ -149,13 +149,22 @@ void TransformTree::AddChain(
   auto currentNode = root_;
   for (auto tpair : transforms) {
     auto tname = tpair.first;
-    // Search for the factory of transform "tname"
-    auto tf = TransformFactory.find(tname);
-    if (tf == TransformFactory.end()) {
+
+    // Search for the constructor of the transform "tname"
+    auto tfit = TransformFactory.find(tname);
+    if (tfit == TransformFactory.end()) {
       throw new TransformNotRegisteredException(tname);
     }
+    // tfit is actually a map from input format to real constructor
+    auto ctorit = tfit->second.find(
+        currentNode->BoundTransform->OutputFormat().Id());
+    if (ctorit == tfit->second.end()) {
+      throw new TransformNotRegisteredException(tname);
+    }
+    auto ctor = ctorit->second;
+
     // Create the transform "tname"
-    auto t = tf->second();
+    auto t = ctor();
     {
       auto tparams = Parameters::Parse(tpair.second);
       t->SetParameters(tparams);

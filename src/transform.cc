@@ -17,7 +17,7 @@
 namespace SpeechFeatureExtraction {
 
 std::shared_ptr<Transform> Transform::Clone() const noexcept {
-  auto copy = TransformFactory[this->Name()]();
+  auto copy = TransformFactory[this->Name()][this->InputFormat().Id()]();
   copy->SetParameters(this->CurrentParameters());
   return copy;
 }
@@ -31,6 +31,10 @@ bool Transform::operator==(const Transform& other) const noexcept {
     }
   }
   return true;
+}
+
+bool Transform::IsInverse() const noexcept {
+  return CurrentParameters()["inverse"] == "true";
 }
 
 }  // namespace SpeechFeatureExtraction

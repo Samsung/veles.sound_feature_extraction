@@ -16,6 +16,7 @@
 #include <memory>
 #include "src/buffers_base.h"
 #include "src/exceptions.h"
+#include "src/formats/format_limits.h"
 
 namespace SpeechFeatureExtraction {
 namespace Formats {
@@ -34,21 +35,22 @@ class InvalidRawFormatSamplingRateException : public ExceptionBase {
                   " is not supported or invalid.") {}
 };
 
+template <typename T>
 struct Raw {
-  std::shared_ptr<int16_t> Data;
+  std::shared_ptr<T> Data;
 
   Raw() : Data(nullptr) {
   }
 
   explicit Raw(size_t size)
-  : Data(new int16_t[size],
-         [](int16_t *ptr) { delete[] ptr; }) {
+  : Data(new T[size],
+         [](T *ptr) { delete[] ptr; }) {
   }
 
   Raw(const Raw& other) : Data(other.Data) {
   }
 
-  explicit Raw(int16_t *ptr) : Data(ptr, [](int16_t *){}) {
+  explicit Raw(T *ptr) : Data(ptr, [](T *){}) {
   }
 
   Raw& operator=(const Raw& other) {
@@ -57,28 +59,75 @@ struct Raw {
   }
 };
 
-class RawFormat : public BufferFormatBase<Raw> {
+typedef Raw<int16_t> Raw16;
+typedef Raw<int32_t> Raw32;
+
+template <typename T>
+class RawFormat : public BufferFormatBase<Raw<T>> {
  public:
-  RawFormat() noexcept;
-  RawFormat(const RawFormat& other) noexcept;
-  RawFormat(size_t size, int samplingRate);
+  RawFormat() noexcept
+  : size_(DEFAULT_SIZE)
+  , samplingRate_(DEFAULT_SAMPLING_RATE) {
+  }
 
-  BufferFormat& operator=(const BufferFormat& other);
+  RawFormat(const RawFormat& other) noexcept
+  : size_(other.size_)
+  , samplingRate_(other.samplingRate_) {
+  }
 
-  int SamplingRate() const noexcept;
-  void SetSamplingRate(int value);
+  RawFormat(size_t size, int samplingRate)
+  : size_(size)
+  , samplingRate_(samplingRate) {
+    ValidateSize(size_);
+    ValidateSamplingRate(samplingRate_);
+  }
+
+  BufferFormat& operator=(const BufferFormat& other) {
+    if (other.Id() != RawFormat<T>::Id()) {
+      throw new InvalidFormatException(RawFormat<T>::Id(), other.Id());
+    }
+    *this = reinterpret_cast<const RawFormat&>(other);
+    return *this;
+  }
+
+  int SamplingRate() const noexcept {
+    return samplingRate_;
+  }
+
+  void SetSamplingRate(int value) {
+    ValidateSamplingRate(value);
+    samplingRate_ = value;
+  }
 
   /// @brief Returns the raw buffer size in samples.
-  size_t Size() const noexcept;
-  void SetSize(size_t value);
+  size_t Size() const noexcept {
+    return size_;
+  }
+
+  void SetSize(size_t value) {
+    ValidateSize(value);
+    size_ = value;
+  }
 
  private:
   size_t size_;
   int samplingRate_;
 
-  static void ValidateSize(size_t value);
-  static void ValidateSamplingRate(int value);
+  static void ValidateSize(size_t value) {
+    if (value < MIN_RAW_SIZE || value > MAX_RAW_SIZE) {
+      throw new InvalidRawFormatSizeException(value);
+    }
+  }
+
+  static void ValidateSamplingRate(int value) {
+    if (value < MIN_SAMPLING_RATE || value > MAX_SAMPLING_RATE) {
+      throw new InvalidRawFormatSamplingRateException(value);
+    }
+  }
 };
+
+typedef RawFormat<int16_t> RawFormat16;
+typedef RawFormat<int32_t> RawFormat32;
 
 }  // namespace Formats
 }  // namespace SpeechFeatureExtraction

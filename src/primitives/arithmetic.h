@@ -13,6 +13,10 @@
 #ifndef ARITHMETIC_H_
 #define ARITHMETIC_H_
 
+#ifdef __cplusplus
+#define __STDC_LIMIT_MACROS
+#endif
+#include <stdint.h>
 #include "src/primitives/memory.h"
 
 INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
@@ -50,6 +54,75 @@ INLINE NOTNULL((3)) void real_multiply_scalar_na(
 
 #include <immintrin.h>
 
+#ifdef __AVX2__
+
+/// @brief Multiplies the contents of two vectors, saving the result to the
+/// third vector, using AVX2 SIMD (int16_t doubling version).
+/// @details res[i] = a[i] * b[i], i = 0..15.
+/// @param a First vector.
+/// @param b Second vector.
+/// @param res Result vector.
+/// @pre a, b and res must be aligned to 32 bytes.
+INLINE NOTNULL((1, 2, 3)) void int16_saturating_multiply(
+    const int16_t *a, const int16_t *b, int32_t *res) {
+  __m256i aVec = _mm256_load_si256((const __m256i*)a);
+  __m256i bVec = _mm256_load_si256((const __m256i*)b);
+  __m256i resVecHi = _mm256_mulhi_epi16(aVec, bVec);
+  __m256i resVecLo = _mm256_mullo_epi16(aVec, bVec);
+  _mm256_maskstore_epi32(
+      res, _mm256_set_epi16(-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0),
+      resVecHi);
+  _mm256_maskstore_epi32(
+      res, _mm256_set_epi16( 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1),
+      resVecLo);
+}
+
+#else
+
+/// @brief Multiplies the contents of two vectors, saving the result to the
+/// third vector, using SSSE3 SIMD (int16_t doubling version).
+/// @details res[i] = a[i] * b[i], i = 0..7.
+/// @param a First vector.
+/// @param b Second vector.
+/// @param res Result vector.
+/// @pre a, b and res must be aligned to 16 bytes.
+INLINE NOTNULL((1, 2, 3)) void int16_multiply(
+    const int16_t *a, const int16_t *b, int32_t *res) {
+  __m128i aVec = _mm_load_si128((const __m128i*)a);
+  __m128i bVec = _mm_load_si128((const __m128i*)b);
+  __m128i resVecHi = _mm_mulhi_epi16(aVec, bVec);
+  __m128i resVecLo = _mm_mullo_epi16(aVec, bVec);
+  _mm_maskmoveu_si128(resVecHi, _mm_set_epi16(-1, 0,-1, 0,-1, 0,-1, 0),
+                      (char*)res);
+  _mm_maskmoveu_si128(resVecLo, _mm_set_epi16( 0,-1, 0,-1, 0,-1, 0,-1),
+                      (char*)res);
+}
+
+#endif
+
+/// @brief Multiplies the contents of two vectors, saving the result to the
+/// third vector, using AVX SIMD (float version).
+/// @details res[i] = a[i] * b[i], i = 0..7.
+/// @param a First vector.
+/// @param b Second vector.
+/// @param res Result vector.
+/// @pre a, b and res must be aligned to 32 bytes.
+INLINE NOTNULL((1, 2, 3)) void real_multiply(
+    const float *a, const float *b, float *res) {
+  __m256 aVec = _mm256_load_ps(a);
+  __m256 bVec = _mm256_load_ps(b);
+  __m256 resVec = _mm256_mul_ps(aVec, bVec);
+  _mm256_store_ps(res, resVec);
+}
+
+/// @brief Performs complex multiplication of the contents of two complex
+/// vectors, saving the result to the third vector, using AVX SIMD.
+/// @details res[i] = a[i] * b[i] - a[i + 1] * b[i + 1], i = 0, 2, 4, 6;
+/// res[i + 1] = a[i] * b[i + 1] + a[i + 1] * b[i], i = 1, 3, 5, 7.
+/// @param a First vector.
+/// @param b Second vector.
+/// @param res Result vector.
+/// @pre a, b and res must be aligned to 32 bytes.
 INLINE NOTNULL((1, 2, 3)) void complex_multiply(
     const float *a, const float *b, float *res) {
   __m256 Xvec = _mm256_load_ps(a);
@@ -65,7 +138,7 @@ INLINE NOTNULL((1, 2, 3)) void complex_multiply(
 
 INLINE NOTNULL((3)) void real_multiply_scalar(float value, int arrayLength,
                                               float *array) {
-  int startIndex = align_offset(array);
+  int startIndex = align_offsetf(array);
 
   for (int i = 0; i < startIndex; i++) {
     array[i] *= value;
@@ -89,6 +162,41 @@ INLINE NOTNULL((3)) void real_multiply_scalar(float value, int arrayLength,
 
 #include <arm_neon.h>
 
+/// @brief Multiplies the contents of two vectors, saving the result to the
+/// third vector, using NEON SIMD (int16_t doubling version).
+/// @details res[i] = a[i] * b[i], i = 0..3.
+/// @param a First vector.
+/// @param b Second vector.
+/// @param res Result vector.
+INLINE NOTNULL((1, 2, 3)) void int16_multiply(
+    const int16_t *a, const int16_t *b, int32_t *res) {
+  int16x4_t aVec = vld1_s16(a);
+  int16x4_t bVec = vld1_s16(b);
+  int32x4_t resVec = vmull_s16(aVec, bVec);
+  vst1q_s32(res, resVec);
+}
+
+/// @brief Multiplies the contents of two vectors, saving the result to the
+/// third vector, using NEON SIMD (float version).
+/// @details res[i] = a[i] * b[i], i = 0..7.
+/// @param a First vector.
+/// @param b Second vector.
+/// @param res Result vector.
+INLINE NOTNULL((1, 2, 3)) void real_multiply(
+    const float *a, const float *b, float *res) {
+  float32x4_t aVec = vld1q_f32(a);
+  float32x4_t bVec = vld1q_f32(b);
+  float32x4_t resVec = vmulq_f32(aVec, bVec);
+  vst1q_f32(res, resVec);
+}
+
+/// @brief Performs complex multiplication of the contents of two complex
+/// vectors, saving the result to the third vector, using NEON SIMD.
+/// @details res[i] = a[i] * b[i] - a[i + 1] * b[i + 1], i = 0, 2, 4, 6;
+/// res[i + 1] = a[i] * b[i + 1] + a[i + 1] * b[i], i = 1, 3, 5, 7.
+/// @param a First vector.
+/// @param b Second vector.
+/// @param res Result vector.
 INLINE NOTNULL((1, 2, 3)) void complex_multiply(
     const float *a, const float *b, float *res) {
   const float32x4_t negVec = { 1.0f, -1.0f, 1.0f, -1.0f };

@@ -159,6 +159,9 @@ class TransformBase : public Transform {
     virtual const std::unordered_map<std::string, ParameterTraits>& \
 SupportedParameters() const noexcept { \
   static const std::unordered_map<std::string, ParameterTraits> sp = { \
+      _TP_("inverse", \
+           "Value indicating whether this transform is inverse.", \
+           "false") \
       init \
   }; \
   return sp; \

@@ -50,5 +50,7 @@ void LowpassFilter::SetFilterParameter(const std::string& name,
   }
 }
 
+REGISTER_TRANSFORM(LowpassFilter);
+
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction

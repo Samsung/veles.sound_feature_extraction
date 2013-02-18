@@ -14,6 +14,7 @@
 #define RAW_WINDOW_FORMAT_H_
 
 #include "src/buffers_base.h"
+#include "src/formats/format_limits.h"
 
 namespace SpeechFeatureExtraction {
 namespace Formats {
@@ -32,31 +33,78 @@ class InvalidWindowFormatSamplingRateException : public ExceptionBase {
                   " is not supported or invalid.") {}
 };
 
+template <class T>
 struct Window {
-  const int16_t* Chunk;
+  const T* Chunk;
 };
 
-class WindowFormat : public BufferFormatBase<Window> {
+typedef Window<int16_t> Window16;
+typedef Window<float> WindowF;
+
+template <class T>
+class WindowFormat : public BufferFormatBase<Window<T>> {
  public:
-  WindowFormat() noexcept;
-  WindowFormat(const WindowFormat& other) noexcept;
-  WindowFormat(size_t duration, int samplingRate);
+  WindowFormat() noexcept
+  : duration_(DEFAULT_WINDOW_DURATION)
+  , samplingRate_(DEFAULT_SAMPLING_RATE) {
+  }
 
-  BufferFormat& operator=(const BufferFormat& other);
+  WindowFormat(const WindowFormat& other) noexcept
+  : duration_(other.duration_)
+  , samplingRate_(samplingRate_) {
+  }
 
-  size_t Duration() const noexcept;
-  void SetDuration(size_t value);
+  WindowFormat(size_t duration, int samplingRate)
+  : duration_(duration), samplingRate_(samplingRate) {
+    ValidateDuration(duration_);
+    ValidateSamplingRate(samplingRate_);
+  }
 
-  int SamplingRate() const noexcept;
-  void SetSamplingRate(int value);
+  BufferFormat& operator=(const BufferFormat& other) {
+    if (other.Id() != WindowFormat<T>::Id()) {
+      throw new InvalidFormatException(WindowFormat<T>::Id(), other.Id());
+    }
+    *this = reinterpret_cast<const WindowFormat&>(other);
+    return *this;
+  }
+
+  size_t Duration() const noexcept {
+    return duration_;
+  }
+
+  void SetDuration(size_t value) {
+    ValidateDuration(value);
+    duration_ = value;
+  }
+
+  int SamplingRate() const noexcept {
+    return samplingRate_;
+  }
+
+  void SetSamplingRate(int value) {
+    ValidateSamplingRate(value);
+    samplingRate_ = value;
+  }
 
  private:
   size_t duration_;
   int samplingRate_;
 
-  static void ValidateDuration(size_t value);
-  static void ValidateSamplingRate(int value);
+  static void ValidateDuration(size_t value) {
+    if (value < MIN_WINDOW_DURATION || value > MAX_WINDOW_DURATION) {
+      throw new InvalidWindowFormatDurationException(value);
+    }
+  }
+
+  static void ValidateSamplingRate(int value) {
+    if (value < MIN_SAMPLING_RATE || value > MAX_SAMPLING_RATE) {
+      throw new InvalidWindowFormatSamplingRateException(value);
+    }
+  }
 };
+
+typedef WindowFormat<int16_t> WindowFormat16;
+typedef WindowFormat<float> WindowFormatF;
 
 }  // namespace Formats
 }  // namespace SpeechFeatureExtraction

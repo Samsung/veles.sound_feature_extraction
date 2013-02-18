@@ -14,7 +14,7 @@
 #define CONVOLUTION_FILTER_BASE_H_
 
 #include <vector>
-#include "src/transform_base.h"
+#include "src/uniform_format_transform.h"
 #include "src/formats/format_limits.h"
 #include "src/formats/raw_format.h"
 
@@ -22,7 +22,7 @@ namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 class FirFilterBase
-    : public TransformBase<Formats::RawFormat, Formats::RawFormat> {
+    : public UniformFormatTransform<Formats::RawFormat16> {
  public:
   FirFilterBase(const std::unordered_map<std::string, ParameterTraits>&
                 supportedParameters) noexcept;
@@ -41,13 +41,12 @@ class FirFilterBase
 
   virtual void SetParameter(const std::string& name, const std::string& value);
 
-  virtual void OnInputFormatChanged();
+  virtual void TypeSafeInitializeBuffers(
+      const BuffersBase<Formats::Raw16>& in,
+      BuffersBase<Formats::Raw16>* buffers) const noexcept;
 
-  virtual void TypeSafeInitializeBuffers(const BuffersBase<Formats::Raw>& in,
-      BuffersBase<Formats::Raw>* buffers) const noexcept;
-
-  virtual void TypeSafeDo(const BuffersBase<Formats::Raw>& in,
-                          BuffersBase<Formats::Raw> *out) const noexcept;
+  virtual void TypeSafeDo(const BuffersBase<Formats::Raw16>& in,
+                          BuffersBase<Formats::Raw16> *out) const noexcept;
 
  private:
   mutable std::vector<float> filter_;

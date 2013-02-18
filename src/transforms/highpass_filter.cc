@@ -47,5 +47,7 @@ void HighpassFilter::SetFilterParameter(const std::string& name,
   }
 }
 
+REGISTER_TRANSFORM(HighpassFilter);
+
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction

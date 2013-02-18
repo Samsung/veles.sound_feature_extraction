@@ -28,7 +28,7 @@ class ParentTestFormat : public BufferFormatBase<ParentChunk> {
 };
 
 class ParentTestTransform
-    : public TransformBase<RawFormat, ParentTestFormat> {
+    : public TransformBase<RawFormat16, ParentTestFormat> {
  public:
   ParentTestTransform() : TransformBase(SupportedParameters()) {}
 
@@ -44,12 +44,12 @@ class ParentTestTransform
   virtual void SetParameter(const std::string&, const std::string&) {
   }
 
-  virtual void TypeSafeInitializeBuffers(const BuffersBase<Raw>&,
+  virtual void TypeSafeInitializeBuffers(const BuffersBase<Raw16>&,
                                         BuffersBase<ParentChunk>*)
   const noexcept {
   }
 
-  virtual void TypeSafeDo(const BuffersBase<Raw>&, BuffersBase<ParentChunk> *)
+  virtual void TypeSafeDo(const BuffersBase<Raw16>&, BuffersBase<ParentChunk> *)
   const noexcept {
   }
 };

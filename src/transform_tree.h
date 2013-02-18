@@ -101,7 +101,7 @@ class TransformTree {
   };
 
  public:
-  explicit TransformTree(const Formats::RawFormat& rootFormat) noexcept;
+  explicit TransformTree(const Formats::RawFormat16& rootFormat) noexcept;
   virtual ~TransformTree() noexcept;
 
   void AddChain(
