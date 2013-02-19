@@ -42,6 +42,7 @@ class BufferFormat {
   const std::string& Id() const noexcept;
 
   bool operator==(const BufferFormat& other) const noexcept;
+  bool operator!=(const BufferFormat& other) const noexcept;
 
   virtual std::function<void(void*)> Destructor() const noexcept = 0;
 

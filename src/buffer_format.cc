@@ -35,4 +35,8 @@ bool BufferFormat::operator==(const BufferFormat& other) const noexcept {
   return this->id_ == other.id_;
 }
 
+bool BufferFormat::operator!=(const BufferFormat& other) const noexcept {
+  return this->id_ != other.id_;
+}
+
 }  // namespace SpeechFeatureExtraction

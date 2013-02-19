@@ -11,8 +11,8 @@
  */
 
 #include "src/transforms/lowpass_filter.h"
-#include <math.h>
 #include "src/formats/format_limits.h"
+#include "src/primitives/window.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
@@ -24,8 +24,7 @@ HammingWindowFilter::HammingWindowFilter(
 }
 
 float HammingWindowFilter::WindowFunction(int index) const noexcept {
-  // Conforms to Matlab hamming() function.
-  return 0.54f - 0.46f * cosf(2 * M_PI * index / (length_ - 1));
+  return HammingWindow(index, length_);
 }
 
 }  // namespace Transforms

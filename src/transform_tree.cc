@@ -164,7 +164,7 @@ void TransformTree::AddTransform(const std::string& name,
   if (t->InputFormat() != (*currentNode)->BoundTransform->OutputFormat()) {
     auto convName = FormatConverter::Name(
         t->InputFormat(), (*currentNode)->BoundTransform->OutputFormat());
-    AddTransform(convName, "", &currentNode);
+    AddTransform(convName, "", currentNode);
   }
 
   // Try to reuse the already existing transform
