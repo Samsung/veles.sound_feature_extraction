@@ -13,13 +13,13 @@
 #ifndef BANDPASS_FILTER_H_
 #define BANDPASS_FILTER_H_
 
-#include "src/transforms/hamming_window_filter.h"
+#include "src/transforms/fir_filter_base.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 /// @brief Discards the frequencies which are lower than the threshold.
-class BandpassFilter : public HammingWindowFilter {
+class BandpassFilter : public FirFilterBase {
  public:
   BandpassFilter() noexcept;
 

@@ -21,21 +21,27 @@
   ASSERT_LT(a - EPSILON, b); \
 } while(0)
 
-TEST(Window, HammingWindow) {
+TEST(Window, Rectangular) {
+  ASSERT_EQ(1.0f, WindowElement(WINDOW_TYPE_RECTANGULAR, 0, 4));
+  ASSERT_EQ(1.0f, WindowElement(WINDOW_TYPE_RECTANGULAR, 2, 5));
+  ASSERT_EQ(1.0f, WindowElement(WINDOW_TYPE_RECTANGULAR, 8, 10));
+}
+
+TEST(Window, Hamming) {
   std::vector<float> filter(20);
   std::vector<float> valid { 0.0800f, 0.7700f, 0.7700f, 0.0800f };
-  for (size_t i = 0; i < filter.size(); i++) {
-    filter[i] = HammingWindow(i, 4);
+  for (size_t i = 0; i < valid.size(); i++) {
+    filter[i] = WindowElement(WINDOW_TYPE_HAMMING, i, 4);
   }
-  for (size_t i = 0; i < filter.size(); i++) {
+  for (size_t i = 0; i < valid.size(); i++) {
     ASSERT_EQF(valid[i], filter[i]);
   }
 
   valid = { 0.0800f, 0.5400f, 1.0000f, 0.5400f, 0.0800f };
-  for (size_t i = 0; i < filter.size(); i++) {
-    filter[i] = HammingWindow(i, 5);
+  for (size_t i = 0; i < valid.size(); i++) {
+    filter[i] = WindowElement(WINDOW_TYPE_HAMMING, i, 5);
   }
-  for (size_t i = 0; i < filter.size(); i++) {
+  for (size_t i = 0; i < valid.size(); i++) {
     ASSERT_EQF(valid[i], filter[i]);
   }
 
@@ -43,10 +49,10 @@ TEST(Window, HammingWindow) {
             0.6199f, 0.7700f, 0.8924f, 0.9723f, 1.0000f,
             0.9723f, 0.8924f, 0.7700f, 0.6199f, 0.4601f,
             0.3100f, 0.1876f, 0.1077f, 0.0800f };
-  for (size_t i = 0; i < filter.size(); i++) {
-    filter[i] = HammingWindow(i, 19);
+  for (size_t i = 0; i < valid.size(); i++) {
+    filter[i] = WindowElement(WINDOW_TYPE_HAMMING, i, 19);
   }
-  for (size_t i = 0; i < filter.size(); i++) {
+  for (size_t i = 0; i < valid.size(); i++) {
     ASSERT_EQF(valid[i], filter[i]);
   }
 
@@ -54,10 +60,10 @@ TEST(Window, HammingWindow) {
             0.5780f, 0.7248f, 0.8515f, 0.9446f, 0.9937f,
             0.9937f, 0.9446f, 0.8515f, 0.7248f, 0.5780f,
             0.4271f, 0.2884f, 0.1770f, 0.1049f, 0.0800f };
-  for (size_t i = 0; i < filter.size(); i++) {
-    filter[i] = HammingWindow(i, 20);
+  for (size_t i = 0; i < valid.size(); i++) {
+    filter[i] = WindowElement(WINDOW_TYPE_HAMMING, i, 20);
   }
-  for (size_t i = 0; i < filter.size(); i++) {
+  for (size_t i = 0; i < valid.size(); i++) {
     ASSERT_EQF(valid[i], filter[i]);
   }
 }

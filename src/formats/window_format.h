@@ -1,5 +1,5 @@
 /*! @file window_format.h
- *  @brief Raw data frame format.
+ *  @brief Window frame format.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -15,6 +15,7 @@
 
 #include "src/buffers_base.h"
 #include "src/formats/format_limits.h"
+#include "src/primitives/memory.h"
 
 namespace SpeechFeatureExtraction {
 namespace Formats {
@@ -33,9 +34,28 @@ class InvalidWindowFormatSamplingRateException : public ExceptionBase {
                   " is not supported or invalid.") {}
 };
 
-template <class T>
+template <typename T>
 struct Window {
-  T* Chunk;
+  std::shared_ptr<T> Data;
+
+  Window() : Data(nullptr) {
+  }
+
+  explicit Window(size_t size)
+  : Data(reinterpret_cast<T*>(malloc_aligned(size * sizeof(T))),
+         [](T *ptr) { free(ptr); }) {
+  }
+
+  Window(const Window& other) : Data(other.Data) {
+  }
+
+  explicit Window(T *ptr) : Data(ptr, [](T *){}) {
+  }
+
+  Window& operator=(const Window& other) {
+    Data = other.Data;
+    return *this;
+  }
 };
 
 typedef Window<int16_t> Window16;

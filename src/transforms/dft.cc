@@ -37,8 +37,8 @@ void DFT::TypeSafeDo(
   int length = outputFormat_.SamplesCount();
   std::vector<float*> inputs(in.Size()), outputs(in.Size());
   for (size_t i = 0; i < in.Size(); i++) {
-    inputs[i] = in[i]->Chunk;
-    outputs[i] = (*out)[i]->Chunk;
+    inputs[i] = in[i]->Data.get();
+    outputs[i] = (*out)[i]->Data.get();
   }
   auto fftPlan = fftf_init_batch(
       FFTF_TYPE_REAL,

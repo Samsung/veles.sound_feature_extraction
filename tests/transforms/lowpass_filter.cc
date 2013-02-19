@@ -12,6 +12,7 @@
 
 #include <gtest/gtest.h>
 #include "src/transforms/lowpass_filter.h"
+#include "src/primitives/window.h"
 
 #define EPSILON 0.0001f
 
@@ -34,7 +35,7 @@ TEST_F(LowpassFilterTest, CalculateLowpassFilter) {
   inputFormat_.SetSamplingRate(16000);
   std::vector<float> filter(length_);
   for (size_t i = 0; i < filter.size(); i++) {
-    filter[i] = WindowFunction(i);
+    filter[i] = WindowElement(WINDOW_TYPE_HAMMING, i, length_);
   }
   CalculateFilter(&filter[0]);
   ASSERT_EQF(0.0059f, filter[0]);
@@ -45,7 +46,7 @@ TEST_F(LowpassFilterTest, CalculateLowpassFilter) {
   length_ = 5;
   filter.resize(length_);
   for (size_t i = 0; i < filter.size(); i++) {
-    filter[i] = WindowFunction(i);
+    filter[i] = WindowElement(WINDOW_TYPE_HAMMING, i, length_);
   }
   CalculateFilter(&filter[0]);
   ASSERT_EQF(0.0058f, filter[0]);

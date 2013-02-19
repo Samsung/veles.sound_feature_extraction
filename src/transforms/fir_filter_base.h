@@ -17,6 +17,7 @@
 #include "src/uniform_format_transform.h"
 #include "src/formats/format_limits.h"
 #include "src/formats/raw_format.h"
+#include "src/primitives/window.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
@@ -35,8 +36,6 @@ class FirFilterBase
   virtual void SetFilterParameter(const std::string& name,
                                   const std::string& value) = 0;
 
-  virtual float WindowFunction(int index) const noexcept = 0;
-
   virtual void CalculateFilter(float* filter) const noexcept = 0;
 
   virtual void SetParameter(const std::string& name, const std::string& value);
@@ -49,13 +48,17 @@ class FirFilterBase
                           BuffersBase<Formats::Raw16> *out) const noexcept;
 
  private:
+  WindowType windowType_;
   mutable std::vector<float> filter_;
   mutable std::vector<float> dataBuffer_;
 };
 
 #define FIR_FILTER_PARAMETERS(init) TRANSFORM_PARAMETERS( \
-  FORWARD_MACROS(_TP_("length", "Hamming window length in samples", \
-                                std::to_string(DEFAULT_FILTER_LENGTH)) \
+  FORWARD_MACROS( \
+      _TP_("length", "Window length in samples", \
+           std::to_string(DEFAULT_FILTER_LENGTH)) \
+      _TP_("window", "Type of the window. Supported values are \"rectangular\" " \
+           "and \"hamming\".", "hamming") \
       init) \
 )
 

@@ -13,7 +13,7 @@
 #ifndef MEMORY_H_
 #define MEMORY_H_
 
-#include <stddef.h>
+#include <string.h>
 #include "spfextr/config.h"
 
 #ifdef __cplusplus
@@ -28,6 +28,7 @@ int align_offset_i16(const int16_t *ptr) NOTNULL((1));
 int align_offset_i32(const int32_t *ptr) NOTNULL((1));
 #endif
 
+void *malloc_aligned(size_t size) MALLOC;
 float *mallocf(size_t length) MALLOC;
 
 void memsetf(float *ptr, size_t length, float value) NOTNULL((1));

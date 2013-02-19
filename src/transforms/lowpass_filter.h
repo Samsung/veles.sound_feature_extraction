@@ -13,13 +13,13 @@
 #ifndef LOWPASS_FILTER_H_
 #define LOWPASS_FILTER_H_
 
-#include "src/transforms/hamming_window_filter.h"
+#include "src/transforms/fir_filter_base.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 /// @brief Discards the frequencies which are higher than the threshold.
-class LowpassFilter : public HammingWindowFilter {
+class LowpassFilter : public FirFilterBase {
  public:
   LowpassFilter() noexcept;
 

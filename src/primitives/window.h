@@ -13,14 +13,16 @@
 #ifndef WINDOW_H_
 #define WINDOW_H_
 
-#include <math.h>
-#include <spfextr/config.h>
+#include <string>
+#include <unordered_map>
 
-/// @brief Calculates the element of Hamming window of length "length"
-/// at index "index".
-/// @note This function conforms to Matlab hamming() function.
-INLINE float HammingWindow(int index, int length) {
-  return 0.54f - 0.46f * cosf(2 * M_PI * index / (length - 1));
-}
+typedef enum {
+  WINDOW_TYPE_RECTANGULAR,
+  WINDOW_TYPE_HAMMING
+} WindowType;
+
+extern const std::unordered_map<std::string, WindowType> WindowTypeMap;
+
+float WindowElement(WindowType type, int index, int length);
 
 #endif  // INCLUDE_WINDOW_H_

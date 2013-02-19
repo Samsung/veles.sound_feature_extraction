@@ -18,7 +18,6 @@
 #endif
 #include <stdlib.h>
 #include <stdint.h>
-#include <string.h>
 
 #ifdef __AVX__
 static int align_offset_internal(const void *ptr) {
@@ -42,12 +41,16 @@ int align_offset_i32(const int32_t *ptr) {
 }
 #endif
 
-float *mallocf(size_t length) {
+void *malloc_aligned(size_t size) {
   void *ptr;
-  if (posix_memalign(&ptr, 32, length * sizeof(float)) != 0) {
+  if (posix_memalign(&ptr, 32, size) != 0) {
     return NULL;
   }
   return ptr;
+}
+
+float *mallocf(size_t length) {
+  return malloc_aligned(length * sizeof(float));
 }
 
 INLINE void memsetf(float *ptr, size_t length, float value) {

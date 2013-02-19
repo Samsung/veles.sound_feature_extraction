@@ -18,7 +18,7 @@ namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 LowpassFilter::LowpassFilter() noexcept
-: HammingWindowFilter(SupportedParameters())
+: FirFilterBase(SupportedParameters())
 , frequency_(DEFAULT_FILTER_HIGH_FREQUENCY) {
 }
 

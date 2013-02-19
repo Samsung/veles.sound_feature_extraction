@@ -40,8 +40,8 @@ void Int32ToInt16Window::TypeSafeDo(
     const BuffersBase<Window32>& in,
     BuffersBase<Window16> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    int32_to_int16(in[i]->Chunk, inputFormat_.SamplesCount(),
-                   (*out)[i]->Chunk);
+    int32_to_int16(in[i]->Data.get(), inputFormat_.SamplesCount(),
+                   (*out)[i]->Data.get());
   }
 }
 

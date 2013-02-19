@@ -16,6 +16,7 @@
 #include "src/formats/raw_format.h"
 #include "src/formats/window_format.h"
 #include "src/transform_base.h"
+#include "src/primitives/window.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
@@ -30,6 +31,8 @@ class Window
   TRANSFORM_PARAMETERS(
       _TP_("length", "Window size in milliseconds", "25")
       _TP_("step", "Distance between sequential windows in milliseconds", "10")
+      _TP_("type", "Type of the window. Supported values are \"rectangular\" "
+           "and \"hamming\".", "hamming")
   )
 
   virtual void Initialize() const noexcept;
@@ -47,6 +50,8 @@ class Window
 
  private:
   int step_;
+  WindowType type_;
+  mutable std::shared_ptr<float> window_;
   mutable int outSizeEach_;
   mutable int inDataStep_;
 };
