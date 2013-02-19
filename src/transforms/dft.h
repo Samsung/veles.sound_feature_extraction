@@ -13,15 +13,14 @@
 #ifndef TEMPLATE_TRANSFORM_H_
 #define TEMPLATE_TRANSFORM_H_
 
-#include <fftf/api.h>
 #include "src/formats/window_format.h"
-#include "src/transform_base.h"
+#include "src/uniform_format_transform.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 class DFT
-    : public TransformBase<Formats::WindowFormat16, Formats::WindowFormatF> {
+    : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
   DFT();
 
@@ -29,22 +28,15 @@ class DFT
 
   TRANSFORM_PARAMETERS()
 
-  virtual void Initialize() const noexcept;
+  virtual bool HasInverse() const noexcept;
 
  protected:
-  virtual void OnInputFormatChanged();
+  virtual void TypeSafeInitializeBuffers(
+      const BuffersBase<Formats::WindowF>& in,
+      BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
-  virtual void SetParameter(const std::string& name, const std::string& value);
-
-  virtual void TypeSafeInitializeBuffers(const BuffersBase<Formats::Window16>& in,
-        BuffersBase<Formats::WindowF>* buffers) const noexcept;
-
-  virtual void TypeSafeDo(const BuffersBase<Formats::Window16>& in,
+  virtual void TypeSafeDo(const BuffersBase<Formats::WindowF>& in,
                           BuffersBase<Formats::WindowF> *out) const noexcept;
-
- private:
-  std::vector<float> buffer_;
-  mutable std::shared_ptr<FFTFInstance> fftPlan_;
 };
 
 }  // namespace Transforms

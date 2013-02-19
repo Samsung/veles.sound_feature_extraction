@@ -20,22 +20,15 @@ SquareRaw::SquareRaw()
 : TransformBase(SupportedParameters()) {
 }
 
-void SquareRaw::Initialize() const noexcept {
-}
-
 void SquareRaw::OnInputFormatChanged() {
   outputFormat_.SetSize(inputFormat_.Size());
   outputFormat_.SetSamplingRate(inputFormat_.SamplingRate());
 }
 
-void SquareRaw::SetParameter(const std::string&,
-                             const std::string&) {
-}
-
 void SquareRaw::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw32>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), outputFormat_.Size());
+  buffers->Initialize(in.Size(), inputFormat_.Size());
 }
 
 void SquareRaw::TypeSafeDo(

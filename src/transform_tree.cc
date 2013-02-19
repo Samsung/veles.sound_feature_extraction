@@ -13,6 +13,7 @@
 #include "src/transform_tree.h"
 #include <assert.h>
 #include "src/formats/raw_format.h"
+#include "src/format_converter.h"
 #include "src/transform_registry.h"
 
 namespace SpeechFeatureExtraction {
@@ -136,6 +137,55 @@ TransformTree::TransformTree(const Formats::RawFormat16& rootFormat) noexcept
 TransformTree::~TransformTree() noexcept {
 }
 
+void TransformTree::AddTransform(const std::string& name,
+                                 const std::string& parameters,
+                                 std::shared_ptr<Node>* currentNode) {
+  // Search for the constructor of the transform "tname"
+  auto tfit = TransformFactory.find(name);
+  if (tfit == TransformFactory.end()) {
+    throw new TransformNotRegisteredException(name);
+  }
+  // tfit is actually a map from input format to real constructor
+  auto ctorit = tfit->second.find(
+      (*currentNode)->BoundTransform->OutputFormat().Id());
+  if (ctorit == tfit->second.end()) {
+    throw new TransformNotRegisteredException(name);
+  }
+  auto ctor = ctorit->second;
+
+  // Create the transform "name"
+  auto t = ctor();
+  {
+    auto tparams = Parameters::Parse(parameters);
+    t->SetParameters(tparams);
+  }
+
+  // Add the format converter, if needed
+  if (t->InputFormat() != (*currentNode)->BoundTransform->OutputFormat()) {
+    auto convName = FormatConverter::Name(
+        t->InputFormat(), (*currentNode)->BoundTransform->OutputFormat());
+    AddTransform(convName, "", &currentNode);
+  }
+
+  // Try to reuse the already existing transform
+  auto reusedNode = (*currentNode)->FindIdenticalChildTransform(*t);
+  if (reusedNode != nullptr) {
+    *currentNode = reusedNode;
+  } else {
+    auto reusedTransform = FindIdenticalTransform(*t);
+    if (reusedTransform != nullptr) {
+      t = reusedTransform;
+    } else {
+      // Set the input format
+      t->SetInputFormat((*currentNode)->BoundTransform->OutputFormat());
+    }
+    // Append the newly created transform
+    auto newNode = std::make_shared<Node>(currentNode->get(), t);
+    (*currentNode)->Children[name].push_back(newNode);
+    *currentNode = newNode;
+  }
+}
+
 void TransformTree::AddChain(
     const std::string& name,
     const std::vector<std::pair<std::string, std::string>>& transforms) {
@@ -149,57 +199,7 @@ void TransformTree::AddChain(
   auto currentNode = root_;
   for (auto tpair : transforms) {
     auto tname = tpair.first;
-
-    // Search for the constructor of the transform "tname"
-    auto tfit = TransformFactory.find(tname);
-    if (tfit == TransformFactory.end()) {
-      throw new TransformNotRegisteredException(tname);
-    }
-    // tfit is actually a map from input format to real constructor
-    auto ctorit = tfit->second.find(
-        currentNode->BoundTransform->OutputFormat().Id());
-    if (ctorit == tfit->second.end()) {
-      throw new TransformNotRegisteredException(tname);
-    }
-    auto ctor = ctorit->second;
-
-    // Create the transform "tname"
-    auto t = ctor();
-    {
-      auto tparams = Parameters::Parse(tpair.second);
-      t->SetParameters(tparams);
-    }
-    // Try to reuse the already existing transform
-    auto reusedNode = currentNode->FindIdenticalChildTransform(*t);
-    if (reusedNode != nullptr) {
-      currentNode = reusedNode;
-    } else {
-      auto reusedTransform = FindIdenticalTransform(*t);
-      if (reusedTransform != nullptr &&
-          reusedTransform->InputFormat() ==
-              currentNode->BoundTransform->OutputFormat()) {
-        t = reusedTransform;
-      } else {
-        try {
-          // Set the input format
-          t->SetInputFormat(currentNode->BoundTransform->OutputFormat());
-        }
-        catch(Formats::InvalidRawFormatSizeException *irfse) {
-           delete irfse;
-           throw new IncompatibleTransformFormatException(
-               *currentNode->BoundTransform, *t);
-        }
-        catch(Formats::InvalidRawFormatSamplingRateException *irfsre) {
-           delete irfsre;
-           throw new IncompatibleTransformFormatException(
-               *currentNode->BoundTransform, *t);
-        }
-      }
-      // Append the newly created transform
-      auto newNode = std::make_shared<Node>(currentNode.get(), t);
-      currentNode->Children[tname].push_back(newNode);
-      currentNode = newNode;
-    }
+    AddTransform(tpair.first, tpair.second, &currentNode);
   }
   if (currentNode->ChainName != "") {
     throw new ChainAlreadyExistsException(currentNode->ChainName, name);

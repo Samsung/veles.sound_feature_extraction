@@ -11,46 +11,52 @@
  */
 
 #include "src/transforms/dft.h"
+#include <fftf/api.h>
+#include "src/primitives/arithmetic.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 DFT::DFT()
-: TransformBase(SupportedParameters()) {
+: UniformFormatTransform(SupportedParameters()) {
 }
 
-void DFT::Initialize() const noexcept {
-  int length = outputFormat_.Duration() * outputFormat_.SamplingRate() / 1000;
-  auto fftPlan = fftf_init_batch(
-      FFTF_TYPE_REAL,
-      IsInverse()? FFTF_DIRECTION_BACKWARD : FFTF_DIRECTION_FORWARD,
-      FFTF_DIMENSION_1D, &length, FFTF_NO_OPTIONS, 100,
-      const float *const *inputs,
-      float *const *outputs);
-  fftPlan_ = std::shared_ptr(fftPlan, [](FFTFInstance* inst) {
-    fftf_destroy(inst);
-  });
-}
-
-void DFT::OnInputFormatChanged() {
-}
-
-void DFT::SetParameter(const std::string& name,
-                       const std::string& value) {
+bool DFT::HasInverse() const noexcept {
+  return true;
 }
 
 void DFT::TypeSafeInitializeBuffers(
-    const BuffersBase<Formats::Window16>& in,
+    const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size());
 }
 
 void DFT::TypeSafeDo(
-    const BuffersBase<Formats::Window16>& in,
+    const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
-  for (int i = 0; i < in.Size(); i++) {
-
+  int length = outputFormat_.SamplesCount();
+  std::vector<float*> inputs(in.Size()), outputs(in.Size());
+  for (size_t i = 0; i < in.Size(); i++) {
+    inputs[i] = in[i]->Chunk;
+    outputs[i] = (*out)[i]->Chunk;
   }
+  auto fftPlan = fftf_init_batch(
+      FFTF_TYPE_REAL,
+      IsInverse()? FFTF_DIRECTION_BACKWARD : FFTF_DIRECTION_FORWARD,
+      FFTF_DIMENSION_1D,
+      &length,
+      FFTF_NO_OPTIONS,
+      in.Size(),
+      &inputs[0], &outputs[0]);
+
+  fftf_calc(fftPlan);
+  if (IsInverse()) {
+    for (size_t i = 0; i < in.Size(); i++) {
+      real_multiply_scalar(1.0f / length, length, outputs[i]);
+    }
+  }
+
+  fftf_destroy(fftPlan);
 }
 
 REGISTER_TRANSFORM(DFT);

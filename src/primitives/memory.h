@@ -23,8 +23,9 @@ extern "C" {
 #ifdef __AVX__
 #include <stdint.h>
 
-int align_offsetf(float *ptr) NOTNULL((1));
-int align_offset_i16(int16_t *ptr) NOTNULL((1));
+int align_offset_f32(const float *ptr) NOTNULL((1));
+int align_offset_i16(const int16_t *ptr) NOTNULL((1));
+int align_offset_i32(const int32_t *ptr) NOTNULL((1));
 #endif
 
 float *mallocf(size_t length) MALLOC;

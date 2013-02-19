@@ -34,7 +34,7 @@ bool Transform::operator==(const Transform& other) const noexcept {
 }
 
 bool Transform::IsInverse() const noexcept {
-  return CurrentParameters()["inverse"] == "true";
+  return CurrentParameters().find("inverse")->second == "true";
 }
 
 }  // namespace SpeechFeatureExtraction

@@ -13,16 +13,17 @@
 #ifndef TRANSFORM_BASE_H_
 #define TRANSFORM_BASE_H_
 
+#include <assert.h>
 #include "src/transform_registry.h"
 #include "src/buffers_base.h"
 
 namespace SpeechFeatureExtraction {
 
 template <typename FIN, typename FOUT>
-class TransformBase : public Transform {
+class TransformBase : public virtual Transform {
  public:
   TransformBase(const std::unordered_map<std::string, ParameterTraits>&
-                supportedParameters) {
+                supportedParameters) noexcept {
     for (auto p : supportedParameters) {
       parameters_.insert(std::make_pair(p.first, p.second.DefaultValue));
     }
@@ -63,6 +64,7 @@ class TransformBase : public Transform {
   }
 
   virtual Buffers* CreateOutputBuffers(const Buffers& in) const noexcept {
+    assert(in.Format() == inputFormat_);
     auto buffers = new BuffersBase<typename FOUT::BufferType>();
     auto tin = reinterpret_cast<const BuffersBase<
         typename FIN::BufferType>&>(in);
@@ -71,6 +73,8 @@ class TransformBase : public Transform {
   }
 
   virtual void Do(const Buffers& in, Buffers* out) const noexcept {
+    assert(in.Format() == inputFormat_);
+    assert(out->Format() == outputFormat_);
     auto tin = reinterpret_cast<const BuffersBase<
         typename FIN::BufferType>&>(in);
     auto tout = reinterpret_cast<BuffersBase<
@@ -93,8 +97,9 @@ class TransformBase : public Transform {
   virtual void OnInputFormatChanged() {
   }
 
-  virtual void SetParameter(const std::string& name, const std::string& value)
-  = 0;
+  virtual void SetParameter(const std::string& name UNUSED,
+                            const std::string& value UNUSED) {
+  }
 
   virtual void TypeSafeInitializeBuffers(
       const BuffersBase<typename FIN::BufferType>& in,

@@ -35,10 +35,11 @@ class InvalidWindowFormatSamplingRateException : public ExceptionBase {
 
 template <class T>
 struct Window {
-  const T* Chunk;
+  T* Chunk;
 };
 
 typedef Window<int16_t> Window16;
+typedef Window<int32_t> Window32;
 typedef Window<float> WindowF;
 
 template <class T>
@@ -86,6 +87,10 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
     samplingRate_ = value;
   }
 
+  size_t SamplesCount() const noexcept {
+    return duration_ * samplingRate_ / 1000;
+  }
+
  private:
   size_t duration_;
   int samplingRate_;
@@ -104,6 +109,7 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
 };
 
 typedef WindowFormat<int16_t> WindowFormat16;
+typedef WindowFormat<int32_t> WindowFormat32;
 typedef WindowFormat<float> WindowFormatF;
 
 }  // namespace Formats

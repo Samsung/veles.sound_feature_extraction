@@ -115,7 +115,7 @@ void convolute(const float *__restrict x, size_t xLength,
     // Return back from the Fourier representation
     fftf_calc(fftInversePlan);
     // Normalize
-    real_multiply_scalar(1.0 / L, step, fftBoilerPlate + M - 1);
+    real_multiply_scalar(1.0f / L, step, fftBoilerPlate + M - 1);
 
     if (i + step <= xLength) {
       memcpy(result + i, fftBoilerPlate + M - 1, step * sizeof(float));

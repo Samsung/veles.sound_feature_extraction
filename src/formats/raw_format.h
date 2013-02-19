@@ -61,6 +61,7 @@ struct Raw {
 
 typedef Raw<int16_t> Raw16;
 typedef Raw<int32_t> Raw32;
+typedef Raw<float> RawF;
 
 template <typename T>
 class RawFormat : public BufferFormatBase<Raw<T>> {
@@ -128,6 +129,7 @@ class RawFormat : public BufferFormatBase<Raw<T>> {
 
 typedef RawFormat<int16_t> RawFormat16;
 typedef RawFormat<int32_t> RawFormat32;
+typedef RawFormat<float> RawFormatF;
 
 }  // namespace Formats
 }  // namespace SpeechFeatureExtraction

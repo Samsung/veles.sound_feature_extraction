@@ -61,6 +61,10 @@ void Buffers::SetSize(size_t size) noexcept {
   buffers_->resize(size);
 }
 
+const BufferFormat& Buffers::Format() const noexcept {
+  return format_;
+}
+
 void* Buffers::operator[](size_t index) noexcept {
   assert(index < Size());
   return buffers_->at(index);

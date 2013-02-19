@@ -119,6 +119,9 @@ class TransformTree {
   std::set<std::string> chains_;
   std::unordered_map<std::string, std::shared_ptr<Transform>> transformsCache_;
 
+  void AddTransform(const std::string& name,
+                    const std::string& parameters,
+                    std::shared_ptr<Node>* currentNode);
   std::shared_ptr<Transform> FindIdenticalTransform(const Transform& base);
   void SaveTransformToCache(const std::shared_ptr<Transform>& t);
 };

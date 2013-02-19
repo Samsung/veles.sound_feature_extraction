@@ -29,12 +29,8 @@ class SquareRaw
 
   TRANSFORM_PARAMETERS()
 
-  virtual void Initialize() const noexcept;
-
  protected:
   virtual void OnInputFormatChanged();
-
-  virtual void SetParameter(const std::string& name, const std::string& value);
 
   virtual void TypeSafeInitializeBuffers(const BuffersBase<Formats::Raw16>& in,
         BuffersBase<Formats::Raw32>* buffers) const noexcept;

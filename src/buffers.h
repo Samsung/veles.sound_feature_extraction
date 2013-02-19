@@ -35,6 +35,8 @@ class Buffers {
 
   const void *const *Data() const noexcept;
 
+  const BufferFormat& Format() const noexcept;
+
  protected:
   /// @defgroup TypeUnsafe Underlying type-unsafe operations
   /// @{
