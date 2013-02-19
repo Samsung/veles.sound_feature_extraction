@@ -6,7 +6,6 @@ AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
-AC_CANONICAL_BUILD
 AC_CANONICAL_SYSTEM
 
 AC_CONFIG_HEADERS([inc/spfextr/config.h])
@@ -46,6 +45,14 @@ passed
 	AC_MSG_RESULT([no])
 	AC_MSG_ERROR([Building this project requires GCC >= 4.5.0])
 ])
+
+dnl Use the best march
+AS_IF([test ${host%%-*} == i686], [
+	CPPFLAGS="$CPPFLAGS -march=native" 
+]) 
+AS_IF([test ${host%%-*} == arm], [
+	CPPFLAGS="$CPPFLAGS -march=armv7-a -mfpu=neon" 
+]) 
 
 dnl Initialize Libtool
 LT_INIT
@@ -174,8 +181,5 @@ CPPFLAGS="$CPPFLAGS -I\$(top_srcdir) -I\$(top_srcdir)/inc -I\$(top_builddir)/inc
 dnl Append debug flags             
 CFLAGS="$CFLAGS $DEBUG_FLAGS"
 CXXFLAGS="$CXXFLAGS $DEBUG_FLAGS"    
-
-dnl Use current arch
-CPPFLAGS="$CPPFLAGS -march=native"     
                 
 AC_OUTPUT
