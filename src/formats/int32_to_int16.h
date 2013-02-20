@@ -13,31 +13,24 @@
 #ifndef INT32_TO_INT16_H_
 #define INT32_TO_INT16_H_
 
-#include "src/format_converter_base.h"
 #include "src/formats/raw_format.h"
+#include "src/formats/raw_format_converter_base.h"
 #include "src/formats/window_format.h"
+#include "src/formats/window_format_converter_base.h"
 
 namespace SpeechFeatureExtraction {
 namespace Formats {
 
 class Int32ToInt16Raw
-    : public FormatConverterBase<RawFormat32, RawFormat16> {
+    : public RawFormatConverterBase<RawFormat32, RawFormat16> {
  protected:
-  virtual void TypeSafeInitializeBuffers(
-      const BuffersBase<Raw32>& in,
-      BuffersBase<Raw16>* buffers) const noexcept;
-
   virtual void TypeSafeDo(const BuffersBase<Raw32>& in,
                           BuffersBase<Raw16> *out) const noexcept;
 };
 
 class Int32ToInt16Window
-    : public FormatConverterBase<WindowFormat32, WindowFormat16> {
+    : public WindowFormatConverterBase<WindowFormat32, WindowFormat16> {
  protected:
-  virtual void TypeSafeInitializeBuffers(
-      const BuffersBase<Window32>& in,
-      BuffersBase<Window16>* buffers) const noexcept;
-
   virtual void TypeSafeDo(const BuffersBase<Window32>& in,
                           BuffersBase<Window16> *out) const noexcept;
 };

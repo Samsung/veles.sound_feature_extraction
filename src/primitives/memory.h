@@ -23,12 +23,14 @@ extern "C" {
 #ifdef __AVX__
 #include <stdint.h>
 
-int align_offset_f32(const float *ptr) NOTNULL((1));
-int align_offset_i16(const int16_t *ptr) NOTNULL((1));
-int align_offset_i32(const int32_t *ptr) NOTNULL((1));
-#endif
+int align_complement_f32(const float *ptr) NOTNULL((1));
+int align_complement_i16(const int16_t *ptr) NOTNULL((1));
+int align_complement_i32(const int32_t *ptr) NOTNULL((1));
 
 void *malloc_aligned(size_t size) MALLOC;
+void *malloc_aligned_offset(size_t size, int offset) MALLOC;
+#endif
+
 float *mallocf(size_t length) MALLOC;
 
 void memsetf(float *ptr, size_t length, float value) NOTNULL((1));

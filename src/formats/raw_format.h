@@ -17,6 +17,9 @@
 #include "src/buffers_base.h"
 #include "src/exceptions.h"
 #include "src/formats/format_limits.h"
+#ifdef __AVX__
+#include "src/primitives/memory.h"
+#endif
 
 namespace SpeechFeatureExtraction {
 namespace Formats {
@@ -39,13 +42,19 @@ template <typename T>
 struct Raw {
   std::shared_ptr<T> Data;
 
-  Raw() : Data(nullptr) {
+#ifdef __AVX__
+  explicit Raw(size_t size, int alignmentOffset)
+  : Data(reinterpret_cast<T*>(malloc_aligned_offset(size, alignmentOffset)),
+         [=](T *ptr) {
+    free(reinterpret_cast<char*>(ptr) - alignmentOffset);
+  }) {
   }
-
+#else
   explicit Raw(size_t size)
   : Data(new T[size],
          [](T *ptr) { delete[] ptr; }) {
   }
+#endif
 
   Raw(const Raw& other) : Data(other.Data) {
   }
@@ -56,6 +65,10 @@ struct Raw {
   Raw& operator=(const Raw& other) {
     Data = other.Data;
     return *this;
+  }
+
+  int AlignmentOffset() const {
+    return reinterpret_cast<uintptr_t>(Data.get()) % 32;
   }
 };
 

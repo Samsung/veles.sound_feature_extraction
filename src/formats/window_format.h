@@ -38,9 +38,6 @@ template <typename T>
 struct Window {
   std::shared_ptr<T> Data;
 
-  Window() : Data(nullptr) {
-  }
-
   explicit Window(size_t size)
   : Data(reinterpret_cast<T*>(malloc_aligned(size * sizeof(T))),
          [](T *ptr) { free(ptr); }) {

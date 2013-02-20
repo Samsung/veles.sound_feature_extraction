@@ -90,7 +90,7 @@ const noexcept {
       auto output = outref[step + i * outSizeEach_]->Data.get();
       if (type_ != WINDOW_TYPE_RECTANGULAR) {
 #ifdef __AVX__
-        if (align_offset_i16(input) != 0) {
+        if (align_complement_i16(input) != 0) {
           memcpy(intbuf, input, inDataStep_ * sizeof(int16_t));
           int16_to_float(intbuf, inDataStep_, fbuf);
         } else {
@@ -99,8 +99,7 @@ const noexcept {
         for (int i = 0; i < inDataStep_ - 7; i += 8) {
           real_multiply(&fbuf[i], window + i, &fbuf[i]);
         }
-        for (size_t i = (((inDataStep_) >> 3) << 3);
-             i < inDataStep_; i++) {
+        for (int i = (((inDataStep_) >> 3) << 3); i < inDataStep_; i++) {
           fbuf[i] *= window[i];
         }
         float_to_int16(fbuf, inDataStep_, output);
@@ -120,7 +119,7 @@ const noexcept {
         }
         float_to_int16(fbuf, inDataStep_, output);
 #endif
-      } else {
+      } else {  // type_ != WINDOW_TYPE_RECTANGULAR
         memcpy(output, input, inDataStep_ * sizeof(int16_t));
       }
     }

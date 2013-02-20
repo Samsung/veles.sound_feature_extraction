@@ -13,31 +13,24 @@
 #ifndef INT32_TO_FLOAT_H_
 #define INT32_TO_FLOAT_H_
 
-#include "src/format_converter_base.h"
 #include "src/formats/raw_format.h"
+#include "src/formats/raw_format_converter_base.h"
 #include "src/formats/window_format.h"
+#include "src/formats/window_format_converter_base.h"
 
 namespace SpeechFeatureExtraction {
 namespace Formats {
 
 class Int32ToFloatRaw
-    : public FormatConverterBase<RawFormat32, RawFormatF> {
+    : public RawFormatConverterBase<RawFormat32, RawFormatF> {
  protected:
-  virtual void TypeSafeInitializeBuffers(
-      const BuffersBase<Raw32>& in,
-      BuffersBase<RawF>* buffers) const noexcept;
-
   virtual void TypeSafeDo(const BuffersBase<Raw32>& in,
                           BuffersBase<RawF> *out) const noexcept;
 };
 
 class Int32ToFloatWindow
-    : public FormatConverterBase<WindowFormat32, WindowFormatF> {
+    : public WindowFormatConverterBase<WindowFormat32, WindowFormatF> {
  protected:
-  virtual void TypeSafeInitializeBuffers(
-      const BuffersBase<Window32>& in,
-      BuffersBase<WindowF>* buffers) const noexcept;
-
   virtual void TypeSafeDo(const BuffersBase<Window32>& in,
                           BuffersBase<WindowF> *out) const noexcept;
 };

@@ -56,7 +56,11 @@ void FirFilterBase::SetParameter(const std::string& name,
 void FirFilterBase::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw16>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), outputFormat_.Size());
+  buffers->Initialize(in.Size(), outputFormat_.Size()
+#ifdef __AVX__
+                      , in[0]->AlignmentOffset()
+#endif
+                      );
 }
 
 void FirFilterBase::TypeSafeDo(const BuffersBase<Formats::Raw16>& in,

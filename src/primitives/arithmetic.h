@@ -16,6 +16,9 @@
 #ifdef __cplusplus
 #define __STDC_LIMIT_MACROS
 #endif
+#ifdef __AVX__
+#include <assert.h>
+#endif
 #include <stdint.h>
 #include "src/primitives/memory.h"
 
@@ -107,7 +110,8 @@ INLINE NOTNULL((1, 2, 3)) void int16_multiply(
 
 INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
                                            size_t length, float *res) {
-  int startIndex = align_offset_i16(data);
+  int startIndex = align_complement_i16(data);
+  assert(startIndex * 2 == align_complement_f32(res));
   for (int i = 0; i < startIndex; i++) {
     res[i] = (float)data[i];
   }
@@ -130,7 +134,8 @@ INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
 
 INLINE NOTNULL((1, 3)) void float_to_int16(const float *data,
                                            size_t length, int16_t *res) {
-  int startIndex = align_offset_f32(data);
+  int startIndex = align_complement_f32(data);
+  assert(startIndex == 2 * align_complement_i16(res));
   for (int i = 0; i < startIndex; i++) {
     res[i] = (int16_t)data[i];
   }
@@ -152,7 +157,8 @@ INLINE NOTNULL((1, 3)) void float_to_int16(const float *data,
 
 INLINE NOTNULL((1, 3)) void int32_to_float(const int32_t *data,
                                            size_t length, float *res) {
-  int startIndex = align_offset_i32(data);
+  int startIndex = align_complement_i32(data);
+  assert(startIndex == align_complement_f32(res));
   for (int i = 0; i < startIndex; i++) {
     res[i] = (float)data[i];
   }
@@ -171,7 +177,8 @@ INLINE NOTNULL((1, 3)) void int32_to_float(const int32_t *data,
 
 INLINE NOTNULL((1, 3)) void float_to_int32(const float *data,
                                            size_t length, int32_t *res) {
-  int startIndex = align_offset_f32(data);
+  int startIndex = align_complement_f32(data);
+  assert(startIndex == align_complement_i32(res));
   for (int i = 0; i < startIndex; i++) {
     res[i] = (int16_t)data[i];
   }
@@ -190,7 +197,8 @@ INLINE NOTNULL((1, 3)) void float_to_int32(const float *data,
 
 INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
                                            size_t length, int32_t *res) {
-  int startIndex = align_offset_i16(data);
+  int startIndex = align_complement_i16(data);
+  assert(startIndex * 2 == align_complement_i32(res));
   for (int i = 0; i < startIndex; i++) {
     res[i] = (float)data[i];
   }
@@ -211,7 +219,8 @@ INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
 
 INLINE NOTNULL((1, 3)) void int32_to_int16(const int32_t *data,
                                            size_t length, int16_t *res) {
-  int startIndex = align_offset_i32(data);
+  int startIndex = align_complement_i32(data);
+  assert(startIndex == 2 * align_complement_i16(res));
   for (int i = 0; i < startIndex; i++) {
     res[i] = (int16_t)data[i];
   }
@@ -233,7 +242,8 @@ INLINE NOTNULL((1, 3)) void int32_to_int16(const int32_t *data,
 
 INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
                                            size_t length, float *res) {
-  int startIndex = align_offset_i16(data);
+  int startIndex = align_complement_i16(data);
+  assert(startIndex * 2 == align_complement_f32(res));
   for (int i = 0; i < startIndex; i++) {
     res[i] = (float)data[i];
   }
@@ -256,7 +266,8 @@ INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
 
 INLINE NOTNULL((1, 3)) void float_to_int16(const float *data,
                                            size_t length, int16_t *res) {
-  int startIndex = align_offset_f32(data);
+  int startIndex = align_complement_f32(data);
+  assert(startIndex == 2 * align_complement_i16(res));
   for (int i = 0; i < startIndex; i++) {
     res[i] = (int16_t)data[i];
   }
@@ -278,7 +289,8 @@ INLINE NOTNULL((1, 3)) void float_to_int16(const float *data,
 
 INLINE NOTNULL((1, 3)) void int32_to_float(const int32_t *data,
                                            size_t length, float *res) {
-  int startIndex = align_offset_i32(data);
+  int startIndex = align_complement_i32(data);
+  assert(startIndex == align_complement_f32(res));
   for (int i = 0; i < startIndex; i++) {
     res[i] = (float)data[i];
   }
@@ -297,7 +309,8 @@ INLINE NOTNULL((1, 3)) void int32_to_float(const int32_t *data,
 
 INLINE NOTNULL((1, 3)) void float_to_int32(const float *data,
                                            size_t length, int32_t *res) {
-  int startIndex = align_offset_f32(data);
+  int startIndex = align_complement_f32(data);
+  assert(startIndex == align_complement_i32(res));
   for (int i = 0; i < startIndex; i++) {
     res[i] = (int16_t)data[i];
   }
@@ -316,7 +329,8 @@ INLINE NOTNULL((1, 3)) void float_to_int32(const float *data,
 
 INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
                                            size_t length, int32_t *res) {
-  int startIndex = align_offset_i16(data);
+  int startIndex = align_complement_i16(data);
+  assert(startIndex * 2 == align_complement_i32(res));
   for (int i = 0; i < startIndex; i++) {
     res[i] = (float)data[i];
   }
@@ -337,7 +351,8 @@ INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
 
 INLINE NOTNULL((1, 3)) void int32_to_int16(const int32_t *data,
                                            size_t length, int16_t *res) {
-  int startIndex = align_offset_i32(data);
+  int startIndex = align_complement_i32(data);
+  assert(startIndex == 2 * align_complement_i16(res));
   for (int i = 0; i < startIndex; i++) {
     res[i] = (int16_t)data[i];
   }
@@ -414,7 +429,7 @@ INLINE NOTNULL((1, 2, 3)) void complex_multiply(
 
 INLINE NOTNULL((3)) void real_multiply_scalar(float value, size_t arrayLength,
                                               float *array) {
-  int startIndex = align_offset_f32(array);
+  int startIndex = align_complement_f32(array);
 
   for (int i = 0; i < startIndex; i++) {
     array[i] *= value;

@@ -28,7 +28,7 @@ bool DFT::HasInverse() const noexcept {
 void DFT::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size());
+  buffers->Initialize(in.Size(), inputFormat_.SamplesCount());
 }
 
 void DFT::TypeSafeDo(

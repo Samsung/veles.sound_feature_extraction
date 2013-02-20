@@ -11,6 +11,7 @@
  */
 
 #include "src/primitives/memory.h"
+#include <assert.h>
 #ifdef __AVX__
 #include <immintrin.h>
 #elif defined(__ARM_NEON__)
@@ -28,18 +29,17 @@ static int align_offset_internal(const void *ptr) {
   return 0;
 }
 
-int align_offset_f32(const float *ptr) {
+int align_complement_f32(const float *ptr) {
   return align_offset_internal(ptr) / 4;
 }
 
-int align_offset_i16(const int16_t *ptr) {
+int align_complement_i16(const int16_t *ptr) {
   return align_offset_internal(ptr) / 2;
 }
 
-int align_offset_i32(const int32_t *ptr) {
+int align_complement_i32(const int32_t *ptr) {
   return align_offset_internal(ptr) /4;
 }
-#endif
 
 void *malloc_aligned(size_t size) {
   void *ptr;
@@ -53,11 +53,22 @@ float *mallocf(size_t length) {
   return malloc_aligned(length * sizeof(float));
 }
 
+void *malloc_aligned_offset(size_t size, int offset) {
+  assert(offset >= 0 && offset < 32);
+  void *ptr = malloc_aligned(size + offset);
+  return (char *)ptr + offset;
+}
+#else
+float *mallocf(size_t length) {
+  return malloc(length * sizeof(float));
+}
+#endif
+
 INLINE void memsetf(float *ptr, size_t length, float value) {
 #ifdef __AVX__
   __m256 fillvec = _mm256_set_ps( value, value, value, value,
                                   value, value, value, value );
-  size_t startIndex = align_offset_f32(ptr);
+  size_t startIndex = align_complement_f32(ptr);
 
   for (size_t i = 0; i < startIndex; i++) {
     ptr[i] = value;

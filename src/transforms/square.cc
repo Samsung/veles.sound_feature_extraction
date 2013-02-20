@@ -28,7 +28,11 @@ void SquareRaw::OnInputFormatChanged() {
 void SquareRaw::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw32>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_.Size());
+  buffers->Initialize(in.Size(), inputFormat_.Size()
+#ifdef __AVX__
+                      , in[0]->AlignmentOffset()
+#endif
+                      );
 }
 
 void SquareRaw::TypeSafeDo(
@@ -39,7 +43,7 @@ void SquareRaw::TypeSafeDo(
     auto inArray = in[i]->Data.get();
     auto outArray = (*out)[i]->Data.get();
 #ifdef __AVX__
-    int startIndex = align_offset_i16(inArray);
+    int startIndex = align_complement_i16(inArray);
 
     for (int j = 0; j < startIndex; j++) {
       outArray[j] = inArray[j] * inArray[j];
