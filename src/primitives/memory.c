@@ -41,9 +41,24 @@ int align_complement_i32(const int32_t *ptr) {
   return align_offset_internal(ptr) /4;
 }
 
+void *malloc_aligned_offset(size_t size, int offset) {
+  assert(offset >= 0 && offset < 32);
+  void *ptr = malloc_aligned(size + offset);
+  return (char *)ptr + offset;
+}
+#endif
+
 void *malloc_aligned(size_t size) {
   void *ptr;
-  if (posix_memalign(&ptr, 32, size) != 0) {
+  if (posix_memalign(&ptr,
+#ifdef __AVX__
+                     32,
+#elif defined(__ARM_NEON__)
+                     64,
+#else
+                     1,
+#endif
+                     size) != 0) {
     return NULL;
   }
   return ptr;
@@ -52,17 +67,6 @@ void *malloc_aligned(size_t size) {
 float *mallocf(size_t length) {
   return malloc_aligned(length * sizeof(float));
 }
-
-void *malloc_aligned_offset(size_t size, int offset) {
-  assert(offset >= 0 && offset < 32);
-  void *ptr = malloc_aligned(size + offset);
-  return (char *)ptr + offset;
-}
-#else
-float *mallocf(size_t length) {
-  return malloc(length * sizeof(float));
-}
-#endif
 
 INLINE void memsetf(float *ptr, size_t length, float value) {
 #ifdef __AVX__

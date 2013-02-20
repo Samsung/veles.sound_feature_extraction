@@ -64,6 +64,11 @@ INLINE NOTNULL((1, 3)) void int16_to_int32_na(const int16_t *data,
   }
 }
 
+INLINE NOTNULL((1, 2, 3)) void real_multiply_na(
+    const float *a, const float *b, float *res) {
+  *res = *a * *b;
+}
+
 INLINE NOTNULL((1, 2, 3)) void complex_multiply_na(
     const float *a, const float *b, float *res) {
   float re1 = (a)[0];
@@ -74,10 +79,11 @@ INLINE NOTNULL((1, 2, 3)) void complex_multiply_na(
   res[1] = re1 * im2 + re2 * im1;
 }
 
-INLINE NOTNULL((3)) void real_multiply_scalar_na(
-    float value, size_t arrayLength, float *array) {
+INLINE NOTNULL((1,4)) void real_multiply_scalar_na(const float *array,
+                                                   size_t arrayLength,
+                                                   float value, float *res) {
   for (size_t i = 0; i < arrayLength; i++) {
-    array[i] *= value;
+    res[i] = array[i] * value;
   }
 }
 
@@ -98,20 +104,18 @@ INLINE NOTNULL((1, 2, 3)) void int16_multiply(
     const int16_t *a, const int16_t *b, int32_t *res) {
   __m256i aVec = _mm256_load_si256((const __m256i*)a);
   __m256i bVec = _mm256_load_si256((const __m256i*)b);
-  __m256i resVecHi = _mm256_mulhi_epi16(aVec, bVec);
-  __m256i resVecLo = _mm256_mullo_epi16(aVec, bVec);
-  _mm256_maskstore_epi32(
-      res, _mm256_set_epi16(-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0),
-      resVecHi);
-  _mm256_maskstore_epi32(
-      res, _mm256_set_epi16( 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1),
-      resVecLo);
+  __m256i resVecHiP = _mm256_mulhi_epi16(aVec, bVec);
+  __m256i resVecLoP = _mm256_mullo_epi16(aVec, bVec);
+  __m256i resVecHi = _mm256_unpackhi_epi16(resVecLoP, resVecHiP);
+  __m256i resVecLo = _mm256_unpacklo_epi16(resVecLoP, resVecHiP);
+  _mm256_store_si256((__m256i *)res, resVecLo);
+  _mm256_store_si256((__m256i *)(res + 8), resVecHi);
 }
 
 INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
                                            size_t length, float *res) {
   int startIndex = align_complement_i16(data);
-  assert(startIndex * 2 == align_complement_f32(res));
+  assert(startIndex % 8 == align_complement_f32(res) % 8);
   for (int i = 0; i < startIndex; i++) {
     res[i] = (float)data[i];
   }
@@ -135,7 +139,7 @@ INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
 INLINE NOTNULL((1, 3)) void float_to_int16(const float *data,
                                            size_t length, int16_t *res) {
   int startIndex = align_complement_f32(data);
-  assert(startIndex == 2 * align_complement_i16(res));
+  assert(startIndex % 16 == align_complement_i16(res) % 16);
   for (int i = 0; i < startIndex; i++) {
     res[i] = (int16_t)data[i];
   }
@@ -198,7 +202,7 @@ INLINE NOTNULL((1, 3)) void float_to_int32(const float *data,
 INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
                                            size_t length, int32_t *res) {
   int startIndex = align_complement_i16(data);
-  assert(startIndex * 2 == align_complement_i32(res));
+  assert(startIndex % 8 == align_complement_i32(res) % 8);
   for (int i = 0; i < startIndex; i++) {
     res[i] = (float)data[i];
   }
@@ -207,8 +211,8 @@ INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
     __m256i intVec = _mm256_load_si256((const __m256i*)(data + i));
     __m256i intlo = _mm256_unpacklo_epi16(intVec, _mm256_set1_epi16(0));
     __m256i inthi = _mm256_unpackhi_epi16(intVec, _mm256_set1_epi16(0));
-    _mm256_store_si256((__m256i *)(res + i), inthi);
-    _mm256_store_si256((__m256i *)(res + i + 8), intlo);
+    _mm256_store_si256((__m256i *)(res + i), intlo);
+    _mm256_store_si256((__m256i *)(res + i + 8), inthi);
   }
 
   for (size_t i = startIndex + (((length - startIndex) >> 4) << 4);
@@ -220,7 +224,7 @@ INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
 INLINE NOTNULL((1, 3)) void int32_to_int16(const int32_t *data,
                                            size_t length, int16_t *res) {
   int startIndex = align_complement_i32(data);
-  assert(startIndex == 2 * align_complement_i16(res));
+  assert(startIndex % 16 == align_complement_i16(res) % 16);
   for (int i = 0; i < startIndex; i++) {
     res[i] = (int16_t)data[i];
   }
@@ -243,7 +247,7 @@ INLINE NOTNULL((1, 3)) void int32_to_int16(const int32_t *data,
 INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
                                            size_t length, float *res) {
   int startIndex = align_complement_i16(data);
-  assert(startIndex * 2 == align_complement_f32(res));
+  assert(startIndex % 4 == align_complement_f32(res) % 4);
   for (int i = 0; i < startIndex; i++) {
     res[i] = (float)data[i];
   }
@@ -267,7 +271,7 @@ INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
 INLINE NOTNULL((1, 3)) void float_to_int16(const float *data,
                                            size_t length, int16_t *res) {
   int startIndex = align_complement_f32(data);
-  assert(startIndex == 2 * align_complement_i16(res));
+  assert(startIndex % 8 == align_complement_i16(res) % 8);
   for (int i = 0; i < startIndex; i++) {
     res[i] = (int16_t)data[i];
   }
@@ -330,7 +334,7 @@ INLINE NOTNULL((1, 3)) void float_to_int32(const float *data,
 INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
                                            size_t length, int32_t *res) {
   int startIndex = align_complement_i16(data);
-  assert(startIndex * 2 == align_complement_i32(res));
+  assert(startIndex % 4 == align_complement_i32(res) % 4);
   for (int i = 0; i < startIndex; i++) {
     res[i] = (float)data[i];
   }
@@ -339,8 +343,8 @@ INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
     __m128i intVec = _mm_load_si128((const __m128i*)(data + i));
     __m128i intlo = _mm_unpacklo_epi16(intVec, _mm_set1_epi16(0));
     __m128i inthi = _mm_unpackhi_epi16(intVec, _mm_set1_epi16(0));
-    _mm_store_si128((__m128i *)(res + i), inthi);
-    _mm_store_si128((__m128i *)(res + i + 4), intlo);
+    _mm_store_si128((__m128i *)(res + i), intlo);
+    _mm_store_si128((__m128i *)(res + i + 4), inthi);
   }
 
   for (size_t i = startIndex + (((length - startIndex) >> 3) << 3);
@@ -352,7 +356,7 @@ INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
 INLINE NOTNULL((1, 3)) void int32_to_int16(const int32_t *data,
                                            size_t length, int16_t *res) {
   int startIndex = align_complement_i32(data);
-  assert(startIndex == 2 * align_complement_i16(res));
+  assert(startIndex % 8 == align_complement_i16(res) % 8);
   for (int i = 0; i < startIndex; i++) {
     res[i] = (int16_t)data[i];
   }
@@ -381,12 +385,12 @@ INLINE NOTNULL((1, 2, 3)) void int16_multiply(
     const int16_t *a, const int16_t *b, int32_t *res) {
   __m128i aVec = _mm_load_si128((const __m128i*)a);
   __m128i bVec = _mm_load_si128((const __m128i*)b);
-  __m128i resVecHi = _mm_mulhi_epi16(aVec, bVec);
-  __m128i resVecLo = _mm_mullo_epi16(aVec, bVec);
-  _mm_maskmoveu_si128(resVecHi, _mm_set_epi16(-1, 0,-1, 0,-1, 0,-1, 0),
-                      (char*)res);
-  _mm_maskmoveu_si128(resVecLo, _mm_set_epi16( 0,-1, 0,-1, 0,-1, 0,-1),
-                      (char*)res);
+  __m128i resVecHiP = _mm_mulhi_epi16(aVec, bVec);
+  __m128i resVecLoP = _mm_mullo_epi16(aVec, bVec);
+  __m128i resVecHi = _mm_unpackhi_epi16(resVecLoP, resVecHiP);
+  __m128i resVecLo = _mm_unpacklo_epi16(resVecLoP, resVecHiP);
+  _mm_store_si128((__m128i *)res, resVecLo);
+  _mm_store_si128((__m128i *)(res + 4), resVecHi);
 }
 
 #endif
@@ -427,12 +431,13 @@ INLINE NOTNULL((1, 2, 3)) void complex_multiply(
   _mm256_store_ps(res, resVec);
 }
 
-INLINE NOTNULL((3)) void real_multiply_scalar(float value, size_t arrayLength,
-                                              float *array) {
+INLINE NOTNULL((1,4)) void real_multiply_scalar(const float *array,
+                                                size_t arrayLength,
+                                                float value, float *res) {
   int startIndex = align_complement_f32(array);
-
+  assert(startIndex == align_complement_f32(res));
   for (int i = 0; i < startIndex; i++) {
-    array[i] *= value;
+    res[i] = array[i] * value;
   }
 
   const __m256 mulVec = _mm256_set_ps( value, value, value, value,
@@ -440,12 +445,12 @@ INLINE NOTNULL((3)) void real_multiply_scalar(float value, size_t arrayLength,
   for (size_t i = (int)startIndex; i < arrayLength - 7; i += 8) {
     __m256 vec = _mm256_load_ps(array + i);
     vec = _mm256_mul_ps(vec, mulVec);
-    _mm256_store_ps(array + i, vec);
+    _mm256_store_ps(res + i, vec);
   }
 
   for (size_t i = startIndex + (((arrayLength - startIndex) >> 3) << 3);
       i < arrayLength; i++) {
-    array[i] *= value;
+    res[i] = array[i] * value;
   }
 }
 
@@ -557,8 +562,8 @@ INLINE NOTNULL((1, 2, 3)) void real_multiply(
 
 /// @brief Performs complex multiplication of the contents of two complex
 /// vectors, saving the result to the third vector, using NEON SIMD.
-/// @details res[i] = a[i] * b[i] - a[i + 1] * b[i + 1], i = 0, 2, 4, 6;
-/// res[i + 1] = a[i] * b[i + 1] + a[i + 1] * b[i], i = 1, 3, 5, 7.
+/// @details res[i] = a[i] * b[i] - a[i + 1] * b[i + 1], i = 0, 2;
+/// res[i + 1] = a[i] * b[i + 1] + a[i + 1] * b[i], i = 1, 3.
 /// @param a First vector.
 /// @param b Second vector.
 /// @param res Result vector.
@@ -576,15 +581,16 @@ INLINE NOTNULL((1, 2, 3)) void complex_multiply(
   vst1q_f32(res, resVec);
 }
 
-INLINE NOTNULL((3)) void real_multiply_scalar(float value, size_t arrayLength,
-                                              float *array) {
+INLINE NOTNULL((1,4)) void real_multiply_scalar(const float *array,
+                                                size_t arrayLength,
+                                                float value, float *res) {
   for (int i = 0; i < arrayLength - 3; i += 4) {
     float32x4_t vec = vld1q_f32(array + i);
     vec = vmulq_n_f32(vec, value);
-    vst1q_f32(array + i, vec);
+    vst1q_f32(res + i, vec);
   }
   for (int i = ((arrayLength >> 2) << 2); i < arrayLength; i++) {
-    array[i] *= value;
+    res[i] = array[i] * value;
   }
 }
 
@@ -596,6 +602,7 @@ INLINE NOTNULL((3)) void real_multiply_scalar(float value, size_t arrayLength,
 #define float_to_int32 float_to_int32_na
 #define int32_to_int16 int32_to_int16_na
 #define int16_to_int32 int16_to_int32_na
+#define real_multiply real_multiply_na
 #define complex_multiply complex_multiply_na
 #define real_multiply_scalar real_multiply_scalar_na
 

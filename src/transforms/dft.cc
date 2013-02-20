@@ -52,7 +52,7 @@ void DFT::TypeSafeDo(
   fftf_calc(fftPlan);
   if (IsInverse()) {
     for (size_t i = 0; i < in.Size(); i++) {
-      real_multiply_scalar(1.0f / length, length, outputs[i]);
+      real_multiply_scalar(outputs[i], length, 1.0f / length, outputs[i]);
     }
   }
 

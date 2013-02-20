@@ -80,8 +80,8 @@ void Window::TypeSafeDo(const BuffersBase<Formats::Raw16>& in,
                         BuffersBase<Formats::Window16> *out)
 const noexcept {
   BuffersBase<Formats::Window16>& outref = *out;
-  int16_t intbuf[inDataStep_] __attribute__ ((aligned (32)));
-  float fbuf[inDataStep_] __attribute__ ((aligned (32)));
+  int16_t intbuf[inDataStep_] __attribute__ ((aligned (64)));
+  float fbuf[inDataStep_] __attribute__ ((aligned (64)));
   float* window = window_.get();
 
   for (size_t i = 0; i < in.Size(); i++) {

@@ -51,8 +51,8 @@ struct Raw {
   }
 #else
   explicit Raw(size_t size)
-  : Data(new T[size],
-         [](T *ptr) { delete[] ptr; }) {
+  : Data(reinterpret_cast<T*>(malloc_aligned(size)),
+         [](T *ptr) { free(ptr); }) {
   }
 #endif
 
@@ -66,10 +66,11 @@ struct Raw {
     Data = other.Data;
     return *this;
   }
-
+#ifdef __AVX__
   int AlignmentOffset() const {
     return reinterpret_cast<uintptr_t>(Data.get()) % 32;
   }
+#endif
 };
 
 typedef Raw<int16_t> Raw16;
