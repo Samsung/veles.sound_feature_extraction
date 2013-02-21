@@ -23,7 +23,9 @@ class BandpassFilter : public FirFilterBase {
  public:
   BandpassFilter() noexcept;
 
-  TRANSFORM_NAME("Bandpass")
+  TRANSFORM_INTRO("Bandpass", "Bandpass filter. Cuts off frequences higher "
+                              "than \"frequency_high\" and lower than "
+                              "\"frequency_low\".")
 
   FIR_FILTER_PARAMETERS(
       _TP_("frequency_high", "All frequencies higher will be cut",

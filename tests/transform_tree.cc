@@ -32,7 +32,7 @@ class ParentTestTransform
  public:
   ParentTestTransform() : TransformBase(SupportedParameters()) {}
 
-  TRANSFORM_NAME("ParentTest")
+  TRANSFORM_INTRO("ParentTest", "")
 
   TRANSFORM_PARAMETERS(_TP_("AmplifyFactor", "Volume amplification factor", "1"))
 
@@ -69,7 +69,7 @@ class ChildTestTransform
  public:
   ChildTestTransform() : TransformBase(SupportedParameters()) {}
 
-  TRANSFORM_NAME("ChildTest")
+  TRANSFORM_INTRO("ChildTest", "")
 
   TRANSFORM_PARAMETERS(
       _TP_("AnalysisLength", "Length of the array with analyzed results",

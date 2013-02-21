@@ -25,7 +25,7 @@ class SquareRaw
  public:
   SquareRaw();
 
-  TRANSFORM_NAME("Square")
+  TRANSFORM_INTRO("Square", "Squares the signal values.")
 
   TRANSFORM_PARAMETERS()
 

@@ -24,7 +24,8 @@ class DFT
  public:
   DFT();
 
-  TRANSFORM_NAME("DFT")
+  TRANSFORM_INTRO("DFT", "Performs Discrete Fourier Transform "
+                         "on the signal (using real FFT).")
 
   TRANSFORM_PARAMETERS()
 

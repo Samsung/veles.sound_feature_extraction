@@ -24,7 +24,7 @@ class TemplateTransform
  public:
   TemplateTransform();
 
-  TRANSFORM_NAME("!Template")
+  TRANSFORM_INTRO("!Template", "")
 
   TRANSFORM_PARAMETERS(
       _TP_("name", "description", "default value")

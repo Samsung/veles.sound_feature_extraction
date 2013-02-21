@@ -26,7 +26,9 @@ class Window
  public:
   Window();
 
-  TRANSFORM_NAME("Window")
+  TRANSFORM_INTRO("Window", "Splits the raw input signal into numerous "
+                            "windows stepping \"step\" ms with length "
+                            "\"length\" ms of type \"type\".")
 
   TRANSFORM_PARAMETERS(
       _TP_("length", "Window size in milliseconds", "25")

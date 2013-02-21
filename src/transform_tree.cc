@@ -29,6 +29,11 @@ class RootTransform : public Transform {
    return name;
   }
 
+  virtual const std::string& Description() const noexcept {
+     static const std::string desc("The root for all other transforms.");
+     return desc;
+    }
+
   virtual const BufferFormat& InputFormat() const noexcept {
     return format_;
   }

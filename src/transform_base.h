@@ -151,15 +151,30 @@ class TransformBase : public virtual Transform {
   }
 };
 
-#define TRANSFORM_NAME(name) virtual const std::string& Name() const noexcept { \
-    static const std::string str(name); \
-    return str; \
+/// @brief Adds Name() and Description() implementations.
+/// @param name The name of the transform (as returned by Name()).
+/// @param description The description of the transform (as returned
+/// by Description()).
+#define TRANSFORM_INTRO(name, description) \
+virtual const std::string& Name() const noexcept { \
+  static const std::string str(name); \
+  return str; \
+} \
+\
+virtual const std::string& Description() const noexcept { \
+  static const std::string str(description); \
+  return str; \
 }
 
-
 #define FORWARD_MACROS(...) __VA_ARGS__
+
+/// @brief Adds a new transform parameter to TRANSFORM_PARAMETERS.
+/// @note This macros should be used inside TRANSFORM_PARAMETERS only.
 #define _TP_(name, descr, defval) { name, { descr, defval } },
 
+/// @brief Adds SupportedParameters() implementation based on specified
+/// parameter items (@see _TP_).
+/// @param init The list of _TP_ parameters.
 #define TRANSFORM_PARAMETERS(init) \
     virtual const std::unordered_map<std::string, ParameterTraits>& \
 SupportedParameters() const noexcept { \

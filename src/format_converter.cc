@@ -24,6 +24,12 @@ const std::string& FormatConverter::Name() const noexcept {
   return name;
 }
 
+const std::string& FormatConverter::Description() const noexcept {
+  static const auto desc = std::string("Converts data format from ") +
+      InputFormat().Id() + " to " + OutputFormat().Id() + ".";
+  return desc;
+}
+
 void FormatConverter::SetInputFormat(const BufferFormat&) {
   std::unexpected();
 }

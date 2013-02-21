@@ -23,7 +23,8 @@ class LowpassFilter : public FirFilterBase {
  public:
   LowpassFilter() noexcept;
 
-  TRANSFORM_NAME("Lowpass")
+  TRANSFORM_INTRO("Lowpass", "Lowpass filter. All frequences higher than "
+                             "\"frequency\" shall not pass.")
 
   FIR_FILTER_PARAMETERS(
       _TP_("frequency", "Cutoff frequency",

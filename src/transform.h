@@ -47,6 +47,8 @@ class Transform {
   /// @{
   virtual const std::string& Name() const noexcept = 0;
 
+  virtual const std::string& Description() const noexcept = 0;
+
   virtual const BufferFormat& InputFormat() const noexcept = 0;
 
   virtual void SetInputFormat(const BufferFormat& format) = 0;

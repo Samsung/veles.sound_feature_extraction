@@ -23,7 +23,8 @@ class HighpassFilter : public FirFilterBase {
  public:
   HighpassFilter() noexcept;
 
-  TRANSFORM_NAME("Highpass")
+  TRANSFORM_INTRO("Highpass", "Highpass filter. All frequences lower than "
+                              "\"frequency\" shall not pass.")
 
   FIR_FILTER_PARAMETERS(
       _TP_("frequency", "Cutoff frequency",

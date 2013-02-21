@@ -23,6 +23,8 @@ class FormatConverter : public virtual Transform {
 
    virtual const std::string& Name() const noexcept;
 
+   virtual const std::string& Description() const noexcept;
+
    virtual void SetInputFormat(const BufferFormat& format);
 
    virtual const std::unordered_map<std::string, ParameterTraits>&
