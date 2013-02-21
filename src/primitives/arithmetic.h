@@ -80,9 +80,9 @@ INLINE NOTNULL((1, 2, 3)) void complex_multiply_na(
 }
 
 INLINE NOTNULL((1,4)) void real_multiply_scalar_na(const float *array,
-                                                   size_t arrayLength,
+                                                   size_t length,
                                                    float value, float *res) {
-  for (size_t i = 0; i < arrayLength; i++) {
+  for (size_t i = 0; i < length; i++) {
     res[i] = array[i] * value;
   }
 }
@@ -112,6 +112,14 @@ INLINE NOTNULL((1, 2, 3)) void int16_multiply(
   _mm256_store_si256((__m256i *)(res + 8), resVecHi);
 }
 
+/// @brief Converts an array of short integers to floating point numbers,
+/// using AVX2 SIMD.
+/// @param data The array of short integers.
+/// @param length The length of the array (in int16_t-s, not in bytes).
+/// @param res The floating point number array to write the results to.
+/// @note align_complement_i16(data) % 8 must be equal to
+/// align_complement_f32(res) % 8.
+/// @note res must have at least the same length as data.
 INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
                                            size_t length, float *res) {
   int startIndex = align_complement_i16(data);
@@ -244,6 +252,14 @@ INLINE NOTNULL((1, 3)) void int32_to_int16(const int32_t *data,
 
 #else
 
+/// @brief Converts an array of short integers to floating point numbers,
+/// using SSE2 SIMD.
+/// @param data The array of short integers.
+/// @param length The length of the array (in int16_t-s, not in bytes).
+/// @param res The floating point number array to write the results to.
+/// @note align_complement_i16(data) % 4 must be equal to
+/// align_complement_f32(res) % 4.
+/// @note res must have at least the same length as data.
 INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
                                            size_t length, float *res) {
   int startIndex = align_complement_i16(data);
@@ -431,8 +447,18 @@ INLINE NOTNULL((1, 2, 3)) void complex_multiply(
   _mm256_store_ps(res, resVec);
 }
 
+/// @brief Multiplies each floating point number in the specified array
+/// by the specified value, using AVX SIMD.
+/// @details This functions does the same thing as real_multiply_scalar_na, but
+/// likely much faster.
+/// @param array The array of floating point numbers.
+/// @param length The length of the array (in float-s, not in bytes).
+/// @param value The value to multiply each number in array.
+/// @param res The array to write the results to.
+/// @note array and res must have the same alignment.
+/// @note res must have at least the same length as array.
 INLINE NOTNULL((1,4)) void real_multiply_scalar(const float *array,
-                                                size_t arrayLength,
+                                                size_t length,
                                                 float value, float *res) {
   int startIndex = align_complement_f32(array);
   assert(startIndex == align_complement_f32(res));
@@ -442,14 +468,14 @@ INLINE NOTNULL((1,4)) void real_multiply_scalar(const float *array,
 
   const __m256 mulVec = _mm256_set_ps( value, value, value, value,
                                        value, value, value, value );
-  for (size_t i = (int)startIndex; i < arrayLength - 7; i += 8) {
+  for (size_t i = (int)startIndex; i < length - 7; i += 8) {
     __m256 vec = _mm256_load_ps(array + i);
     vec = _mm256_mul_ps(vec, mulVec);
     _mm256_store_ps(res + i, vec);
   }
 
-  for (size_t i = startIndex + (((arrayLength - startIndex) >> 3) << 3);
-      i < arrayLength; i++) {
+  for (size_t i = startIndex + (((length - startIndex) >> 3) << 3);
+      i < length; i++) {
     res[i] = array[i] * value;
   }
 }
@@ -581,15 +607,24 @@ INLINE NOTNULL((1, 2, 3)) void complex_multiply(
   vst1q_f32(res, resVec);
 }
 
+/// @brief Multiplies each floating point number in the specified array
+/// by the specified value, using NEON SIMD.
+/// @details This functions does the same thing as real_multiply_scalar_na, but
+/// likely much faster.
+/// @param array The array of floating point numbers.
+/// @param length The length of the array (in float-s, not in bytes).
+/// @param value The value to multiply each number in array.
+/// @param res The array to write the results to.
+/// @note res must have at least the same length as array.
 INLINE NOTNULL((1,4)) void real_multiply_scalar(const float *array,
-                                                size_t arrayLength,
+                                                size_t length,
                                                 float value, float *res) {
-  for (int i = 0; i < arrayLength - 3; i += 4) {
+  for (int i = 0; i < length - 3; i += 4) {
     float32x4_t vec = vld1q_f32(array + i);
     vec = vmulq_n_f32(vec, value);
     vst1q_f32(res + i, vec);
   }
-  for (int i = ((arrayLength >> 2) << 2); i < arrayLength; i++) {
+  for (int i = ((length >> 2) << 2); i < length; i++) {
     res[i] = array[i] * value;
   }
 }
