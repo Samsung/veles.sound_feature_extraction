@@ -76,7 +76,8 @@ TransformTree::Node::Node(Node* parent,
                           const std::shared_ptr<Transform>& boundTransform)
 : Parent(parent)
 , BoundTransform(boundTransform)
-, BoundBuffers(nullptr) {
+, BoundBuffers(nullptr)
+, Host(parent == nullptr? nullptr : parent->Host) {
 }
 
 void TransformTree::Node::Apply(
@@ -116,7 +117,11 @@ void TransformTree::Node::Execute(
               [](Buffers *ptr){ delete[] ptr; });
       }
     }
+    auto checkPointStart = std::chrono::high_resolution_clock::now();
     BoundTransform->Do(*Parent->BoundBuffers, BoundBuffers.get());
+    auto checkPointFinish = std::chrono::high_resolution_clock::now();
+    Host->transformsCache_[BoundTransform->Name()].ElapsedTime =
+        checkPointFinish - checkPointStart;
     if (ChainName != "") {
       (*results)[ChainName] = BoundBuffers;
     }
@@ -132,6 +137,7 @@ TransformTree::TransformTree(const Formats::RawFormat16& rootFormat) noexcept
 : root_(std::make_shared<Node>(nullptr,
                                std::make_shared<RootTransform>(rootFormat))),
   treeIsPrepared_(false) {
+  root_->Host = this;
 }
 
 TransformTree::~TransformTree() noexcept {
@@ -228,12 +234,21 @@ TransformTree::Execute(const Buffers& in) {
     results.insert(std::make_pair(name, nullptr));
   }
   root_->BoundBuffers = std::make_shared<Buffers>(in);
+  auto checkPointStart = std::chrono::high_resolution_clock::now();
   root_->Execute(&results);
+  auto checkPointFinish = std::chrono::high_resolution_clock::now();
+  auto allDuration = checkPointFinish - checkPointStart;
+  auto otherDuration = allDuration;
+  for (auto cit : transformsCache_) {
+    otherDuration -= cit.second.ElapsedTime;
+  }
+  transformsCache_["All"].ElapsedTime = allDuration;
+  transformsCache_["Other"].ElapsedTime = otherDuration;
   return std::move(results);
 }
 
 std::shared_ptr<Transform> TransformTree::FindIdenticalTransform(
-    const Transform& base) {
+    const Transform& base) noexcept {
   std::string id = base.Name();
   for (auto pp : base.CurrentParameters()) {
     id += pp.first;
@@ -241,18 +256,34 @@ std::shared_ptr<Transform> TransformTree::FindIdenticalTransform(
   }
   auto iti = transformsCache_.find(id);
   if (iti != transformsCache_.end()) {
-    return iti->second;
+    return iti->second.BoundTransform;
   }
   return nullptr;
 }
 
-void TransformTree::SaveTransformToCache(const std::shared_ptr<Transform>& t) {
+void TransformTree::SaveTransformToCache(
+    const std::shared_ptr<Transform>& t) noexcept {
   std::string id = t->Name();
   for (auto pp : t->CurrentParameters()) {
     id += pp.first;
     id += pp.second;
   }
-  transformsCache_.insert(std::make_pair(id, t));
+  transformsCache_.insert(std::make_pair(
+      id,
+      TransformCacheItem {
+        t, std::chrono::high_resolution_clock::duration(0)
+      }
+  ));
+}
+
+std::unordered_map<std::string, std::chrono::high_resolution_clock::duration>
+TransformTree::ExecutionTimeReport() const noexcept {
+  std::unordered_map<std::string,
+                     std::chrono::high_resolution_clock::duration> ret;
+  for (auto cit : transformsCache_) {
+    ret.insert(std::make_pair(cit.first, cit.second.ElapsedTime));
+  }
+  return std::move(ret);
 }
 
 }  // namespace SpeechFeatureExtraction

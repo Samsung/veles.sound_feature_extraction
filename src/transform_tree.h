@@ -13,6 +13,7 @@
 #ifndef TRANSFORM_TREE_H_
 #define TRANSFORM_TREE_H_
 
+#include <chrono>
 #include <vector>
 #include <set>
 #include "src/formats/raw_format.h"
@@ -89,6 +90,7 @@ class TransformTree {
     std::unordered_map<std::string, std::vector<std::shared_ptr<Node>>>
     Children;
     std::string ChainName;
+    TransformTree* Host;
 
     Node(Node* parent, const std::shared_ptr<Transform>& boundTransform);
 
@@ -113,17 +115,26 @@ class TransformTree {
   std::unordered_map<std::string, std::shared_ptr<Buffers>> Execute(
       const Buffers& in);
 
+  std::unordered_map<std::string, std::chrono::high_resolution_clock::duration>
+  ExecutionTimeReport() const noexcept;
+
  private:
+  struct TransformCacheItem {
+    std::shared_ptr<Transform> BoundTransform;
+    std::chrono::high_resolution_clock::duration ElapsedTime;
+  };
+
   std::shared_ptr<Node> root_;
   bool treeIsPrepared_;
   std::set<std::string> chains_;
-  std::unordered_map<std::string, std::shared_ptr<Transform>> transformsCache_;
+  std::unordered_map<std::string, TransformCacheItem> transformsCache_;
 
   void AddTransform(const std::string& name,
                     const std::string& parameters,
                     std::shared_ptr<Node>* currentNode);
-  std::shared_ptr<Transform> FindIdenticalTransform(const Transform& base);
-  void SaveTransformToCache(const std::shared_ptr<Transform>& t);
+  std::shared_ptr<Transform> FindIdenticalTransform(
+      const Transform& base) noexcept;
+  void SaveTransformToCache(const std::shared_ptr<Transform>& t) noexcept;
 };
 
 }  // namespace SpeechFeatureExtraction
