@@ -44,15 +44,17 @@ struct Raw {
 
 #ifdef __AVX__
   explicit Raw(size_t size, int alignmentOffset)
-  : Data(reinterpret_cast<T*>(malloc_aligned_offset(size, alignmentOffset)),
-         [=](T *ptr) {
+  : Data(reinterpret_cast<T*>(malloc_aligned_offset(
+      size * sizeof(T), alignmentOffset)),
+      [=](T *ptr) {
     free(reinterpret_cast<char*>(ptr) - alignmentOffset);
   }) {
   }
 #else
-  explicit Raw(size_t size)
-  : Data(reinterpret_cast<T*>(malloc_aligned(size)),
-         [](T *ptr) { free(ptr); }) {
+  explicit Raw(size_t size, int alignmentOffset UNUSED)
+  : Data(reinterpret_cast<T*>(
+      malloc_aligned(size * sizeof(T))),
+      [](T *ptr) { free(ptr); }) {
   }
 #endif
 
@@ -66,11 +68,14 @@ struct Raw {
     Data = other.Data;
     return *this;
   }
-#ifdef __AVX__
+
   int AlignmentOffset() const {
+#ifdef __AVX__
     return reinterpret_cast<uintptr_t>(Data.get()) % 32;
-  }
+#else
+    return 0;
 #endif
+  }
 };
 
 typedef Raw<int16_t> Raw16;

@@ -26,11 +26,12 @@ static float HammingWindow(int index, int length) {
   return 0.54f - 0.46f * cosf(2 * M_PI * index / (length - 1));
 }
 
-float WindowElement(WindowType type, int index, int length) {
+float WindowElement(WindowType type, int length, int index) {
   switch (type) {
     case WINDOW_TYPE_RECTANGULAR:
       return 1.0f;
     case WINDOW_TYPE_HAMMING:
       return HammingWindow(index, length);
   }
+  return 0.0f;
 }

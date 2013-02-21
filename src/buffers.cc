@@ -16,14 +16,14 @@
 
 namespace SpeechFeatureExtraction {
 
-Buffers::Buffers(int size, const BufferFormat& format) noexcept
+Buffers::Buffers(size_t size, const BufferFormat& format) noexcept
 : format_(format) {
-  assert(size >= 1 && size <= (1 << 20));
+  assert(size <= (1 << 20));
   auto buffers = new std::vector<void*>();
   buffers->resize(size);
-  buffers_ = std::shared_ptr<std::vector<void*>>(buffers,
-                                                 [&](std::vector<void*>* vec) {
-    auto destroy = format_.Destructor();
+  auto destroy = format_.Destructor();
+  buffers_ = std::shared_ptr<std::vector<void*>>(
+      buffers, [=](std::vector<void*>* vec) {
     for (size_t i = 0; i < vec->size(); i++) {
       if (vec->at(i) != nullptr) {
         destroy(vec->at(i));

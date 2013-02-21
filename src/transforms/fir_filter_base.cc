@@ -28,7 +28,7 @@ FirFilterBase::FirFilterBase(
 void FirFilterBase::Initialize() const noexcept {
   filter_.resize(length_);
   for (int i = 0; i < length_; i++) {
-    filter_[i] = WindowElement(windowType_, i, length_);
+    filter_[i] = WindowElement(windowType_, length_, i);
   }
   CalculateFilter(&filter_[0]);
   dataBuffer_.resize(inputFormat_.Size());
@@ -56,11 +56,8 @@ void FirFilterBase::SetParameter(const std::string& name,
 void FirFilterBase::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw16>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), outputFormat_.Size()
-#ifdef __AVX__
-                      , in[0]->AlignmentOffset()
-#endif
-                      );
+  buffers->Initialize(in.Size(), outputFormat_.Size(),
+                      in[0]->AlignmentOffset());
 }
 
 void FirFilterBase::TypeSafeDo(const BuffersBase<Formats::Raw16>& in,

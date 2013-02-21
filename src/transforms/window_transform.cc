@@ -72,7 +72,7 @@ void Window::TypeSafeInitializeBuffers(
   });
   float* window = window_.get();
   for (int i = 0; i < inDataStep_; i++) {
-    window[i] = WindowElement(type_, i, inDataStep_);
+    window[i] = WindowElement(type_, inDataStep_, i);
   }
 }
 

@@ -21,7 +21,7 @@ namespace SpeechFeatureExtraction {
 
 class Buffers {
  public:
-  Buffers(int size, const BufferFormat& format) noexcept;
+  Buffers(size_t size, const BufferFormat& format) noexcept;
   Buffers(const Buffers& other) noexcept;
   Buffers& operator=(const Buffers& other) noexcept;
 

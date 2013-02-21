@@ -16,13 +16,26 @@
 #include <string>
 #include <unordered_map>
 
+/// @brief All implemented window types.
+/// @see http://en.wikipedia.org/wiki/Window_function.
 typedef enum {
   WINDOW_TYPE_RECTANGULAR,
   WINDOW_TYPE_HAMMING
 } WindowType;
 
+/// @brief The map between window name and window type.
+/// @details For example,
+/// @code
+/// WindowTypeMap["hamming"] == WINDOW_TYPE_HAMMING
+/// @endcode
+/// is true.
 extern const std::unordered_map<std::string, WindowType> WindowTypeMap;
 
-float WindowElement(WindowType type, int index, int length);
+/// @brief Returns the window element at the specified index.
+/// @param type The window type.
+/// @param length The length of the window.
+/// @param index The index of the element to return.
+/// @return The requested window element.
+float WindowElement(WindowType type, int length, int index);
 
 #endif  // INCLUDE_WINDOW_H_

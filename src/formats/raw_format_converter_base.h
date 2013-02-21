@@ -26,11 +26,8 @@ class RawFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
       const BuffersBase<typename FIN::BufferType>& in,
       BuffersBase<typename FOUT::BufferType>* buffers) const noexcept {
     buffers->Initialize(in.Size(),
-                        FormatConverterBase<FIN, FOUT>::inputFormat_.Size()
-  #ifdef __AVX__
-                        , in[0]->AlignmentOffset()
-  #endif
-    );
+                        FormatConverterBase<FIN, FOUT>::inputFormat_.Size(),
+                        in[0]->AlignmentOffset());
   }
 };
 
