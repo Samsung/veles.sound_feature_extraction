@@ -1,8 +1,19 @@
 include $(top_srcdir)/Makefile.common
 
-noinst_PROGRAMS = arithmetic convolute window
+noinst_PROGRAMS = memory arithmetic convolute window
 
 GTEST_INCLUDE = -I$(top_srcdir)/tests/google
+
+# Sources 
+memory_SOURCES = memory.cc
+
+# Compiler options
+memory_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+memory_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
 
 # Sources 
 arithmetic_SOURCES = arithmetic.cc
