@@ -30,7 +30,7 @@ void Window::OnInputFormatChanged() {
 }
 
 void Window::SetParameter(const std::string& name,
-                                   const std::string& value) {
+                          const std::string& value) {
   if (name == "length") {
     int pv = Parse<int>(name, value);
     if (pv < MIN_WINDOW_DURATION || pv > MAX_WINDOW_DURATION) {

@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef TEMPLATE_TRANSFORM_H_
-#define TEMPLATE_TRANSFORM_H_
+#ifndef LOG_H_
+#define LOG_H_
 
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
@@ -24,7 +24,8 @@ class Log
  public:
   Log();
 
-  TRANSFORM_INTRO("Log", "Taking the logarithm on each value of the signal.")
+  TRANSFORM_INTRO("Log",
+                  "Takes the logarithm on each value of the signal.")
 
   TRANSFORM_PARAMETERS(
       _TP_("base", "Logarithm base (2, 10 or e).", "e")
@@ -56,4 +57,4 @@ class Log
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_TEMPLATE_TRANSFORM_H_
+#endif  // INCLUDE_LOG_H_
