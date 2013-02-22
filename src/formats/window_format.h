@@ -13,6 +13,7 @@
 #ifndef RAW_WINDOW_FORMAT_H_
 #define RAW_WINDOW_FORMAT_H_
 
+#include <assert.h>
 #include "src/buffers_base.h"
 #include "src/formats/format_limits.h"
 #include "src/primitives/memory.h"
@@ -39,8 +40,9 @@ struct Window {
   std::shared_ptr<T> Data;
 
   explicit Window(size_t size)
-  : Data(reinterpret_cast<T*>(malloc_aligned(size * sizeof(T))),
-         [](T *ptr) { free(ptr); }) {
+  : Data(reinterpret_cast<T*>(
+      malloc_aligned(size * sizeof(T))),
+      [](T *ptr) { free(ptr); }) {
   }
 
   Window(const Window& other) : Data(other.Data) {
@@ -64,12 +66,14 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
  public:
   WindowFormat() noexcept
   : duration_(DEFAULT_WINDOW_DURATION)
-  , samplingRate_(DEFAULT_SAMPLING_RATE) {
+  , samplingRate_(DEFAULT_SAMPLING_RATE)
+  , size_(SamplesCount()) {
   }
 
   WindowFormat(const WindowFormat& other) noexcept
   : duration_(other.duration_)
-  , samplingRate_(samplingRate_) {
+  , samplingRate_(samplingRate_)
+  , size_(SamplesCount()) {
   }
 
   WindowFormat(size_t duration, int samplingRate)
@@ -108,9 +112,20 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
     return duration_ * samplingRate_ / 1000;
   }
 
+  size_t Size() const noexcept {
+    return size_;
+  }
+
+  void SetSize(size_t value) noexcept {
+    // We speculatively allocate only 2 extra numbers
+    assert(value <= SamplesCount() + 2);
+    size_ = value;
+  }
+
  private:
   size_t duration_;
   int samplingRate_;
+  size_t size_;
 
   static void ValidateDuration(size_t value) {
     if (value < MIN_WINDOW_DURATION || value > MAX_WINDOW_DURATION) {

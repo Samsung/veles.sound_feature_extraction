@@ -25,16 +25,31 @@ bool DFT::HasInverse() const noexcept {
   return true;
 }
 
+void DFT::OnInputFormatChanged() {
+  if (!IsInverse()) {
+    outputFormat_.SetSize(inputFormat_.Size() + 2);
+  } else {
+    outputFormat_.SetSize(inputFormat_.Size() - 2);
+  }
+}
+
 void DFT::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_.SamplesCount());
+  if (!IsInverse()) {
+    buffers->Initialize(in.Size(), inputFormat_.Size() + 2);
+  } else {
+    buffers->Initialize(in.Size(), inputFormat_.Size() - 2);
+  }
 }
 
 void DFT::TypeSafeDo(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
-  int length = outputFormat_.SamplesCount();
+  int length = outputFormat_.Size();
+  if (IsInverse()) {
+    length -= 2;
+  }
   std::vector<float*> inputs(in.Size()), outputs(in.Size());
   for (size_t i = 0; i < in.Size(); i++) {
     inputs[i] = in[i]->Data.get();

@@ -64,7 +64,7 @@ void Window::Initialize() const noexcept {
 void Window::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Window16>* buffers) const noexcept {
-  // Adding 2 extra samples here to be compatible with real DFT
+  // Allocate 2 extra samples to use zero-copy FFT
   buffers->Initialize(in.Size() * outSizeEach_, inDataStep_ + 2);
   window_ = std::shared_ptr<float>(
       mallocf(inDataStep_), [](float* ptr) {

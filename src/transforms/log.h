@@ -1,5 +1,5 @@
 /*! @file log.h
- *  @brief Taking logarithm on the values.
+ *  @brief Taking logarithm on the real values.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -25,7 +25,7 @@ class Log
   Log();
 
   TRANSFORM_INTRO("Log",
-                  "Takes the logarithm on each value of the signal.")
+                  "Takes the logarithm on each real value of the signal.")
 
   TRANSFORM_PARAMETERS(
       _TP_("base", "Logarithm base (2, 10 or e).", "e")
