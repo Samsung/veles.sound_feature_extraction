@@ -77,7 +77,9 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
   }
 
   WindowFormat(size_t duration, int samplingRate)
-  : duration_(duration), samplingRate_(samplingRate) {
+  : duration_(duration)
+  , samplingRate_(samplingRate)
+  , size_(SamplesCount()) {
     ValidateDuration(duration_);
     ValidateSamplingRate(samplingRate_);
   }

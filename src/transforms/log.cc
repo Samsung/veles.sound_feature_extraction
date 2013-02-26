@@ -12,6 +12,11 @@
 
 #include "src/transforms/log.h"
 #include <math.h>
+#ifdef __AVX__
+#include "src/primitives/avx_mathfun.h"
+#elif defined(__ARM_NEON__)
+#include "src/primitives/neon_mathfun.h"
+#endif
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
@@ -54,18 +59,45 @@ void Log::TypeSafeDo(
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();
-    for (size_t j = 0; j < inputFormat_.SamplesCount(); j++) {
-      switch (base_) {
-        case LOG_BASE_E:
-          output[j] = logf(input[i]);
-          break;
-        case LOG_BASE_2:
-          output[j] = log2f(input[i]);
-          break;
-        case LOG_BASE_10:
-          output[j] = log10f(input[i]);
-          break;
+    switch (base_) {
+      case LOG_BASE_E: {
+#ifdef __AVX__
+        int length = inputFormat_.Size();
+        for (int j = 0; j < length - 7; j += 8) {
+          __m256 vec = _mm256_load_ps(input + j);
+          vec = log256_ps(vec);
+          _mm256_store_ps(output + j, vec);
+        }
+        for (int j = ((length >> 3) << 3); j < length; j++) {
+          output[j] = logf(input[j]);
+        }
+#elif defined(__ARM_NEON__)
+        int length = inputFormat_.Size();
+        for (int j = 0; j < length - 3; j += 4) {
+          float32x4_t vec = vld1q_f32(input + j);
+          vec = log_ps(vec);
+          vst1_f32(vec, output + j);
+        }
+        for (int j = ((length >> 2) << 2); j < length; j++) {
+          output[j] = logf(input[j]);
+        }
+#else
+        for (size_t j = 0; j < inputFormat_.SamplesCount(); j++) {
+          output[j] = logf(input[j]);
+        }
+#endif
+        break;
       }
+      case LOG_BASE_2:
+        for (size_t j = 0; j < inputFormat_.SamplesCount(); j++) {
+          output[j] = log2f(input[j]);
+        }
+        break;
+      case LOG_BASE_10:
+        for (size_t j = 0; j < inputFormat_.SamplesCount(); j++) {
+          output[j] = log10f(input[j]);
+        }
+        break;
     }
   }
 }
