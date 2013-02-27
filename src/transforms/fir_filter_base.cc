@@ -12,7 +12,7 @@
 
 #include "src/transforms/fir_filter_base.h"
 #include "src/primitives/convolute.h"
-#include "src/primitives/arithmetic.h"
+#include "src/primitives/arithmetic-inl.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {

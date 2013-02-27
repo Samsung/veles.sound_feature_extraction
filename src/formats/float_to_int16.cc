@@ -11,7 +11,7 @@
  */
 
 #include "src/formats/float_to_int16.h"
-#include "src/primitives/arithmetic.h"
+#include "src/primitives/arithmetic-inl.h"
 
 namespace SpeechFeatureExtraction {
 namespace Formats {

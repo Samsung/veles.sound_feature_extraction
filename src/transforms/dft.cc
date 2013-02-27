@@ -12,7 +12,7 @@
 
 #include "src/transforms/dft.h"
 #include <fftf/api.h>
-#include "src/primitives/arithmetic.h"
+#include "src/primitives/arithmetic-inl.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {

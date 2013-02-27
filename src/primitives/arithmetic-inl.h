@@ -1,5 +1,5 @@
-/*! @file arithmetic.h
- *  @brief Basic arithmetic functions with SIMD acceleration.
+/*! @file arithmetic-inl.h
+ *  @brief Inline arithmetic functions with SIMD acceleration.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

@@ -11,7 +11,7 @@
  */
 
 #include "src/transforms/square.h"
-#include "src/primitives/arithmetic.h"
+#include "src/primitives/arithmetic-inl.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {

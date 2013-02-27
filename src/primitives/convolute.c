@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fftf/api.h>
-#include "src/primitives/arithmetic.h"
+#include "src/primitives/arithmetic-inl.h"
 
 /*
 /// @brief Brute-force calculation method used for debugging FFT one.

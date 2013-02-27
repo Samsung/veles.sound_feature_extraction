@@ -12,7 +12,10 @@
 
 #include "src/transform.h"
 #include <assert.h>
+#include <boost/algorithm/string/replace.hpp>
 #include "src/transform_registry.h"
+
+using boost::algorithm::replace_all_copy;
 
 namespace SpeechFeatureExtraction {
 
@@ -35,6 +38,17 @@ bool Transform::operator==(const Transform& other) const noexcept {
 
 bool Transform::IsInverse() const noexcept {
   return CurrentParameters().find("inverse")->second == "true";
+}
+
+std::string Transform::SafeName() const noexcept {
+  return replace_all_copy(replace_all_copy(replace_all_copy(
+      Name(), " ", ""), "->", "To"), "!", "");
+}
+
+std::string Transform::HtmlEscapedName() const noexcept {
+  return replace_all_copy(replace_all_copy(replace_all_copy(replace_all_copy(
+      Name(), "&", "&amp;"), ">", "&gt;"), "<", "&lt;"), "!", "");
+
 }
 
 }  // namespace SpeechFeatureExtraction

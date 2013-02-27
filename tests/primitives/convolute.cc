@@ -13,7 +13,7 @@
 #include <gtest/gtest.h>
 #include "src/primitives/convolute.h"
 #include "src/primitives/memory.h"
-#include "src/primitives/arithmetic.h"
+#include "src/primitives/arithmetic-inl.h"
 
 void convolute_reference(const float *__restrict x, size_t xLength,
                          const float *__restrict h, size_t hLength,

@@ -13,7 +13,7 @@
 #include "src/transforms/filter_bank.h"
 #include <math.h>
 #include "src/formats/format_limits.h"
-#include "src/primitives/arithmetic.h"
+#include "src/primitives/arithmetic-inl.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {

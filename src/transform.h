@@ -90,6 +90,10 @@ class Transform {
   bool operator==(const Transform& other) const noexcept;
 
   bool IsInverse() const noexcept;
+
+  std::string SafeName() const noexcept;
+
+  std::string HtmlEscapedName() const noexcept;
   /// @}
 };
 

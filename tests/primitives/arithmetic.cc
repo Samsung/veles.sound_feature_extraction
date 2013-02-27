@@ -1,5 +1,5 @@
 /*! @file arithmetic.cc
- *  @brief Tests for src/primitives/arithmetic.h.
+ *  @brief Tests for src/primitives/arithmetic-inl.h.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -11,7 +11,7 @@
  */
 
 #include <gtest/gtest.h>
-#include "src/primitives/arithmetic.h"
+#include "src/primitives/arithmetic-inl.h"
 
 TEST(Arithmetic, int16_multiply) {
   int16_t a[16], b[16] __attribute__ ((aligned (64)));
