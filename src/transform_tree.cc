@@ -12,6 +12,7 @@
 
 #include "src/transform_tree.h"
 #include <assert.h>
+#include <fstream>
 #include "src/formats/raw_format.h"
 #include "src/format_converter.h"
 #include "src/transform_registry.h"
@@ -25,7 +26,7 @@ class RootTransform : public Transform {
   }
 
   virtual const std::string& Name() const noexcept {
-   static const std::string name("!ROOT!");
+   static const std::string name("!Root");
    return name;
   }
 
@@ -85,12 +86,22 @@ TransformTree::Node::Node(Node* parent,
 , Host(parent == nullptr? nullptr : parent->Host) {
 }
 
-void TransformTree::Node::Apply(
+void TransformTree::Node::ActionOnEachTransform(
     const std::function<void(const Transform&)> action) {
   action(*BoundTransform);
   for (auto subnode : Children) {
     for (auto inode : subnode.second) {
-      inode->Apply(action);
+      inode->ActionOnEachTransform(action);
+    }
+  }
+}
+
+void TransformTree::Node::ActionOnEachNode(
+    const std::function<void(const Node&)> action) {
+  action(*this);
+  for (auto subnode : Children) {
+    for (auto inode : subnode.second) {
+      inode->ActionOnEachNode(action);
     }
   }
 }
@@ -125,8 +136,8 @@ void TransformTree::Node::Execute(
     auto checkPointStart = std::chrono::high_resolution_clock::now();
     BoundTransform->Do(*Parent->BoundBuffers, BoundBuffers.get());
     auto checkPointFinish = std::chrono::high_resolution_clock::now();
-    Host->transformsCache_[BoundTransform->Name()].ElapsedTime =
-        checkPointFinish - checkPointStart;
+    ElapsedTime = checkPointFinish - checkPointStart;
+    Host->transformsCache_[BoundTransform->Name()].ElapsedTime += ElapsedTime;
     if (ChainName != "") {
       (*results)[ChainName] = BoundBuffers;
     }
@@ -221,7 +232,7 @@ void TransformTree::AddChain(
 
 void TransformTree::PrepareForExecution() noexcept {
   treeIsPrepared_ = true;
-  root_->Apply([](const Transform& t) {
+  root_->ActionOnEachTransform([](const Transform& t) {
     t.Initialize();
   });
 }
@@ -281,14 +292,102 @@ void TransformTree::SaveTransformToCache(
   ));
 }
 
-std::unordered_map<std::string, std::chrono::high_resolution_clock::duration>
+std::unordered_map<std::string, float>
 TransformTree::ExecutionTimeReport() const noexcept {
-  std::unordered_map<std::string,
-                     std::chrono::high_resolution_clock::duration> ret;
+  std::unordered_map<std::string, float> ret;
+  auto allIt = transformsCache_.find("All");
+  if (allIt == transformsCache_.end()) {
+    return ret;
+  }
+  auto allTime = allIt->second.ElapsedTime;
   for (auto cit : transformsCache_) {
-    ret.insert(std::make_pair(cit.first, cit.second.ElapsedTime));
+    if (cit.first != "All") {
+      ret.insert(std::make_pair(cit.first, cit.second.ElapsedTime / allTime));
+    } else {
+      ret.insert(std::make_pair(cit.first, allTime.count()));
+    }
   }
   return std::move(ret);
+}
+
+void TransformTree::Dump(const std::string& dotFileName) const {
+  const float redThreshold = 0.25f;
+
+  auto timeReport = ExecutionTimeReport();
+  bool includeTime = timeReport.size() > 0;
+  float maxTimeRatio = 0.0f;
+  if (includeTime) {
+    for (auto tr : timeReport) {
+      if (tr.second > maxTimeRatio && tr.first != "All") {
+        maxTimeRatio = tr.second;
+      }
+    }
+  }
+  float redShift = redThreshold * maxTimeRatio;
+  std::chrono::high_resolution_clock::duration::rep rep(timeReport["All"]);
+  auto allTime = std::chrono::high_resolution_clock::duration(rep);
+
+  std::ofstream fw;
+  fw.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+  fw.open(dotFileName);
+  fw << "digraph TransformsTree {" << std::endl;
+  std::unordered_map<std::string, int> counters;
+  std::unordered_map<const Node*, int> nodeCounters;
+  root_->ActionOnEachNode([&](const Node& node) {
+    auto t = node.BoundTransform;
+    nodeCounters[&node] = counters[t->Name()];
+    fw << "\t" << t->SafeName() << counters[t->Name()]++ << " [";
+    if (includeTime && timeReport[t->Name()] > redShift) {
+      fw << "style=\"filled\", fillcolor=\"#";
+      fw << std::hex << static_cast<int>(
+          (timeReport[t->Name()] - redShift) / (maxTimeRatio - redShift) * 255)
+         << "4040\", ";
+    }
+    fw << "label=<" << t->HtmlEscapedName()
+        << "<br /><font point-size=\"10\">";
+    if (includeTime) {
+      fw << "<b>"
+          << static_cast<int>((node.ElapsedTime / allTime * 100))
+          << "% ("
+          << static_cast<int>(timeReport[t->Name()] / timeReport["All"] * 100)
+          << "%)</b><br /> <br />";
+    }
+    for (auto p : t->CurrentParameters()) {
+      auto isDefault = false;
+      isDefault = p.second ==
+          t->SupportedParameters().find(p.first)->second.DefaultValue;
+      if (isDefault) {
+        fw << "<font color=\"gray\">";
+      }
+      fw << p.first << " = " << p.second;
+      if (isDefault) {
+        fw << "</font>";
+      }
+      fw << "<br />";
+    }
+    if (t->CurrentParameters().size() == 0) {
+      fw << " ";
+    }
+    fw << "</font>>]" << std::endl;
+  });
+  fw << "\tOther [label=<Other";
+  if (includeTime) {
+    fw << "<br /><font point-size=\"10\"><b>"
+        << timeReport["Other"] / timeReport["All"] * 100
+        << "%</b></font>";
+  }
+  fw << ">]" << std::endl << std::endl;
+  root_->ActionOnEachNode([&](const Node& node) {
+    for (auto child : node.Children) {
+      for (auto childNode : child.second) {
+        fw << "\t" << node.BoundTransform->SafeName()
+            << nodeCounters[&node] << " -> "
+            << childNode->BoundTransform->SafeName()
+            << nodeCounters[childNode.get()] << std::endl;
+      }
+    }
+  });
+  fw << "}" << std::endl;
 }
 
 }  // namespace SpeechFeatureExtraction

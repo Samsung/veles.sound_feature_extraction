@@ -130,4 +130,12 @@ TEST_F(TransformTreeTest, AddChain) {
   PrepareForExecution();
 }
 
+TEST_F(TransformTreeTest, Dump) {
+  AddChain("One", { {"ParentTest", "AmplifyFactor=1" },
+                    { "ChildTest", "" } });
+  AddChain("Two", { {"ParentTest", "AmplifyFactor=2" },
+                    { "ChildTest", "AnalysisLength=256" } });
+  Dump("/tmp/ttdump.dot");
+}
+
 #include "tests/google/src/gtest_main.cc"

@@ -91,12 +91,16 @@ class TransformTree {
     Children;
     std::string ChainName;
     TransformTree* Host;
+    std::chrono::high_resolution_clock::duration ElapsedTime;
 
     Node(Node* parent, const std::shared_ptr<Transform>& boundTransform);
 
     std::shared_ptr<Node> FindIdenticalChildTransform(const Transform& base);
 
-    void Apply(const std::function<void(const Transform&)> action);
+    void ActionOnEachTransform(
+        const std::function<void(const Transform&)> action);
+    void ActionOnEachNode(
+        const std::function<void(const Node&)> action);
 
     void Execute(
         std::unordered_map<std::string, std::shared_ptr<Buffers>>* results);
@@ -115,8 +119,8 @@ class TransformTree {
   std::unordered_map<std::string, std::shared_ptr<Buffers>> Execute(
       const Buffers& in);
 
-  std::unordered_map<std::string, std::chrono::high_resolution_clock::duration>
-  ExecutionTimeReport() const noexcept;
+  std::unordered_map<std::string, float> ExecutionTimeReport() const noexcept;
+  void Dump(const std::string& dotFileName) const;
 
  private:
   struct TransformCacheItem {
