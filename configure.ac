@@ -47,7 +47,7 @@ passed
 ])
 
 dnl Use the best march
-AS_IF([test ${host%%-*} == i686], [
+AS_IF([test ${host%%-*} == i686 -o ${host%%-*} == x86_64 ], [
 	CPPFLAGS="$CPPFLAGS -march=native" 
 ]) 
 AS_IF([test ${host%%-*} == arm], [
