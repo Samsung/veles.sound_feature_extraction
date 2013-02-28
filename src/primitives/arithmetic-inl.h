@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef ARITHMETIC_H_
-#define ARITHMETIC_H_
+#ifndef SRC_PRIMITIVES_ARITHMETIC_INL_H_
+#define SRC_PRIMITIVES_ARITHMETIC_INL_H_
 
 #ifdef __cplusplus
 #define __STDC_LIMIT_MACROS
@@ -79,9 +79,9 @@ INLINE NOTNULL((1, 2, 3)) void complex_multiply_na(
   res[1] = re1 * im2 + re2 * im1;
 }
 
-INLINE NOTNULL((1,4)) void real_multiply_scalar_na(const float *array,
-                                                   size_t length,
-                                                   float value, float *res) {
+INLINE NOTNULL((1, 4)) void real_multiply_scalar_na(const float *array,
+                                                    size_t length,
+                                                    float value, float *res) {
   for (size_t i = 0; i < length; i++) {
     res[i] = array[i] * value;
   }
@@ -89,7 +89,7 @@ INLINE NOTNULL((1,4)) void real_multiply_scalar_na(const float *array,
 
 #ifdef __AVX__
 
-#include <immintrin.h>
+#include <immintrin.h>  // NOLINT(build/include_order)
 
 #ifdef __AVX2__
 
@@ -457,17 +457,17 @@ INLINE NOTNULL((1, 2, 3)) void complex_multiply(
 /// @param res The array to write the results to.
 /// @note array and res must have the same alignment.
 /// @note res must have at least the same length as array.
-INLINE NOTNULL((1,4)) void real_multiply_scalar(const float *array,
-                                                size_t length,
-                                                float value, float *res) {
+INLINE NOTNULL((1, 4)) void real_multiply_scalar(const float *array,
+                                                 size_t length,
+                                                 float value, float *res) {
   int startIndex = align_complement_f32(array);
   assert(startIndex == align_complement_f32(res));
   for (int i = 0; i < startIndex; i++) {
     res[i] = array[i] * value;
   }
 
-  const __m256 mulVec = _mm256_set_ps( value, value, value, value,
-                                       value, value, value, value );
+  const __m256 mulVec = _mm256_set_ps(value, value, value, value,
+                                      value, value, value, value);
   for (size_t i = (int)startIndex; i < length - 7; i += 8) {
     __m256 vec = _mm256_load_ps(array + i);
     vec = _mm256_mul_ps(vec, mulVec);
@@ -482,7 +482,7 @@ INLINE NOTNULL((1,4)) void real_multiply_scalar(const float *array,
 
 #elif defined(__ARM_NEON__)
 
-#include <arm_neon.h>
+#include <arm_neon.h>  // NOLINT(build/include_order)
 
 INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
                                            size_t length, float *res) {
@@ -616,9 +616,9 @@ INLINE NOTNULL((1, 2, 3)) void complex_multiply(
 /// @param value The value to multiply each number in array.
 /// @param res The array to write the results to.
 /// @note res must have at least the same length as array.
-INLINE NOTNULL((1,4)) void real_multiply_scalar(const float *array,
-                                                size_t length,
-                                                float value, float *res) {
+INLINE NOTNULL((1, 4)) void real_multiply_scalar(const float *array,
+                                                 size_t length,
+                                                 float value, float *res) {
   for (int i = 0; i < length - 3; i += 4) {
     float32x4_t vec = vld1q_f32(array + i);
     vec = vmulq_n_f32(vec, value);
@@ -643,4 +643,4 @@ INLINE NOTNULL((1,4)) void real_multiply_scalar(const float *array,
 
 #endif
 
-#endif  // INCLUDE_ARITHMETIC_H_
+#endif  // SRC_PRIMITIVES_ARITHMETIC_INL_H_

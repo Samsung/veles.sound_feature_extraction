@@ -34,11 +34,8 @@ class ParentTestTransform
 
   TRANSFORM_INTRO("ParentTest", "")
 
-  TRANSFORM_PARAMETERS(_TP_("AmplifyFactor", "Volume amplification factor", "1"))
-
-  virtual void Initialize() const noexcept {
-
-  }
+  TRANSFORM_PARAMETERS(_TP_("AmplifyFactor", "Volume amplification factor",
+                            "1"))
 
  protected:
   virtual void SetParameter(const std::string&, const std::string&) {
@@ -75,10 +72,6 @@ class ChildTestTransform
       _TP_("AnalysisLength", "Length of the array with analyzed results",
            "128"))
 
-  virtual void Initialize() const noexcept {
-
-  }
-
  protected:
   virtual void SetParameter(const std::string&, const std::string&) {
   }
@@ -112,7 +105,7 @@ TEST_F(TransformTreeTest, AddChain) {
   try {
     AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
   }
-  catch (ChainNameAlreadyExistsException* e) {
+  catch(ChainNameAlreadyExistsException* e) {
     fail = true;
   }
   EXPECT_TRUE(fail);
@@ -121,12 +114,13 @@ TEST_F(TransformTreeTest, AddChain) {
   try {
     AddChain("Two", { {"ParentTest", "" }, { "ChildTest", "" } });
   }
-  catch (ChainAlreadyExistsException* e) {
+  catch(ChainAlreadyExistsException* e) {
     fail = true;
   }
   EXPECT_TRUE(fail);
 
-  AddChain("Two", { {"ParentTest", "" }, { "ChildTest", "AnalysisLength=256" } });
+  AddChain("Two", { {"ParentTest", "" }, { "ChildTest",
+                                           "AnalysisLength=256" } });
   PrepareForExecution();
 }
 

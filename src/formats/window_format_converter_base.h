@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef WINDOW_FORMAT_CONVERTER_BASE_H_
-#define WINDOW_FORMAT_CONVERTER_BASE_H_
+#ifndef SRC_FORMATS_WINDOW_FORMAT_CONVERTER_BASE_H_
+#define SRC_FORMATS_WINDOW_FORMAT_CONVERTER_BASE_H_
 
 #include "src/format_converter_base.h"
 
@@ -25,11 +25,12 @@ class WindowFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
   virtual void TypeSafeInitializeBuffers(
       const BuffersBase<typename FIN::BufferType>& in,
       BuffersBase<typename FOUT::BufferType>* buffers) const noexcept {
-      buffers->Initialize(in.Size(),
-                          FormatConverterBase<FIN, FOUT>::inputFormat_.SamplesCount());
+      buffers->Initialize(
+          in.Size(),
+          FormatConverterBase<FIN, FOUT>::inputFormat_.SamplesCount());
   }
 };
 
 }  // namespace SpeechFeatureExtraction
 
-#endif  // INCLUDE_WINDOW_FORMAT_CONVERTER_BASE_H_
+#endif  // SRC_FORMATS_WINDOW_FORMAT_CONVERTER_BASE_H_

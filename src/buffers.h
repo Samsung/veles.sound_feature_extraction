@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef BUFFERS_H_
-#define BUFFERS_H_
+#ifndef SRC_BUFFERS_H_
+#define SRC_BUFFERS_H_
 
 #include <memory>
 #include <vector>
@@ -50,4 +50,4 @@ class Buffers {
 };
 
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_BUFFERS_H_
+#endif  // SRC_BUFFERS_H_

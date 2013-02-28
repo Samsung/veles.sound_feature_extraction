@@ -14,8 +14,8 @@
 #include "src/primitives/arithmetic-inl.h"
 
 TEST(Arithmetic, int16_multiply) {
-  int16_t a[16], b[16] __attribute__ ((aligned (64)));
-  int32_t res[16] __attribute__ ((aligned (64)));
+  int16_t a[16], b[16] __attribute__ ((aligned (64)));  // NOLINT(*)
+  int32_t res[16] __attribute__ ((aligned (64)));  // NOLINT(*)
   for (int i = 0; i < 16; i++) {
     a[i] = i;
     b[i] = 16 - i;
@@ -66,13 +66,13 @@ void DebugPrintFloat32x4_t(const char* name, float32x4_t vec) {
 */
 
 TEST(Arithmetic, complex_multiply) {
-  float ar1[8] __attribute__ ((aligned (64))) = {
+  float ar1[8] __attribute__ ((aligned (64))) = {  // NOLINT(whitespace/parens)
       1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f
   };
-  float ar2[8] __attribute__ ((aligned (64))) = {
+  float ar2[8] __attribute__ ((aligned (64))) = {  // NOLINT(whitespace/parens)
       -1.5f, 1.0f, 3.5f, 3.0f, -5.5f, 6.5f, 2.0f, -9.0f
   };
-  float res[8] __attribute__ ((aligned (64)));
+  float res[8] __attribute__ ((aligned (64)));  // NOLINT(whitespace/parens)
   /*
   __m256 Xvec = _mm256_load_ps(ar1);
   DebugPrint__m256("Xvec\t", Xvec);
@@ -131,17 +131,17 @@ TEST(Arithmetic, complex_multiply) {
 #else
                       2
 #endif
-                      * sizeof(float)));
+                      * sizeof(res[0])));
 }
 
 TEST(Arithmetic, real_multiply) {
-  float ar1[8] __attribute__ ((aligned (64))) = {
+  float ar1[8] __attribute__ ((aligned (64))) = {  // NOLINT(whitespace/parens)
       1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f
   };
-  float ar2[8] __attribute__ ((aligned (64))) = {
+  float ar2[8] __attribute__ ((aligned (64))) = {  // NOLINT(whitespace/parens)
       -1.5f, 1.0f, 3.5f, 3.0f, -5.5f, 6.5f, 2.0f, -9.0f
   };
-  float res[8] __attribute__ ((aligned (64)));
+  float res[8] __attribute__ ((aligned (64)));  // NOLINT(whitespace/parens)
 
   real_multiply(ar1, ar2, res);
 
@@ -157,19 +157,19 @@ TEST(Arithmetic, real_multiply) {
   #else
                         1
   #endif
-                        * sizeof(float)));
+                        * sizeof(res[0])));
 }
 
 TEST(Arithmetic, real_multiply_scalar) {
-  float ar[19] __attribute__ ((aligned (32))) = {
+  float ar[19] __attribute__ ((aligned (32))) = {  // NOLINT(whitespace/parens)
       1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f,
       11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f
   };
-  float res[19] __attribute__ ((aligned (32)));
+  float res[19] __attribute__ ((aligned (32)));  // NOLINT(whitespace/parens)
   real_multiply_scalar(&ar[1], 18, 2.0f, &res[1]);
   float verif[18];
   real_multiply_scalar_na(&ar[1], 18, 2.0f, verif);
-  ASSERT_EQ(0, memcmp(&res[1], verif, 18 * sizeof(float)));
+  ASSERT_EQ(0, memcmp(&res[1], verif, 18 * sizeof(res[0])));
 #ifdef __AVX__
   EXPECT_DEATH({
     real_multiply_scalar(&ar[1], 18, 2.0f, res);
@@ -178,16 +178,16 @@ TEST(Arithmetic, real_multiply_scalar) {
 }
 
 TEST(Arithmetic, int16_to_int32) {
-  int16_t ar[30] __attribute__ ((aligned (32))) = {
+  int16_t ar[30] __attribute__ ((aligned (32))) = {  // NOLINT(*)
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
       11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
       21, 22, 23, 24, 25, 26, 27, 28, 29, 30
   };
-  int32_t res[30] __attribute__ ((aligned (32)));
+  int32_t res[30] __attribute__ ((aligned (32)));  // NOLINT(whitespace/parens)
   int16_to_int32(&ar[1], 29, &res[1]);
   int32_t verif[29];
   int16_to_int32_na(&ar[1], 29, verif);
-  ASSERT_EQ(0, memcmp(&res[1], verif, 29 * sizeof(int32_t)));
+  ASSERT_EQ(0, memcmp(&res[1], verif, 29 * sizeof(res[0])));
 #ifdef __AVX__
     EXPECT_DEATH({
       int16_to_int32(&ar[1], 29, res);
@@ -196,16 +196,16 @@ TEST(Arithmetic, int16_to_int32) {
 }
 
 TEST(Arithmetic, int32_to_int16) {
-  int32_t ar[30] __attribute__ ((aligned (32))) = {
+  int32_t ar[30] __attribute__ ((aligned (32))) = {  // NOLINT(*)
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
       11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
       21, 22, 23, 24, 25, 26, 27, 28, 29, 30
   };
-  int16_t res[30] __attribute__ ((aligned (32)));
+  int16_t res[30] __attribute__ ((aligned (32)));  // NOLINT(whitespace/parens)
   int32_to_int16(&ar[1], 29, &res[1]);
   int16_t verif[29];
   int32_to_int16_na(&ar[1], 29, verif);
-  ASSERT_EQ(0, memcmp(&res[1], verif, 29 * sizeof(int16_t)));
+  ASSERT_EQ(0, memcmp(&res[1], verif, 29 * sizeof(res[0])));
 #ifdef __AVX__
     EXPECT_DEATH({
       int32_to_int16(&ar[1], 29, res);
@@ -214,16 +214,16 @@ TEST(Arithmetic, int32_to_int16) {
 }
 
 TEST(Arithmetic, int32_to_float) {
-  int32_t ar[31] __attribute__ ((aligned (32))) = {
+  int32_t ar[31] __attribute__ ((aligned (32))) = {  // NOLINT(*)
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
       11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
       21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
   };
-  float res[30] __attribute__ ((aligned (32)));
+  float res[30] __attribute__ ((aligned (32)));  // NOLINT(whitespace/parens)
   int32_to_float(&ar[1], 29, &res[1]);
   float verif[29];
   int32_to_float_na(&ar[1], 29, verif);
-  ASSERT_EQ(0, memcmp(&res[1], verif, 29 * sizeof(float)));
+  ASSERT_EQ(0, memcmp(&res[1], verif, 29 * sizeof(res[0])));
 #ifdef __AVX__
     EXPECT_DEATH({
       int32_to_float(&ar[1], 29, res);
@@ -232,16 +232,16 @@ TEST(Arithmetic, int32_to_float) {
 }
 
 TEST(Arithmetic, float_to_int32) {
-  float ar[31] __attribute__ ((aligned (32))) = {
+  float ar[31] __attribute__ ((aligned (32))) = {  // NOLINT(whitespace/parens)
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
       11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
       21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
   };
-  int32_t res[30] __attribute__ ((aligned (32)));
+  int32_t res[30] __attribute__ ((aligned (32)));  // NOLINT(whitespace/parens)
   float_to_int32(&ar[1], 29, &res[1]);
   int32_t verif[29];
   float_to_int32_na(&ar[1], 29, verif);
-  ASSERT_EQ(0, memcmp(&res[1], verif, 29 * sizeof(float)));
+  ASSERT_EQ(0, memcmp(&res[1], verif, 29 * sizeof(res[0])));
 #ifdef __AVX__
     EXPECT_DEATH({
       float_to_int32(&ar[1], 29, res);
@@ -250,16 +250,16 @@ TEST(Arithmetic, float_to_int32) {
 }
 
 TEST(Arithmetic, int16_to_float) {
-  int16_t ar[31] __attribute__ ((aligned (32))) = {
+  int16_t ar[31] __attribute__ ((aligned (32))) = {  // NOLINT(*)
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
       11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
       21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
   };
-  float res[30] __attribute__ ((aligned (32)));
+  float res[30] __attribute__ ((aligned (32)));  // NOLINT(whitespace/parens)
   int16_to_float(&ar[1], 29, &res[1]);
   float verif[29];
   int16_to_float_na(&ar[1], 29, verif);
-  ASSERT_EQ(0, memcmp(&res[1], verif, 29 * sizeof(float)));
+  ASSERT_EQ(0, memcmp(&res[1], verif, 29 * sizeof(res[0])));
 #ifdef __AVX__
     EXPECT_DEATH({
       int16_to_float(&ar[1], 29, res);
@@ -268,16 +268,16 @@ TEST(Arithmetic, int16_to_float) {
 }
 
 TEST(Arithmetic, float_to_int16) {
-  float ar[31] __attribute__ ((aligned (32))) = {
+  float ar[31] __attribute__ ((aligned (32))) = {  // NOLINT(whitespace/parens)
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
       11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
       21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
   };
-  int16_t res[30] __attribute__ ((aligned (32)));
+  int16_t res[30] __attribute__ ((aligned (32)));  // NOLINT(whitespace/parens)
   float_to_int16(&ar[1], 29, &res[1]);
   int16_t verif[29];
   float_to_int16_na(&ar[1], 29, verif);
-  ASSERT_EQ(0, memcmp(&res[1], verif, 29 * sizeof(int16_t)));
+  ASSERT_EQ(0, memcmp(&res[1], verif, 29 * sizeof(res[0])));
 #ifdef __AVX__
     EXPECT_DEATH({
       float_to_int16(&ar[1], 29, res);

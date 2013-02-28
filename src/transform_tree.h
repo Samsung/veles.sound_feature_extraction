@@ -10,12 +10,14 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef TRANSFORM_TREE_H_
-#define TRANSFORM_TREE_H_
+#ifndef SRC_TRANSFORM_TREE_H_
+#define SRC_TRANSFORM_TREE_H_
 
 #include <chrono>
-#include <vector>
 #include <set>
+#include <string>
+#include <utility>
+#include <vector>
 #include "src/formats/raw_format.h"
 #include "src/exceptions.h"
 #include "src/transform.h"
@@ -24,22 +26,25 @@ namespace SpeechFeatureExtraction {
 
 class ChainNameAlreadyExistsException : public ExceptionBase {
  public:
-  ChainNameAlreadyExistsException(const std::string& name)
-  : ExceptionBase("Chain name \"" + name + "\" already exists.") {}
+  explicit ChainNameAlreadyExistsException(const std::string& name)
+  : ExceptionBase("Chain name \"" + name + "\" already exists.") {
+  }
 };
 
 class ChainAlreadyExistsException : public ExceptionBase {
  public:
-  ChainAlreadyExistsException(const std::string& nameOld,
+  explicit ChainAlreadyExistsException(const std::string& nameOld,
                               const std::string& nameNew)
   : ExceptionBase("Chain \"" + nameNew + "\" is identical to previously "
-                  "added \"" + nameOld + "\".") {}
+                  "added \"" + nameOld + "\".") {
+  }
 };
 
 class TransformNotRegisteredException : public ExceptionBase {
  public:
-  TransformNotRegisteredException(const std::string& name)
-  : ExceptionBase("Transform \"" + name + "\" is not registered.") {}
+  explicit TransformNotRegisteredException(const std::string& name)
+  : ExceptionBase("Transform \"" + name + "\" is not registered.") {
+  }
 };
 
 class IncompatibleTransformFormatException : public ExceptionBase {
@@ -50,13 +55,15 @@ class IncompatibleTransformFormatException : public ExceptionBase {
                   child.InputFormat().Id() +
                   "\", while the previous transform \"" +
                   parent.Name() + "\" has output format \"" +
-                  parent.OutputFormat().Id() + "\".") {}
+                  parent.OutputFormat().Id() + "\".") {
+  }
 };
 
 class TreeIsEmptyException : public ExceptionBase {
  public:
   TreeIsEmptyException()
-  : ExceptionBase("Transform tree is empty.") {}
+  : ExceptionBase("Transform tree is empty.") {
+  }
 };
 
 class DependencyParameterUnknownException : public ExceptionBase {
@@ -66,20 +73,23 @@ class DependencyParameterUnknownException : public ExceptionBase {
                                       const std::string& childTransformName)
   : ExceptionBase("Transform \"" + parentTransformName + "\" does not "
                   "have a registered parameter \"" + pname + "\" checked "
-                  " by transform \"" + childTransformName + "\".") {}
+                  " by transform \"" + childTransformName + "\".") {
+  }
 };
 
 class TreeIsPreparedException : public ExceptionBase {
  public:
   TreeIsPreparedException()
   : ExceptionBase("Transform tree has previously been prepared for execution "
-      "and no more chains may be added.") {}
+      "and no more chains may be added.") {
+  }
 };
 
 class TreeIsNotPreparedException : public ExceptionBase {
  public:
   TreeIsNotPreparedException()
-  : ExceptionBase("Transform tree has not been prepared for execution.") {}
+  : ExceptionBase("Transform tree has not been prepared for execution.") {
+  }
 };
 
 class TransformTree {
@@ -87,7 +97,7 @@ class TransformTree {
     Node* Parent;
     const std::shared_ptr<Transform> BoundTransform;
     std::shared_ptr<Buffers> BoundBuffers;
-    std::unordered_map<std::string, std::vector<std::shared_ptr<Node>>>
+    std::unordered_map<std::string, std::vector<std::shared_ptr<Node>>>  // NOLINT(*)
     Children;
     std::string ChainName;
     TransformTree* Host;
@@ -103,7 +113,7 @@ class TransformTree {
         const std::function<void(const Node&)> action);
 
     void Execute(
-        std::unordered_map<std::string, std::shared_ptr<Buffers>>* results);
+        std::unordered_map<std::string, std::shared_ptr<Buffers>>* results);  // NOLINT(*)
   };
 
  public:
@@ -112,7 +122,7 @@ class TransformTree {
 
   void AddChain(
       const std::string& name,
-      const std::vector<std::pair<std::string, std::string>>& transforms);
+      const std::vector<std::pair<std::string, std::string>>& transforms);  // NOLINT(*)
 
   void PrepareForExecution() noexcept;
 
@@ -142,4 +152,4 @@ class TransformTree {
 };
 
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_TRANSFORM_TREE_H_
+#endif  // SRC_TRANSFORM_TREE_H_

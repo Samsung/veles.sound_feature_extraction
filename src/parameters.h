@@ -10,12 +10,12 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef PARAMETERS_H_
-#define PARAMETERS_H_
+#ifndef SRC_PARAMETERS_H_
+#define SRC_PARAMETERS_H_
 
 #include <memory>
 #include <string>
-#include <unordered_map>
+#include <unordered_map>  // NOLINT(build/include_order)
 #include "src/exceptions.h"
 
 namespace SpeechFeatureExtraction {
@@ -43,4 +43,4 @@ std::unordered_map<std::string, std::string> Parse(const std::string& line);
 
 }  // namespace SpeechFeatureExtraction
 
-#endif  // INCLUDE_PARAMETERS_H_
+#endif  // SRC_PARAMETERS_H_

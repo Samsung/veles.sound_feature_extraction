@@ -2,7 +2,7 @@ include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = lib_transforms.la
 
-lib_transforms_la_SOURCES = window_transform.cc \
+lib_transforms_la_SOURCES = window.cc \
 fir_filter_base.cc lowpass_filter.cc highpass_filter.cc bandpass_filter.cc  \
 square.cc dft.cc magnitude.cc filter_bank.cc log.cc
 

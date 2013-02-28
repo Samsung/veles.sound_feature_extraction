@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef INT16_TO_FLOAT_H_
-#define INT16_TO_FLOAT_H_
+#ifndef SRC_FORMATS_INT16_TO_FLOAT_H_
+#define SRC_FORMATS_INT16_TO_FLOAT_H_
 
 #include "src/formats/raw_format.h"
 #include "src/formats/raw_format_converter_base.h"
@@ -37,4 +37,4 @@ class Int16ToFloatWindow
 
 }  // namespace Formats
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_INT16_TO_FLOAT_H_
+#endif  // SRC_FORMATS_INT16_TO_FLOAT_H_

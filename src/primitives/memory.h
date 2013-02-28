@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef MEMORY_H_
-#define MEMORY_H_
+#ifndef SRC_PRIMITIVES_MEMORY_H_
+#define SRC_PRIMITIVES_MEMORY_H_
 
 #include <string.h>
 #include "spfextr/config.h"
@@ -21,7 +21,7 @@ extern "C" {
 #endif
 
 #ifdef __AVX__
-#include <stdint.h>
+#include <stdint.h>  // NOLINT(build/include_order)
 
 /// @brief Returns the alignment complement of a pointer to a floating point
 /// number array.
@@ -136,4 +136,4 @@ NOTNULL((1, 3)) MALLOC;
 }
 #endif
 
-#endif  // INCLUDE_MEMORY_H_
+#endif  // SRC_PRIMITIVES_MEMORY_H_

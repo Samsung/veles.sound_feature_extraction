@@ -32,7 +32,7 @@ void SquareRaw::TypeSafeInitializeBuffers(
 #ifdef __AVX__
                       , in[0]->AlignmentOffset()
 #endif
-                      );
+                      );  // NOLINT(whitespace/parens)
 }
 
 void SquareRaw::TypeSafeDo(

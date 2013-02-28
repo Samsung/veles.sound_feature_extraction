@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef FLOAT_TO_INT32_H_
-#define FLOAT_TO_INT32_H_
+#ifndef SRC_FORMATS_FLOAT_TO_INT32_H_
+#define SRC_FORMATS_FLOAT_TO_INT32_H_
 
 #include "src/formats/raw_format.h"
 #include "src/formats/raw_format_converter_base.h"
@@ -37,4 +37,4 @@ class FloatToInt32Window
 
 }  // namespace Formats
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_FLOAT_TO_INT32_H_
+#endif  // SRC_FORMATS_FLOAT_TO_INT32_H_

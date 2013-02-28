@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef RAW_WINDOW_FORMAT_H_
-#define RAW_WINDOW_FORMAT_H_
+#ifndef SRC_FORMATS_WINDOW_FORMAT_H_
+#define SRC_FORMATS_WINDOW_FORMAT_H_
 
 #include <assert.h>
 #include "src/buffers_base.h"
@@ -23,14 +23,14 @@ namespace Formats {
 
 class InvalidWindowFormatDurationException : public ExceptionBase {
  public:
-  InvalidWindowFormatDurationException(size_t duration)
+  explicit InvalidWindowFormatDurationException(size_t duration)
   : ExceptionBase("Duration " + std::to_string(duration) +
                   " is not supported or invalid.") {}
 };
 
 class InvalidWindowFormatSamplingRateException : public ExceptionBase {
  public:
-  InvalidWindowFormatSamplingRateException(int samplingRate)
+  explicit InvalidWindowFormatSamplingRateException(int samplingRate)
   : ExceptionBase("Sampling rate " + std::to_string(samplingRate) +
                   " is not supported or invalid.") {}
 };
@@ -48,7 +48,7 @@ struct Window {
   Window(const Window& other) : Data(other.Data) {
   }
 
-  explicit Window(T *ptr) : Data(ptr, [](T *){}) {
+  explicit Window(T* ptr) : Data(ptr, [](T* p) {}) {
   }
 
   Window& operator=(const Window& other) {
@@ -72,7 +72,7 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
 
   WindowFormat(const WindowFormat& other) noexcept
   : duration_(other.duration_)
-  , samplingRate_(samplingRate_)
+  , samplingRate_(other.samplingRate_)
   , size_(SamplesCount()) {
   }
 
@@ -148,4 +148,4 @@ typedef WindowFormat<float> WindowFormatF;
 
 }  // namespace Formats
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_RAW_WINDOW_FORMAT_H_
+#endif  // SRC_FORMATS_WINDOW_FORMAT_H_

@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef EXCEPTIONS_H_
-#define EXCEPTIONS_H_
+#ifndef SRC_EXCEPTIONS_H_
+#define SRC_EXCEPTIONS_H_
 
 #include <string>
 
@@ -40,4 +40,4 @@ class ExceptionBase : public std::exception {
 };
 
 
-#endif  // INCLUDE_EXCEPTIONS_H_
+#endif  // SRC_EXCEPTIONS_H_

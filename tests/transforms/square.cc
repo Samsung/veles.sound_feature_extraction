@@ -23,13 +23,13 @@ class SquareRawTest : public SquareRaw, public testing::Test {
   BuffersBase<Raw32> Output;
 
   virtual void SetUp() {
-   Input.Initialize(1, 32000, 0);
-   for (int i = 0; i < 32000; i++) {
-     Input[0]->Data.get()[i] = i;
-   }
-   RawFormat16 format(32000, 16000);
-   SetInputFormat(format);
-   TypeSafeInitializeBuffers(Input, &Output);
+    Input.Initialize(1, 32000, 0);
+    for (int i = 0; i < 32000; i++) {
+      Input[0]->Data.get()[i] = i;
+    }
+    RawFormat16 format(32000, 16000);
+    SetInputFormat(format);
+    TypeSafeInitializeBuffers(Input, &Output);
   }
 };
 

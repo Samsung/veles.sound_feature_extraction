@@ -10,9 +10,10 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef LOWPASS_FILTER_H_
-#define LOWPASS_FILTER_H_
+#ifndef SRC_TRANSFORMS_LOWPASS_FILTER_H_
+#define SRC_TRANSFORMS_LOWPASS_FILTER_H_
 
+#include <string>
 #include "src/transforms/fir_filter_base.h"
 
 namespace SpeechFeatureExtraction {
@@ -43,4 +44,4 @@ class LowpassFilter : public FirFilterBase {
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_LOWPASS_FILTER_H_
+#endif  // SRC_TRANSFORMS_LOWPASS_FILTER_H_

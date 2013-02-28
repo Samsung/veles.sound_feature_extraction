@@ -12,6 +12,7 @@
 
 #include "src/transforms/filter_bank.h"
 #include <math.h>
+#include <string>
 #include "src/formats/format_limits.h"
 #include "src/primitives/arithmetic-inl.h"
 
@@ -19,11 +20,11 @@ namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 FilterBank::FilterBank()
-: UniformFormatTransform(SupportedParameters())
-, type_(SCALE_TYPE_MEL)
-, length_(DEFAULT_FB_LENGTH)
-, minFreq_(DEFAULT_FB_MIN_FREQ)
-, maxFreq_(DEFAULT_FB_MAX_FREQ) {
+  : UniformFormatTransform(SupportedParameters()),
+    type_(SCALE_TYPE_MEL),
+    length_(DEFAULT_FB_LENGTH),
+    minFreq_(DEFAULT_FB_MIN_FREQ),
+    maxFreq_(DEFAULT_FB_MAX_FREQ) {
 }
 
 bool FilterBank::HasInverse() const noexcept {
@@ -140,8 +141,7 @@ void FilterBank::Initialize() const noexcept {
       mallocf(inputFormat_.Size()),
       [](float* ptr) {
         free(ptr);
-      }
-  );
+      });
   memsetf(filterBank_.get(), inputFormat_.Size(), 0.0f);
 
   float scaleMin = LinearToScale(type_, minFreq_);

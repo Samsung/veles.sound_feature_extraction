@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SQUARE_H_
-#define SQUARE_H_
+#ifndef SRC_TRANSFORMS_SQUARE_H_
+#define SRC_TRANSFORMS_SQUARE_H_
 
 #include "src/formats/raw_format.h"
 #include "src/formats/window_format.h"
@@ -41,4 +41,4 @@ class SquareRaw
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_SQUARE_H_
+#endif  // SRC_TRANSFORMS_SQUARE_H_

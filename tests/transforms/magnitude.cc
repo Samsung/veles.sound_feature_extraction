@@ -42,7 +42,7 @@ class MagnitudeTest : public Magnitude, public testing::Test {
 #define ASSERT_EQF(a, b) do { \
   ASSERT_GT(a + EPSILON, b); \
   ASSERT_LT(a - EPSILON, b); \
-} while(0)
+} while (0)
 
 TEST_F(MagnitudeTest, Do) {
   TypeSafeDo(Input, &Output);

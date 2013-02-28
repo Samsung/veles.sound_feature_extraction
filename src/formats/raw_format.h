@@ -10,9 +10,10 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef RAW_FORMAT_H_
-#define RAW_FORMAT_H_
+#ifndef SRC_FORMATS_RAW_FORMAT_H_
+#define SRC_FORMATS_RAW_FORMAT_H_
 
+#include <spfextr/config.h>
 #include <memory>
 #include "src/buffers_base.h"
 #include "src/exceptions.h"
@@ -26,14 +27,14 @@ namespace Formats {
 
 class InvalidRawFormatSizeException : public ExceptionBase {
  public:
-  InvalidRawFormatSizeException(size_t size)
+  explicit InvalidRawFormatSizeException(size_t size)
   : ExceptionBase("Buffer size " + std::to_string(size) +
                   " is not supported or invalid.") {}
 };
 
 class InvalidRawFormatSamplingRateException : public ExceptionBase {
  public:
-  InvalidRawFormatSamplingRateException(int samplingRate)
+  explicit InvalidRawFormatSamplingRateException(int samplingRate)
   : ExceptionBase("Sampling rate " + std::to_string(samplingRate) +
                   " is not supported or invalid.") {}
 };
@@ -61,7 +62,7 @@ struct Raw {
   Raw(const Raw& other) : Data(other.Data) {
   }
 
-  explicit Raw(T *ptr) : Data(ptr, [](T *){}) {
+  explicit Raw(T* ptr) : Data(ptr, [](T* p) {}) {
   }
 
   Raw& operator=(const Raw& other) {
@@ -152,4 +153,4 @@ typedef RawFormat<float> RawFormatF;
 
 }  // namespace Formats
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_RAW_FORMAT_H_
+#endif  // SRC_FORMATS_RAW_FORMAT_H_

@@ -10,9 +10,10 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef FORMAT_CONVERTER_BASE_H_
-#define FORMAT_CONVERTER_BASE_H_
+#ifndef SRC_FORMAT_CONVERTER_BASE_H_
+#define SRC_FORMAT_CONVERTER_BASE_H_
 
+#include <string>
 #include "src/format_converter.h"
 #include "src/transform_base.h"
 
@@ -50,4 +51,4 @@ class FormatConverterBase
 }  // namespace SpeechFeatureExtraction
 
 
-#endif  // INCLUDE_FORMAT_CONVERTER_BASE_H_
+#endif  // SRC_FORMAT_CONVERTER_BASE_H_

@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef BUFFER_FORMAT_H_
-#define BUFFER_FORMAT_H_
+#ifndef SRC_BUFFER_FORMAT_H_
+#define SRC_BUFFER_FORMAT_H_
 
 #include <functional>
 #include <set>
@@ -44,7 +44,7 @@ class BufferFormat {
   bool operator==(const BufferFormat& other) const noexcept;
   bool operator!=(const BufferFormat& other) const noexcept;
 
-  virtual std::function<void(void*)> Destructor() const noexcept = 0;
+  virtual std::function<void(void*)> Destructor() const noexcept = 0;  // NOLINT(*)
 
  private:
   std::string id_;
@@ -54,4 +54,4 @@ class BufferFormat {
     const sibling& var = reinterpret_cast<const sibling&>(other)
 
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_BUFFER_FORMAT_H_
+#endif  // SRC_BUFFER_FORMAT_H_

@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef CONVOLUTE_H_
-#define CONVOLUTE_H_
+#ifndef SRC_PRIMITIVES_CONVOLUTE_H_
+#define SRC_PRIMITIVES_CONVOLUTE_H_
 
 #include <stddef.h>
 #include "spfextr/config.h"
@@ -36,4 +36,4 @@ void convolute(const float *__restrict x, size_t xLength,
 }
 #endif
 
-#endif  // INCLUDE_CONVOLUTE_H_
+#endif  // SRC_PRIMITIVES_CONVOLUTE_H_

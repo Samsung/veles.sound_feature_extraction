@@ -10,39 +10,40 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef FORMAT_CONVERTER_H_
-#define FORMAT_CONVERTER_H_
+#ifndef SRC_FORMAT_CONVERTER_H_
+#define SRC_FORMAT_CONVERTER_H_
 
+#include <string>
 #include "src/transform.h"
 
 namespace SpeechFeatureExtraction {
 
 class FormatConverter : public virtual Transform {
  public:
-   virtual ~FormatConverter() {}
+  virtual ~FormatConverter() {}
 
-   virtual const std::string& Name() const noexcept;
+  virtual const std::string& Name() const noexcept;
 
-   virtual const std::string& Description() const noexcept;
+  virtual const std::string& Description() const noexcept;
 
-   virtual void SetInputFormat(const BufferFormat& format);
+  virtual void SetInputFormat(const BufferFormat& format);
 
-   virtual const std::unordered_map<std::string, ParameterTraits>&
-   SupportedParameters() const noexcept;
+  virtual const std::unordered_map<std::string, ParameterTraits>&
+  SupportedParameters() const noexcept;
 
-   virtual const std::unordered_map<std::string, std::string>&
-   CurrentParameters() const noexcept;
+  virtual const std::unordered_map<std::string, std::string>&
+  CurrentParameters() const noexcept;
 
-   virtual void SetParameters(
-       const std::unordered_map<std::string, std::string>& parameters);
+  virtual void SetParameters(
+      const std::unordered_map<std::string, std::string>& parameters);
 
-   virtual void Initialize() const noexcept;
+  virtual void Initialize() const noexcept;
 
-   static std::string Name(const BufferFormat& in,
-                           const BufferFormat& out);
+  static std::string Name(const BufferFormat& in,
+                          const BufferFormat& out);
 };
 
 }  // namespace SpeechFeatureExtraction
 
 
-#endif  // INCLUDE_FORMAT_CONVERTER_H_
+#endif  // SRC_FORMAT_CONVERTER_H_

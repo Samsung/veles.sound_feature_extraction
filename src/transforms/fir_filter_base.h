@@ -10,9 +10,10 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef CONVOLUTION_FILTER_BASE_H_
-#define CONVOLUTION_FILTER_BASE_H_
+#ifndef SRC_TRANSFORMS_FIR_FILTER_BASE_H_
+#define SRC_TRANSFORMS_FIR_FILTER_BASE_H_
 
+#include <string>
 #include <vector>
 #include "src/uniform_format_transform.h"
 #include "src/formats/format_limits.h"
@@ -57,11 +58,11 @@ class FirFilterBase
   FORWARD_MACROS( \
       _TP_("length", "Window length in samples", \
            std::to_string(DEFAULT_FILTER_LENGTH)) \
-      _TP_("window", "Type of the window. Supported values are \"rectangular\" " \
-           "and \"hamming\".", "hamming") \
+      _TP_("window", "Type of the window. Supported values are " \
+           "\"rectangular\" and \"hamming\".", "hamming") \
       init) \
 )
 
 }  // namespace Formats
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_CONVOLUTION_FILTER_BASE_H_
+#endif  // SRC_TRANSFORMS_FIR_FILTER_BASE_H_

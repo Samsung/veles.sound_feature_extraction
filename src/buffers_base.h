@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef BUFFERS_BASE_H_
-#define BUFFERS_BASE_H_
+#ifndef SRC_BUFFERS_BASE_H_
+#define SRC_BUFFERS_BASE_H_
 
 #include "src/buffer_format.h"
 #include "src/buffers.h"
@@ -27,8 +27,8 @@ class BufferFormatBase : public BufferFormat {
   : BufferFormat(typeid(T).name()) {
   }
 
-  virtual std::function<void(void*)> Destructor() const noexcept {
-    return [](void* ptr) {
+  virtual std::function<void(void*)> Destructor() const noexcept {  // NOLINT(*)
+    return [](void* ptr) {  // NOLINT(whitespace/braces)
       auto instance = reinterpret_cast<T*>(ptr);
       delete instance;
     };
@@ -54,11 +54,11 @@ class BuffersBase : public Buffers {
   }
 
   T* operator[](int index) noexcept {
-    return reinterpret_cast<T*>(Buffers::operator [](index));
+    return reinterpret_cast<T*>(Buffers::operator [](index));  // NOLINT(*)
   }
 
   const T* operator[](int index) const noexcept {
-    return reinterpret_cast<const T*>(Buffers::operator [](index));
+    return reinterpret_cast<const T*>(Buffers::operator [](index));  // NOLINT(*)
   }
 
   const BufferFormat& Format() const noexcept {
@@ -69,4 +69,4 @@ class BuffersBase : public Buffers {
 
 }  // namespace SpeechFeatureExtraction
 
-#endif  // INCLUDE_BUFFERS_BASE_H_
+#endif  // SRC_BUFFERS_BASE_H_

@@ -10,9 +10,10 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef FILTER_BANK_H_
-#define FILTER_BANK_H_
+#ifndef SRC_TRANSFORMS_FILTER_BANK_H_
+#define SRC_TRANSFORMS_FILTER_BANK_H_
 
+#include <string>
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
 
@@ -85,4 +86,4 @@ class FilterBank
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_FILTER_BANK_H_
+#endif  // SRC_TRANSFORMS_FILTER_BANK_H_

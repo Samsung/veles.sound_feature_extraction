@@ -1,5 +1,5 @@
-/*! @file window_transform.h
- *  @brief New file description.
+/*! @file window.h
+ *  @brief Windowing transform.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -10,9 +10,10 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef WINDOWTRANSFORM_H_
-#define WINDOWTRANSFORM_H_
+#ifndef SRC_TRANSFORMS_WINDOW_H_
+#define SRC_TRANSFORMS_WINDOW_H_
 
+#include <string>
 #include "src/formats/raw_format.h"
 #include "src/formats/window_format.h"
 #include "src/transform_base.h"
@@ -60,4 +61,4 @@ class Window
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_WINDOWTRANSFORM_H_
+#endif  // SRC_TRANSFORMS_WINDOW_H_

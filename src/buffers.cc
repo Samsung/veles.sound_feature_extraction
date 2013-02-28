@@ -22,7 +22,7 @@ Buffers::Buffers(size_t size, const BufferFormat& format) noexcept
   auto buffers = new std::vector<void*>();
   buffers->resize(size);
   auto destroy = format_.Destructor();
-  buffers_ = std::shared_ptr<std::vector<void*>>(
+  buffers_ = std::shared_ptr<std::vector<void*>>( // NOLINT(*)
       buffers, [=](std::vector<void*>* vec) {
     for (size_t i = 0; i < vec->size(); i++) {
       if (vec->at(i) != nullptr) {

@@ -10,17 +10,19 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
+#include <gtest/gtest.h>
 #include <string>
 #include <vector>
-#include <gtest/gtest.h>
 #include "src/speech_features.h"
 
 using SpeechFeatureExtraction::Features::Parse;
 
 TEST(Features, Parse) {
   std::vector<std::string> lines = {
-      "MFCC[Window(length=25, step=10), DFT, MelFreq(size=16), Log10, DCT(engine=Kiss)]",
-      "PLP[Window(length=25, step=10), IntensityLoudness(direction=i2l), IDFT, AutoRegressiveAnalysis(), LPCtoCC]"
+      "MFCC[Window(length=25, step=10), DFT, MelFreq(size=16), "
+          "Log10, DCT(engine=Kiss)]",
+      "PLP[Window(length=25, step=10), IntensityLoudness(direction=i2l), "
+          "IDFT, AutoRegressiveAnalysis(), LPCtoCC]"
   };
   auto result = Parse(lines);
   ASSERT_EQ(result.size(), 2);

@@ -11,6 +11,7 @@
  */
 
 #include "src/format_converter.h"
+#include <string>
 
 namespace SpeechFeatureExtraction {
 
@@ -20,12 +21,12 @@ std::string FormatConverter::Name(const BufferFormat& in,
 }
 
 const std::string& FormatConverter::Name() const noexcept {
-  static const auto name = Name(InputFormat(), OutputFormat());
+  static const auto name = Name(InputFormat(), OutputFormat());  // NOLINT(*)
   return name;
 }
 
 const std::string& FormatConverter::Description() const noexcept {
-  static const auto desc = std::string("Converts data format from ") +
+  static const auto desc = std::string("Converts data format from ") +  // NOLINT(*)
       InputFormat().Id() + " to " + OutputFormat().Id() + ".";
   return desc;
 }
@@ -47,7 +48,7 @@ FormatConverter::CurrentParameters() const noexcept {
 }
 
 void FormatConverter::SetParameters(
-   const std::unordered_map<std::string, std::string>&) {
+  const std::unordered_map<std::string, std::string>&) {
 }
 
 void FormatConverter::Initialize() const noexcept {

@@ -10,9 +10,10 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef TEMPLATE_TRANSFORM_H_
-#define TEMPLATE_TRANSFORM_H_
+#ifndef SRC_TRANSFORMS_TEMPLATE_TRANSFORM_H_
+#define SRC_TRANSFORMS_TEMPLATE_TRANSFORM_H_
 
+#include <string>
 #include "src/formats/window_format.h"
 #include "src/transform_base.h"
 
@@ -47,4 +48,4 @@ class TemplateTransform
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_TEMPLATE_TRANSFORM_H_
+#endif  // SRC_TRANSFORMS_TEMPLATE_TRANSFORM_H_

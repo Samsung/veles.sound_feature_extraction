@@ -12,15 +12,16 @@
 
 #include "src/transforms/bandpass_filter.h"
 #include <math.h>
+#include <string>
 #include "src/formats/format_limits.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 BandpassFilter::BandpassFilter() noexcept
-: FirFilterBase(SupportedParameters())
-, frequencyHigh_(DEFAULT_FILTER_HIGH_FREQUENCY)
-, frequencyLow_(DEFAULT_FILTER_LOW_FREQUENCY){
+    : FirFilterBase(SupportedParameters()),
+      frequencyHigh_(DEFAULT_FILTER_HIGH_FREQUENCY),
+      frequencyLow_(DEFAULT_FILTER_LOW_FREQUENCY) {
 }
 
 void BandpassFilter::CalculateFilter(float *filter) const noexcept {
@@ -30,9 +31,9 @@ void BandpassFilter::CalculateFilter(float *filter) const noexcept {
     float h;
     if (n - wOffset != 0) {
       h = sinf(2 * M_PI * (n - wOffset) * frequencyHigh_ / samplingRate) /
-          ( M_PI * (n - wOffset)) -
+          (M_PI * (n - wOffset)) -
           sinf(2 * M_PI * (n - wOffset) * frequencyLow_ / samplingRate) /
-          ( M_PI * (n - wOffset));
+          (M_PI * (n - wOffset));
     } else {
       h = 2.0f * (frequencyHigh_ - frequencyLow_) / samplingRate;
     }

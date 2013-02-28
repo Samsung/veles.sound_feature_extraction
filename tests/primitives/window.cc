@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <vector>
 #include <gtest/gtest.h>
+#include <vector>
 #include "src/primitives/window.h"
 
 #define EPSILON 0.0001f
@@ -19,7 +19,7 @@
 #define ASSERT_EQF(a, b) do { \
   ASSERT_GT(a + EPSILON, b); \
   ASSERT_LT(a - EPSILON, b); \
-} while(0)
+} while (0)
 
 TEST(Window, Rectangular) {
   ASSERT_EQ(1.0f, WindowElement(WINDOW_TYPE_RECTANGULAR, 4, 0));
@@ -29,7 +29,7 @@ TEST(Window, Rectangular) {
 
 TEST(Window, Hamming) {
   std::vector<float> filter(20);
-  std::vector<float> valid { 0.0800f, 0.7700f, 0.7700f, 0.0800f };
+  std::vector<float> valid { 0.0800f, 0.7700f, 0.7700f, 0.0800f };  // NOLINT(*)
   for (size_t i = 0; i < valid.size(); i++) {
     filter[i] = WindowElement(WINDOW_TYPE_HAMMING, 4, i);
   }

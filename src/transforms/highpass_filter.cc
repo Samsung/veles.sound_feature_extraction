@@ -12,14 +12,15 @@
 
 #include "src/transforms/highpass_filter.h"
 #include <math.h>
+#include <string>
 #include "src/formats/format_limits.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 HighpassFilter::HighpassFilter() noexcept
-: FirFilterBase(SupportedParameters())
-, frequency_(DEFAULT_FILTER_HIGH_FREQUENCY) {
+    : FirFilterBase(SupportedParameters()),
+      frequency_(DEFAULT_FILTER_HIGH_FREQUENCY) {
 }
 
 void HighpassFilter::CalculateFilter(float* filter) const noexcept {

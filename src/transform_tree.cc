@@ -13,6 +13,8 @@
 #include "src/transform_tree.h"
 #include <assert.h>
 #include <fstream>
+#include <string>
+#include <utility>
 #include "src/formats/raw_format.h"
 #include "src/format_converter.h"
 #include "src/transform_registry.h"
@@ -26,8 +28,8 @@ class RootTransform : public Transform {
   }
 
   virtual const std::string& Name() const noexcept {
-   static const std::string name("!Root");
-   return name;
+    static const std::string name("!Root");
+    return name;
   }
 
   virtual const std::string& Description() const noexcept {
@@ -120,7 +122,7 @@ TransformTree::Node::FindIdenticalChildTransform(
 }
 
 void TransformTree::Node::Execute(
-    std::unordered_map<std::string, std::shared_ptr<Buffers>>* results) {
+    std::unordered_map<std::string, std::shared_ptr<Buffers>>* results) {  // NOLINT(*)
   if (Parent != nullptr) {
     if (BoundBuffers == nullptr) {
       if (BoundTransform->OutputFormat() ==
@@ -130,7 +132,7 @@ void TransformTree::Node::Execute(
       } else {
           BoundBuffers = std::shared_ptr<Buffers>(
               BoundTransform->CreateOutputBuffers(*Parent->BoundBuffers),
-              [](Buffers *ptr){ delete[] ptr; });
+              [](Buffers *ptr) { delete[] ptr; });
       }
     }
     auto checkPointStart = std::chrono::high_resolution_clock::now();
@@ -210,7 +212,7 @@ void TransformTree::AddTransform(const std::string& name,
 
 void TransformTree::AddChain(
     const std::string& name,
-    const std::vector<std::pair<std::string, std::string>>& transforms) {
+    const std::vector<std::pair<std::string, std::string>>& transforms) {  // NOLINT(*)
   if (treeIsPrepared_) {
     throw new TreeIsPreparedException();
   }
@@ -288,8 +290,7 @@ void TransformTree::SaveTransformToCache(
       id,
       TransformCacheItem {
         t, std::chrono::high_resolution_clock::duration(0)
-      }
-  ));
+      }));
 }
 
 std::unordered_map<std::string, float>

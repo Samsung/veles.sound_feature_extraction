@@ -18,9 +18,9 @@
 void convolute_reference(const float *__restrict x, size_t xLength,
                          const float *__restrict h, size_t hLength,
                          float *__restrict result) {
-  for (int n = 0; n < (int)xLength; n++) {
+  for (int n = 0; n < static_cast<int>(xLength); n++) {
     float sum = .0f;
-    for (int m = 0; m < (int)hLength && m <= n; m++) {
+    for (int m = 0; m < static_cast<int>(hLength) && m <= n; m++) {
       sum += h[m] * x[n - m];
     }
     result[n] = sum;
@@ -37,25 +37,25 @@ void DebugPrintConvolution(const char* name, const float* vec) {
 
 TEST(convolute, convolute) {
   float x[1024];
-  for (int i = 0; i < (int)(sizeof(x) / sizeof(float)); i++) {
+  for (int i = 0; i < static_cast<int>(sizeof(x) / sizeof(x[0])); i++) {
     x[i] = 1.0f;
   }
   float h[50];
-  for (int i = 0; i < (int)(sizeof(h) / sizeof(float)); i++) {
-    h[i] = i / (sizeof(h) / sizeof(float) - 1.0f);
+  for (int i = 0; i < static_cast<int>(sizeof(h) / sizeof(h[0])); i++) {
+    h[i] = i / (sizeof(h) / sizeof(h[0]) - 1.0f);
   }
 
-  float verif[sizeof(x) / sizeof(float)];
-  convolute_reference(x, sizeof(x) / sizeof(float),
-                      h, sizeof(h) / sizeof(float), verif);
+  float verif[sizeof(x) / sizeof(x[0])];
+  convolute_reference(x, sizeof(x) / sizeof(x[0]),
+                      h, sizeof(h) / sizeof(h[0]), verif);
   DebugPrintConvolution("BRUTE-FORCE", verif);
 
-  float res[sizeof(x) / sizeof(float)];
-  convolute(x, sizeof(x) / sizeof(float), h, sizeof(h) / sizeof(float), res);
+  float res[sizeof(x) / sizeof(x[0])];
+  convolute(x, sizeof(x) / sizeof(x[0]), h, sizeof(h) / sizeof(h[0]), res);
   DebugPrintConvolution("OVERLAP-SAVE", res);
 
   int firstDifferenceIndex = -1;
-  for (int i = 0; i < (int)(sizeof(x) / sizeof(float)); i++) {
+  for (int i = 0; i < static_cast<int>(sizeof(x) / sizeof(x[0])); i++) {
     float delta = res[i] - verif[i];
     if (delta * delta > 1E-10 && firstDifferenceIndex == -1) {
       firstDifferenceIndex = i;

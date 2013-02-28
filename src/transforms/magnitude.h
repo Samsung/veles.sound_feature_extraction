@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef MAGNITUDE_H_
-#define MAGNITUDE_H_
+#ifndef SRC_TRANSFORMS_MAGNITUDE_H_
+#define SRC_TRANSFORMS_MAGNITUDE_H_
 
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
@@ -43,4 +43,4 @@ class Magnitude
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_MAGNITUDE_H_
+#endif  // SRC_TRANSFORMS_MAGNITUDE_H_

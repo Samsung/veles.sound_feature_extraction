@@ -10,12 +10,12 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef TRANSFORM_H_
-#define TRANSFORM_H_
+#ifndef SRC_TRANSFORM_H_
+#define SRC_TRANSFORM_H_
 
-#include <string>
-#include <unordered_map>
 #include <spfextr/config.h>
+#include <string>
+#include <unordered_map>  // NOLINT(build/include_order)
 #include "src/buffer_format.h"
 #include "src/buffers.h"
 #include "src/parameters.h"
@@ -98,4 +98,4 @@ class Transform {
 };
 
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_TRANSFORM_H_
+#endif  // SRC_TRANSFORM_H_

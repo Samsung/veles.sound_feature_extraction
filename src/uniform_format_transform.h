@@ -10,9 +10,10 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef UNIFORM_FORMAT_TRANSFORM_H_
-#define UNIFORM_FORMAT_TRANSFORM_H_
+#ifndef SRC_UNIFORM_FORMAT_TRANSFORM_H_
+#define SRC_UNIFORM_FORMAT_TRANSFORM_H_
 
+#include <string>
 #include "src/transform_base.h"
 
 namespace SpeechFeatureExtraction {
@@ -31,10 +32,10 @@ class UniformFormatTransform : public TransformBase<F, F> {
 
  protected:
   virtual void OnInputFormatChanged() {
-   TransformBase<F, F>::outputFormat_ = TransformBase<F, F>::inputFormat_;
+    TransformBase<F, F>::outputFormat_ = TransformBase<F, F>::inputFormat_;
   }
 };
 
 }  // namespace SpeechFeatureExtraction
 
-#endif  // INCLUDE_UNIFORM_FORMAT_TRANSFORM_H_
+#endif  // SRC_UNIFORM_FORMAT_TRANSFORM_H_

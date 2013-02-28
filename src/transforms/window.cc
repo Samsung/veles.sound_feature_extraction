@@ -1,5 +1,5 @@
-/*! @file window_transform.cc
- *  @brief New file description.
+/*! @file window.cc
+ *  @brief Windowing transform.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -10,7 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/transforms/window_transform.h"
+#include "src/transforms/window.h"
+#include <string>
 #include "src/formats/format_limits.h"
 #include "src/primitives/arithmetic-inl.h"
 
@@ -80,8 +81,8 @@ void Window::TypeSafeDo(const BuffersBase<Formats::Raw16>& in,
                         BuffersBase<Formats::Window16> *out)
 const noexcept {
   BuffersBase<Formats::Window16>& outref = *out;
-  int16_t intbuf[inDataStep_] __attribute__ ((aligned (64)));
-  float fbuf[inDataStep_] __attribute__ ((aligned (64)));
+  int16_t intbuf[inDataStep_] __attribute__ ((aligned (64)));  // NOLINT(*)
+  float fbuf[inDataStep_] __attribute__ ((aligned (64)));  // NOLINT(*)
   float* window = window_.get();
 
   for (size_t i = 0; i < in.Size(); i++) {
@@ -103,7 +104,7 @@ const noexcept {
           fbuf[i] *= window[i];
         }
         float_to_int16(fbuf, inDataStep_, output);
-#elif defined (__ARM_NEON__)
+#elif defined(__ARM_NEON__)
         int16_to_float(input, inDataStep_, fbuf);
         for (int i = 0; i < inDataStep_ - 3; i += 4) {
           real_multiply(fbuf + i, window + i, fbuf + i);

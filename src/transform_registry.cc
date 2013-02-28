@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-
 #include "src/transform_registry.h"
+#include <string>
 
 namespace SpeechFeatureExtraction {
 

@@ -10,10 +10,11 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef TRANSFORM_BASE_H_
-#define TRANSFORM_BASE_H_
+#ifndef SRC_TRANSFORM_BASE_H_
+#define SRC_TRANSFORM_BASE_H_
 
 #include <assert.h>
+#include <string>
 #include "src/transform_registry.h"
 #include "src/buffers_base.h"
 
@@ -66,7 +67,7 @@ class TransformBase : public virtual Transform {
   virtual Buffers* CreateOutputBuffers(const Buffers& in) const noexcept {
     assert(in.Format() == inputFormat_);
     auto buffers = new BuffersBase<typename FOUT::BufferType>();
-    auto tin = reinterpret_cast<const BuffersBase<
+    auto tin = reinterpret_cast<const BuffersBase<  // NOLINT(*)
         typename FIN::BufferType>&>(in);
     TypeSafeInitializeBuffers(tin, buffers);
     return buffers;
@@ -75,17 +76,17 @@ class TransformBase : public virtual Transform {
   virtual void Do(const Buffers& in, Buffers* out) const noexcept {
     assert(in.Format() == inputFormat_);
     assert(out->Format() == outputFormat_);
-    auto tin = reinterpret_cast<const BuffersBase<
+    auto tin = reinterpret_cast<const BuffersBase<  // NOLINT(*)
         typename FIN::BufferType>&>(in);
-    auto tout = reinterpret_cast<BuffersBase<
+    auto tout = reinterpret_cast<BuffersBase<  // NOLINT(*)
         typename FOUT::BufferType>*>(out);
     TypeSafeDo(tin, tout);
   }
 
   virtual void DoInverse(const Buffers& in, Buffers* out) const noexcept {
-    auto tin = reinterpret_cast<const BuffersBase<
+    auto tin = reinterpret_cast<const BuffersBase<  // NOLINT(*)
         typename FOUT::BufferType>&>(in);
-    auto tout = reinterpret_cast<BuffersBase<
+    auto tout = reinterpret_cast<BuffersBase<  // NOLINT(*)
         typename FIN::BufferType>*>(out);
     TypeSafeDoInverse(tin, tout);
   }
@@ -124,7 +125,9 @@ class TransformBase : public virtual Transform {
   std::unordered_map<std::string, std::string> parameters_;
 
   template<typename T>
-  struct identity { typedef T type; };
+  struct identity {
+    typedef T type;
+  };
 
   int Parse(const std::string& name, const std::string& value,
             identity<int>) {
@@ -132,7 +135,7 @@ class TransformBase : public virtual Transform {
     try {
       pv = std::stoi(value);
     }
-    catch (...) {
+    catch(...) {
       throw new InvalidParameterValueException(name, value, Name());
     }
     return pv;
@@ -144,7 +147,7 @@ class TransformBase : public virtual Transform {
     try {
       pv = std::stoul(value);
     }
-    catch (...) {
+    catch(...) {
       throw new InvalidParameterValueException(name, value, Name());
     }
     return pv;
@@ -188,4 +191,4 @@ SupportedParameters() const noexcept { \
 }
 
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_TRANSFORM_BASE_H_
+#endif  // SRC_TRANSFORM_BASE_H_

@@ -16,7 +16,7 @@
 #ifdef __AVX__
 
 TEST(Memory, align_complement_f32) {
-  float ptr[32] __attribute__ ((aligned (32)));
+  float ptr[32] __attribute__ ((aligned (32)));  // NOLINT(whitespace/parens)
   EXPECT_EQ(0, align_complement_f32(ptr));
   EXPECT_EQ(7, align_complement_f32(&ptr[1]));
   EXPECT_EQ(5, align_complement_f32(&ptr[3]));
@@ -25,7 +25,7 @@ TEST(Memory, align_complement_f32) {
 }
 
 TEST(Memory, align_complement_i16) {
-  int16_t ptr[32] __attribute__ ((aligned (32)));
+  int16_t ptr[32] __attribute__ ((aligned (32)));  // NOLINT(whitespace/parens)
   EXPECT_EQ(0, align_complement_i16(ptr));
   EXPECT_EQ(15, align_complement_i16(&ptr[1]));
   EXPECT_EQ(13, align_complement_i16(&ptr[3]));
@@ -34,7 +34,7 @@ TEST(Memory, align_complement_i16) {
 }
 
 TEST(Memory, align_complement_i32) {
-  int32_t ptr[32] __attribute__ ((aligned (32)));
+  int32_t ptr[32] __attribute__ ((aligned (32)));  // NOLINT(whitespace/parens)
   EXPECT_EQ(0, align_complement_i32(ptr));
   EXPECT_EQ(7, align_complement_i32(&ptr[1]));
   EXPECT_EQ(5, align_complement_i32(&ptr[3]));
@@ -75,7 +75,7 @@ TEST(Memory, mallocf) {
 }
 
 TEST(Memory, memsetf) {
-  float ptr[102] __attribute__ ((aligned (32)));
+  float ptr[102] __attribute__ ((aligned (32)));  // NOLINT(whitespace/parens)
   memsetf(&ptr[3], 99, 3.0f);
   for (int i = 3; i < 99; i++) {
     ASSERT_EQ(3.0f, ptr[i]);

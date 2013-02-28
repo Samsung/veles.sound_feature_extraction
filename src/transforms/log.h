@@ -10,9 +10,10 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef LOG_H_
-#define LOG_H_
+#ifndef SRC_TRANSFORMS_LOG_H_
+#define SRC_TRANSFORMS_LOG_H_
 
+#include <string>
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
 
@@ -57,4 +58,4 @@ class Log
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_LOG_H_
+#endif  // SRC_TRANSFORMS_LOG_H_

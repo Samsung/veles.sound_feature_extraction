@@ -10,11 +10,11 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef WINDOW_H_
-#define WINDOW_H_
+#ifndef SRC_PRIMITIVES_WINDOW_H_
+#define SRC_PRIMITIVES_WINDOW_H_
 
 #include <string>
-#include <unordered_map>
+#include <unordered_map>  // NOLINT(build/include_order)
 
 /// @brief All implemented window types.
 /// @see http://en.wikipedia.org/wiki/Window_function.
@@ -38,4 +38,4 @@ extern const std::unordered_map<std::string, WindowType> WindowTypeMap;
 /// @return The requested window element.
 float WindowElement(WindowType type, int length, int index);
 
-#endif  // INCLUDE_WINDOW_H_
+#endif  // SRC_PRIMITIVES_WINDOW_H_

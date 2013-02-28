@@ -25,6 +25,9 @@
   (this is the zlib license)
 */
 
+#ifndef SRC_PRIMITIVES_NEON_MATHFUN_H_
+#define SRC_PRIMITIVES_NEON_MATHFUN_H_
+
 #include <arm_neon.h>
 
 typedef float32x4_t v4sf;  // vector of 4 float
@@ -297,5 +300,4 @@ v4sf cos_ps(v4sf x) {
   sincos_ps(x, &ysin, &ycos); 
   return ycos;
 }
-
-
+#endif  // SRC_PRIMITIVES_NEON_MATHFUN_H_

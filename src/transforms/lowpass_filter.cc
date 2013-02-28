@@ -12,14 +12,15 @@
 
 #include "src/transforms/lowpass_filter.h"
 #include <math.h>
+#include <string>
 #include "src/formats/format_limits.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 LowpassFilter::LowpassFilter() noexcept
-: FirFilterBase(SupportedParameters())
-, frequency_(DEFAULT_FILTER_HIGH_FREQUENCY) {
+    : FirFilterBase(SupportedParameters()),
+      frequency_(DEFAULT_FILTER_HIGH_FREQUENCY) {
 }
 
 void LowpassFilter::CalculateFilter(float *filter) const noexcept {
@@ -29,7 +30,7 @@ void LowpassFilter::CalculateFilter(float *filter) const noexcept {
     float h;
     if (n - wOffset != 0) {
       h = sinf(2 * M_PI * (n - wOffset) * frequency_ / samplingRate) /
-          ( M_PI * (n - wOffset));
+          (M_PI * (n - wOffset));
     } else {
       // lim  sin (x) / x = 1, handle this case separately
       // x->0

@@ -10,11 +10,12 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef FEATURES_H_
-#define FEATURES_H_
+#ifndef SRC_SPEECH_FEATURES_H_
+#define SRC_SPEECH_FEATURES_H_
 
 #include <string>
-#include <unordered_map>
+#include <unordered_map>  // NOLINT(build/include_order)
+#include <utility>
 #include <vector>
 #include "src/exceptions.h"
 
@@ -40,7 +41,7 @@ namespace Features {
 
 class ParseFeaturesException : public ExceptionBase {
  public:
-  ParseFeaturesException(size_t index)
+  explicit ParseFeaturesException(size_t index)
   : ExceptionBase("Syntax error on feature at index " + std::to_string(index) +
                   ".") {}
 };
@@ -55,4 +56,4 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures);
 }  // namespace SpeechFeatureExtraction
 
 
-#endif  // INCLUDE_FEATURES_H_
+#endif  // SRC_SPEECH_FEATURES_H_

@@ -45,7 +45,7 @@ TEST(Parameters, InvalidParse) {
   try {
     auto pp = Parse("256");
   }
-  catch (ParseParametersException *e) {
+  catch(ParseParametersException* e) {
     fail = true;
   }
   ASSERT_TRUE(fail);

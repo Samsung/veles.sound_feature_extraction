@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef API_H_
-#define API_H_
+#ifndef INC_SPFEXTR_API_H_
+#define INC_SPFEXTR_API_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -21,7 +21,7 @@ extern "C" {
 #endif
 
 #if __GNUC__ >= 4
-#pragma GCC visibility push (default)
+#pragma GCC visibility push(default)
 #endif
 
 #define MAX_FEATURES_COUNT 256
@@ -53,4 +53,4 @@ void free_results(void **results, int featuresCount);
 }
 #endif
 
-#endif  // INCLUDE_API_H_
+#endif  // INC_SPFEXTR_API_H_

@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef INT32_TO_INT16_H_
-#define INT32_TO_INT16_H_
+#ifndef SRC_FORMATS_INT32_TO_INT16_H_
+#define SRC_FORMATS_INT32_TO_INT16_H_
 
 #include "src/formats/raw_format.h"
 #include "src/formats/raw_format_converter_base.h"
@@ -37,4 +37,4 @@ class Int32ToInt16Window
 
 }  // namespace Formats
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_INT32_TO_INT16_H_
+#endif  // SRC_FORMATS_INT32_TO_INT16_H_

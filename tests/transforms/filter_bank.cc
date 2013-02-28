@@ -43,7 +43,7 @@ class FilterBankTest : public FilterBank, public testing::Test {
 #define ASSERT_EQF(a, b) do { \
   ASSERT_GT(a + EPSILON, b); \
   ASSERT_LT(a - EPSILON, b); \
-} while(0)
+} while (0)
 
 TEST_F(FilterBankTest, Do) {
   TypeSafeDo(Input, &Output);

@@ -25,7 +25,6 @@ using SpeechFeatureExtraction::TransformTree;
 using SpeechFeatureExtraction::Formats::RawFormat16;
 
 extern "C" {
-
 struct FeaturesConfiguration {
   std::shared_ptr<TransformTree> Tree;
 };
@@ -71,25 +70,25 @@ FeaturesConfiguration *setup_features_extraction(
     try {
       fconfig->Tree->AddChain(featpair.first, featpair.second);
     }
-    catch (ChainNameAlreadyExistsException* cnaee) {
+    catch(ChainNameAlreadyExistsException* cnaee) {
       fprintf(stderr, "Failed to construct the transform tree. %s\n",
               cnaee->what());
       delete cnaee;
       return nullptr;
     }
-    catch (TransformNotRegisteredException* tnre) {
+    catch(TransformNotRegisteredException* tnre) {
       fprintf(stderr, "Failed to construct the transform tree. %s\n",
               tnre->what());
       delete tnre;
       return nullptr;
     }
-    catch (ChainAlreadyExistsException* caee) {
+    catch(ChainAlreadyExistsException* caee) {
       fprintf(stderr, "Failed to construct the transform tree. %s\n",
               caee->what());
       delete caee;
       return nullptr;
     }
-    catch (IncompatibleTransformFormatException* itfe) {
+    catch(IncompatibleTransformFormatException* itfe) {
       fprintf(stderr, "Failed to construct the transform tree. %s\n",
               itfe->what());
       delete itfe;
@@ -116,5 +115,4 @@ void free_results(void **results, int featuresCount) {
   }
   free(results);
 }
-
 }

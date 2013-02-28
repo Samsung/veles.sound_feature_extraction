@@ -48,7 +48,6 @@ std::string Transform::SafeName() const noexcept {
 std::string Transform::HtmlEscapedName() const noexcept {
   return replace_all_copy(replace_all_copy(replace_all_copy(replace_all_copy(
       Name(), "&", "&amp;"), ">", "&gt;"), "<", "&lt;"), "!", "");
-
 }
 
 }  // namespace SpeechFeatureExtraction

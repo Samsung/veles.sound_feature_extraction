@@ -10,12 +10,13 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef TRANSFORM_REGISTER_H_
-#define TRANSFORM_REGISTER_H_
+#ifndef SRC_TRANSFORM_REGISTRY_H_
+#define SRC_TRANSFORM_REGISTRY_H_
 
 #include <functional>
 #include <memory>
-#include <unordered_map>
+#include <string>
+#include <unordered_map>  // NOLINT(build/include_order)
 #include "src/transform.h"
 
 namespace SpeechFeatureExtraction {
@@ -62,4 +63,4 @@ class RegisterTransform {
 #define REGISTER_TRANSFORM(T) RegisterTransform<T> T##RegistryInstance
 
 }  // namespace SpeechFeatureExtraction
-#endif  // INCLUDE_TRANSFORM_REGISTER_H_
+#endif  // SRC_TRANSFORM_REGISTRY_H_
