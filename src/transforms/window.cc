@@ -27,7 +27,7 @@ Window::Window()
 }
 
 void Window::OnInputFormatChanged() {
-  outputFormat_.SetSamplingRate(inputFormat_.SamplingRate());
+  outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
 }
 
 void Window::SetParameter(const std::string& name,
@@ -37,7 +37,7 @@ void Window::SetParameter(const std::string& name,
     if (pv < MIN_WINDOW_DURATION || pv > MAX_WINDOW_DURATION) {
       throw new InvalidParameterValueException(name, value, Name());
     }
-    outputFormat_.SetDuration(pv);
+    outputFormat_->SetDuration(pv);
   } else if (name == "step") {
     int pv = Parse<int>(name, value);
     if (pv < MIN_WINDOW_STEP || pv > MAX_WINDOW_STEP) {
@@ -54,11 +54,11 @@ void Window::SetParameter(const std::string& name,
 }
 
 void Window::Initialize() const noexcept {
-  inDataStep_ = outputFormat_.SamplesCount();
-  outSizeEach_ = inputFormat_.Size() / inDataStep_;
-  if (inputFormat_.Size() % inDataStep_ != 0) {
-    fprintf(stderr, "Input buffer size %zu is not divisible by step %i",
-            inputFormat_.Size(), inDataStep_);
+  inDataStep_ = outputFormat_->SamplesCount();
+  outSizeEach_ = inputFormat_->Size() / inDataStep_;
+  if (inputFormat_->Size() % inDataStep_ != 0) {
+    fprintf(stderr, "Input buffer size %zu is not divisible by step %i\n",
+            inputFormat_->Size(), inDataStep_);
   }
 }
 
@@ -71,7 +71,7 @@ void Window::TypeSafeInitializeBuffers(
       mallocf(inDataStep_), [](float* ptr) {
     free(ptr);
   });
-  float* window = window_.get();
+  auto window = window_.get();
   for (int i = 0; i < inDataStep_; i++) {
     window[i] = WindowElement(type_, inDataStep_, i);
   }

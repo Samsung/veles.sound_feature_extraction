@@ -23,7 +23,7 @@ std::string FormatConverter::Name(const BufferFormat& in,
 
 const std::string& FormatConverter::Name() const noexcept {
   if (name_ == "") {
-    name_ = Name(InputFormat(), OutputFormat());
+    name_ = Name(*InputFormat(), *OutputFormat());
   }
   return name_;
 }
@@ -31,13 +31,9 @@ const std::string& FormatConverter::Name() const noexcept {
 const std::string& FormatConverter::Description() const noexcept {
   if (description_ == "") {
     description_ = std::string("Converts data format from ") +
-        InputFormat().Id() + " to " + OutputFormat().Id() + ".";
+        InputFormat()->Id() + " to " + OutputFormat()->Id() + ".";
   }
   return description_;
-}
-
-void FormatConverter::SetInputFormat(const BufferFormat& format) {
-  assert(format.Id() == InputFormat().Id());
 }
 
 const std::unordered_map<std::string, ParameterTraits>&

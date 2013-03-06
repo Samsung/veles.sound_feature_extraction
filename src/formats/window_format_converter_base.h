@@ -22,12 +22,21 @@ class WindowFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
  protected:
   virtual ~WindowFormatConverterBase() {}
 
+  virtual void OnInputFormatChanged() {
+    FormatConverterBase<FIN, FOUT>::outputFormat_->SetDuration(
+        FormatConverterBase<FIN, FOUT>::inputFormat_->Duration());
+    FormatConverterBase<FIN, FOUT>::outputFormat_->SetSamplingRate(
+        FormatConverterBase<FIN, FOUT>::inputFormat_->SamplingRate());
+    FormatConverterBase<FIN, FOUT>::outputFormat_->SetSize(
+        FormatConverterBase<FIN, FOUT>::inputFormat_->Size());
+  }
+
   virtual void TypeSafeInitializeBuffers(
       const BuffersBase<typename FIN::BufferType>& in,
       BuffersBase<typename FOUT::BufferType>* buffers) const noexcept {
       buffers->Initialize(
           in.Size(),
-          FormatConverterBase<FIN, FOUT>::inputFormat_.SamplesCount());
+          FormatConverterBase<FIN, FOUT>::inputFormat_->SamplesCount());
   }
 };
 

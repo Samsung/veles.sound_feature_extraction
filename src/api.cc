@@ -33,7 +33,7 @@ FeaturesConfiguration *setup_features_extraction(
     const char *const *features, int featuresCount,
     size_t bufferSize, int samplingRate) {
   if (features == nullptr) {
-    fprintf(stderr, "features is null");
+    fprintf(stderr, "features is null\n");
     return nullptr;
   }
   if (featuresCount < 0) {
@@ -48,7 +48,7 @@ FeaturesConfiguration *setup_features_extraction(
   std::vector<std::string> lines;
   for (int i = 0; i < featuresCount; i++) {
     if (features[i] == nullptr) {
-      fprintf(stderr, "features[%i] is null", i);
+      fprintf(stderr, "features[%i] is null\n", i);
       return nullptr;
     }
     lines.push_back(features[i]);
@@ -63,7 +63,7 @@ FeaturesConfiguration *setup_features_extraction(
     return nullptr;
   }
 
-  RawFormat16 format(bufferSize, samplingRate);
+  auto format = std::make_shared<RawFormat16>(bufferSize, samplingRate);
   auto fconfig = new FeaturesConfiguration();
   fconfig->Tree = std::make_shared<TransformTree>(format);
   for (auto featpair : featmap) {

@@ -27,10 +27,12 @@ bool DFT::HasInverse() const noexcept {
 }
 
 void DFT::OnInputFormatChanged() {
+  outputFormat_->SetDuration(inputFormat_->Duration());
+  outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
   if (!IsInverse()) {
-    outputFormat_.SetSize(inputFormat_.Size() + 2);
+    outputFormat_->SetSize(inputFormat_->Size() + 2);
   } else {
-    outputFormat_.SetSize(inputFormat_.Size() - 2);
+    outputFormat_->SetSize(inputFormat_->Size() - 2);
   }
 }
 
@@ -38,17 +40,17 @@ void DFT::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   if (!IsInverse()) {
-    buffers->Initialize(in.Size(), inputFormat_.Size() + 2);
+    buffers->Initialize(in.Size(), inputFormat_->Size() + 2);
   } else {
-    buffers->Initialize(in.Size(), inputFormat_.Size() - 2);
+    buffers->Initialize(in.Size(), inputFormat_->Size() - 2);
   }
 }
 
 void DFT::TypeSafeDo(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
-  int length = outputFormat_.Size();
-  if (IsInverse()) {
+  int length = outputFormat_->Size();
+  if (!IsInverse()) {
     length -= 2;
   }
   std::vector<float*> inputs(in.Size()), outputs(in.Size());

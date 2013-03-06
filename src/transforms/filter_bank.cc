@@ -89,9 +89,9 @@ void FilterBank::AddTriangularFilter(float center, float halfWidth) const {
   float rightFreq = ScaleToLinear(type_, center + halfWidth);
 
   // The number of frequency points
-  int N = inputFormat_.Size() / 2;
+  int N = inputFormat_->Size() / 2;
   // Frequency resolution
-  float df = inputFormat_.SamplingRate() / (2 * N);
+  float df = inputFormat_->SamplingRate() / (2 * N);
 
   int leftIndex = ceilf(leftFreq / df);
   int centerIndex = ceilf(centerFreq / df);
@@ -138,11 +138,11 @@ void FilterBank::AddTriangularFilter(float center, float halfWidth) const {
 
 void FilterBank::Initialize() const noexcept {
   filterBank_ = std::shared_ptr<float>(
-      mallocf(inputFormat_.Size()),
+      mallocf(inputFormat_->Size()),
       [](float* ptr) {
         free(ptr);
       });
-  memsetf(filterBank_.get(), inputFormat_.Size(), 0.0f);
+  memsetf(filterBank_.get(), inputFormat_->Size(), 0.0f);
 
   float scaleMin = LinearToScale(type_, minFreq_);
   float scaleMax = LinearToScale(type_, maxFreq_);
@@ -156,14 +156,14 @@ void FilterBank::Initialize() const noexcept {
 void FilterBank::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_.Size());
+  buffers->Initialize(in.Size(), inputFormat_->Size());
 }
 
 void FilterBank::TypeSafeDo(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   auto filter = filterBank_.get();
-  int N = inputFormat_.Size();
+  int N = inputFormat_->Size();
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();

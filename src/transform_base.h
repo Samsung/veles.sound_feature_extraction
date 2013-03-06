@@ -24,7 +24,9 @@ template <typename FIN, typename FOUT>
 class TransformBase : public virtual Transform {
  public:
   TransformBase(const std::unordered_map<std::string, ParameterTraits>&
-                supportedParameters) noexcept {
+                supportedParameters) noexcept
+      : inputFormat_(std::make_shared<FIN>()),
+        outputFormat_(std::make_shared<FOUT>()) {
     for (auto p : supportedParameters) {
       parameters_.insert(std::make_pair(p.first, p.second.DefaultValue));
     }
@@ -32,17 +34,17 @@ class TransformBase : public virtual Transform {
 
   virtual ~TransformBase() {}
 
-  virtual const BufferFormat& InputFormat() const noexcept {
-    return inputFormat_;
+  virtual const std::shared_ptr<BufferFormat> InputFormat() const noexcept {
+    return std::static_pointer_cast<BufferFormat>(inputFormat_);
   }
 
-  virtual void SetInputFormat(const BufferFormat& format) {
-    inputFormat_ = format;
+  virtual void SetInputFormat(const std::shared_ptr<BufferFormat>& format) {
+    inputFormat_ = std::static_pointer_cast<FIN>(format);
     OnInputFormatChanged();
   }
 
-  virtual const BufferFormat& OutputFormat() const noexcept {
-    return outputFormat_;
+  virtual const std::shared_ptr<BufferFormat> OutputFormat() const noexcept {
+    return std::static_pointer_cast<BufferFormat>(outputFormat_);
   }
 
   virtual const std::unordered_map<std::string, std::string>&
@@ -64,18 +66,18 @@ class TransformBase : public virtual Transform {
   virtual void Initialize() const noexcept {
   }
 
-  virtual Buffers* CreateOutputBuffers(const Buffers& in) const noexcept {
-    assert(in.Format() == inputFormat_);
-    auto buffers = new BuffersBase<typename FOUT::BufferType>();
+  virtual std::shared_ptr<Buffers> CreateOutputBuffers(const Buffers& in) const noexcept {
+    assert(*in.Format() == *inputFormat_);
+    auto buffers = std::make_shared<BuffersBase<typename FOUT::BufferType>>();
     auto tin = reinterpret_cast<const BuffersBase<  // NOLINT(*)
         typename FIN::BufferType>&>(in);
-    TypeSafeInitializeBuffers(tin, buffers);
+    TypeSafeInitializeBuffers(tin, buffers.get());
     return buffers;
   }
 
   virtual void Do(const Buffers& in, Buffers* out) const noexcept {
-    assert(in.Format() == inputFormat_);
-    assert(out->Format() == outputFormat_);
+    assert(*in.Format() == *inputFormat_);
+    assert(*out->Format() == *outputFormat_);
     auto tin = reinterpret_cast<const BuffersBase<  // NOLINT(*)
         typename FIN::BufferType>&>(in);
     auto tout = reinterpret_cast<BuffersBase<  // NOLINT(*)
@@ -92,8 +94,8 @@ class TransformBase : public virtual Transform {
   }
 
  protected:
-  FIN inputFormat_;
-  FOUT outputFormat_;
+  std::shared_ptr<FIN> inputFormat_;
+  std::shared_ptr<FOUT> outputFormat_;
 
   virtual void OnInputFormatChanged() {
   }

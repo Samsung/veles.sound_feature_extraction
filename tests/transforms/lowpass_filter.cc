@@ -32,7 +32,7 @@ class LowpassFilterTest : public LowpassFilter, public testing::Test {
 
 TEST_F(LowpassFilterTest, CalculateLowpassFilter) {
   length_ = 4;
-  inputFormat_.SetSamplingRate(16000);
+  inputFormat_->SetSamplingRate(16000);
   std::vector<float> filter(length_);
   for (size_t i = 0; i < filter.size(); i++) {
     filter[i] = WindowElement(WINDOW_TYPE_HAMMING, length_, i);

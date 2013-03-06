@@ -32,7 +32,7 @@ void FirFilterBase::Initialize() const noexcept {
     filter_[i] = WindowElement(windowType_, length_, i);
   }
   CalculateFilter(&filter_[0]);
-  dataBuffer_.resize(inputFormat_.Size());
+  dataBuffer_.resize(inputFormat_->Size());
 }
 
 void FirFilterBase::SetParameter(const std::string& name,
@@ -57,7 +57,7 @@ void FirFilterBase::SetParameter(const std::string& name,
 void FirFilterBase::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw16>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), outputFormat_.Size(),
+  buffers->Initialize(in.Size(), outputFormat_->Size(),
                       in[0]->AlignmentOffset());
 }
 
@@ -65,11 +65,11 @@ void FirFilterBase::TypeSafeDo(const BuffersBase<Formats::Raw16>& in,
                                BuffersBase<Formats::Raw16> *out)
 const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    int16_to_float(in[i]->Data.get(), inputFormat_.Size(), &dataBuffer_[0]);
-    convolute(&dataBuffer_[0], inputFormat_.Size(),
+    int16_to_float(in[i]->Data.get(), inputFormat_->Size(), &dataBuffer_[0]);
+    convolute(&dataBuffer_[0], inputFormat_->Size(),
               &filter_[0], filter_.size(),
               &dataBuffer_[0]);
-    float_to_int16(&dataBuffer_[0], inputFormat_.Size(), (*out)[i]->Data.get());
+    float_to_int16(&dataBuffer_[0], inputFormat_->Size(), (*out)[i]->Data.get());
   }
 }
 

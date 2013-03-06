@@ -21,7 +21,7 @@ namespace SpeechFeatureExtraction {
 
 class Buffers {
  public:
-  Buffers(size_t size, const BufferFormat& format) noexcept;
+  Buffers(size_t size, const std::shared_ptr<BufferFormat>& format) noexcept;
   Buffers(const Buffers& other) noexcept;
   Buffers& operator=(const Buffers& other) noexcept;
 
@@ -33,9 +33,9 @@ class Buffers {
   void* operator[](size_t index) noexcept;
   const void* operator[](size_t index) const noexcept;
 
-  const void *const *Data() const noexcept;
+  const void* const* Data() const noexcept;
 
-  const BufferFormat& Format() const noexcept;
+  virtual const std::shared_ptr<BufferFormat> Format() const noexcept;
 
  protected:
   /// @defgroup TypeUnsafe Underlying type-unsafe operations
@@ -45,7 +45,7 @@ class Buffers {
   /// @}
 
  private:
-  const BufferFormat& format_;
+  std::shared_ptr<BufferFormat> format_;
   std::shared_ptr<std::vector<void*>> buffers_;
 };
 

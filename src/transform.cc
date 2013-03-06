@@ -20,7 +20,7 @@ using boost::algorithm::replace_all_copy;
 namespace SpeechFeatureExtraction {
 
 std::shared_ptr<Transform> Transform::Clone() const noexcept {
-  auto copy = TransformFactory[this->Name()][this->InputFormat().Id()]();
+  auto copy = TransformFactory[this->Name()][this->InputFormat()->Id()]();
   copy->SetParameters(this->CurrentParameters());
   return copy;
 }

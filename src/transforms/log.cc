@@ -51,7 +51,7 @@ void Log::SetParameter(const std::string& name,
 void Log::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_.SamplesCount());
+  buffers->Initialize(in.Size(), inputFormat_->SamplesCount());
 }
 
 void Log::TypeSafeDo(
@@ -63,7 +63,7 @@ void Log::TypeSafeDo(
     switch (base_) {
       case LOG_BASE_E: {
 #ifdef __AVX__
-        int length = inputFormat_.Size();
+        int length = inputFormat_->Size();
         for (int j = 0; j < length - 7; j += 8) {
           __m256 vec = _mm256_load_ps(input + j);
           vec = log256_ps(vec);
@@ -73,7 +73,7 @@ void Log::TypeSafeDo(
           output[j] = logf(input[j]);
         }
 #elif defined(__ARM_NEON__)
-        int length = inputFormat_.Size();
+        int length = inputFormat_->Size();
         for (int j = 0; j < length - 3; j += 4) {
           float32x4_t vec = vld1q_f32(input + j);
           vec = log_ps(vec);
@@ -83,19 +83,19 @@ void Log::TypeSafeDo(
           output[j] = logf(input[j]);
         }
 #else
-        for (size_t j = 0; j < inputFormat_.SamplesCount(); j++) {
+        for (size_t j = 0; j < inputFormat_->SamplesCount(); j++) {
           output[j] = logf(input[j]);
         }
 #endif
         break;
       }
       case LOG_BASE_2:
-        for (size_t j = 0; j < inputFormat_.SamplesCount(); j++) {
+        for (size_t j = 0; j < inputFormat_->SamplesCount(); j++) {
           output[j] = log2f(input[j]);
         }
         break;
       case LOG_BASE_10:
-        for (size_t j = 0; j < inputFormat_.SamplesCount(); j++) {
+        for (size_t j = 0; j < inputFormat_->SamplesCount(); j++) {
           output[j] = log10f(input[j]);
         }
         break;

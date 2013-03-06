@@ -44,14 +44,14 @@ class RegisterTransform {
       }
     }
     TransformFactory[t.Name()].insert(std::make_pair(
-        t.InputFormat().Id(), []() {
+        t.InputFormat()->Id(), []() {
       auto ptr = std::make_shared<T>();
       ptr->SetParameters({ {"inverse", "false"} });
       return ptr;
     }));
     if (t.HasInverse()) {
       TransformFactory[std::string("I") + t.Name()].insert(std::make_pair(
-          t.OutputFormat().Id(), []() {
+          t.OutputFormat()->Id(), []() {
         auto ptr = std::make_shared<T>();
         ptr->SetParameters({ {"inverse", "true"} });
         return ptr;

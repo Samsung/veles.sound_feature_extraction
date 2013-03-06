@@ -31,7 +31,7 @@ class FilterBankTest : public FilterBank, public testing::Test {
     for (int i = 0; i < Size; i++) {
       Input[0]->Data.get()[i] = 100;
     }
-    WindowFormatF format(Size * 1000 / 18000, 18000);
+    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
     TypeSafeInitializeBuffers(Input, &Output);
     Initialize();

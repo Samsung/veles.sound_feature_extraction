@@ -26,8 +26,8 @@ class FormatConverterBase
   FormatConverterBase() : TransformBase<FIN, FOUT>(SupportedParameters()) {
   }
 
-  virtual void SetInputFormat(const BufferFormat& format) {
-    FormatConverter::SetInputFormat(format);
+  virtual void SetInputFormat(const std::shared_ptr<BufferFormat>& format) {
+    TransformBase<FIN, FOUT>::SetInputFormat(format);
   }
 
   virtual const std::unordered_map<std::string, ParameterTraits>&
@@ -46,6 +46,9 @@ class FormatConverterBase
 
   virtual void Initialize() const noexcept {
   }
+
+ protected:
+  virtual void OnInputFormatChanged() = 0;
 };
 
 }  // namespace SpeechFeatureExtraction

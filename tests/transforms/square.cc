@@ -27,7 +27,7 @@ class SquareRawTest : public SquareRaw, public testing::Test {
     for (int i = 0; i < 32000; i++) {
       Input[0]->Data.get()[i] = i;
     }
-    RawFormat16 format(32000, 16000);
+    auto format = std::make_shared<RawFormat16>(32000, 16000);
     SetInputFormat(format);
     TypeSafeInitializeBuffers(Input, &Output);
   }

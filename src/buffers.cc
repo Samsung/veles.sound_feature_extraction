@@ -16,12 +16,13 @@
 
 namespace SpeechFeatureExtraction {
 
-Buffers::Buffers(size_t size, const BufferFormat& format) noexcept
-: format_(format) {
+Buffers::Buffers(size_t size,
+                 const std::shared_ptr<BufferFormat>& format) noexcept
+    : format_(format) {
   assert(size <= (1 << 20));
   auto buffers = new std::vector<void*>();
   buffers->resize(size);
-  auto destroy = format_.Destructor();
+  auto destroy = format_->Destructor();
   buffers_ = std::shared_ptr<std::vector<void*>>( // NOLINT(*)
       buffers, [=](std::vector<void*>* vec) {
     for (size_t i = 0; i < vec->size(); i++) {
@@ -34,8 +35,8 @@ Buffers::Buffers(size_t size, const BufferFormat& format) noexcept
 }
 
 Buffers::Buffers(const Buffers& other) noexcept
-: format_(other.format_)
-, buffers_(other.buffers_) {
+    : format_(other.format_),
+      buffers_(other.buffers_) {
 }
 
 Buffers& Buffers::operator=(const Buffers& other) noexcept {
@@ -50,7 +51,7 @@ size_t Buffers::Size() const noexcept {
 
 void Buffers::SetSize(size_t size) noexcept {
   if (size < buffers_->size()) {
-    auto destroy = format_.Destructor();
+    auto destroy = format_->Destructor();
     for (size_t i = size; i < buffers_->size(); i++) {
       if (buffers_->at(i) != nullptr) {
         destroy(buffers_->at(i));
@@ -61,7 +62,7 @@ void Buffers::SetSize(size_t size) noexcept {
   buffers_->resize(size);
 }
 
-const BufferFormat& Buffers::Format() const noexcept {
+const std::shared_ptr<BufferFormat> Buffers::Format() const noexcept {
   return format_;
 }
 

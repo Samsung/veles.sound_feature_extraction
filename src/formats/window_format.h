@@ -99,6 +99,7 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
   void SetDuration(size_t value) {
     ValidateDuration(value);
     duration_ = value;
+    size_ = SamplesCount();
   }
 
   int SamplingRate() const noexcept {
@@ -119,7 +120,7 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
   }
 
   void SetSize(size_t value) noexcept {
-    // We speculatively allocate only 2 extra numbers
+    // We may speculatively allocate only 2 extra numbers
     assert(value <= SamplesCount() + 2);
     size_ = value;
   }

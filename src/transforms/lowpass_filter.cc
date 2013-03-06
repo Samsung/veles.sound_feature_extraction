@@ -25,7 +25,7 @@ LowpassFilter::LowpassFilter() noexcept
 
 void LowpassFilter::CalculateFilter(float *filter) const noexcept {
   const float wOffset = (length_ - 1) / 2.0f;
-  int samplingRate = inputFormat_.SamplingRate();
+  int samplingRate = inputFormat_->SamplingRate();
   for (int n = 0; n < length_; n++) {
     float h;
     if (n - wOffset != 0) {

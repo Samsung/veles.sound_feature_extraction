@@ -49,11 +49,12 @@ class Transform {
 
   virtual const std::string& Description() const noexcept = 0;
 
-  virtual const BufferFormat& InputFormat() const noexcept = 0;
+  virtual const std::shared_ptr<BufferFormat> InputFormat() const noexcept = 0;
 
-  virtual void SetInputFormat(const BufferFormat& format) = 0;
+  virtual void SetInputFormat(const std::shared_ptr<BufferFormat>& format) = 0;
 
-  virtual const BufferFormat& OutputFormat() const noexcept = 0;
+  virtual const std::shared_ptr<BufferFormat> OutputFormat()
+      const noexcept = 0;
 
   virtual const std::unordered_map<std::string, ParameterTraits>&
   SupportedParameters() const noexcept = 0;
@@ -66,7 +67,8 @@ class Transform {
 
   virtual void Initialize() const noexcept = 0;
 
-  virtual Buffers* CreateOutputBuffers(const Buffers& in) const noexcept = 0;
+  virtual std::shared_ptr<Buffers> CreateOutputBuffers(const Buffers& in)
+      const noexcept = 0;
 
   virtual void Do(const Buffers& in, Buffers* out) const noexcept = 0;
   /// @}

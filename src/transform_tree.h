@@ -52,10 +52,10 @@ class IncompatibleTransformFormatException : public ExceptionBase {
   IncompatibleTransformFormatException(const Transform& parent,
                                        const Transform& child)
   : ExceptionBase("Transform \"" + child.Name() + "\" has input format \"" +
-                  child.InputFormat().Id() +
+                  child.InputFormat()->Id() +
                   "\", while the previous transform \"" +
                   parent.Name() + "\" has output format \"" +
-                  parent.OutputFormat().Id() + "\".") {
+                  parent.OutputFormat()->Id() + "\".") {
   }
 };
 
@@ -103,7 +103,8 @@ class TransformTree {
     TransformTree* Host;
     std::chrono::high_resolution_clock::duration ElapsedTime;
 
-    Node(Node* parent, const std::shared_ptr<Transform>& boundTransform);
+    Node(Node* parent, const std::shared_ptr<Transform>& boundTransform,
+         TransformTree* host = nullptr);
 
     std::shared_ptr<Node> FindIdenticalChildTransform(const Transform& base);
 
@@ -117,7 +118,9 @@ class TransformTree {
   };
 
  public:
-  explicit TransformTree(const Formats::RawFormat16& rootFormat) noexcept;
+  explicit TransformTree(Formats::RawFormat16&& rootFormat) noexcept;
+  explicit TransformTree(
+      const std::shared_ptr<Formats::RawFormat16>& rootFormat) noexcept;
   virtual ~TransformTree() noexcept;
 
   void AddChain(

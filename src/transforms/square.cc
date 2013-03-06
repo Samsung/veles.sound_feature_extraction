@@ -21,14 +21,14 @@ SquareRaw::SquareRaw()
 }
 
 void SquareRaw::OnInputFormatChanged() {
-  outputFormat_.SetSize(inputFormat_.Size());
-  outputFormat_.SetSamplingRate(inputFormat_.SamplingRate());
+  outputFormat_->SetSize(inputFormat_->Size());
+  outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
 }
 
 void SquareRaw::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw32>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_.Size()
+  buffers->Initialize(in.Size(), inputFormat_->Size()
 #ifdef __AVX__
                       , in[0]->AlignmentOffset()
 #endif
@@ -38,7 +38,7 @@ void SquareRaw::TypeSafeInitializeBuffers(
 void SquareRaw::TypeSafeDo(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw32> *out) const noexcept {
-  int arrayLength = outputFormat_.Size();
+  int arrayLength = outputFormat_->Size();
   for (size_t i = 0; i < in.Size(); i++) {
     auto inArray = in[i]->Data.get();
     auto outArray = (*out)[i]->Data.get();

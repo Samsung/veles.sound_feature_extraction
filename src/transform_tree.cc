@@ -23,8 +23,9 @@ namespace SpeechFeatureExtraction {
 
 class RootTransform : public Transform {
  public:
-  explicit RootTransform(const Formats::RawFormat16& format) noexcept
-  : format_(format) {
+  explicit RootTransform(
+      const std::shared_ptr<Formats::RawFormat16>& format) noexcept
+      : format_(format) {
   }
 
   virtual const std::string& Name() const noexcept {
@@ -37,15 +38,15 @@ class RootTransform : public Transform {
      return desc;
     }
 
-  virtual const BufferFormat& InputFormat() const noexcept {
+  virtual const std::shared_ptr<BufferFormat> InputFormat() const noexcept {
     return format_;
   }
 
-  virtual void SetInputFormat(const BufferFormat& format) {
-    format_ = format;
+  virtual void SetInputFormat(const std::shared_ptr<BufferFormat>& format) {
+    format_ = std::static_pointer_cast<Formats::RawFormat16>(format);
   }
 
-  virtual const BufferFormat& OutputFormat() const noexcept {
+  virtual const std::shared_ptr<BufferFormat> OutputFormat() const noexcept {
     return format_;
   }
 
@@ -68,7 +69,8 @@ class RootTransform : public Transform {
   virtual void Initialize() const noexcept {
   }
 
-  virtual Buffers* CreateOutputBuffers(const Buffers&) const noexcept {
+  virtual std::shared_ptr<Buffers> CreateOutputBuffers(const Buffers&)
+      const noexcept {
     return nullptr;
   }
 
@@ -77,15 +79,16 @@ class RootTransform : public Transform {
   }
 
  private:
-  Formats::RawFormat16 format_;
+  std::shared_ptr<Formats::RawFormat16> format_;
 };
 
 TransformTree::Node::Node(Node* parent,
-                          const std::shared_ptr<Transform>& boundTransform)
+                          const std::shared_ptr<Transform>& boundTransform,
+                          TransformTree* host)
 : Parent(parent)
 , BoundTransform(boundTransform)
 , BoundBuffers(nullptr)
-, Host(parent == nullptr? nullptr : parent->Host) {
+, Host(host == nullptr? parent == nullptr? nullptr : parent->Host : host) {
 }
 
 void TransformTree::Node::ActionOnEachTransform(
@@ -125,14 +128,13 @@ void TransformTree::Node::Execute(
     std::unordered_map<std::string, std::shared_ptr<Buffers>>* results) {  // NOLINT(*)
   if (Parent != nullptr) {
     if (BoundBuffers == nullptr) {
-      if (BoundTransform->OutputFormat() ==
-            Parent->BoundTransform->InputFormat() &&
+      if (*BoundTransform->OutputFormat() ==
+            *Parent->BoundTransform->InputFormat() &&
           Parent->Children.size() == 1) {
           BoundBuffers = Parent->BoundBuffers;
       } else {
-          BoundBuffers = std::shared_ptr<Buffers>(
-              BoundTransform->CreateOutputBuffers(*Parent->BoundBuffers),
-              [](Buffers *ptr) { delete[] ptr; });
+          BoundBuffers = BoundTransform->CreateOutputBuffers(
+              *Parent->BoundBuffers);
       }
     }
     auto checkPointStart = std::chrono::high_resolution_clock::now();
@@ -151,11 +153,18 @@ void TransformTree::Node::Execute(
   }
 }
 
-TransformTree::TransformTree(const Formats::RawFormat16& rootFormat) noexcept
-: root_(std::make_shared<Node>(nullptr,
-                               std::make_shared<RootTransform>(rootFormat))),
-  treeIsPrepared_(false) {
-  root_->Host = this;
+TransformTree::TransformTree(Formats::RawFormat16&& rootFormat) noexcept
+    : root_(std::make_shared<Node>(
+        nullptr, std::make_shared<RootTransform>(
+            std::make_shared<Formats::RawFormat16>(rootFormat)), this)),
+      treeIsPrepared_(false) {
+}
+
+TransformTree::TransformTree(
+    const std::shared_ptr<Formats::RawFormat16>& rootFormat) noexcept
+    : root_(std::make_shared<Node>(
+        nullptr, std::make_shared<RootTransform>(rootFormat), this)),
+      treeIsPrepared_(false) {
 }
 
 TransformTree::~TransformTree() noexcept {
@@ -171,7 +180,7 @@ void TransformTree::AddTransform(const std::string& name,
   }
   // tfit is actually a map from input format to real constructor
   auto ctorit = tfit->second.find(
-      (*currentNode)->BoundTransform->OutputFormat().Id());
+      (*currentNode)->BoundTransform->OutputFormat()->Id());
   if (ctorit == tfit->second.end()) {
     ctorit = tfit->second.begin();
   }
@@ -185,9 +194,9 @@ void TransformTree::AddTransform(const std::string& name,
   }
 
   // Add the format converter, if needed
-  if (t->InputFormat() != (*currentNode)->BoundTransform->OutputFormat()) {
+  if (*t->InputFormat() != *(*currentNode)->BoundTransform->OutputFormat()) {
     auto convName = FormatConverter::Name(
-        (*currentNode)->BoundTransform->OutputFormat(), t->InputFormat());
+        *(*currentNode)->BoundTransform->OutputFormat(), *t->InputFormat());
     AddTransform(convName, "", currentNode);
   }
 
