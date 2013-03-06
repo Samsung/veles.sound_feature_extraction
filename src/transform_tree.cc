@@ -173,7 +173,7 @@ void TransformTree::AddTransform(const std::string& name,
   auto ctorit = tfit->second.find(
       (*currentNode)->BoundTransform->OutputFormat().Id());
   if (ctorit == tfit->second.end()) {
-    throw new TransformNotRegisteredException(name);
+    ctorit = tfit->second.begin();
   }
   auto ctor = ctorit->second;
 
@@ -187,7 +187,7 @@ void TransformTree::AddTransform(const std::string& name,
   // Add the format converter, if needed
   if (t->InputFormat() != (*currentNode)->BoundTransform->OutputFormat()) {
     auto convName = FormatConverter::Name(
-        t->InputFormat(), (*currentNode)->BoundTransform->OutputFormat());
+        (*currentNode)->BoundTransform->OutputFormat(), t->InputFormat());
     AddTransform(convName, "", currentNode);
   }
 

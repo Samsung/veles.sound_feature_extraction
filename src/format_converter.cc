@@ -11,6 +11,7 @@
  */
 
 #include "src/format_converter.h"
+#include <assert.h>
 #include <string>
 
 namespace SpeechFeatureExtraction {
@@ -21,18 +22,22 @@ std::string FormatConverter::Name(const BufferFormat& in,
 }
 
 const std::string& FormatConverter::Name() const noexcept {
-  static const auto name = Name(InputFormat(), OutputFormat());  // NOLINT(*)
-  return name;
+  if (name_ == "") {
+    name_ = Name(InputFormat(), OutputFormat());
+  }
+  return name_;
 }
 
 const std::string& FormatConverter::Description() const noexcept {
-  static const auto desc = std::string("Converts data format from ") +  // NOLINT(*)
-      InputFormat().Id() + " to " + OutputFormat().Id() + ".";
-  return desc;
+  if (description_ == "") {
+    description_ = std::string("Converts data format from ") +
+        InputFormat().Id() + " to " + OutputFormat().Id() + ".";
+  }
+  return description_;
 }
 
-void FormatConverter::SetInputFormat(const BufferFormat&) {
-  std::unexpected();
+void FormatConverter::SetInputFormat(const BufferFormat& format) {
+  assert(format.Id() == InputFormat().Id());
 }
 
 const std::unordered_map<std::string, ParameterTraits>&

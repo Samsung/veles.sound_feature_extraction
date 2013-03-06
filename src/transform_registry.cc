@@ -11,6 +11,7 @@
  */
 
 #include "src/transform_registry.h"
+#include <stdio.h>
 #include <string>
 
 namespace SpeechFeatureExtraction {
@@ -19,5 +20,11 @@ std::unordered_map<std::string,
                    std::unordered_map<std::string,
                                       TransformConstructor>>
 TransformFactory;
+
+void PrintRegisteredTransforms() {
+  for (auto tit : SpeechFeatureExtraction::TransformFactory) {
+    printf("%s\n", tit.first.c_str());
+  }
+}
 
 }  // namespace SpeechFeatureExtraction

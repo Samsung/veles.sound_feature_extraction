@@ -15,6 +15,7 @@
 
 #include "src/buffer_format.h"
 #include "src/buffers.h"
+#include "src/demangle.h"
 
 namespace SpeechFeatureExtraction {
 
@@ -24,7 +25,7 @@ class BufferFormatBase : public BufferFormat {
   typedef T BufferType;
 
   BufferFormatBase() noexcept
-  : BufferFormat(typeid(T).name()) {
+  : BufferFormat(CutNamespaces(std::demangle(typeid(T).name()))) {
   }
 
   virtual std::function<void(void*)> Destructor() const noexcept {  // NOLINT(*)
@@ -32,6 +33,11 @@ class BufferFormatBase : public BufferFormat {
       auto instance = reinterpret_cast<T*>(ptr);
       delete instance;
     };
+  }
+
+ protected:
+  std::string CutNamespaces(std::string&& str) {
+    return str.substr(str.find_last_of(':') + 1, std::string::npos);
   }
 };
 

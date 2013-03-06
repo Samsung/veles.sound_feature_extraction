@@ -61,9 +61,9 @@ dnl Check if Libtool is present
 dnl Libtool is used for building share libraries 
 AC_PROG_LIBTOOL     
 
-dnl Enable pkg-config      
+dnl Enable pkg-config    
+m4_ifndef([PKG_PROG_PKG_CONFIG], AC_MSG_ERROR([Configuration requires pkg-config to be installed]))  
 PKG_PROG_PKG_CONFIG
-EMBEDDED_LIBS=
 
 dnl Check FFTF
 PKG_CHECK_MODULES([FFTF], [fftf >= 1.0])  

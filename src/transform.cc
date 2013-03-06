@@ -41,8 +41,9 @@ bool Transform::IsInverse() const noexcept {
 }
 
 std::string Transform::SafeName() const noexcept {
-  return replace_all_copy(replace_all_copy(replace_all_copy(
-      Name(), " ", ""), "->", "To"), "!", "");
+  return replace_all_copy(replace_all_copy(replace_all_copy(replace_all_copy(
+      replace_all_copy(
+      Name(), " ", ""), "->", "To"), "!", ""), ">", "_"), "<", "_");
 }
 
 std::string Transform::HtmlEscapedName() const noexcept {

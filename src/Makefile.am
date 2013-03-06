@@ -8,7 +8,7 @@ lib_LTLIBRARIES = libspfextr.la
 # Source files
 libspfextr_la_SOURCES = api.cc buffers.cc buffer_format.cc speech_features.cc \
 parameters.cc transform.cc transform_registry.cc transform_tree.cc \
-format_converter.cc
+format_converter.cc demangle.cc
 
 # Linker options
 libspfextr_la_LDFLAGS = 

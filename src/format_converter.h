@@ -41,6 +41,10 @@ class FormatConverter : public virtual Transform {
 
   static std::string Name(const BufferFormat& in,
                           const BufferFormat& out);
+
+ private:
+  mutable std::string name_;
+  mutable std::string description_;
 };
 
 }  // namespace SpeechFeatureExtraction

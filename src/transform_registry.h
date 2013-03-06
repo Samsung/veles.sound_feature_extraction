@@ -62,5 +62,7 @@ class RegisterTransform {
 
 #define REGISTER_TRANSFORM(T) RegisterTransform<T> T##RegistryInstance
 
+void PrintRegisteredTransforms();
+
 }  // namespace SpeechFeatureExtraction
 #endif  // SRC_TRANSFORM_REGISTRY_H_
