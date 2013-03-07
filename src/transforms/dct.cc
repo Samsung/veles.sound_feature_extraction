@@ -1,5 +1,5 @@
-/*! @file dft.cc
- *  @brief Discrete Fourier Transform using FFT.
+/*! @file dct.cc
+ *  @brief Discrete Cosine Transform calculation.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -10,52 +10,39 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/transforms/dft.h"
+#include "src/transforms/dct.h"
 #include <fftf/api.h>
-#include <vector>
+#include <string>
 #include "src/primitives/arithmetic-inl.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-DFT::DFT()
-: UniformFormatTransform(SupportedParameters()) {
+DCT::DCT()
+  : UniformFormatTransform(SupportedParameters()) {
 }
 
-bool DFT::HasInverse() const noexcept {
+bool DCT::HasInverse() const noexcept {
   return true;
 }
 
-void DFT::OnInputFormatChanged() {
-  outputFormat_->SetDuration(inputFormat_->Duration());
-  outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
-  if (!IsInverse()) {
-    outputFormat_->SetSize(inputFormat_->Size() + 2);
-  } else {
-    outputFormat_->SetSize(inputFormat_->Size() - 2);
-  }
-}
-
-void DFT::TypeSafeInitializeBuffers(
+void DCT::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), outputFormat_->Size());
+  buffers->Initialize(in.Size(), inputFormat_->Size());
 }
 
-void DFT::TypeSafeDo(
+void DCT::TypeSafeDo(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   int length = outputFormat_->Size();
-  if (!IsInverse()) {
-    length -= 2;
-  }
   std::vector<float*> inputs(in.Size()), outputs(in.Size());
   for (size_t i = 0; i < in.Size(); i++) {
     inputs[i] = in[i]->Data.get();
     outputs[i] = (*out)[i]->Data.get();
   }
   auto fftPlan = fftf_init_batch(
-      FFTF_TYPE_REAL,
+      FFTF_TYPE_DCT,
       IsInverse()? FFTF_DIRECTION_BACKWARD : FFTF_DIRECTION_FORWARD,
       FFTF_DIMENSION_1D,
       &length,
@@ -73,7 +60,7 @@ void DFT::TypeSafeDo(
   fftf_destroy(fftPlan);
 }
 
-REGISTER_TRANSFORM(DFT);
+REGISTER_TRANSFORM(DCT);
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction

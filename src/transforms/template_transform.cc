@@ -17,13 +17,10 @@ namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 TemplateTransform::TemplateTransform()
-: TransformBase(SupportedParameters()) {
+  : UniformFormatTransform(SupportedParameters()) {
 }
 
 void TemplateTransform::Initialize() const noexcept {
-}
-
-void TemplateTransform::OnInputFormatChanged() {
 }
 
 void TemplateTransform::SetParameter(const std::string& name,
@@ -31,13 +28,13 @@ void TemplateTransform::SetParameter(const std::string& name,
 }
 
 void TemplateTransform::TypeSafeInitializeBuffers(
-    const BuffersBase<Formats::Raw16>& in,
-    BuffersBase<Formats::Window>* buffers) const noexcept {
+    const BuffersBase<Formats::WindowF>& in,
+    BuffersBase<Formats::WindowF>* buffers) const noexcept {
 }
 
 void TemplateTransform::TypeSafeDo(
-    const BuffersBase<Formats::Raw16>& in,
-    BuffersBase<Formats::Window> *out) const noexcept {
+    const BuffersBase<Formats::WindowF>& in,
+    BuffersBase<Formats::WindowF> *out) const noexcept {
 }
 
 REGISTER_TRANSFORM(TemplateTransform);

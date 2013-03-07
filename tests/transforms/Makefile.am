@@ -1,6 +1,6 @@
 include $(top_srcdir)/Makefile.common
 
-noinst_PROGRAMS = lowpass_filter square magnitude log filter_bank
+noinst_PROGRAMS = lowpass_filter square magnitude log filter_bank real_to_complex
 
 GTEST_INCLUDE = -I$(top_srcdir)/tests/google
 
@@ -56,6 +56,17 @@ filter_bank_CPPFLAGS = $(GTEST_INCLUDE)
 
 # Used libraries
 filter_bank_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+real_to_complex_SOURCES = real_to_complex.cc
+
+# Compiler options
+real_to_complex_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+real_to_complex_LDADD = $(top_builddir)/src/libspfextr.la  \
 $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 

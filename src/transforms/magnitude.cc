@@ -25,6 +25,14 @@ Magnitude::Magnitude()
 : UniformFormatTransform(SupportedParameters()) {
 }
 
+void Magnitude::OnInputFormatChanged() {
+  if (inputFormat_->Size() % 2 == 1) {
+    fprintf(stderr, "Input buffer size is odd (%zu), truncated\n",
+            inputFormat_->Size());
+  }
+  outputFormat_->SetSize(inputFormat_->Size() / 2);
+}
+
 void Magnitude::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {

@@ -15,13 +15,13 @@
 
 #include <string>
 #include "src/formats/window_format.h"
-#include "src/transform_base.h"
+#include "src/uniform_format_transform.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 class TemplateTransform
-    : public TransformBase<Formats::WindowFormat, Formats::WindowFormat> {
+    : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
   TemplateTransform();
 
@@ -35,15 +35,14 @@ class TemplateTransform
   virtual void Initialize() const noexcept;
 
  protected:
-  virtual void OnInputFormatChanged();
-
   virtual void SetParameter(const std::string& name, const std::string& value);
 
-  virtual void TypeSafeInitializeBuffers(const BuffersBase<Formats::Raw16>& in,
-        BuffersBase<Formats::Window>* buffers) const noexcept;
+  virtual void TypeSafeInitializeBuffers(
+      const BuffersBase<Formats::WindowF>& in,
+      BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
-  virtual void TypeSafeDo(const BuffersBase<Formats::Raw16>& in,
-                          BuffersBase<Formats::Window> *out) const noexcept;
+  virtual void TypeSafeDo(const BuffersBase<Formats::WindowF>& in,
+                          BuffersBase<Formats::WindowF> *out) const noexcept;
 };
 
 }  // namespace Transforms

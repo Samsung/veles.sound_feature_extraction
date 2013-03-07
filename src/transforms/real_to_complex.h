@@ -1,5 +1,5 @@
-/*! @file magnitude.h
- *  @brief Calculate the magnitude of each complex number.
+/*! @file real_to_complex.h
+ *  @brief Converts real numbers to the corresponding complex numbers.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -10,24 +10,23 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_MAGNITUDE_H_
-#define SRC_TRANSFORMS_MAGNITUDE_H_
+#ifndef SRC_TRANSFORMS_REAL_TO_COMPLEX_H_
+#define SRC_TRANSFORMS_REAL_TO_COMPLEX_H_
 
+#include <string>
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-class Magnitude
+class RealToComplex
     : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
-  Magnitude();
+  RealToComplex();
 
-  TRANSFORM_INTRO("Magnitude",
-                  "Calculates the magnitude of each complex number, that is, "
-                  " a square root of the sum of squared real and imaginary "
-                  "parts.")
+  TRANSFORM_INTRO("R2C", "Converts each real number to complex "
+                         "number (imaginary part is set to zero).")
 
   TRANSFORM_PARAMETERS()
 
@@ -36,8 +35,7 @@ class Magnitude
 
   virtual void TypeSafeInitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers)
-  const noexcept;
+      BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
   virtual void TypeSafeDo(const BuffersBase<Formats::WindowF>& in,
                           BuffersBase<Formats::WindowF> *out) const noexcept;
@@ -45,4 +43,4 @@ class Magnitude
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // SRC_TRANSFORMS_MAGNITUDE_H_
+#endif  // SRC_TRANSFORMS_REAL_TO_COMPLEX_H_

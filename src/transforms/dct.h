@@ -1,5 +1,5 @@
-/*! @file magnitude.h
- *  @brief Calculate the magnitude of each complex number.
+/*! @file dct.h
+ *  @brief Discrete Cosine Transform calculation.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -10,34 +10,32 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_MAGNITUDE_H_
-#define SRC_TRANSFORMS_MAGNITUDE_H_
+#ifndef SRC_TRANSFORMS_DCT_H_
+#define SRC_TRANSFORMS_DCT_H_
 
+#include <string>
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-class Magnitude
+class DCT
     : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
-  Magnitude();
+  DCT();
 
-  TRANSFORM_INTRO("Magnitude",
-                  "Calculates the magnitude of each complex number, that is, "
-                  " a square root of the sum of squared real and imaginary "
-                  "parts.")
+  TRANSFORM_INTRO("DCT", "Performs Discrete Cosine Transform "
+                         "on the signal.")
 
   TRANSFORM_PARAMETERS()
 
- protected:
-  virtual void OnInputFormatChanged();
+  virtual bool HasInverse() const noexcept;
 
+ protected:
   virtual void TypeSafeInitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers)
-  const noexcept;
+      BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
   virtual void TypeSafeDo(const BuffersBase<Formats::WindowF>& in,
                           BuffersBase<Formats::WindowF> *out) const noexcept;
@@ -45,4 +43,4 @@ class Magnitude
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // SRC_TRANSFORMS_MAGNITUDE_H_
+#endif  // SRC_TRANSFORMS_DCT_H_
