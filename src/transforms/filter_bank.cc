@@ -110,15 +110,12 @@ void FilterBank::AddTriangularFilter(float center, float halfWidth) const {
   Linear triangle is in the scale space, we convert it to the linear frequency
   space. Thus, the triangle becomes nonlinear, curvy:
 
-       /\
-       | ----
-      /      \
-      |       ---
-      |          \
-     /            \
-     |             --
-     |               \
-    /                 |
+       xxxxxxx
+     xxx      xx
+    xx         xxx
+    x             xx
+   xx              xx
+   x                 x
 ------------------------
   left* center*    right*
 */

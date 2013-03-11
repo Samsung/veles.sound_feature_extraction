@@ -120,3 +120,43 @@ float *zeropaddingex(const float *ptr, size_t length, size_t *newLength,
   memsetf(ret + length, nl - length, .0f);
   return ret;
 }
+
+float *rmemcpyf(float *__restrict dest,
+                const float *__restrict src, size_t length) {
+#ifdef __AVX__
+  for (size_t i = 0; i < length - 7; i += 8) {
+    __m256 vec = _mm256_loadu_ps(src + i);
+    vec = _mm256_permute2f128_ps(vec, vec, 1);
+    vec = _mm256_permute_ps(vec, 0x1B);
+    _mm256_storeu_ps(dest + length - i - 8, vec);
+  }
+
+  for (size_t i = ((length >> 3) << 3); i < length; i++) {
+    dest[length - i - 1] = src[i];
+  }
+#elif defined(__ARM_NEON__)
+  for (size_t i = 0; i < length - 7; i += 8) {
+    float32x4_t vec = vld1q_f32(src + i);
+    vec = vrev64q_f32(vec);
+    vst1q_f32(dest + length - i - 4, vec);
+  }
+
+  for (size_t i = ((length >> 2) << 2); i < length; i++) {
+    dest[length - i - 1] = src[i];
+  }
+#else
+  for (size_t i = 0; i < length; i++) {
+    dest[i] = src[length - i - 1];
+  }
+#endif
+  return dest;
+}
+
+float *crmemcpyf(float *__restrict dest,
+                 const float *__restrict src, size_t length) {
+  for (size_t i = 0; i < length; i += 2) {
+    dest[i] = src[length - i - 2];
+    dest[i + 1] = src[length - i - 1];
+  }
+  return dest;
+}

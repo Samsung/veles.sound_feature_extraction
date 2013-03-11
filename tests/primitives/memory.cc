@@ -99,4 +99,17 @@ TEST(Memory, zeropadding) {
   free(ptr);
 }
 
+TEST(Memory, rmemcpyf) {
+  float src[25] __attribute__ ((aligned (32)));
+  int len = sizeof(src) / sizeof(float);
+  for (int i = 0; i < len; i++) {
+    src[i] = i;
+  }
+  float dest[25] __attribute__ ((aligned (32)));
+  rmemcpyf(dest + 1, src + 1, len - 1);
+  for (int i = 1; i < len; i++) {
+    ASSERT_EQ(dest[i], src[len - i]);
+  }
+}
+
 #include "tests/google/src/gtest_main.cc"

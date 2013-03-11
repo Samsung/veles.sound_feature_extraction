@@ -1,5 +1,5 @@
-/*! @file magnitude.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::Magnitude.
+/*! @file complex_magnitude.cc
+ *  @brief Tests for SpeechFeatureExtraction::Transforms::ComplexMagnitude.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,13 +13,13 @@
 
 #include <gtest/gtest.h>
 #include <math.h>
-#include "src/transforms/magnitude.h"
+#include "src/transforms/complex_magnitude.h"
 
 using namespace SpeechFeatureExtraction::Formats;
 using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::Magnitude;
+using SpeechFeatureExtraction::Transforms::ComplexMagnitude;
 
-class MagnitudeTest : public Magnitude, public testing::Test {
+class ComplexMagnitudeTest : public ComplexMagnitude, public testing::Test {
  public:
   BuffersBase<WindowF> Input;
   BuffersBase<WindowF> Output;
@@ -44,7 +44,7 @@ class MagnitudeTest : public Magnitude, public testing::Test {
   ASSERT_LT(a - EPSILON, b); \
 } while (0)
 
-TEST_F(MagnitudeTest, Do) {
+TEST_F(ComplexMagnitudeTest, Do) {
   TypeSafeDo(Input, &Output);
   for (int i = 0; i < Size / 2; i++) {
     float m = Output[0]->Data.get()[i];

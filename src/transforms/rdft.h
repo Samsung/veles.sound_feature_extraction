@@ -1,5 +1,5 @@
-/*! @file magnitude.h
- *  @brief Calculate the magnitude of each complex number.
+/*! @file rft.h
+ *  @brief Discrete Fourier Transform on real input using FFT.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_MAGNITUDE_H_
-#define SRC_TRANSFORMS_MAGNITUDE_H_
+#ifndef SRC_TRANSFORMS_DFT_H_
+#define SRC_TRANSFORMS_DFT_H_
 
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
@@ -19,25 +19,24 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-class Magnitude
+class RDFT
     : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
-  Magnitude();
+  RDFT();
 
-  TRANSFORM_INTRO("Magnitude",
-                  "Calculates the magnitude of each complex number, that is, "
-                  " a square root of the sum of squared real and imaginary "
-                  "parts.")
+  TRANSFORM_INTRO("RDFT", "Performs Discrete Fourier Transform "
+                         "on the input signal (using real FFT).")
 
   TRANSFORM_PARAMETERS()
+
+  virtual bool HasInverse() const noexcept;
 
  protected:
   virtual void OnInputFormatChanged();
 
   virtual void TypeSafeInitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers)
-  const noexcept;
+      BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
   virtual void TypeSafeDo(const BuffersBase<Formats::WindowF>& in,
                           BuffersBase<Formats::WindowF> *out) const noexcept;
@@ -45,4 +44,4 @@ class Magnitude
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // SRC_TRANSFORMS_MAGNITUDE_H_
+#endif  // SRC_TRANSFORMS_DFT_H_

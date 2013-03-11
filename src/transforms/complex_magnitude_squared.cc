@@ -1,4 +1,4 @@
-/*! @file magnitude.cc
+/*! @file complex_magnitude.cc
  *  @brief Calculate the magnitude of each complex number.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -10,7 +10,7 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/transforms/magnitude.h"
+#include "src/transforms/complex_magnitude_squared.h"
 #include <math.h>
 #ifdef __AVX__
 #include <immintrin.h>
@@ -21,11 +21,13 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-Magnitude::Magnitude()
+ComplexMagnitudeSquared::ComplexMagnitudeSquared()
 : UniformFormatTransform(SupportedParameters()) {
 }
 
-void Magnitude::OnInputFormatChanged() {
+void ComplexMagnitudeSquared::OnInputFormatChanged() {
+  outputFormat_->SetDuration(inputFormat_->Duration());
+  outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
   if (inputFormat_->Size() % 2 == 1) {
     fprintf(stderr, "Input buffer size is odd (%zu), truncated\n",
             inputFormat_->Size());
@@ -33,13 +35,13 @@ void Magnitude::OnInputFormatChanged() {
   outputFormat_->SetSize(inputFormat_->Size() / 2);
 }
 
-void Magnitude::TypeSafeInitializeBuffers(
+void ComplexMagnitudeSquared::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), inputFormat_->Size() / 2);
 }
 
-void Magnitude::TypeSafeDo(
+void ComplexMagnitudeSquared::TypeSafeDo(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
@@ -55,13 +57,12 @@ void Magnitude::TypeSafeDo(
       __m256 r1 = _mm256_permute2f128_ps(vec1, vec2, 0x20);
       __m256 r2 = _mm256_permute2f128_ps(vec1, vec2, 0x31);
       __m256 res = _mm256_hadd_ps(r1, r2);
-      res = _mm256_sqrt_ps(res);
       _mm256_store_ps(output + i / 2, res);
     }
     for (int i = ((length >> 4) << 4); i < length; i += 2) {
       float re = input[i];
       float im = input[i + 1];
-      output[i / 2] = sqrtf(re * re + im * im);
+      output[i / 2] = re * re + im * im;
     }
 #elif defined(__ARM_NEON__)
     for (int i = 0; i < length - 3; i += 4) {
@@ -70,13 +71,10 @@ void Magnitude::TypeSafeDo(
       float32x2_t sums = vpadd_f32(vget_high_f32(sqrvec), vget_low_f32(sqrvec));
       vst1_f32(sums, output + i / 2);
     }
-    for (int i = 0; i < length - 3; i++) {
-      output[i] = sqrtf(output[i]);
-    }
     for (int i = ((length >> 2) << 2); i < length; i += 2) {
       float re = input[i];
       float im = input[i + 1];
-      output[i / 2] = sqrtf(re * re + im * im);
+      output[i / 2] = re * re + im * im;
     }
 #else
     for (int i = 0; i < length; i += 2) {
@@ -88,7 +86,7 @@ void Magnitude::TypeSafeDo(
   }
 }
 
-REGISTER_TRANSFORM(Magnitude);
+REGISTER_TRANSFORM(ComplexMagnitudeSquared);
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction

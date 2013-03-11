@@ -10,7 +10,7 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/transforms/dft.h"
+#include "src/transforms/rdft.h"
 #include <fftf/api.h>
 #include <vector>
 #include "src/primitives/arithmetic-inl.h"
@@ -18,15 +18,15 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-DFT::DFT()
+RDFT::RDFT()
 : UniformFormatTransform(SupportedParameters()) {
 }
 
-bool DFT::HasInverse() const noexcept {
+bool RDFT::HasInverse() const noexcept {
   return true;
 }
 
-void DFT::OnInputFormatChanged() {
+void RDFT::OnInputFormatChanged() {
   outputFormat_->SetDuration(inputFormat_->Duration());
   outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
   if (!IsInverse()) {
@@ -36,13 +36,13 @@ void DFT::OnInputFormatChanged() {
   }
 }
 
-void DFT::TypeSafeInitializeBuffers(
+void RDFT::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), outputFormat_->Size());
 }
 
-void DFT::TypeSafeDo(
+void RDFT::TypeSafeDo(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   int length = outputFormat_->Size();
@@ -73,7 +73,7 @@ void DFT::TypeSafeDo(
   fftf_destroy(fftPlan);
 }
 
-REGISTER_TRANSFORM(DFT);
+REGISTER_TRANSFORM(RDFT);
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction

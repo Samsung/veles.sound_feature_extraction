@@ -1,6 +1,7 @@
 include $(top_srcdir)/Makefile.common
 
-noinst_PROGRAMS = lowpass_filter square magnitude log filter_bank real_to_complex
+noinst_PROGRAMS = lowpass_filter square complex_magnitude log filter_bank \
+complex_magnitude_squared real_to_complex
 
 GTEST_INCLUDE = -I$(top_srcdir)/tests/google
 
@@ -27,13 +28,24 @@ $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 
 # Sources 
-magnitude_SOURCES = magnitude.cc
+complex_magnitude_SOURCES = complex_magnitude.cc
 
 # Compiler options
-magnitude_CPPFLAGS = $(GTEST_INCLUDE)
+complex_magnitude_CPPFLAGS = $(GTEST_INCLUDE)
 
 # Used libraries
-magnitude_LDADD = $(top_builddir)/src/libspfextr.la  \
+complex_magnitude_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+complex_magnitude_squared_SOURCES = complex_magnitude_squared.cc
+
+# Compiler options
+complex_magnitude_squared_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+complex_magnitude_squared_LDADD = $(top_builddir)/src/libspfextr.la  \
 $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 

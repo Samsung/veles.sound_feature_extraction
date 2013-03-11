@@ -132,6 +132,17 @@ float *zeropaddingex(const float *ptr, size_t length, size_t *newLength,
                      size_t additionalLength)
 NOTNULL((1, 3)) MALLOC;
 
+/// @brief Reverse memcpy() for arrays of floating point numbers.
+/// That is, dest[i] = src[n - i - 1], i = 0..(n-1).
+float *rmemcpyf(float *__restrict dest,
+                const float *__restrict src, size_t length) NOTNULL((1, 2));
+
+/// @brief Reverse memcpy() for arrays of floating point complex numbers.
+/// That is, dest[i] = src[n - i - 2], i = 0..(n-1), i += 2;
+/// dest[i + 1] = src[n - i - 1], i = 1..(n-1), i += 2.
+float *crmemcpyf(float *__restrict dest,
+                 const float *__restrict src, size_t length) NOTNULL((1, 2));
+
 #ifdef __cplusplus
 }
 #endif

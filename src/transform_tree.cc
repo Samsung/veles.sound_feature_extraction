@@ -13,6 +13,7 @@
 #include "src/transform_tree.h"
 #include <assert.h>
 #include <fstream>
+#include <iomanip>
 #include <string>
 #include <utility>
 #include "src/formats/raw_format.h"
@@ -309,12 +310,12 @@ TransformTree::ExecutionTimeReport() const noexcept {
   if (allIt == transformsCache_.end()) {
     return ret;
   }
-  auto allTime = allIt->second.ElapsedTime;
+  auto allTime = allIt->second.ElapsedTime.count();
   for (auto cit : transformsCache_) {
     if (cit.first != "All") {
-      ret.insert(std::make_pair(cit.first, cit.second.ElapsedTime / allTime));
+      ret.insert(std::make_pair(cit.first, (cit.second.ElapsedTime.count() + .0f) / allTime));
     } else {
-      ret.insert(std::make_pair(cit.first, allTime.count()));
+      ret.insert(std::make_pair(cit.first, allTime));
     }
   }
   return std::move(ret);
@@ -334,8 +335,8 @@ void TransformTree::Dump(const std::string& dotFileName) const {
     }
   }
   float redShift = redThreshold * maxTimeRatio;
-  std::chrono::high_resolution_clock::duration::rep rep(timeReport["All"]);
-  auto allTime = std::chrono::high_resolution_clock::duration(rep);
+  const int initialLight = 0x30;
+  auto allTime = timeReport["All"];
 
   std::ofstream fw;
   fw.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -349,33 +350,41 @@ void TransformTree::Dump(const std::string& dotFileName) const {
     fw << "\t" << t->SafeName() << counters[t->Name()]++ << " [";
     if (includeTime && timeReport[t->Name()] > redShift) {
       fw << "style=\"filled\", fillcolor=\"#";
-      fw << std::hex << static_cast<int>(
-          (timeReport[t->Name()] - redShift) / (maxTimeRatio - redShift) * 255)
-         << "4040\", ";
+      int light = 255 - (timeReport[t->Name()] - redShift) /
+          (maxTimeRatio - redShift) * (255 - initialLight);
+      // this is crazy printing of smth like ff4040
+      fw << "ff" << std::hex << std::setw(2) << std::setfill('0') << light
+         << std::setw(2) << std::setfill('0') << light << "\", ";
     }
     fw << "label=<" << t->HtmlEscapedName()
         << "<br /><font point-size=\"10\">";
     if (includeTime) {
       fw << "<b>"
-          << static_cast<int>((node.ElapsedTime / allTime * 100))
+          << std::to_string(static_cast<int>(((node.ElapsedTime.count() * 100) / allTime)))
           << "% ("
-          << static_cast<int>(timeReport[t->Name()] / timeReport["All"] * 100)
-          << "%)</b><br /> <br />";
+          << std::to_string(static_cast<int>(timeReport[t->Name()] * 100))
+          << "%)</b>";
     }
-    for (auto p : t->CurrentParameters()) {
-      auto isDefault = false;
-      isDefault = p.second ==
-          t->SupportedParameters().find(p.first)->second.DefaultValue;
-      if (isDefault) {
-        fw << "<font color=\"gray\">";
+    if (t->CurrentParameters().size() > 1 ||
+        (t->CurrentParameters().size() > 0 && t->HasInverse())) {
+      fw << "<br /> <br />";
+      for (auto p : t->CurrentParameters()) {
+        if (p.first == "inverse" && !t->HasInverse()) {
+          continue;
+        }
+        auto isDefault = false;
+        isDefault = p.second ==
+            t->SupportedParameters().find(p.first)->second.DefaultValue;
+        if (isDefault) {
+          fw << "<font color=\"gray\">";
+        }
+        fw << p.first << " = " << p.second;
+        if (isDefault) {
+          fw << "</font>";
+        }
+        fw << "<br />";
       }
-      fw << p.first << " = " << p.second;
-      if (isDefault) {
-        fw << "</font>";
-      }
-      fw << "<br />";
-    }
-    if (t->CurrentParameters().size() == 0) {
+    } else {
       fw << " ";
     }
     fw << "</font>>]" << std::endl;
@@ -383,7 +392,7 @@ void TransformTree::Dump(const std::string& dotFileName) const {
   fw << "\tOther [label=<Other";
   if (includeTime) {
     fw << "<br /><font point-size=\"10\"><b>"
-        << timeReport["Other"] / timeReport["All"] * 100
+        << std::to_string(static_cast<int>(timeReport["Other"]))
         << "%</b></font>";
   }
   fw << ">]" << std::endl << std::endl;
