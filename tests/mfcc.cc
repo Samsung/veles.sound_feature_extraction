@@ -25,7 +25,7 @@ TEST(MFCC, Calculation) {
   try {
     TransformTree tt( { 48000, 16000 } );
     tt.AddChain("MFCC", { { "Window", "length=32" }, { "RDFT", "" },
-        { "ComplexMagnitudeSquared", "" }, { "FilterBank", "" },
+        { "Energy", "" }, { "FilterBank", "" },
         { "Log", "" }, { "Square", "" }, { "UnpackRDFT", "" }, { "DCT", "" } });
     BuffersBase<Raw16> buffers;
     buffers.Initialize(1, 48000, 0);

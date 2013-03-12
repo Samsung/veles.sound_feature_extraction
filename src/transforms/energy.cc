@@ -10,7 +10,7 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/transforms/complex_magnitude_squared.h"
+#include "src/transforms/energy.h"
 #include <math.h>
 #ifdef __AVX__
 #include <immintrin.h>
@@ -21,11 +21,11 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-ComplexMagnitudeSquared::ComplexMagnitudeSquared()
+Energy::Energy()
 : UniformFormatTransform(SupportedParameters()) {
 }
 
-void ComplexMagnitudeSquared::OnInputFormatChanged() {
+void Energy::OnInputFormatChanged() {
   outputFormat_->SetDuration(inputFormat_->Duration());
   outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
   if (inputFormat_->Size() % 2 == 1) {
@@ -35,13 +35,13 @@ void ComplexMagnitudeSquared::OnInputFormatChanged() {
   outputFormat_->SetSize(inputFormat_->Size() / 2);
 }
 
-void ComplexMagnitudeSquared::TypeSafeInitializeBuffers(
+void Energy::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), inputFormat_->Size() / 2);
 }
 
-void ComplexMagnitudeSquared::TypeSafeDo(
+void Energy::TypeSafeDo(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
@@ -86,7 +86,7 @@ void ComplexMagnitudeSquared::TypeSafeDo(
   }
 }
 
-REGISTER_TRANSFORM(ComplexMagnitudeSquared);
+REGISTER_TRANSFORM(Energy);
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction

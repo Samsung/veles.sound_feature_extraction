@@ -39,7 +39,7 @@ class BufferFormat {
 
   virtual ~BufferFormat() noexcept {}
 
-  const std::string& Id() const noexcept;
+  virtual const std::string& Id() const noexcept;
 
   bool operator==(const BufferFormat& other) const noexcept;
   bool operator!=(const BufferFormat& other) const noexcept;

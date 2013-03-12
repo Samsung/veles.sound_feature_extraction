@@ -23,19 +23,11 @@ UnpackRDFT::UnpackRDFT()
 void UnpackRDFT::OnInputFormatChanged() {
   outputFormat_->SetDuration(inputFormat_->Duration());
   outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
-  auto realTest = inputFormat_->Size() - 1;
-  if ((realTest & (realTest - 1)) == 0) {
-    // that is, if realTest is a power of 2
-    outputFormat_->SetSize(realTest * 2);
-    return;
+  if (inputFormat_->Size() % 2 == 1) {
+    outputFormat_->SetSize((inputFormat_->Size() - 1) * 2);
+  } else {
+    outputFormat_->SetSize((inputFormat_->Size() - 2) * 2);
   }
-  auto complexTest = inputFormat_->Size() - 2;
-  if ((complexTest & (complexTest - 1)) == 0) {
-    // that is, if complexTest is a power of 2
-    outputFormat_->SetSize(complexTest * 2);
-    return;
-  }
-  throw new InvalidPackedWindowSizeException(inputFormat_->Size());
 }
 
 void UnpackRDFT::TypeSafeInitializeBuffers(

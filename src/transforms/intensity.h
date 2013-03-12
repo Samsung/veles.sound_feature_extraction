@@ -1,5 +1,5 @@
-/*! @file unpack_rdft.h
- *  @brief Unpacks data after applying RDFT.
+/*! @file intensity.h
+ *  @brief Sound intensity calculation.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -10,36 +10,35 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_UNPACK_RDFT_H_
-#define SRC_TRANSFORMS_UNPACK_RDFT_H_
+#ifndef SRC_TRANSFORMS_INTENSITY_H_
+#define SRC_TRANSFORMS_INTENSITY_H_
 
 #include <string>
 #include "src/formats/window_format.h"
-#include "src/uniform_format_transform.h"
+#include "src/formats/single_format.h"
+#include "src/transform_base.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-class UnpackRDFT
-    : public UniformFormatTransform<Formats::WindowFormatF> {
+class Intensity
+    : public TransformBase<Formats::WindowFormatF, Formats::SingleFormat> {
  public:
-  UnpackRDFT();
+  Intensity();
 
-  TRANSFORM_INTRO("UnpackRDFT", "Unpacks the result after applying RDFT.")
+  TRANSFORM_INTRO("Intensity", "Unnormalized sound intensity calculation.")
 
   TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void OnInputFormatChanged();
-
   virtual void TypeSafeInitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept;
+      BuffersBase<float>* buffers) const noexcept;
 
   virtual void TypeSafeDo(const BuffersBase<Formats::WindowF>& in,
-                          BuffersBase<Formats::WindowF> *out) const noexcept;
+                          BuffersBase<float> *out) const noexcept;
 };
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // SRC_TRANSFORMS_UNPACK_RDFT_H_
+#endif  // SRC_TRANSFORMS_INTENSITY_H_

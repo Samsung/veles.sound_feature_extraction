@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_COMPLEX_MAGNITUDE_SQUARED_H_
-#define SRC_TRANSFORMS_COMPLEX_MAGNITUDE_SQUARED_H_
+#ifndef SRC_TRANSFORMS_ENERGY_H_
+#define SRC_TRANSFORMS_ENERGY_H_
 
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
@@ -19,15 +19,14 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-class ComplexMagnitudeSquared
+class Energy
     : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
-  ComplexMagnitudeSquared();
+  Energy();
 
-  TRANSFORM_INTRO("ComplexMagnitudeSquared",
-                  "Calculates the magnitude of each complex number, that is, "
-                  " a square root of the sum of squared real and imaginary "
-                  "parts.")
+  TRANSFORM_INTRO("Energy",
+                  "Calculates the squared magnitude of each complex number, "
+                  "that is, the sum of squared real and imaginary parts.")
 
   TRANSFORM_PARAMETERS()
 
@@ -45,4 +44,4 @@ class ComplexMagnitudeSquared
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // SRC_TRANSFORMS_COMPLEX_MAGNITUDE_SQUARED_H_
+#endif  // SRC_TRANSFORMS_ENERGY_H_

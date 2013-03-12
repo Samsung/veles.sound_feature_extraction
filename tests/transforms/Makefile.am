@@ -1,7 +1,7 @@
 include $(top_srcdir)/Makefile.common
 
 noinst_PROGRAMS = lowpass_filter square complex_magnitude log filter_bank \
-complex_magnitude_squared real_to_complex unpack_rdft
+energy real_to_complex unpack_rdft intensity
 
 GTEST_INCLUDE = -I$(top_srcdir)/tests/google
 
@@ -39,13 +39,13 @@ $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 
 # Sources 
-complex_magnitude_squared_SOURCES = complex_magnitude_squared.cc
+energy_SOURCES = energy.cc
 
 # Compiler options
-complex_magnitude_squared_CPPFLAGS = $(GTEST_INCLUDE)
+energy_CPPFLAGS = $(GTEST_INCLUDE)
 
 # Used libraries
-complex_magnitude_squared_LDADD = $(top_builddir)/src/libspfextr.la  \
+energy_LDADD = $(top_builddir)/src/libspfextr.la  \
 $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 
@@ -90,6 +90,17 @@ unpack_rdft_CPPFLAGS = $(GTEST_INCLUDE)
 
 # Used libraries
 unpack_rdft_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+intensity_SOURCES = intensity.cc
+
+# Compiler options
+intensity_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+intensity_LDADD = $(top_builddir)/src/libspfextr.la  \
 $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 
