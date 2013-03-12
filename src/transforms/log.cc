@@ -57,6 +57,7 @@ void Log::TypeSafeInitializeBuffers(
 void Log::TypeSafeDo(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
+  assert(!IsInverse() && "Not implemented yet");
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();

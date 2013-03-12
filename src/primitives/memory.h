@@ -31,7 +31,7 @@ extern "C" {
 /// (32 - (ptr % 32)) / sizeof(float),
 /// @endcode
 /// else 0.
-int align_complement_f32(const float *ptr) NOTNULL((1));
+int align_complement_f32(const float *ptr) NOTNULL(1);
 /// @brief Returns the alignment complement of a pointer to a short integer
 /// array.
 /// @param ptr The pointer to a short integer array.
@@ -40,7 +40,7 @@ int align_complement_f32(const float *ptr) NOTNULL((1));
 /// (32 - (ptr % 32)) / sizeof(int16_t),
 /// @endcode
 /// else 0.
-int align_complement_i16(const int16_t *ptr) NOTNULL((1));
+int align_complement_i16(const int16_t *ptr) NOTNULL(1);
 /// @brief Returns the alignment complement of a pointer to an integer array.
 /// @param ptr The pointer to an integer array.
 /// @return If ptr is not aligned,
@@ -48,7 +48,7 @@ int align_complement_i16(const int16_t *ptr) NOTNULL((1));
 /// (32 - (ptr % 32)) / sizeof(int32_t),
 /// @endcode
 /// else 0.
-int align_complement_i32(const int32_t *ptr) NOTNULL((1));
+int align_complement_i32(const int32_t *ptr) NOTNULL(1);
 #endif
 
 /// @brief Allocates an aligned block in the memory.
@@ -81,7 +81,7 @@ float *mallocf(size_t length) MALLOC;
 /// @endcode
 /// So array[i] becomes equal to 1.0f, i = 0..99.
 /// @note This function tries to use SIMD instructions available on the host.
-void memsetf(float *ptr, size_t length, float value) NOTNULL((1));
+void memsetf(float *ptr, size_t length, float value) NOTNULL(1);
 
 /// @brief Allocates a new aligned memory block of size
 /// (nearest power of 2 greater than length) * 2, the contents in
@@ -113,7 +113,7 @@ void memsetf(float *ptr, size_t length, float value) NOTNULL((1));
 /// @endcode
 /// @note This function tries to use SIMD instructions available on the host.
 float *zeropadding(const float *ptr, size_t length, size_t *newLength)
-NOTNULL((1, 3)) MALLOC;
+NOTNULL(1, 3) MALLOC;
 
 /// @brief Acts like zeropadding(), but it is possible to request some extra
 /// space at the end of the newly allocated array, which is too filled
@@ -130,18 +130,18 @@ NOTNULL((1, 3)) MALLOC;
 /// @note This function tries to use SIMD instructions available on the host.
 float *zeropaddingex(const float *ptr, size_t length, size_t *newLength,
                      size_t additionalLength)
-NOTNULL((1, 3)) MALLOC;
+NOTNULL(1, 3) MALLOC;
 
 /// @brief Reverse memcpy() for arrays of floating point numbers.
 /// That is, dest[i] = src[n - i - 1], i = 0..(n-1).
 float *rmemcpyf(float *__restrict dest,
-                const float *__restrict src, size_t length) NOTNULL((1, 2));
+                const float *__restrict src, size_t length) NOTNULL(1, 2);
 
 /// @brief Reverse memcpy() for arrays of floating point complex numbers.
 /// That is, dest[i] = src[n - i - 2], i = 0..(n-1), i += 2;
 /// dest[i + 1] = src[n - i - 1], i = 1..(n-1), i += 2.
 float *crmemcpyf(float *__restrict dest,
-                 const float *__restrict src, size_t length) NOTNULL((1, 2));
+                 const float *__restrict src, size_t length) NOTNULL(1, 2);
 
 #ifdef __cplusplus
 }

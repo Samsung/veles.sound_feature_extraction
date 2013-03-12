@@ -13,6 +13,8 @@
 #ifndef SRC_PRIMITIVES_ARITHMETIC_INL_H_
 #define SRC_PRIMITIVES_ARITHMETIC_INL_H_
 
+#include <spfextr/config.h>
+
 #ifdef __cplusplus
 #define __STDC_LIMIT_MACROS
 #endif
@@ -22,54 +24,54 @@
 #include <stdint.h>
 #include "src/primitives/memory.h"
 
-INLINE NOTNULL((1, 3)) void int16_to_float_na(const int16_t *data,
+INLINE NOTNULL(1, 3) void int16_to_float_na(const int16_t *data,
                                               size_t length, float *res) {
   for (size_t i = 0; i < length; i++) {
     res[i] = (float)data[i];
   }
 }
 
-INLINE NOTNULL((1, 3)) void float_to_int16_na(const float *data,
+INLINE NOTNULL(1, 3) void float_to_int16_na(const float *data,
                                               size_t length, int16_t *res) {
   for (size_t i = 0; i < length; i++) {
     res[i] = (int16_t)data[i];
   }
 }
 
-INLINE NOTNULL((1, 3)) void int32_to_float_na(const int32_t *data,
+INLINE NOTNULL(1, 3) void int32_to_float_na(const int32_t *data,
                                               size_t length, float *res) {
   for (size_t i = 0; i < length; i++) {
     res[i] = (float)data[i];
   }
 }
 
-INLINE NOTNULL((1, 3)) void float_to_int32_na(const float *data,
+INLINE NOTNULL(1, 3) void float_to_int32_na(const float *data,
                                               size_t length, int32_t *res) {
   for (size_t i = 0; i < length; i++) {
     res[i] = (int32_t)data[i];
   }
 }
 
-INLINE NOTNULL((1, 3)) void int32_to_int16_na(const int32_t *data,
+INLINE NOTNULL(1, 3) void int32_to_int16_na(const int32_t *data,
                                               size_t length, int16_t *res) {
   for (size_t i = 0; i < length; i++) {
     res[i] = (int16_t)data[i];
   }
 }
 
-INLINE NOTNULL((1, 3)) void int16_to_int32_na(const int16_t *data,
+INLINE NOTNULL(1, 3) void int16_to_int32_na(const int16_t *data,
                                               size_t length, int32_t *res) {
   for (size_t i = 0; i < length; i++) {
     res[i] = (int32_t)data[i];
   }
 }
 
-INLINE NOTNULL((1, 2, 3)) void real_multiply_na(
+INLINE NOTNULL(1, 2, 3) void real_multiply_na(
     const float *a, const float *b, float *res) {
   *res = *a * *b;
 }
 
-INLINE NOTNULL((1, 2, 3)) void complex_multiply_na(
+INLINE NOTNULL(1, 2, 3) void complex_multiply_na(
     const float *a, const float *b, float *res) {
   float re1 = (a)[0];
   float im1 = a[1];
@@ -79,7 +81,7 @@ INLINE NOTNULL((1, 2, 3)) void complex_multiply_na(
   res[1] = re1 * im2 + re2 * im1;
 }
 
-INLINE NOTNULL((1, 4)) void real_multiply_scalar_na(const float *array,
+INLINE NOTNULL(1, 4) void real_multiply_scalar_na(const float *array,
                                                     size_t length,
                                                     float value, float *res) {
   for (size_t i = 0; i < length; i++) {
@@ -100,7 +102,7 @@ INLINE NOTNULL((1, 4)) void real_multiply_scalar_na(const float *array,
 /// @param b Second vector.
 /// @param res Result vector.
 /// @pre a, b and res must be aligned to 32 bytes.
-INLINE NOTNULL((1, 2, 3)) void int16_multiply(
+INLINE NOTNULL(1, 2, 3) void int16_multiply(
     const int16_t *a, const int16_t *b, int32_t *res) {
   __m256i aVec = _mm256_load_si256((const __m256i*)a);
   __m256i bVec = _mm256_load_si256((const __m256i*)b);
@@ -120,7 +122,7 @@ INLINE NOTNULL((1, 2, 3)) void int16_multiply(
 /// @note align_complement_i16(data) % 8 must be equal to
 /// align_complement_f32(res) % 8.
 /// @note res must have at least the same length as data.
-INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
+INLINE NOTNULL(1, 3) void int16_to_float(const int16_t *data,
                                            size_t length, float *res) {
   int startIndex = align_complement_i16(data);
   assert(startIndex % 8 == align_complement_f32(res) % 8);
@@ -144,7 +146,7 @@ INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
   }
 }
 
-INLINE NOTNULL((1, 3)) void float_to_int16(const float *data,
+INLINE NOTNULL(1, 3) void float_to_int16(const float *data,
                                            size_t length, int16_t *res) {
   int startIndex = align_complement_f32(data);
   assert(startIndex % 16 == align_complement_i16(res) % 16);
@@ -167,7 +169,7 @@ INLINE NOTNULL((1, 3)) void float_to_int16(const float *data,
   }
 }
 
-INLINE NOTNULL((1, 3)) void int32_to_float(const int32_t *data,
+INLINE NOTNULL(1, 3) void int32_to_float(const int32_t *data,
                                            size_t length, float *res) {
   int startIndex = align_complement_i32(data);
   assert(startIndex == align_complement_f32(res));
@@ -187,7 +189,7 @@ INLINE NOTNULL((1, 3)) void int32_to_float(const int32_t *data,
   }
 }
 
-INLINE NOTNULL((1, 3)) void float_to_int32(const float *data,
+INLINE NOTNULL(1, 3) void float_to_int32(const float *data,
                                            size_t length, int32_t *res) {
   int startIndex = align_complement_f32(data);
   assert(startIndex == align_complement_i32(res));
@@ -207,7 +209,7 @@ INLINE NOTNULL((1, 3)) void float_to_int32(const float *data,
   }
 }
 
-INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
+INLINE NOTNULL(1, 3) void int16_to_int32(const int16_t *data,
                                            size_t length, int32_t *res) {
   int startIndex = align_complement_i16(data);
   assert(startIndex % 8 == align_complement_i32(res) % 8);
@@ -229,7 +231,7 @@ INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
   }
 }
 
-INLINE NOTNULL((1, 3)) void int32_to_int16(const int32_t *data,
+INLINE NOTNULL(1, 3) void int32_to_int16(const int32_t *data,
                                            size_t length, int16_t *res) {
   int startIndex = align_complement_i32(data);
   assert(startIndex % 16 == align_complement_i16(res) % 16);
@@ -260,7 +262,7 @@ INLINE NOTNULL((1, 3)) void int32_to_int16(const int32_t *data,
 /// @note align_complement_i16(data) % 4 must be equal to
 /// align_complement_f32(res) % 4.
 /// @note res must have at least the same length as data.
-INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
+INLINE NOTNULL(1, 3) void int16_to_float(const int16_t *data,
                                            size_t length, float *res) {
   int startIndex = align_complement_i16(data);
   assert(startIndex % 4 == align_complement_f32(res) % 4);
@@ -284,7 +286,7 @@ INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
   }
 }
 
-INLINE NOTNULL((1, 3)) void float_to_int16(const float *data,
+INLINE NOTNULL(1, 3) void float_to_int16(const float *data,
                                            size_t length, int16_t *res) {
   int startIndex = align_complement_f32(data);
   assert(startIndex % 8 == align_complement_i16(res) % 8);
@@ -307,7 +309,7 @@ INLINE NOTNULL((1, 3)) void float_to_int16(const float *data,
   }
 }
 
-INLINE NOTNULL((1, 3)) void int32_to_float(const int32_t *data,
+INLINE NOTNULL(1, 3) void int32_to_float(const int32_t *data,
                                            size_t length, float *res) {
   int startIndex = align_complement_i32(data);
   assert(startIndex == align_complement_f32(res));
@@ -327,7 +329,7 @@ INLINE NOTNULL((1, 3)) void int32_to_float(const int32_t *data,
   }
 }
 
-INLINE NOTNULL((1, 3)) void float_to_int32(const float *data,
+INLINE NOTNULL(1, 3) void float_to_int32(const float *data,
                                            size_t length, int32_t *res) {
   int startIndex = align_complement_f32(data);
   assert(startIndex == align_complement_i32(res));
@@ -347,7 +349,7 @@ INLINE NOTNULL((1, 3)) void float_to_int32(const float *data,
   }
 }
 
-INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
+INLINE NOTNULL(1, 3) void int16_to_int32(const int16_t *data,
                                            size_t length, int32_t *res) {
   int startIndex = align_complement_i16(data);
   assert(startIndex % 4 == align_complement_i32(res) % 4);
@@ -369,7 +371,7 @@ INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
   }
 }
 
-INLINE NOTNULL((1, 3)) void int32_to_int16(const int32_t *data,
+INLINE NOTNULL(1, 3) void int32_to_int16(const int32_t *data,
                                            size_t length, int16_t *res) {
   int startIndex = align_complement_i32(data);
   assert(startIndex % 8 == align_complement_i16(res) % 8);
@@ -397,7 +399,7 @@ INLINE NOTNULL((1, 3)) void int32_to_int16(const int32_t *data,
 /// @param b Second vector.
 /// @param res Result vector.
 /// @pre a, b and res must be aligned to 16 bytes.
-INLINE NOTNULL((1, 2, 3)) void int16_multiply(
+INLINE NOTNULL(1, 2, 3) void int16_multiply(
     const int16_t *a, const int16_t *b, int32_t *res) {
   __m128i aVec = _mm_load_si128((const __m128i*)a);
   __m128i bVec = _mm_load_si128((const __m128i*)b);
@@ -418,7 +420,7 @@ INLINE NOTNULL((1, 2, 3)) void int16_multiply(
 /// @param b Second vector.
 /// @param res Result vector.
 /// @pre a, b and res must be aligned to 32 bytes.
-INLINE NOTNULL((1, 2, 3)) void real_multiply(
+INLINE NOTNULL(1, 2, 3) void real_multiply(
     const float *a, const float *b, float *res) {
   __m256 aVec = _mm256_load_ps(a);
   __m256 bVec = _mm256_load_ps(b);
@@ -434,7 +436,7 @@ INLINE NOTNULL((1, 2, 3)) void real_multiply(
 /// @param b Second vector.
 /// @param res Result vector.
 /// @pre a, b and res must be aligned to 32 bytes.
-INLINE NOTNULL((1, 2, 3)) void complex_multiply(
+INLINE NOTNULL(1, 2, 3) void complex_multiply(
     const float *a, const float *b, float *res) {
   __m256 Xvec = _mm256_load_ps(a);
   __m256 Hvec = _mm256_load_ps(b);
@@ -457,7 +459,7 @@ INLINE NOTNULL((1, 2, 3)) void complex_multiply(
 /// @param res The array to write the results to.
 /// @note array and res must have the same alignment.
 /// @note res must have at least the same length as array.
-INLINE NOTNULL((1, 4)) void real_multiply_scalar(const float *array,
+INLINE NOTNULL(1, 4) void real_multiply_scalar(const float *array,
                                                  size_t length,
                                                  float value, float *res) {
   int startIndex = align_complement_f32(array);
@@ -484,7 +486,7 @@ INLINE NOTNULL((1, 4)) void real_multiply_scalar(const float *array,
 
 #include <arm_neon.h>  // NOLINT(build/include_order)
 
-INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
+INLINE NOTNULL(1, 3) void int16_to_float(const int16_t *data,
                                            size_t length, float *res) {
   for (size_t i = 0; i < length - 3; i += 4) {
     int16x4_t intVec = vld1_s16(data + i);
@@ -497,7 +499,7 @@ INLINE NOTNULL((1, 3)) void int16_to_float(const int16_t *data,
   }
 }
 
-INLINE NOTNULL((1, 3)) void float_to_int16(const float *data,
+INLINE NOTNULL(1, 3) void float_to_int16(const float *data,
                                            size_t length, int16_t *res) {
   for (size_t i = 0; i < length - 3; i += 4) {
     float32x4_t floatVec = vld1q_f32(data + i);
@@ -510,7 +512,7 @@ INLINE NOTNULL((1, 3)) void float_to_int16(const float *data,
   }
 }
 
-INLINE NOTNULL((1, 3)) void int32_to_float(const int32_t *data,
+INLINE NOTNULL(1, 3) void int32_to_float(const int32_t *data,
                                            size_t length, float *res) {
   for (size_t i = 0; i < length - 3; i += 4) {
     int32x4_t intVec = vld1q_s32(data + i);
@@ -522,7 +524,7 @@ INLINE NOTNULL((1, 3)) void int32_to_float(const int32_t *data,
   }
 }
 
-INLINE NOTNULL((1, 3)) void float_to_int32(const float *data,
+INLINE NOTNULL(1, 3) void float_to_int32(const float *data,
                                            size_t length, int32_t *res) {
   for (size_t i = 0; i < length - 3; i += 4) {
     float32x4_t floatVec = vld1q_f32(data + i);
@@ -534,7 +536,7 @@ INLINE NOTNULL((1, 3)) void float_to_int32(const float *data,
   }
 }
 
-INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
+INLINE NOTNULL(1, 3) void int16_to_int32(const int16_t *data,
                                            size_t length, int32_t *res) {
   for (size_t i = 0; i < length - 3; i += 4) {
     int16x4_t intVec = vld1_s16(data + i);
@@ -546,7 +548,7 @@ INLINE NOTNULL((1, 3)) void int16_to_int32(const int16_t *data,
   }
 }
 
-INLINE NOTNULL((1, 3)) void int32_to_int16(const int32_t *data,
+INLINE NOTNULL(1, 3) void int32_to_int16(const int32_t *data,
                                            size_t length, int16_t *res) {
   for (size_t i = 0; i < length - 3; i += 4) {
     int32x4_t extIntVec = vld1q_s32(data + i);
@@ -564,7 +566,7 @@ INLINE NOTNULL((1, 3)) void int32_to_int16(const int32_t *data,
 /// @param a First vector.
 /// @param b Second vector.
 /// @param res Result vector.
-INLINE NOTNULL((1, 2, 3)) void int16_multiply(
+INLINE NOTNULL(1, 2, 3) void int16_multiply(
     const int16_t *a, const int16_t *b, int32_t *res) {
   int16x4_t aVec = vld1_s16(a);
   int16x4_t bVec = vld1_s16(b);
@@ -574,11 +576,11 @@ INLINE NOTNULL((1, 2, 3)) void int16_multiply(
 
 /// @brief Multiplies the contents of two vectors, saving the result to the
 /// third vector, using NEON SIMD (float version).
-/// @details res[i] = a[i] * b[i], i = 0..7.
+/// @details res[i] = a[i] * b[i], i = 0..3.
 /// @param a First vector.
 /// @param b Second vector.
 /// @param res Result vector.
-INLINE NOTNULL((1, 2, 3)) void real_multiply(
+INLINE NOTNULL(1, 2, 3) void real_multiply(
     const float *a, const float *b, float *res) {
   float32x4_t aVec = vld1q_f32(a);
   float32x4_t bVec = vld1q_f32(b);
@@ -593,7 +595,7 @@ INLINE NOTNULL((1, 2, 3)) void real_multiply(
 /// @param a First vector.
 /// @param b Second vector.
 /// @param res Result vector.
-INLINE NOTNULL((1, 2, 3)) void complex_multiply(
+INLINE NOTNULL(1, 2, 3) void complex_multiply(
     const float *a, const float *b, float *res) {
   const float32x4_t negVec = { 1.0f, -1.0f, 1.0f, -1.0f };
   float32x4_t Xvec = vld1q_f32(a);
@@ -616,7 +618,7 @@ INLINE NOTNULL((1, 2, 3)) void complex_multiply(
 /// @param value The value to multiply each number in array.
 /// @param res The array to write the results to.
 /// @note res must have at least the same length as array.
-INLINE NOTNULL((1, 4)) void real_multiply_scalar(const float *array,
+INLINE NOTNULL(1, 4) void real_multiply_scalar(const float *array,
                                                  size_t length,
                                                  float value, float *res) {
   for (int i = 0; i < length - 3; i += 4) {

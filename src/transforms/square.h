@@ -15,7 +15,7 @@
 
 #include "src/formats/raw_format.h"
 #include "src/formats/window_format.h"
-#include "src/transform_base.h"
+#include "src/uniform_format_transform.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
@@ -25,18 +25,42 @@ class SquareRaw
  public:
   SquareRaw();
 
-  TRANSFORM_INTRO("Square", "Squares the signal values.")
+  TRANSFORM_INTRO("Square", "Squares the signal (raw format).")
 
   TRANSFORM_PARAMETERS()
+
+  virtual bool HasInverse() const noexcept;
 
  protected:
   virtual void OnInputFormatChanged();
 
-  virtual void TypeSafeInitializeBuffers(const BuffersBase<Formats::Raw16>& in,
-        BuffersBase<Formats::Raw32>* buffers) const noexcept;
+  virtual void TypeSafeInitializeBuffers(
+      const BuffersBase<Formats::Raw16>& in,
+      BuffersBase<Formats::Raw32>* buffers) const noexcept;
 
   virtual void TypeSafeDo(const BuffersBase<Formats::Raw16>& in,
-                          BuffersBase<Formats::Raw32> *out) const noexcept;
+                          BuffersBase<Formats::Raw32>* out) const noexcept;
+};
+
+class SquareWindow
+    : public UniformFormatTransform<Formats::WindowFormatF> {
+ public:
+  SquareWindow();
+
+  TRANSFORM_INTRO("Square", "Squares the signal (window floating point "
+                            "format).")
+
+  TRANSFORM_PARAMETERS()
+
+  virtual bool HasInverse() const noexcept;
+
+ protected:
+  virtual void TypeSafeInitializeBuffers(
+      const BuffersBase<Formats::WindowF>& in,
+      BuffersBase<Formats::WindowF>* buffers) const noexcept;
+
+  virtual void TypeSafeDo(const BuffersBase<Formats::WindowF>& in,
+                          BuffersBase<Formats::WindowF>* out) const noexcept;
 };
 
 }  // namespace Transforms

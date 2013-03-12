@@ -30,7 +30,7 @@ extern "C" {
 /// @note result and x may be the same arrays.
 void convolute(const float *__restrict x, size_t xLength,
                const float *__restrict h, size_t hLength,
-               float *result) NOTNULL((1, 3, 5));
+               float *result) NOTNULL(1, 3, 5);
 
 #ifdef __cplusplus
 }

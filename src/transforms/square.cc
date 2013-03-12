@@ -20,6 +20,10 @@ SquareRaw::SquareRaw()
 : TransformBase(SupportedParameters()) {
 }
 
+bool SquareRaw::HasInverse() const noexcept {
+  return true;
+}
+
 void SquareRaw::OnInputFormatChanged() {
   outputFormat_->SetSize(inputFormat_->Size());
   outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
@@ -37,7 +41,8 @@ void SquareRaw::TypeSafeInitializeBuffers(
 
 void SquareRaw::TypeSafeDo(
     const BuffersBase<Formats::Raw16>& in,
-    BuffersBase<Formats::Raw32> *out) const noexcept {
+    BuffersBase<Formats::Raw32>* out) const noexcept {
+  assert(!IsInverse() && "Not implemented yet");
   int arrayLength = outputFormat_->Size();
   for (size_t i = 0; i < in.Size(); i++) {
     auto inArray = in[i]->Data.get();
@@ -84,7 +89,52 @@ void SquareRaw::TypeSafeDo(
   }
 }
 
+SquareWindow::SquareWindow()
+: UniformFormatTransform(SupportedParameters()) {
+}
+
+bool SquareWindow::HasInverse() const noexcept {
+  return true;
+}
+
+void SquareWindow::TypeSafeInitializeBuffers(
+    const BuffersBase<Formats::WindowF>& in,
+    BuffersBase<Formats::WindowF>* buffers) const noexcept {
+  buffers->Initialize(in.Size(), inputFormat_->Size());
+}
+
+void SquareWindow::TypeSafeDo(
+    const BuffersBase<Formats::WindowF>& in,
+    BuffersBase<Formats::WindowF>* out) const noexcept {
+  assert(!IsInverse() && "Not implemented yet");
+  int arrayLength = outputFormat_->Size();
+  for (size_t i = 0; i < in.Size(); i++) {
+    auto inArray = in[i]->Data.get();
+    auto outArray = (*out)[i]->Data.get();
+#ifdef __AVX__
+    for (int j = 0; j < arrayLength - 7; j += 8) {
+      real_multiply(inArray + j, inArray + j, outArray + j);
+    }
+    for (int j = ((arrayLength >> 3) << 3); j < arrayLength; j++) {
+      outArray[j] = inArray[j] * inArray[j];
+    }
+#elif defined(NEON)
+    for (int j = 0; j < arrayLength - 3; j += 4) {
+      real_multiply(inArray + j, inArray + j, outArray + j);
+    }
+    for (int j = ((arrayLength >> 2) << 2); j < arrayLength; j++) {
+      outArray[j] = inArray[j] * inArray[j];
+    }
+#else
+    for (int j = 0; j < arrayLength; j++) {
+      outArray[j] = inArray[j] * inArray[j];
+    }
+#endif
+  }
+}
+
 REGISTER_TRANSFORM(SquareRaw);
+REGISTER_TRANSFORM(SquareWindow);
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction

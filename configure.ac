@@ -39,7 +39,7 @@ passed
 	AC_DEFINE([MALLOC], [__attribute__ ((__malloc__))], [malloc() function attribute])
 	AC_DEFINE([WARN_UNUSED_RESULT], [__attribute__ ((__warn_unused_result__))],
 		      [warn about unused result function attribute])
-	AC_DEFINE([NOTNULL(params)], [__attribute__ ((__nonnull__ params))],
+	AC_DEFINE([NOTNULL(...)], [__attribute__ ((__nonnull__ (__VA_ARGS__)))],
 			  [Mark pointer parameters which must not be NULL])
 ], [
 	AC_MSG_RESULT([no])
@@ -180,6 +180,9 @@ CPPFLAGS="$CPPFLAGS -I\$(top_srcdir) -I\$(top_srcdir)/inc -I\$(top_builddir)/inc
          
 dnl Append debug flags             
 CFLAGS="$CFLAGS $DEBUG_FLAGS"
-CXXFLAGS="$CXXFLAGS $DEBUG_FLAGS"    
+CXXFLAGS="$CXXFLAGS $DEBUG_FLAGS"   
+
+dnl Use OpenMP             
+CPPFLAGS="$CPPFLAGS -fopenmp"  
                 
 AC_OUTPUT
