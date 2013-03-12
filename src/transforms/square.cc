@@ -47,38 +47,24 @@ void SquareRaw::TypeSafeDo(
   for (size_t i = 0; i < in.Size(); i++) {
     auto inArray = in[i]->Data.get();
     auto outArray = (*out)[i]->Data.get();
+
+#ifdef SIMD
+    int startIndex = 0;
 #ifdef __AVX__
-    int startIndex = align_complement_i16(inArray);
+    startIndex = align_complement_i16(inArray);
 
     for (int j = 0; j < startIndex; j++) {
       outArray[j] = inArray[j] * inArray[j];
     }
-
-#ifdef __AVX2__
-    for (int j = startIndex; j < arrayLength - 15; j += 16) {
-      int16_multiply(inArray + j, inArray + j, outArray + j);
-    }
-
-    for (int j = startIndex + (((arrayLength - startIndex) >> 4) << 4);
-         j < arrayLength; j++) {
-      outArray[j] = inArray[j] * inArray[j];
-    }
-#else
-    for (int j = startIndex; j < arrayLength - 7; j += 8) {
-      int16_multiply(inArray + j, inArray + j, outArray + j);
-    }
-
-    for (int j = startIndex + (((arrayLength - startIndex) >> 3) << 3);
-         j < arrayLength; j++) {
-      outArray[j] = inArray[j] * inArray[j];
-    }
 #endif
-#elif defined(NEON)
-    for (int j = 0; j < arrayLength - 3; j += 4) {
+    for (int j = startIndex; j < arrayLength - INT16MUL_STEP + 1;
+        j += INT16MUL_STEP) {
       int16_multiply(inArray + j, inArray + j, outArray + j);
     }
 
-    for (int j = ((arrayLength >> 2) << 2); j < arrayLength; j++) {
+    for (int j = startIndex + (((arrayLength - startIndex)
+            >> INT16MUL_STEP_LOG2) << INT16MUL_STEP_LOG2);
+         j < arrayLength; j++) {
       outArray[j] = inArray[j] * inArray[j];
     }
 #else
@@ -111,18 +97,12 @@ void SquareWindow::TypeSafeDo(
   for (size_t i = 0; i < in.Size(); i++) {
     auto inArray = in[i]->Data.get();
     auto outArray = (*out)[i]->Data.get();
-#ifdef __AVX__
-    for (int j = 0; j < arrayLength - 7; j += 8) {
+#ifdef SIMD
+    for (int j = 0; j < arrayLength - FLOAT_STEP + 1; j += FLOAT_STEP) {
       real_multiply(inArray + j, inArray + j, outArray + j);
     }
-    for (int j = ((arrayLength >> 3) << 3); j < arrayLength; j++) {
-      outArray[j] = inArray[j] * inArray[j];
-    }
-#elif defined(NEON)
-    for (int j = 0; j < arrayLength - 3; j += 4) {
-      real_multiply(inArray + j, inArray + j, outArray + j);
-    }
-    for (int j = ((arrayLength >> 2) << 2); j < arrayLength; j++) {
+    for (int j = ((arrayLength >> FLOAT_STEP_LOG2) << FLOAT_STEP_LOG2);
+        j < arrayLength; j++) {
       outArray[j] = inArray[j] * inArray[j];
     }
 #else

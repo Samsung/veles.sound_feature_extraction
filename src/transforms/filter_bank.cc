@@ -164,18 +164,11 @@ void FilterBank::TypeSafeDo(
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();
-#ifdef __AVX__
-    for (int i = 0; i < N - 7; i += 8) {
+#ifdef SIMD
+    for (int i = 0; i < N - FLOAT_STEP + 1; i += FLOAT_STEP) {
       real_multiply(input + i, filter + i, output + i);
     }
-    for (int i = (N >> 3) << 3; i < N; i++) {
-      output[i] = input[i] * filter[i];
-    }
-#elif defined(__ARM_NEON__)
-    for (int i = 0; i < N - 3; i += 4) {
-      real_multiply(input + i, filter + i, output + i);
-    }
-    for (size_t i = (N >> 2) << 2; i < N; i++) {
+    for (int i = (N >> FLOAT_STEP_LOG2) << FLOAT_STEP_LOG2; i < N; i++) {
       output[i] = input[i] * filter[i];
     }
 #else

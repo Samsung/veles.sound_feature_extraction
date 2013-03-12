@@ -18,9 +18,7 @@
 #include "src/buffers_base.h"
 #include "src/exceptions.h"
 #include "src/formats/format_limits.h"
-#ifdef __AVX__
 #include "src/primitives/memory.h"
-#endif
 
 namespace SpeechFeatureExtraction {
 namespace Formats {

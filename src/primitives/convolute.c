@@ -97,14 +97,9 @@ void convolute(const float *__restrict x, size_t xLength,
 
     // fftBoilerPlate = fftBoilerPlate * H (complex arithmetic)
     int cciStart = 0;
-#ifdef __AVX__
+#ifdef SIMD
     cciStart = L;
-    for (int cci = 0; cci < (int)L; cci += 8) {
-      complex_multiply(fftBoilerPlate + cci, H + cci, fftBoilerPlate + cci);
-    }
-#elif defined(__ARM_NEON__)
-    cciStart = L;
-    for (int cci = 0; cci < (int)L; cci += 4) {
+    for (int cci = 0; cci < (int)L; cci += FLOAT_STEP) {
       complex_multiply(fftBoilerPlate + cci, H + cci, fftBoilerPlate + cci);
     }
 #endif

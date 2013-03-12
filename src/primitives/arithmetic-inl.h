@@ -18,6 +18,7 @@
 #ifdef __cplusplus
 #define __STDC_LIMIT_MACROS
 #endif
+
 #ifdef __AVX__
 #include <assert.h>
 #endif
@@ -25,42 +26,42 @@
 #include "src/primitives/memory.h"
 
 INLINE NOTNULL(1, 3) void int16_to_float_na(const int16_t *data,
-                                              size_t length, float *res) {
+                                            size_t length, float *res) {
   for (size_t i = 0; i < length; i++) {
     res[i] = (float)data[i];
   }
 }
 
 INLINE NOTNULL(1, 3) void float_to_int16_na(const float *data,
-                                              size_t length, int16_t *res) {
+                                            size_t length, int16_t *res) {
   for (size_t i = 0; i < length; i++) {
     res[i] = (int16_t)data[i];
   }
 }
 
 INLINE NOTNULL(1, 3) void int32_to_float_na(const int32_t *data,
-                                              size_t length, float *res) {
+                                            size_t length, float *res) {
   for (size_t i = 0; i < length; i++) {
     res[i] = (float)data[i];
   }
 }
 
 INLINE NOTNULL(1, 3) void float_to_int32_na(const float *data,
-                                              size_t length, int32_t *res) {
+                                            size_t length, int32_t *res) {
   for (size_t i = 0; i < length; i++) {
     res[i] = (int32_t)data[i];
   }
 }
 
 INLINE NOTNULL(1, 3) void int32_to_int16_na(const int32_t *data,
-                                              size_t length, int16_t *res) {
+                                            size_t length, int16_t *res) {
   for (size_t i = 0; i < length; i++) {
     res[i] = (int16_t)data[i];
   }
 }
 
 INLINE NOTNULL(1, 3) void int16_to_int32_na(const int16_t *data,
-                                              size_t length, int32_t *res) {
+                                            size_t length, int32_t *res) {
   for (size_t i = 0; i < length; i++) {
     res[i] = (int32_t)data[i];
   }
@@ -93,7 +94,14 @@ INLINE NOTNULL(1, 4) void real_multiply_scalar_na(const float *array,
 
 #include <immintrin.h>  // NOLINT(build/include_order)
 
+#define SIMD
+#define FLOAT_STEP 8
+#define FLOAT_STEP_LOG2 3
+
 #ifdef __AVX2__
+
+#define INT16MUL_STEP 16
+#define INT16MUL_STEP_LOG2 4
 
 /// @brief Multiplies the contents of two vectors, saving the result to the
 /// third vector, using AVX2 SIMD (int16_t doubling version).
@@ -123,7 +131,7 @@ INLINE NOTNULL(1, 2, 3) void int16_multiply(
 /// align_complement_f32(res) % 8.
 /// @note res must have at least the same length as data.
 INLINE NOTNULL(1, 3) void int16_to_float(const int16_t *data,
-                                           size_t length, float *res) {
+                                         size_t length, float *res) {
   int startIndex = align_complement_i16(data);
   assert(startIndex % 8 == align_complement_f32(res) % 8);
   for (int i = 0; i < startIndex; i++) {
@@ -147,7 +155,7 @@ INLINE NOTNULL(1, 3) void int16_to_float(const int16_t *data,
 }
 
 INLINE NOTNULL(1, 3) void float_to_int16(const float *data,
-                                           size_t length, int16_t *res) {
+                                         size_t length, int16_t *res) {
   int startIndex = align_complement_f32(data);
   assert(startIndex % 16 == align_complement_i16(res) % 16);
   for (int i = 0; i < startIndex; i++) {
@@ -170,7 +178,7 @@ INLINE NOTNULL(1, 3) void float_to_int16(const float *data,
 }
 
 INLINE NOTNULL(1, 3) void int32_to_float(const int32_t *data,
-                                           size_t length, float *res) {
+                                         size_t length, float *res) {
   int startIndex = align_complement_i32(data);
   assert(startIndex == align_complement_f32(res));
   for (int i = 0; i < startIndex; i++) {
@@ -190,7 +198,7 @@ INLINE NOTNULL(1, 3) void int32_to_float(const int32_t *data,
 }
 
 INLINE NOTNULL(1, 3) void float_to_int32(const float *data,
-                                           size_t length, int32_t *res) {
+                                         size_t length, int32_t *res) {
   int startIndex = align_complement_f32(data);
   assert(startIndex == align_complement_i32(res));
   for (int i = 0; i < startIndex; i++) {
@@ -210,7 +218,7 @@ INLINE NOTNULL(1, 3) void float_to_int32(const float *data,
 }
 
 INLINE NOTNULL(1, 3) void int16_to_int32(const int16_t *data,
-                                           size_t length, int32_t *res) {
+                                         size_t length, int32_t *res) {
   int startIndex = align_complement_i16(data);
   assert(startIndex % 8 == align_complement_i32(res) % 8);
   for (int i = 0; i < startIndex; i++) {
@@ -232,7 +240,7 @@ INLINE NOTNULL(1, 3) void int16_to_int32(const int16_t *data,
 }
 
 INLINE NOTNULL(1, 3) void int32_to_int16(const int32_t *data,
-                                           size_t length, int16_t *res) {
+                                         size_t length, int16_t *res) {
   int startIndex = align_complement_i32(data);
   assert(startIndex % 16 == align_complement_i16(res) % 16);
   for (int i = 0; i < startIndex; i++) {
@@ -254,6 +262,28 @@ INLINE NOTNULL(1, 3) void int32_to_int16(const int32_t *data,
 
 #else
 
+#define INT16MUL_STEP 8
+#define INT16MUL_STEP_LOG2 3
+
+/// @brief Multiplies the contents of two vectors, saving the result to the
+/// third vector, using SSSE3 SIMD (int16_t doubling version).
+/// @details res[i] = a[i] * b[i], i = 0..7.
+/// @param a First vector.
+/// @param b Second vector.
+/// @param res Result vector.
+/// @pre a, b and res must be aligned to 16 bytes.
+INLINE NOTNULL(1, 2, 3) void int16_multiply(
+    const int16_t *a, const int16_t *b, int32_t *res) {
+  __m128i aVec = _mm_load_si128((const __m128i*)a);
+  __m128i bVec = _mm_load_si128((const __m128i*)b);
+  __m128i resVecHiP = _mm_mulhi_epi16(aVec, bVec);
+  __m128i resVecLoP = _mm_mullo_epi16(aVec, bVec);
+  __m128i resVecHi = _mm_unpackhi_epi16(resVecLoP, resVecHiP);
+  __m128i resVecLo = _mm_unpacklo_epi16(resVecLoP, resVecHiP);
+  _mm_store_si128((__m128i *)res, resVecLo);
+  _mm_store_si128((__m128i *)(res + 4), resVecHi);
+}
+
 /// @brief Converts an array of short integers to floating point numbers,
 /// using SSE2 SIMD.
 /// @param data The array of short integers.
@@ -263,7 +293,7 @@ INLINE NOTNULL(1, 3) void int32_to_int16(const int32_t *data,
 /// align_complement_f32(res) % 4.
 /// @note res must have at least the same length as data.
 INLINE NOTNULL(1, 3) void int16_to_float(const int16_t *data,
-                                           size_t length, float *res) {
+                                         size_t length, float *res) {
   int startIndex = align_complement_i16(data);
   assert(startIndex % 4 == align_complement_f32(res) % 4);
   for (int i = 0; i < startIndex; i++) {
@@ -287,7 +317,7 @@ INLINE NOTNULL(1, 3) void int16_to_float(const int16_t *data,
 }
 
 INLINE NOTNULL(1, 3) void float_to_int16(const float *data,
-                                           size_t length, int16_t *res) {
+                                         size_t length, int16_t *res) {
   int startIndex = align_complement_f32(data);
   assert(startIndex % 8 == align_complement_i16(res) % 8);
   for (int i = 0; i < startIndex; i++) {
@@ -310,7 +340,7 @@ INLINE NOTNULL(1, 3) void float_to_int16(const float *data,
 }
 
 INLINE NOTNULL(1, 3) void int32_to_float(const int32_t *data,
-                                           size_t length, float *res) {
+                                         size_t length, float *res) {
   int startIndex = align_complement_i32(data);
   assert(startIndex == align_complement_f32(res));
   for (int i = 0; i < startIndex; i++) {
@@ -330,7 +360,7 @@ INLINE NOTNULL(1, 3) void int32_to_float(const int32_t *data,
 }
 
 INLINE NOTNULL(1, 3) void float_to_int32(const float *data,
-                                           size_t length, int32_t *res) {
+                                         size_t length, int32_t *res) {
   int startIndex = align_complement_f32(data);
   assert(startIndex == align_complement_i32(res));
   for (int i = 0; i < startIndex; i++) {
@@ -350,7 +380,7 @@ INLINE NOTNULL(1, 3) void float_to_int32(const float *data,
 }
 
 INLINE NOTNULL(1, 3) void int16_to_int32(const int16_t *data,
-                                           size_t length, int32_t *res) {
+                                         size_t length, int32_t *res) {
   int startIndex = align_complement_i16(data);
   assert(startIndex % 4 == align_complement_i32(res) % 4);
   for (int i = 0; i < startIndex; i++) {
@@ -372,7 +402,7 @@ INLINE NOTNULL(1, 3) void int16_to_int32(const int16_t *data,
 }
 
 INLINE NOTNULL(1, 3) void int32_to_int16(const int32_t *data,
-                                           size_t length, int16_t *res) {
+                                         size_t length, int16_t *res) {
   int startIndex = align_complement_i32(data);
   assert(startIndex % 8 == align_complement_i16(res) % 8);
   for (int i = 0; i < startIndex; i++) {
@@ -390,25 +420,6 @@ INLINE NOTNULL(1, 3) void int32_to_int16(const int32_t *data,
         i < length; i++) {
       res[i] = (int16_t)data[i];
   }
-}
-
-/// @brief Multiplies the contents of two vectors, saving the result to the
-/// third vector, using SSSE3 SIMD (int16_t doubling version).
-/// @details res[i] = a[i] * b[i], i = 0..7.
-/// @param a First vector.
-/// @param b Second vector.
-/// @param res Result vector.
-/// @pre a, b and res must be aligned to 16 bytes.
-INLINE NOTNULL(1, 2, 3) void int16_multiply(
-    const int16_t *a, const int16_t *b, int32_t *res) {
-  __m128i aVec = _mm_load_si128((const __m128i*)a);
-  __m128i bVec = _mm_load_si128((const __m128i*)b);
-  __m128i resVecHiP = _mm_mulhi_epi16(aVec, bVec);
-  __m128i resVecLoP = _mm_mullo_epi16(aVec, bVec);
-  __m128i resVecHi = _mm_unpackhi_epi16(resVecLoP, resVecHiP);
-  __m128i resVecLo = _mm_unpacklo_epi16(resVecLoP, resVecHiP);
-  _mm_store_si128((__m128i *)res, resVecLo);
-  _mm_store_si128((__m128i *)(res + 4), resVecHi);
 }
 
 #endif
@@ -460,8 +471,8 @@ INLINE NOTNULL(1, 2, 3) void complex_multiply(
 /// @note array and res must have the same alignment.
 /// @note res must have at least the same length as array.
 INLINE NOTNULL(1, 4) void real_multiply_scalar(const float *array,
-                                                 size_t length,
-                                                 float value, float *res) {
+                                               size_t length,
+                                               float value, float *res) {
   int startIndex = align_complement_f32(array);
   assert(startIndex == align_complement_f32(res));
   for (int i = 0; i < startIndex; i++) {
@@ -485,6 +496,26 @@ INLINE NOTNULL(1, 4) void real_multiply_scalar(const float *array,
 #elif defined(__ARM_NEON__)
 
 #include <arm_neon.h>  // NOLINT(build/include_order)
+
+#define SIMD
+#define FLOAT_STEP 4
+#define FLOAT_STEP_LOG2 2
+#define INT16MUL_STEP 4
+#define INT16MUL_STEP_LOG2 2
+
+/// @brief Multiplies the contents of two vectors, saving the result to the
+/// third vector, using NEON SIMD (int16_t doubling version).
+/// @details res[i] = a[i] * b[i], i = 0..3.
+/// @param a First vector.
+/// @param b Second vector.
+/// @param res Result vector.
+INLINE NOTNULL(1, 2, 3) void int16_multiply(
+    const int16_t *a, const int16_t *b, int32_t *res) {
+  int16x4_t aVec = vld1_s16(a);
+  int16x4_t bVec = vld1_s16(b);
+  int32x4_t resVec = vmull_s16(aVec, bVec);
+  vst1q_s32(res, resVec);
+}
 
 INLINE NOTNULL(1, 3) void int16_to_float(const int16_t *data,
                                            size_t length, float *res) {
@@ -558,20 +589,6 @@ INLINE NOTNULL(1, 3) void int32_to_int16(const int32_t *data,
   for (int i = ((length >> 2) << 2); i < length; i++) {
     res[i] = (int16_t)data[i];
   }
-}
-
-/// @brief Multiplies the contents of two vectors, saving the result to the
-/// third vector, using NEON SIMD (int16_t doubling version).
-/// @details res[i] = a[i] * b[i], i = 0..3.
-/// @param a First vector.
-/// @param b Second vector.
-/// @param res Result vector.
-INLINE NOTNULL(1, 2, 3) void int16_multiply(
-    const int16_t *a, const int16_t *b, int32_t *res) {
-  int16x4_t aVec = vld1_s16(a);
-  int16x4_t bVec = vld1_s16(b);
-  int32x4_t resVec = vmull_s16(aVec, bVec);
-  vst1q_s32(res, resVec);
 }
 
 /// @brief Multiplies the contents of two vectors, saving the result to the

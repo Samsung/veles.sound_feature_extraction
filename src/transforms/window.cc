@@ -97,29 +97,23 @@ const noexcept {
         } else {
           int16_to_float(input, inDataStep_, fbuf);
         }
-        for (int i = 0; i < inDataStep_ - 7; i += 8) {
-          real_multiply(&fbuf[i], window + i, &fbuf[i]);
-        }
-        for (int i = (((inDataStep_) >> 3) << 3); i < inDataStep_; i++) {
-          fbuf[i] *= window[i];
-        }
-        float_to_int16(fbuf, inDataStep_, output);
-#elif defined(__ARM_NEON__)
-        int16_to_float(input, inDataStep_, fbuf);
-        for (int i = 0; i < inDataStep_ - 3; i += 4) {
-          real_multiply(fbuf + i, window + i, fbuf + i);
-        }
-        for (int i = (inDataStep_ >> 2) << 2; i < inDataStep_; i++) {
-          fbuf[i] *= window[i];
-        }
-        float_to_int16(fbuf, inDataStep_, output);
 #else
         int16_to_float(input, inDataStep_, fbuf);
+#endif
+#ifdef SIMD
+        for (int i = 0; i < inDataStep_ - FLOAT_STEP + 1; i += FLOAT_STEP) {
+          real_multiply(&fbuf[i], window + i, &fbuf[i]);
+        }
+        for (int i = (((inDataStep_) >> FLOAT_STEP_LOG2) << FLOAT_STEP_LOG2);
+            i < inDataStep_; i++) {
+          fbuf[i] *= window[i];
+        }
+#else
         for (int i = 0; i < inDataStep_; i++) {
           fbuf[i] *= window[i];
         }
-        float_to_int16(fbuf, inDataStep_, output);
 #endif
+        float_to_int16(fbuf, inDataStep_, output);
       } else {  // type_ != WINDOW_TYPE_RECTANGULAR
         memcpy(output, input, inDataStep_ * sizeof(int16_t));
       }

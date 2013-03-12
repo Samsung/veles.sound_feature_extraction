@@ -1,7 +1,7 @@
 include $(top_srcdir)/Makefile.common
 
 noinst_PROGRAMS = lowpass_filter square complex_magnitude log filter_bank \
-complex_magnitude_squared real_to_complex
+complex_magnitude_squared real_to_complex unpack_rdft
 
 GTEST_INCLUDE = -I$(top_srcdir)/tests/google
 
@@ -79,6 +79,17 @@ real_to_complex_CPPFLAGS = $(GTEST_INCLUDE)
 
 # Used libraries
 real_to_complex_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+unpack_rdft_SOURCES = unpack_rdft.cc
+
+# Compiler options
+unpack_rdft_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+unpack_rdft_LDADD = $(top_builddir)/src/libspfextr.la  \
 $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 
