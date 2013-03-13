@@ -34,8 +34,8 @@ class FilterBank
                   "(default is mel).")
 
   TRANSFORM_PARAMETERS(
-      _TP_("type", "The type of the scale. Supported values are \"mel\" "
-                   "and \"bark\".", "mel")
+      _TP_("type", "The type of the scale. Supported values are \"linear\","
+                   "\"mel\" and \"bark\".", "mel")
       _TP_("number", "The number of triangular filters.",
            std::to_string(DEFAULT_FB_LENGTH))
       _TP_("frequency_min", "Minimal frequency of the filter bank.",
@@ -50,9 +50,12 @@ class FilterBank
 
  protected:
   enum ScaleType {
+    SCALE_TYPE_LINEAR,
     SCALE_TYPE_MEL,
     SCALE_TYPE_BARK
   };
+
+  static const std::unordered_map<std::string, ScaleType> ScaleTypeMap;
 
   ScaleType type_;
   size_t length_;

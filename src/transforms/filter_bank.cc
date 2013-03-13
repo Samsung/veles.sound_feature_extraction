@@ -19,6 +19,13 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
+const std::unordered_map<std::string, FilterBank::ScaleType>
+FilterBank::ScaleTypeMap = {
+    { "linear", SCALE_TYPE_LINEAR },
+    { "mel", SCALE_TYPE_MEL },
+    { "bark", SCALE_TYPE_BARK }
+};
+
 FilterBank::FilterBank()
   : UniformFormatTransform(SupportedParameters()),
     type_(SCALE_TYPE_MEL),
@@ -32,7 +39,7 @@ bool FilterBank::HasInverse() const noexcept {
 }
 
 void FilterBank::SetParameter(const std::string& name,
-                                 const std::string& value) {
+                              const std::string& value) {
   if (name == "number") {
     auto pv = Parse<size_t>(name, value);
     if (pv > 2048) {
@@ -51,34 +58,40 @@ void FilterBank::SetParameter(const std::string& name,
       throw new InvalidParameterValueException(name, value, Name());
     }
     maxFreq_ = pv;
+  } else if (name == "type") {
+    auto tit = ScaleTypeMap.find(value);
+    if (tit == ScaleTypeMap.end()) {
+      throw new InvalidParameterValueException(name, value, Name());
+    }
+    type_ = tit->second;
   }
 }
 
 float FilterBank::LinearToScale(ScaleType type, float freq) {
   switch (type) {
+    case SCALE_TYPE_LINEAR:
+      return freq;
     case SCALE_TYPE_MEL:
       return 1127.0f * logf(1 + freq / 700.0f);
-      break;
     case SCALE_TYPE_BARK:
       // see http://depository.bas-net.by/EDNI/Periodicals/Articles/Details.aspx?Key_Journal=32&Id=681
       return 8.96f * logf(0.978f +
                           5.0f * logf(0.994f +
                                       powf((freq + 75.4f) / 2173.0f, 1.347f)));
-      break;
   }
   return 0.0f;
 }
 
 float FilterBank::ScaleToLinear(ScaleType type, float value) {
   switch (type) {
+    case SCALE_TYPE_LINEAR:
+      return value;
     case SCALE_TYPE_MEL:
       return 700.0f * (expf(value / 1127.0f) - 1);
-      break;
     case SCALE_TYPE_BARK:
       // see http://depository.bas-net.by/EDNI/Periodicals/Articles/Details.aspx?Key_Journal=32&Id=681
       return 2173.0f * powf(expf((expf(value / 8.96f) - 0.978f) / 5.0f) -
                             0.994f, 1.0f / 1.347f) - 75.4f;
-      break;
   }
   return 0.0f;
 }
