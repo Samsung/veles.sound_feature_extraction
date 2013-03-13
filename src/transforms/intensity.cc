@@ -41,11 +41,8 @@ void Intensity::TypeSafeDo(
 #ifdef __AVX__
     for (int j = 0; j < length - 7; j += 8) {
       __m256 vec = _mm256_load_ps(input + j);
-      vec = _mm256_mul_ps(vec, vec);
-      __m256 vecp = _mm256_permute2f128_ps(vec, vec, 1);
-      vec = _mm256_add_ps(vec, vecp);
-      vec = _mm256_hadd_ps(vec, vec);
-      intensity += ElementAt(vec, 0) + ElementAt(vec, 1);
+      vec = _mm256_dp_ps(vec, vec, 0xFF);
+      intensity += ElementAt(vec, 0) + ElementAt(vec, 4);
     }
     for (int j = ((length >> 3) << 3); j < length; j++) {
       intensity += input[j] * input[j];
