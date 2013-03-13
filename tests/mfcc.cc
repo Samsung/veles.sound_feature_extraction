@@ -24,8 +24,10 @@ extern unsigned char data[96000];
 TEST(MFCC, Calculation) {
   try {
     TransformTree tt( { 48000, 16000 } );
+    // We have to apply FilterBank twice since Energy results in
+    // squared magnitude
     tt.AddChain("MFCC", { { "Window", "length=32" }, { "RDFT", "" },
-        { "Energy", "" }, { "FilterBank", "" },
+        { "Energy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
         { "Log", "" }, { "Square", "" }, { "UnpackRDFT", "" }, { "DCT", "" } });
     BuffersBase<Raw16> buffers;
     buffers.Initialize(1, 48000, 0);
