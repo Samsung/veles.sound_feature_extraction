@@ -48,14 +48,23 @@ void Intensity::TypeSafeDo(
       intensity += input[j] * input[j];
     }
 #elif defined(__ARM_NEON__)
-    for (int j = 0; j < length - 3; j += 4) {
-      float32x4_t vec = vld1q_f32(input + j);
-      vec = vmulq_f32(vec, vec);
-      float32x2_t vec2 = vadd_f32(vget_high_f32(vec), vget_low_f32(vec));
-      float32x2_t res = vpadd_f32(vec2, vec2);
+    for (int j = 0; j < length - 15; j += 16) {
+      float32x4_t vec1 = vld1q_f32(input + j);
+      float32x4_t vec2 = vld1q_f32(input + j + 4);
+      float32x4_t vec3 = vld1q_f32(input + j + 8);
+      float32x4_t vec4 = vld1q_f32(input + j + 12);
+
+      float32x4_t veca = vmulq_f32(vec1, vec1);
+      veca = vmlaq_f32(veca, vec2, vec2);
+      veca = vmlaq_f32(veca, vec3, vec3);
+      veca = vmlaq_f32(veca, vec4, vec4);
+
+      float32x2_t vecp = vadd_f32(vget_high_f32(veca),
+                                  vget_low_f32(veca));
+      float32x2_t res = vpadd_f32(vecp, vecp);
       intensity += vget_lane_f32(res, 0);
     }
-    for (int j = ((length >> 2) << 2); j < length; j++) {
+    for (int j = ((length >> 4) << 4); j < length; j++) {
       intensity += input[j] * input[j];
     }
 #else

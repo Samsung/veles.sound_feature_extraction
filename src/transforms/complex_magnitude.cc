@@ -69,7 +69,8 @@ void ComplexMagnitude::TypeSafeDo(
     for (int i = 0; i < length - 3; i += 4) {
       float32x4_t cvec = vld1q_f32(input + i);
       float32x4_t sqrvec = vmulq_f32(cvec, cvec);
-      float32x2_t sums = vpadd_f32(vget_high_f32(sqrvec), vget_low_f32(sqrvec));
+      float32x2_t sums = vpadd_f32(vget_high_f32(sqrvec),
+                                   vget_low_f32(sqrvec));
       vst1_f32(sums, output + i / 2);
     }
     for (int i = 0; i < length - 3; i++) {

@@ -10,6 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
+#include "src/primitives/daubechies.h"
+
 const double DaubechiesD[38][76] = {
   // 1 (2)
   {  7.071067811865475244008443621048490392848359376884740365883398e-01,

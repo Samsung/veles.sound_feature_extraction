@@ -1,6 +1,6 @@
 include $(top_srcdir)/Makefile.common
 
-noinst_PROGRAMS = memory arithmetic convolute window
+noinst_PROGRAMS = memory arithmetic convolute window wavelet
 
 GTEST_INCLUDE = -I$(top_srcdir)/tests/google
 
@@ -45,6 +45,17 @@ window_CPPFLAGS = $(GTEST_INCLUDE)
 
 # Used libraries
 window_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+wavelet_SOURCES = wavelet.cc
+
+# Compiler options
+wavelet_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+wavelet_LDADD = $(top_builddir)/src/libspfextr.la  \
 $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 
