@@ -45,7 +45,7 @@ void LowpassFilter::SetFilterParameter(const std::string& name,
   if (name == "frequency") {
     int pv = Parse<int>(name, value);
     if (pv < MIN_FILTER_FREQUENCY || pv > MAX_FILTER_FREQUENCY) {
-      throw new InvalidParameterValueException(name, value, Name());
+      throw InvalidParameterValueException(name, value, Name());
     }
     frequency_ = pv;
   }

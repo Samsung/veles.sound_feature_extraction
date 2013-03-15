@@ -56,7 +56,7 @@ class TransformBase : public virtual Transform {
       const std::unordered_map<std::string, std::string>& parameters) {
     for (auto p : parameters) {
       if (parameters_.find(p.first) == parameters_.end()) {
-        throw new InvalidParameterNameException(p.first, Name());
+        throw InvalidParameterNameException(p.first, Name());
       }
       parameters_[p.first] = p.second;
       SetParameter(p.first, p.second);
@@ -138,7 +138,7 @@ class TransformBase : public virtual Transform {
       pv = std::stoi(value);
     }
     catch(...) {
-      throw new InvalidParameterValueException(name, value, Name());
+      throw InvalidParameterValueException(name, value, Name());
     }
     return pv;
   }
@@ -150,7 +150,7 @@ class TransformBase : public virtual Transform {
       pv = std::stoul(value);
     }
     catch(...) {
-      throw new InvalidParameterValueException(name, value, Name());
+      throw InvalidParameterValueException(name, value, Name());
     }
     return pv;
   }

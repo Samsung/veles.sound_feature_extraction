@@ -33,7 +33,7 @@ class SingleFormat : public BufferFormatBase<float> {
 
   BufferFormat& operator=(const BufferFormat& other) {
     if (other.Id() != Id()) {
-      throw new InvalidFormatException(Id(), other.Id());
+      throw InvalidFormatException(Id(), other.Id());
     }
     *this = reinterpret_cast<const SingleFormat&>(other);
     return *this;

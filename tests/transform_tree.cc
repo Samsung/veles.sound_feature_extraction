@@ -99,37 +99,32 @@ class TransformTreeTest : public TransformTree, public testing::Test {
 };
 
 TEST_F(TransformTreeTest, AddChain) {
-  AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
+  ASSERT_NO_THROW(
+      AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } }));
 
-  bool fail = false;
-  try {
+  ASSERT_THROW({
     AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
-  }
-  catch(ChainNameAlreadyExistsException* e) {
-    fail = true;
-  }
-  EXPECT_TRUE(fail);
+  }, ChainNameAlreadyExistsException);
 
-  fail = false;
-  try {
+  ASSERT_THROW({
     AddChain("Two", { {"ParentTest", "" }, { "ChildTest", "" } });
-  }
-  catch(ChainAlreadyExistsException* e) {
-    fail = true;
-  }
-  EXPECT_TRUE(fail);
+  }, ChainAlreadyExistsException);
 
-  AddChain("Two", { {"ParentTest", "" }, { "ChildTest",
+  ASSERT_NO_THROW({
+    AddChain("Two", { {"ParentTest", "" }, { "ChildTest",
                                            "AnalysisLength=256" } });
-  PrepareForExecution();
+    PrepareForExecution();
+  });
 }
 
 TEST_F(TransformTreeTest, Dump) {
-  AddChain("One", { {"ParentTest", "AmplifyFactor=1" },
-                    { "ChildTest", "" } });
-  AddChain("Two", { {"ParentTest", "AmplifyFactor=2" },
-                    { "ChildTest", "AnalysisLength=256" } });
-  Dump("/tmp/ttdump.dot");
+  ASSERT_NO_THROW({
+    AddChain("One", { {"ParentTest", "AmplifyFactor=1" },
+                      { "ChildTest", "" } });
+    AddChain("Two", { {"ParentTest", "AmplifyFactor=2" },
+                      { "ChildTest", "AnalysisLength=256" } });
+    Dump("/tmp/ttdump.dot");
+  });
 }
 
 #include "tests/google/src/gtest_main.cc"

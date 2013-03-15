@@ -43,6 +43,11 @@ float *wavelet_prepare_array(const float *src, size_t length)
 float *wavelet_allocate_destination(size_t sourceLength)
     MALLOC WARN_UNUSED_RESULT;
 
+void wavelet_recycle_source(float *src, size_t length,
+                            float **desthihi, float **desthilo,
+                            float **destlohi, float **destlolo)
+    NOTNULL(1, 3, 4, 5, 6);
+
 /// @brief Performs an atomic wavelet transform on series of real numbers.
 /// @param src An array of floating point numbers to transform.
 /// @param length The logical length of src (in float-s, not in bytes).

@@ -41,14 +41,9 @@ TEST(Parameters, Parse) {
 }
 
 TEST(Parameters, InvalidParse) {
-  bool fail = false;
-  try {
+  ASSERT_THROW({
     auto pp = Parse("256");
-  }
-  catch(ParseParametersException* e) {
-    fail = true;
-  }
-  ASSERT_TRUE(fail);
+  }, ParseParametersException);
 }
 
 #include "tests/google/src/gtest_main.cc"

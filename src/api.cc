@@ -12,7 +12,7 @@
 
 #include <spfextr/api.h>
 #include <stddef.h>
-#include "src/speech_features.h"
+#include "src/features_parser.h"
 #include "src/transform_tree.h"
 
 using SpeechFeatureExtraction::ChainNameAlreadyExistsException;
@@ -57,9 +57,8 @@ FeaturesConfiguration *setup_features_extraction(
   try {
     featmap = SpeechFeatureExtraction::Features::Parse(lines);
   }
-  catch(ParseFeaturesException* pfe) {
-    fprintf(stderr, "Failed to parse features. %s\n", pfe->what());
-    delete pfe;
+  catch(const ParseFeaturesException& pfe) {
+    fprintf(stderr, "Failed to parse features. %s\n", pfe.what());
     return nullptr;
   }
 
@@ -70,28 +69,24 @@ FeaturesConfiguration *setup_features_extraction(
     try {
       fconfig->Tree->AddChain(featpair.first, featpair.second);
     }
-    catch(ChainNameAlreadyExistsException* cnaee) {
+    catch(const ChainNameAlreadyExistsException& cnaee) {
       fprintf(stderr, "Failed to construct the transform tree. %s\n",
-              cnaee->what());
-      delete cnaee;
+              cnaee.what());
       return nullptr;
     }
-    catch(TransformNotRegisteredException* tnre) {
+    catch(const TransformNotRegisteredException& tnre) {
       fprintf(stderr, "Failed to construct the transform tree. %s\n",
-              tnre->what());
-      delete tnre;
+              tnre.what());
       return nullptr;
     }
-    catch(ChainAlreadyExistsException* caee) {
+    catch(const ChainAlreadyExistsException& caee) {
       fprintf(stderr, "Failed to construct the transform tree. %s\n",
-              caee->what());
-      delete caee;
+              caee.what());
       return nullptr;
     }
-    catch(IncompatibleTransformFormatException* itfe) {
+    catch(const IncompatibleTransformFormatException& itfe) {
       fprintf(stderr, "Failed to construct the transform tree. %s\n",
-              itfe->what());
-      delete itfe;
+              itfe.what());
       return nullptr;
     }
   }

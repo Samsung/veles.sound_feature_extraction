@@ -177,7 +177,7 @@ void TransformTree::AddTransform(const std::string& name,
   // Search for the constructor of the transform "tname"
   auto tfit = TransformFactory.find(name);
   if (tfit == TransformFactory.end()) {
-    throw new TransformNotRegisteredException(name);
+    throw TransformNotRegisteredException(name);
   }
   // tfit is actually a map from input format to real constructor
   auto ctorit = tfit->second.find(
@@ -224,10 +224,10 @@ void TransformTree::AddChain(
     const std::string& name,
     const std::vector<std::pair<std::string, std::string>>& transforms) {  // NOLINT(*)
   if (treeIsPrepared_) {
-    throw new TreeIsPreparedException();
+    throw TreeIsPreparedException();
   }
   if (chains_.find(name) != chains_.end()) {
-    throw new ChainNameAlreadyExistsException(name);
+    throw ChainNameAlreadyExistsException(name);
   }
 
   auto currentNode = root_;
@@ -236,7 +236,7 @@ void TransformTree::AddChain(
     AddTransform(tpair.first, tpair.second, &currentNode);
   }
   if (currentNode->ChainName != "") {
-    throw new ChainAlreadyExistsException(currentNode->ChainName, name);
+    throw ChainAlreadyExistsException(currentNode->ChainName, name);
   }
   currentNode->ChainName = name;
   chains_.insert(name);
@@ -252,10 +252,10 @@ void TransformTree::PrepareForExecution() noexcept {
 std::unordered_map<std::string, std::shared_ptr<Buffers>>
 TransformTree::Execute(const Buffers& in) {
   if (!treeIsPrepared_) {
-    throw new TreeIsNotPreparedException();
+    throw TreeIsNotPreparedException();
   }
   if (chains_.size() == 0) {
-    throw new TreeIsEmptyException();
+    throw TreeIsEmptyException();
   }
   std::unordered_map<std::string, std::shared_ptr<Buffers>> results;
   for (auto name : chains_) {

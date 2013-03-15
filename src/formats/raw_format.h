@@ -103,7 +103,7 @@ class RawFormat : public BufferFormatBase<Raw<T>> {
 
   BufferFormat& operator=(const BufferFormat& other) {
     if (other.Id() != RawFormat<T>::Id()) {
-      throw new InvalidFormatException(RawFormat<T>::Id(), other.Id());
+      throw InvalidFormatException(RawFormat<T>::Id(), other.Id());
     }
     *this = reinterpret_cast<const RawFormat&>(other);
     return *this;
@@ -134,13 +134,13 @@ class RawFormat : public BufferFormatBase<Raw<T>> {
 
   static void ValidateSize(size_t value) {
     if (value < MIN_RAW_SIZE || value > MAX_RAW_SIZE) {
-      throw new InvalidRawFormatSizeException(value);
+      throw InvalidRawFormatSizeException(value);
     }
   }
 
   static void ValidateSamplingRate(int value) {
     if (value < MIN_SAMPLING_RATE || value > MAX_SAMPLING_RATE) {
-      throw new InvalidRawFormatSamplingRateException(value);
+      throw InvalidRawFormatSamplingRateException(value);
     }
   }
 };

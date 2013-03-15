@@ -27,7 +27,7 @@ std::unordered_map<std::string, std::string> Parse(const std::string& line) {
   while (std::getline(ss, s, ',')) {
     auto pos = s.find('=');
     if (pos == s.npos) {
-      throw new ParseParametersException(line, index);
+      throw ParseParametersException(line, index);
     }
     auto pname = s.substr(0, pos);
     boost::algorithm::trim(pname);

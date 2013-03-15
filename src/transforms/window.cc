@@ -35,19 +35,19 @@ void Window::SetParameter(const std::string& name,
   if (name == "length") {
     int pv = Parse<int>(name, value);
     if (pv < MIN_WINDOW_DURATION || pv > MAX_WINDOW_DURATION) {
-      throw new InvalidParameterValueException(name, value, Name());
+      throw InvalidParameterValueException(name, value, Name());
     }
     outputFormat_->SetDuration(pv);
   } else if (name == "step") {
     int pv = Parse<int>(name, value);
     if (pv < MIN_WINDOW_STEP || pv > MAX_WINDOW_STEP) {
-      throw new InvalidParameterValueException(name, value, Name());
+      throw InvalidParameterValueException(name, value, Name());
     }
     step_ = pv;
   } else if (name == "window") {
     auto wti = WindowTypeMap.find(value);
     if (wti == WindowTypeMap.end()) {
-      throw new InvalidParameterValueException(name, value, Name());
+      throw InvalidParameterValueException(name, value, Name());
     }
     type_ = wti->second;
   }

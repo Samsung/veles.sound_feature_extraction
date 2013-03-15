@@ -52,7 +52,9 @@ float *wavelet_prepare_array(const float *src, size_t length
 #ifndef __AVX__
   return src;
 #else
-  float *res = mallocf(length * 4 - 24);
+  // We could substract 24 here, but it breaks alignment for
+  // wavelet_recycle_source()
+  float *res = mallocf(length * 4);
   wavelet_prepare_array_memcpy(src, length, res);
   return res;
 #endif
@@ -65,9 +67,29 @@ float *wavelet_allocate_destination(size_t sourceLength) {
 #ifndef __AVX__
   float *res = mallocf(sourceLength / 2);
 #else
-  float *res = mallocf(sourceLength * 2 - 24);
+  // We could substract 24 here, but it breaks alignment for
+  // wavelet_recycle_source()
+  float *res = mallocf(sourceLength * 2);
 #endif
   return res;
+}
+
+void wavelet_recycle_source(float *src, size_t length,
+                            float **desthihi, float **desthilo,
+                            float **destlohi, float **destlolo) {
+  check_length(length);
+  assert(length >= 32);
+
+  int lq =
+#ifndef __AVX__
+  length / 4;
+#else
+  length;
+#endif
+  *desthihi = src;
+  *desthilo = src + lq;
+  *destlohi = src + lq * 2;
+  *destlolo = src + lq * 3;
 }
 
 static INLINE NOTNULL(2, 3) void initialize_highpass_lowpass(

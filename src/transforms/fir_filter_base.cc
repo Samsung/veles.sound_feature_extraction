@@ -40,13 +40,13 @@ void FirFilterBase::SetParameter(const std::string& name,
   if (name == "length") {
     int pv = Parse<int>(name, value);
     if (pv < MIN_FILTER_LENGTH || pv > MAX_FILTER_LENGTH) {
-      throw new InvalidParameterValueException(name, value, Name());
+      throw InvalidParameterValueException(name, value, Name());
     }
     length_ = pv;
   } else if (name == "window") {
     auto wti = WindowTypeMap.find(value);
     if (wti == WindowTypeMap.end()) {
-      throw new InvalidParameterValueException(name, value, Name());
+      throw InvalidParameterValueException(name, value, Name());
     }
     windowType_ = wti->second;
   } else {

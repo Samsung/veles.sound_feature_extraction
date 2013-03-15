@@ -1,5 +1,5 @@
-/*! @file speech_features.cc
- *  @brief Tests for src/speech_features.cc.
+/*! @file features_parser.cc
+ *  @brief Tests for src/features_parser.cc.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,7 +13,7 @@
 #include <gtest/gtest.h>
 #include <string>
 #include <vector>
-#include "src/speech_features.h"
+#include "src/features_parser.h"
 
 using SpeechFeatureExtraction::Features::Parse;
 

@@ -1,4 +1,4 @@
-/*! @file speech_features.cc
+/*! @file features_parser.cc
  *  @brief Features string functions.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -10,7 +10,7 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/speech_features.h"
+#include "src/features_parser.h"
 #include <boost/regex.hpp>
 
 namespace SpeechFeatureExtraction {
@@ -26,12 +26,12 @@ void AddToTransformsList(const std::string& str, size_t featureIndex,
   boost::sregex_token_iterator nameIterator(
       str.begin(), str.end(), nameRegex, 1);
   if (nameIterator == empty) {
-    throw new ParseFeaturesException(featureIndex);
+    throw ParseFeaturesException(featureIndex);
   }
   transforms->push_back(std::make_pair(
       *nameIterator++, ""));
   if (nameIterator != empty) {
-    throw new ParseFeaturesException(featureIndex);
+    throw ParseFeaturesException(featureIndex);
   }
   boost::sregex_token_iterator parametersIterator(
       str.begin(), str.end(), parametersRegex, 1);
@@ -41,7 +41,7 @@ void AddToTransformsList(const std::string& str, size_t featureIndex,
       (*transforms)[transforms->size() - 1].second = pvalue;
     }
     if (parametersIterator != empty) {
-      throw new ParseFeaturesException(featureIndex);
+      throw ParseFeaturesException(featureIndex);
     }
   }
 }
@@ -63,22 +63,22 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures) {
     boost::sregex_token_iterator featureNameIterator(
         str.begin(), str.end(), featureRegex, 1);
     if (featureNameIterator == empty) {
-      throw new ParseFeaturesException(index);
+      throw ParseFeaturesException(index);
     }
     std::string fname = *featureNameIterator++;
     if (featureNameIterator != empty) {
-      throw new ParseFeaturesException(index);
+      throw ParseFeaturesException(index);
     }
     ret.insert(std::make_pair(fname, RawTransformsList()));
 
     boost::sregex_token_iterator featureTransformsIterator(
         str.begin(), str.end(), featureRegex, 2);
     if (featureTransformsIterator == empty) {
-      throw new ParseFeaturesException(index);
+      throw ParseFeaturesException(index);
     }
     std::string transformsStr = *featureTransformsIterator++;
     if (featureTransformsIterator != empty) {
-      throw new ParseFeaturesException(index);
+      throw ParseFeaturesException(index);
     }
 
     boost::sregex_token_iterator featureEachTransformIterator(
@@ -90,13 +90,13 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures) {
     boost::sregex_token_iterator featureTransformsEndIterator(
         transformsStr.begin(), transformsStr.end(), transformsEndRegex, 1);
     if (featureTransformsEndIterator == empty) {
-      throw new ParseFeaturesException(index);
+      throw ParseFeaturesException(index);
     }
     AddToTransformsList(*featureTransformsEndIterator++,
                         index,
                         &ret[fname]);
     if (featureTransformsEndIterator != empty) {
-      throw new ParseFeaturesException(index);
+      throw ParseFeaturesException(index);
     }
   }
   return std::move(ret);

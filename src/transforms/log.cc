@@ -42,7 +42,7 @@ void Log::SetParameter(const std::string& name,
   if (name == "base") {
     auto lbit = LogBaseMap.find(value);
     if (lbit == LogBaseMap.end()) {
-      throw new InvalidParameterValueException(name, value, Name());
+      throw InvalidParameterValueException(name, value, Name());
     }
     base_ = lbit->second;
   }

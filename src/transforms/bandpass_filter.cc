@@ -46,13 +46,13 @@ void BandpassFilter::SetFilterParameter(const std::string& name,
   if (name == "frequency_high") {
     int pv = Parse<int>(name, value);
     if (pv < MIN_FILTER_FREQUENCY || pv > MAX_FILTER_FREQUENCY) {
-      throw new InvalidParameterValueException(name, value, Name());
+      throw InvalidParameterValueException(name, value, Name());
     }
     frequencyHigh_ = pv;
   } else if (name == "frequency_low") {
     int pv = Parse<int>(name, value);
     if (pv < MIN_FILTER_FREQUENCY || pv > MAX_FILTER_FREQUENCY) {
-      throw new InvalidParameterValueException(name, value, Name());
+      throw InvalidParameterValueException(name, value, Name());
     }
     frequencyLow_ = pv;
   }

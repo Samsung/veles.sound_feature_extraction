@@ -43,25 +43,25 @@ void FilterBank::SetParameter(const std::string& name,
   if (name == "number") {
     auto pv = Parse<size_t>(name, value);
     if (pv > 2048) {
-      throw new InvalidParameterValueException(name, value, Name());
+      throw InvalidParameterValueException(name, value, Name());
     }
     length_ = pv;
   } else if (name == "frequency_min") {
     auto pv = Parse<int>(name, value);
     if (pv < 10 || pv >= maxFreq_) {
-      throw new InvalidParameterValueException(name, value, Name());
+      throw InvalidParameterValueException(name, value, Name());
     }
     minFreq_ = pv;
   } else if (name == "frequency_min") {
     auto pv = Parse<int>(name, value);
     if (pv < 10 || pv <= minFreq_) {
-      throw new InvalidParameterValueException(name, value, Name());
+      throw InvalidParameterValueException(name, value, Name());
     }
     maxFreq_ = pv;
   } else if (name == "type") {
     auto tit = ScaleTypeMap.find(value);
     if (tit == ScaleTypeMap.end()) {
-      throw new InvalidParameterValueException(name, value, Name());
+      throw InvalidParameterValueException(name, value, Name());
     }
     type_ = tit->second;
   }

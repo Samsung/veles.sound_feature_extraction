@@ -1,4 +1,4 @@
-/*! @file speech_features.h
+/*! @file features_parser.h
  *  @brief Features string functions.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_SPEECH_FEATURES_H_
-#define SRC_SPEECH_FEATURES_H_
+#ifndef SRC_FEATURES_PARSER_H_
+#define SRC_FEATURES_PARSER_H_
 
 #include <string>
 #include <unordered_map>  // NOLINT(build/include_order)
@@ -56,4 +56,4 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures);
 }  // namespace SpeechFeatureExtraction
 
 
-#endif  // SRC_SPEECH_FEATURES_H_
+#endif  // SRC_FEATURES_PARSER_H_

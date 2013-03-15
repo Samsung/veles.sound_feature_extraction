@@ -86,7 +86,7 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
 
   BufferFormat& operator=(const BufferFormat& other) {
     if (other.Id() != WindowFormat<T>::Id()) {
-      throw new InvalidFormatException(WindowFormat<T>::Id(), other.Id());
+      throw InvalidFormatException(WindowFormat<T>::Id(), other.Id());
     }
     *this = reinterpret_cast<const WindowFormat&>(other);
     return *this;
@@ -132,13 +132,13 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
 
   static void ValidateDuration(size_t value) {
     if (value < MIN_WINDOW_DURATION || value > MAX_WINDOW_DURATION) {
-      throw new InvalidWindowFormatDurationException(value);
+      throw InvalidWindowFormatDurationException(value);
     }
   }
 
   static void ValidateSamplingRate(int value) {
     if (value < MIN_SAMPLING_RATE || value > MAX_SAMPLING_RATE) {
-      throw new InvalidWindowFormatSamplingRateException(value);
+      throw InvalidWindowFormatSamplingRateException(value);
     }
   }
 };
