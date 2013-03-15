@@ -109,7 +109,9 @@ void WaveletFilterBank::Apply(const float* source, size_t length,
   assert(length >= minLength_);
 
   std::vector<int> tree(tree_);
-  std::vector<int> workingTree(tree.size());
+  std::reverse(tree.begin(), tree.end());
+  std::vector<int> workingTree;
+  workingTree.reserve(tree.size());
 
   auto lsrc = std::shared_ptr<float>(
       wavelet_prepare_array(source, length), free);
@@ -121,7 +123,8 @@ void WaveletFilterBank::Apply(const float* source, size_t length,
   float *desthihi, *desthilo, *destlohi, *destlolo;
   wavelet_recycle_source(lsrc.get(), length, &desthihi, &desthilo,
                          &destlohi, &destlolo);
-  workingTree.insert(workingTree.begin(), { 1, 1 });
+  workingTree.push_back(1);
+  workingTree.push_back(1);
 
   while (!tree.empty()) {
     RecursivelyIterate(length / 2, &tree, &workingTree, ldesthi.get(),
