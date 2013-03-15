@@ -105,6 +105,8 @@ TEST(Wavelet, wavelet_apply_na) {
   }
   ASSERT_EQF(vlo, destlo[15]);
   ASSERT_EQF(vhi, desthi[15]);
+
+  wavelet_apply_na(array, 8, 8, desthi, destlo);
 }
 
 TEST(Wavelet, wavelet_apply) {
