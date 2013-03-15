@@ -18,58 +18,25 @@
 
 const int BENCHMARK_LENGTH = 1000000;
 
-TEST(Wavelet, wavelet_scatter_array) {
+TEST(Wavelet, wavelet_prepare_array) {
   float array[512];
   int length = sizeof(array) / sizeof(float);
   for (int i = 0; i < length; i++) {
     array[i] = i;
   }
-  auto res = wavelet_scatter_array(array, length);
+  auto res = wavelet_prepare_array(array, length);
 
 #ifdef __AVX__
   ASSERT_EQ(0, align_complement_f32(res));
-  float val = 0;
-  ASSERT_EQ(val, res[0]);
-  val = 1;
-  ASSERT_EQ(val, res[1]);
-  val = 2;
-  ASSERT_EQ(val, res[2]);
-  ASSERT_EQ(val, res[8]);
-  val = 3;
-  ASSERT_EQ(val, res[3]);
-  ASSERT_EQ(val, res[9]);
-  val = 4;
-  ASSERT_EQ(val, res[4]);
-  ASSERT_EQ(val, res[10]);
-  ASSERT_EQ(val, res[16]);
-  val = 5;
-  ASSERT_EQ(val, res[5]);
-  ASSERT_EQ(val, res[11]);
-  ASSERT_EQ(val, res[17]);
-  for (int i = 6; i < length; i += 2) {
-    int baseIndex = -18 + (i / 2) * 8;
-    val = i;
-    ASSERT_EQ(val, res[baseIndex]);
-    ASSERT_EQ(val, res[baseIndex + 6]);
-    ASSERT_EQ(val, res[baseIndex + 12]);
-    ASSERT_EQ(val, res[baseIndex + 18]);
-  }
+  ASSERT_EQ(0, memcmp(array, res, length * sizeof(float)));
+  int checkSize = (length - 8) * sizeof(float);
+  ASSERT_EQ(0, memcmp(array + 2, res + length, checkSize));
+  ASSERT_EQ(0, memcmp(array + 4, res + length * 2 - 8, checkSize));
+  ASSERT_EQ(0, memcmp(array + 6, res + length * 3 - 16, checkSize));
   free(res);
 #else
   ASSERT_EQ(0, memcmp(res, array, sizeof(array));
 #endif
-}
-
-TEST(Wavelet, wavelet_gather_array) {
-  float array[512];
-  int length = sizeof(array) / sizeof(float);
-  for (int i = 0; i < length; i++) {
-    array[i] = i;
-  }
-  auto res = wavelet_scatter_array(array, length);
-  wavelet_gather_array(res, length);
-  ASSERT_EQ(0, memcmp(array, res, sizeof(array)));
-  free(res);
 }
 
 TEST(Wavelet, wavelet_allocate_destination) {
@@ -146,12 +113,10 @@ TEST(Wavelet, wavelet_apply) {
   for (int i = 0; i < length; i++) {
     array[i] = i;
   }
-  auto prep = wavelet_scatter_array(array, length);
+  auto prep = wavelet_prepare_array(array, length);
   auto desthi = wavelet_allocate_destination(length);
   auto destlo = wavelet_allocate_destination(length);
   wavelet_apply(prep, length, desthi, destlo);
-  wavelet_gather_array(desthi, length / 2);
-  wavelet_gather_array(destlo, length / 2);
   float validdesthi[length / 2], validdestlo[length / 2];
   wavelet_apply_na(array, length, 8, validdesthi, validdestlo);
   for (int i = 0; i < length / 2; i++) {
@@ -171,7 +136,7 @@ TEST(Wavelet, SIMDSpeedup) {
   for (int i = 0; i < length; i++) {
     array[i] = i;
   }
-  auto prep = wavelet_scatter_array(array, length);
+  auto prep = wavelet_prepare_array(array, length);
   auto desthi = wavelet_allocate_destination(length);
   auto destlo = wavelet_allocate_destination(length);
 

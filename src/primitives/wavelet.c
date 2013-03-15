@@ -29,7 +29,21 @@ static INLINE void check_length(size_t length) {
   assert((length & (length - 1)) == 0 && "length must be a power of 2");
 }
 
-float *wavelet_scatter_array(const float *src, size_t length
+static INLINE NOTNULL(1, 3) void wavelet_prepare_array_memcpy(
+    const float *src, size_t length, float *res) {
+  assert(length % 8 == 0);
+  assert(length >= 16);
+
+  if (res != src) {
+    memcpy(res, src, length * sizeof(float));
+  }
+  int copySize = (length - 8) * sizeof(float);
+  memcpy(res + length,          src + 2, copySize);
+  memcpy(res + length * 2 -  8, src + 4, copySize);
+  memcpy(res + length * 3 - 16, src + 6, copySize);
+}
+
+float *wavelet_prepare_array(const float *src, size_t length
 #ifndef __AVX__
                              UNUSED
 #endif
@@ -38,60 +52,26 @@ float *wavelet_scatter_array(const float *src, size_t length
 #ifndef __AVX__
   return src;
 #else
-  float *res = mallocf(length * 4 + 6);
-  res[0] = src[0];
-  res[1] = src[1];
-  float val = src[2];
-  res[2] = val;
-  res[8] = val;
-  val = src[3];
-  res[3] = val;
-  res[9] = val;
-  val = src[4];
-  res[4] = val;
-  res[10] = val;
-  res[16] = val;
-  val = src[5];
-  res[5] = val;
-  res[11] = val;
-  res[17] = val;
-  for (int i = 6; i < (int)length; i++) {
-    int baseIndex = -18 + (i / 2) * 8 + (i % 2);
-    float val = src[i];
-    for (int j = 0; j < 4 * 6; j += 6) {
-      res[baseIndex + j] = val;
-    }
-  }
+  float *res = mallocf(length * 4 - 24);
+  wavelet_prepare_array_memcpy(src, length, res);
   return res;
-#endif
-}
-
-void wavelet_gather_array(float *src, size_t length
-#ifndef __AVX__
-                          UNUSED
-#endif
-) {
-#ifndef __AVX__
-  return src;
-#else
-  for (int i = 8; i < (int)length; i++) {
-    src[i] = src[-18 + (i / 2) * 8 + i % 2];
-  }
 #endif
 }
 
 float *wavelet_allocate_destination(size_t sourceLength) {
   check_length(sourceLength);
+  assert(sourceLength >= 16);
+
 #ifndef __AVX__
   float *res = mallocf(sourceLength / 2);
 #else
-  float *res = mallocf(sourceLength * 2 + 6);
+  float *res = mallocf(sourceLength * 2 - 24);
 #endif
   return res;
 }
 
-static void initialize_highpass_lowpass(int order,
-                                        float *highpass, float *lowpass) {
+static INLINE NOTNULL(2, 3) void initialize_highpass_lowpass(
+    int order, float *highpass, float *lowpass) {
   for (int i = 0; i < order; i++) {
     float val =  DaubechiesF[order / 2][i];
     lowpass[i] = val;
@@ -105,33 +85,48 @@ void wavelet_apply_na(const float *__restrict src, size_t length, int order,
   assert(length % 2 == 0);
   assert(src && desthi && destlo);
 
+  int ilength = (int)length;
   float highpassC[order], lowpassC[order];
   initialize_highpass_lowpass(order, highpassC, lowpassC);
 
-  float srcExt[(order - 2) * 2];
-  memcpy(srcExt, src + length - (order - 2),
-         (order - 2) * sizeof(float));
-  memcpy(srcExt + order - 2, src, (order - 2) * sizeof(float));
-
-  for (int i = 0, di = 0; i < (int)length - (order - 2); i += 2, di++) {
-    float reshi = .0f, reslo = .0f;
-    for (int j = 0; j < order; j++) {
-      float srcval = src[i + j];
-      reshi += highpassC[j] * srcval;
-      reslo += lowpassC[j] * srcval;
+  if (ilength > order) {
+    for (int i = 0, di = 0; i < ilength; i += 2, di++) {
+      float reshi = .0f, reslo = .0f;
+      for (int j = 0; j < order; j++) {
+        int index = i + j;
+        float srcval = src[index < ilength? index : index - ilength];
+        reshi += highpassC[j] * srcval;
+        reslo += lowpassC[j] * srcval;
+      }
+      desthi[di] = reshi;
+      destlo[di] = reslo;
     }
-    desthi[di] = reshi;
-    destlo[di] = reslo;
-  }
-  for (int i = 0, di = (length - (order - 2)) / 2; i < 6; i += 2, di++) {
-    float reshi = .0f, reslo = .0f;
-    for (int j = 0; j < order; j++) {
-      float srcval = srcExt[i + j];
-      reshi += highpassC[j] * srcval;
-      reslo += lowpassC[j] * srcval;
+  } else {
+    if (order == 8) {
+      for (int i = 0, di = 0; i < 8; i += 2, di++) {
+        float reshi = .0f, reslo = .0f;
+        for (int j = 0; j < 8; j++) {
+          int index = i + j;
+          float srcval = src[index < 8? index : index - 8];
+          reshi += highpassC[j] * srcval;
+          reslo += lowpassC[j] * srcval;
+        }
+        desthi[di] = reshi;
+        destlo[di] = reslo;
+      }
+    } else {
+      for (int i = 0, di = 0; i < order; i += 2, di++) {
+        float reshi = .0f, reslo = .0f;
+        for (int j = 0; j < order; j++) {
+          int index = i + j;
+          float srcval = src[index < order? index : index - order];
+          reshi += highpassC[j] * srcval;
+          reslo += lowpassC[j] * srcval;
+        }
+        desthi[di] = reshi;
+        destlo[di] = reslo;
+      }
     }
-    desthi[di] = reshi;
-    destlo[di] = reslo;
   }
 }
 
@@ -146,84 +141,31 @@ void wavelet_apply(const float *__restrict src, size_t length,
   assert(length % 2 == 0);
   assert(src && desthi && destlo);
 
+  int ilength = (int)length;
   float highpassC[order] __attribute__ ((aligned (32))),
         lowpassC[order] __attribute__ ((aligned (32)));
   initialize_highpass_lowpass(order, highpassC, lowpassC);
 
-#ifndef __AVX__
-  float srcExt[(order - 2) * 2];
-  memcpy(srcExt, src + length - (order - 2),
-         (order - 2) * sizeof(float));
-  memcpy(srcExt + order - 2, src, (order - 2) * sizeof(float));
-#else
-  float srcExt[8 * 3] __attribute__ ((aligned (32)));
-  memcpy(srcExt, src + 4 * length - 30, sizeof(srcExt));
-  float a = src[0], b = src[1],
-      c = src[2], d = src[3],
-      e = src[4], f = src[5];
-  srcExt[6] = a;
-  srcExt[7] = b;
-  srcExt[12] = a;
-  srcExt[13] = b;
-  srcExt[14] = c;
-  srcExt[15] = d;
-  srcExt[18] = a;
-  srcExt[19] = b;
-  srcExt[20] = c;
-  srcExt[21] = d;
-  srcExt[22] = e;
-  srcExt[23] = f;
-#endif
-
 #ifdef __AVX__
   const __m256 hpvec = _mm256_load_ps(highpassC);
   const __m256 lpvec = _mm256_load_ps(lowpassC);
-  for (int i = 0, di = 0; i < (int)length - 6; i += 2, di++) {
-    __m256 srcvec = _mm256_load_ps(src + i * 4);
+  for (int i = 0, di = 0; i < ilength - 6; i += 2, di++) {
+    int ex = (i / 2) % 4;
+    int offset = i + (ex > 0? ex * (length - 10) + 8 : 0);
+    __m256 srcvec = _mm256_load_ps(src + offset);
     __m256 vechi = _mm256_dp_ps(srcvec, hpvec, 0xFF);
     __m256 veclo = _mm256_dp_ps(srcvec, lpvec, 0xFF);
     float reshi = vechi[0] + vechi[4];
     float reslo = veclo[0] + veclo[4];
-    // Make 4 backward copies of the result
-    if (di >= 6) {
-      int baseIndex = -18 + (di / 2) * 8 + (di % 2);
-      for (int j = 0; j < 4 * 6; j += 6) {
-        desthi[baseIndex + j] = reshi;
-        destlo[baseIndex + j] = reslo;
-      }
-    } else {
-      desthi[di] = reshi;
-      destlo[di] = reslo;
-      if (di >= 2) {
-        desthi[di + 6] = reshi;
-        destlo[di + 6] = reslo;
-      }
-      if (di >= 4) {
-        desthi[di + 6 * 2] = reshi;
-        destlo[di + 6 * 2] = reslo;
-      }
-    }
-  }
-  for (int i = 0, di = (length - 6) / 2; i < 6; i += 2, di++) {
-    __m256 srcvec = _mm256_load_ps(srcExt + i * 4);
-    __m256 vechi = _mm256_dp_ps(srcvec, hpvec, 0xFF);
-    __m256 veclo = _mm256_dp_ps(srcvec, lpvec, 0xFF);
-    float reshi = vechi[0] + vechi[4];
-    float reslo = veclo[0] + veclo[4];
-
-    // Make 4 backward copies of the result
-    int baseIndex = -18 + (di / 2) * 8 + (di % 2);
-    for (int j = 0; j < 4 * 6; j += 6) {
-      desthi[baseIndex + j] = reshi;
-      destlo[baseIndex + j] = reslo;
-    }
+    desthi[di] = reshi;
+    destlo[di] = reslo;
   }
 #elif defined(__ARM_NEON__)
   const float32x4_t hivec1 = vld1q_f32(highpassC);
   const float32x4_t hivec2 = vld1q_f32(&highpassC[4]);
   const float32x4_t lovec1 = vld1q_f32(lowpassC);
   const float32x4_t lovec2 = vld1q_f32(&lowpassC[4]);
-  for (int i = 0, di = 0; i < (int)length - 6; i += 2, di++) {
+  for (int i = 0, di = 0; i < ilength - 6; i += 2, di++) {
     float32x4_t srcvec = vld1q_f32(src + i);
 
     float32x4_t vechitmp = vmulq_f32(srcvec, hivec1);
@@ -244,18 +186,24 @@ void wavelet_apply(const float *__restrict src, size_t length,
     desthi[di] = reshi;
     destlo[di] = reslo;
   }
-  for (int i = 0, di = (length - 6) / 2; i < 6; i += 2, di++) {
-    float reshi = .0f, reslo = .0f;
-    for (int j = 0; j < order; j++) {
-      float srcval = srcExt[i + j];
-      reshi += highpass[j] * srcval;
-      reslo += lowpass[j] * srcval;
-    }
-    desthi[di] = reshi;
-    destlo[di] = reslo;
-  }
 #else
 #error This SIMD variant is not supported.
 #endif  // #elif defined(__ARM_NEON__)
 #endif  // #ifndef SIMD
+  // Finish with the extended end
+  for (int i = ilength - 6, di = (ilength - 6) / 2; i < ilength; i += 2, di++) {
+    float reshi = .0f, reslo = .0f;
+    for (int j = 0; j < 8; j++) {
+      int index = i + j;
+      float srcval = src[index < ilength? index : index - ilength];
+      reshi += highpassC[j] * srcval;
+      reslo += lowpassC[j] * srcval;
+    }
+    desthi[di] = reshi;
+    destlo[di] = reslo;
+  }
+#ifdef __AVX__
+  wavelet_prepare_array_memcpy(desthi, length / 2, desthi);
+  wavelet_prepare_array_memcpy(destlo, length / 2, destlo);
+#endif
 }

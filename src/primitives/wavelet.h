@@ -26,20 +26,12 @@ extern "C" {
 /// @param length The length of source in float-s.
 /// @return A newly allocated memory block which should be disposed with
 /// free() if AVX SIMD is activated; otherwise, src.
-float *wavelet_scatter_array(const float *src, size_t length)
+float *wavelet_prepare_array(const float *src, size_t length)
     NOTNULL(1)
 #ifdef __AVX__
     MALLOC WARN_UNUSED_RESULT
 #endif
 ;
-
-/// @brief If AVX SIMD instruction set is used, act as an inplace inverse of
-/// wavelet_scatter_array(), else just returns src.
-/// @param src The scattered signal.
-/// @param length The logical length of src (in float-s, not in bytes).
-/// @details Use this function to transform desthi/destlo from
-/// wavelet_apply() into the usual sequential array format.
-void wavelet_gather_array(float *src, size_t length) NOTNULL(1);
 
 /// @brief Allocates the array which is capable of storing one of the two
 /// wavelet splitted parts of a signal (that is, desthi or destlo in
