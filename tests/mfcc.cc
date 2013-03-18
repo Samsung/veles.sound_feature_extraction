@@ -22,7 +22,7 @@ using SpeechFeatureExtraction::BuffersBase;
 extern unsigned char data[96000];
 
 TEST(MFCC, Calculation) {
-  ASSERT_NO_THROW({
+  //ASSERT_NO_THROW({
     TransformTree tt( { 48000, 16000 } );
     // We have to apply FilterBank twice since Energy results in
     // squared magnitude
@@ -39,7 +39,7 @@ TEST(MFCC, Calculation) {
     for (auto r : report) {
       printf("%s:\t%f\n", r.first.c_str(), r.second);
     }
-  });
+  //});
 }
 
 unsigned char data[96000] = {

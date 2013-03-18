@@ -51,7 +51,7 @@ void SubbandEnergy::Initialize() const noexcept {
   int offset = 0;
   for (auto depth : treeFingerprint_) {
     offsets_.push_back(offset);
-    offset += (1 << depth);
+    offset += (inputFormat_->Size() >> depth);
   }
   offsets_.push_back(offset);
 }
@@ -69,8 +69,8 @@ void SubbandEnergy::TypeSafeDo(
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();
     for (int i = 0; i < (int)offsets_.size() - 1; i++) {
-      output[i] = CalculateEnergy(input + offsets_[i],
-                                  offsets_[i + 1] - offsets_[i]);
+      output[i] = calculate_energy(input + offsets_[i],
+                                   offsets_[i + 1] - offsets_[i]);
     }
   }
 }

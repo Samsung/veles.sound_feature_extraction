@@ -25,11 +25,12 @@ class RealToComplexTest : public RealToComplex, public testing::Test {
 
   virtual void SetUp() {
     Size = 486;
-    Input.Initialize(1, Size);
+    Input.Initialize(1, Size * 2);
     for (int i = 0; i < Size; i++) {
       Input[0]->Data.get()[i] = i;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
+    format->SetAllocatedSize(Size * 2);
     SetInputFormat(format);
     TypeSafeInitializeBuffers(Input, &Output);
   }

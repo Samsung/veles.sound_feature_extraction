@@ -1,7 +1,7 @@
 include $(top_srcdir)/Makefile.common
 
 noinst_PROGRAMS = memory arithmetic convolute window wavelet \
-wavelet_filter_bank
+wavelet_filter_bank energy
 
 GTEST_INCLUDE = -I$(top_srcdir)/tests/google
 
@@ -68,6 +68,17 @@ wavelet_filter_bank_CPPFLAGS = $(GTEST_INCLUDE)
 
 # Used libraries
 wavelet_filter_bank_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+energy_SOURCES = energy.cc
+
+# Compiler options
+energy_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+energy_LDADD = $(top_builddir)/src/libspfextr.la  \
 $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 

@@ -20,7 +20,7 @@
 extern "C" {
 #endif
 
-float CalculateEnergy(const float *signal, size_t length) NOTNULL(1);
+float calculate_energy(const float *signal, size_t length) NOTNULL(1);
 
 #ifdef __cplusplus
 }

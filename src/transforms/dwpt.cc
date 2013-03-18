@@ -56,6 +56,7 @@ void DWPT::TypeSafeDo(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");
+  assert(filterBank_ != nullptr && "Initialize() was not called");
   size_t length = inputFormat_->Size();
 
   #pragma omp parallel for

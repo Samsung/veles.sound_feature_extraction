@@ -32,7 +32,8 @@ class UniformFormatTransform : public TransformBase<F, F> {
 
  protected:
   virtual void OnInputFormatChanged() {
-    TransformBase<F, F>::outputFormat_ = TransformBase<F, F>::inputFormat_;
+    TransformBase<F, F>::outputFormat_ = std::make_shared<F>(
+        *TransformBase<F, F>::inputFormat_);
     OnFormatChanged();
   }
 

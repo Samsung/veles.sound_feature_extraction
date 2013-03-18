@@ -39,6 +39,7 @@ void Window::SetParameter(const std::string& name,
     if (pv < MIN_WINDOW_DURATION || pv > MAX_WINDOW_DURATION) {
       throw InvalidParameterValueException(name, value, Name());
     }
+    outputFormat_->SetAllocatedSize(pv * outputFormat_->SamplingRate() / 1000);
     outputFormat_->SetDuration(pv);
   } else if (name == "step") {
     int pv = Parse<int>(name, value);

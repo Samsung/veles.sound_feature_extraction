@@ -123,7 +123,7 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
     duration_ = value;
     size_ = SamplesCount();
     if (size_ > allocatedSize_) {
-      throw TooBigWindowSizeException(value, allocatedSize_);
+      throw TooBigWindowSizeException(size_, allocatedSize_);
     }
   }
 

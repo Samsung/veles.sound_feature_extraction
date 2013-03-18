@@ -33,6 +33,7 @@ class DWPTTest : public DWPT, public testing::Test {
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
     SetInputFormat(format);
     TypeSafeInitializeBuffers(Input, &Output);
+    Initialize();
   }
 };
 

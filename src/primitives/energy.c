@@ -18,7 +18,7 @@
 #endif
 #include "src/primitives/memory.h"
 
-float CalculateEnergy(const float *signal, size_t length) {
+float calculate_energy(const float *signal, size_t length) {
   float energy = .0f;
 #ifdef __AVX__
   __m256 accum = { .0f };

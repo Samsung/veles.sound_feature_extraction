@@ -23,6 +23,8 @@ class WindowFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
   virtual ~WindowFormatConverterBase() {}
 
   virtual void OnInputFormatChanged() {
+    FormatConverterBase<FIN, FOUT>::outputFormat_->SetAllocatedSize(
+        FormatConverterBase<FIN, FOUT>::inputFormat_->AllocatedSize());
     FormatConverterBase<FIN, FOUT>::outputFormat_->SetDuration(
         FormatConverterBase<FIN, FOUT>::inputFormat_->Duration());
     FormatConverterBase<FIN, FOUT>::outputFormat_->SetSamplingRate(

@@ -25,21 +25,40 @@ class SubbandEnergyTest : public SubbandEnergy, public testing::Test {
   int Size;
 
   virtual void SetUp() {
-    SetParameter("tree", "3, 3, 2, 2, 3, 3");
+    SetParameter("tree", "3 3 2 2 3 3");
     Size = 512;
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; i++) {
-      Input[0]->Data.get()[i] = i;
+      Input[0]->Data.get()[i] = i + 1;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
     SetInputFormat(format);
     TypeSafeInitializeBuffers(Input, &Output);
+    Initialize();
   }
 };
 
+#define EPSILON 0.005f
+
+#define ASSERT_EQF(a, b) do { \
+  ASSERT_GT(a + EPSILON, b); \
+  ASSERT_LT(a - EPSILON, b); \
+} while (0)
+
+float SumOfSquares(int max) {
+  return max * (max + 1) * (2 * max + 1.0f) / 6;
+}
+
 TEST_F(SubbandEnergyTest, Forward) {
   TypeSafeDo(Input, &Output);
-  // TODO(v.markovtsev): assert
+  float* output = Output[0]->Data.get();
+  int quarter = Size / 8;
+  ASSERT_EQF(SumOfSquares(quarter) / quarter, output[0]);
+  ASSERT_EQF((SumOfSquares(quarter * 2) - SumOfSquares(quarter)) / quarter,
+             output[1]);
+  ASSERT_EQF(
+      (SumOfSquares(quarter * 4) - SumOfSquares(quarter * 2)) / (2 * quarter),
+      output[2]);
 }
 
 #include "tests/google/src/gtest_main.cc"
