@@ -25,22 +25,34 @@
      _a > _b ? _a : _b; \
    })
 
-static INLINE void check_length(size_t length) {
-  assert((length & (length - 1)) == 0 && "length must be a power of 2");
+static INLINE void check_length(size_t length, int order) {
+  assert(length >= (size_t)order);
+  assert(length % 2 == 0);
+}
+
+static INLINE size_t aligned_length(size_t length, size_t alignment) {
+  size_t ex = length % alignment;
+  if (ex == 0) {
+    return length;
+  }
+  return length + alignment - ex;
 }
 
 static INLINE NOTNULL(1, 3) void wavelet_prepare_array_memcpy(
     const float *src, size_t length, float *res) {
-  assert(length % 8 == 0);
-  assert(length >= 16);
+  check_length(length, 8);
 
   if (res != src) {
     memcpy(res, src, length * sizeof(float));
   }
-  int copySize = (length - 8) * sizeof(float);
-  memcpy(res + length,          src + 2, copySize);
-  memcpy(res + length * 2 -  8, src + 4, copySize);
-  memcpy(res + length * 3 - 16, src + 6, copySize);
+
+  if (length > 8) {
+    size_t length8 = aligned_length(length, 8);
+    int copySize = (length8 - 8) * sizeof(float);
+    memcpy(res + length8,          src + 2, copySize);
+    memcpy(res + length8 * 2 -  8, src + 4, copySize);
+    memcpy(res + length8 * 3 - 16, src + 6, copySize);
+  }
 }
 
 float *wavelet_prepare_array(const float *src, size_t length
@@ -48,28 +60,29 @@ float *wavelet_prepare_array(const float *src, size_t length
                              UNUSED
 #endif
 ) {
-  check_length(length);
+  check_length(length, 8);
 #ifndef __AVX__
   return src;
 #else
+  size_t length8 = aligned_length(length, 8);
   // We could substract 24 here, but it breaks alignment for
   // wavelet_recycle_source()
-  float *res = mallocf(length * 4);
+  float *res = mallocf(length8 * 4);
   wavelet_prepare_array_memcpy(src, length, res);
   return res;
 #endif
 }
 
 float *wavelet_allocate_destination(size_t sourceLength) {
-  check_length(sourceLength);
-  assert(sourceLength >= 16);
+  check_length(sourceLength, 8);
 
 #ifndef __AVX__
   float *res = mallocf(sourceLength / 2);
 #else
+  size_t length8 = aligned_length(sourceLength, 8);
   // We could substract 24 here, but it breaks alignment for
   // wavelet_recycle_source()
-  float *res = mallocf(sourceLength * 2);
+  float *res = mallocf(length8 * 2);
 #endif
   return res;
 }
@@ -77,14 +90,14 @@ float *wavelet_allocate_destination(size_t sourceLength) {
 void wavelet_recycle_source(float *src, size_t length,
                             float **desthihi, float **desthilo,
                             float **destlohi, float **destlolo) {
-  check_length(length);
-  assert(length >= 32);
+  assert(length >= 16);
+  assert(length % 4 == 0);
 
   int lq =
 #ifndef __AVX__
   length / 4;
 #else
-  length;
+  aligned_length(length, 8);
 #endif
   *desthihi = src;
   *desthilo = src + lq;
@@ -103,8 +116,7 @@ static INLINE NOTNULL(2, 3) void initialize_highpass_lowpass(
 
 void wavelet_apply_na(const float *__restrict src, size_t length, int order,
                       float *__restrict desthi, float *__restrict destlo) {
-  assert(length >= (size_t)order);
-  assert(length % 2 == 0);
+  check_length(length, order);
   assert(src && desthi && destlo);
 
   int ilength = (int)length;
@@ -157,23 +169,21 @@ void wavelet_apply(const float *__restrict src, size_t length,
 #ifndef SIMD
   wavelet_apply_na(src, length, 8, desthi, destlo);
 #else
-  const int order = 8;
-
-  assert(length >= (size_t)order);
-  assert(length % 2 == 0);
+  check_length(length, 8);
   assert(src && desthi && destlo);
 
   int ilength = (int)length;
-  float highpassC[order] __attribute__ ((aligned (32))),
-        lowpassC[order] __attribute__ ((aligned (32)));
-  initialize_highpass_lowpass(order, highpassC, lowpassC);
+  float highpassC[8] __attribute__ ((aligned (32))),
+        lowpassC[8] __attribute__ ((aligned (32)));
+  initialize_highpass_lowpass(8, highpassC, lowpassC);
 
 #ifdef __AVX__
   const __m256 hpvec = _mm256_load_ps(highpassC);
   const __m256 lpvec = _mm256_load_ps(lowpassC);
+  size_t length8 = aligned_length(length, 8);
   for (int i = 0, di = 0; i < ilength - 6; i += 2, di++) {
     int ex = (i / 2) % 4;
-    int offset = i + (ex > 0? ex * (length - 10) + 8 : 0);
+    int offset = i + (ex > 0? ex * (length8 - 10) + 8 : 0);
     __m256 srcvec = _mm256_load_ps(src + offset);
     __m256 vechi = _mm256_dp_ps(srcvec, hpvec, 0xFF);
     __m256 veclo = _mm256_dp_ps(srcvec, lpvec, 0xFF);
@@ -213,7 +223,8 @@ void wavelet_apply(const float *__restrict src, size_t length,
 #endif  // #elif defined(__ARM_NEON__)
 #endif  // #ifndef SIMD
   // Finish with the extended end
-  for (int i = ilength - 6, di = (ilength - 6) / 2; i < ilength; i += 2, di++) {
+  for (int i = ilength - 6, di = (ilength - 6) / 2;
+      i < ilength; i += 2, di++) {
     float reshi = .0f, reslo = .0f;
     for (int j = 0; j < 8; j++) {
       int index = i + j;
@@ -225,7 +236,9 @@ void wavelet_apply(const float *__restrict src, size_t length,
     destlo[di] = reslo;
   }
 #ifdef __AVX__
-  wavelet_prepare_array_memcpy(desthi, length / 2, desthi);
-  wavelet_prepare_array_memcpy(destlo, length / 2, destlo);
+  if (length >= 16) {
+    wavelet_prepare_array_memcpy(desthi, length / 2, desthi);
+    wavelet_prepare_array_memcpy(destlo, length / 2, destlo);
+  }
 #endif
 }

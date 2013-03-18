@@ -20,24 +20,35 @@
 namespace SpeechFeatureExtraction {
 namespace Primitives {
 
-class InvalidWaveletTreeDescriptionException : public ExceptionBase {
+class WaveletFilterBank {
  public:
-  explicit InvalidWaveletTreeDescriptionException(
+  explicit WaveletFilterBank(const std::vector<int>& treeDescription);
+  explicit WaveletFilterBank(std::vector<int>&& treeDescription);
+
+  void Apply(const float* source, size_t length, float *result) noexcept;
+
+  static void ValidateDescription(const std::vector<int>& treeDescription);
+  static std::vector<int> ParseDescription(const std::string& str);
+  static std::string DescriptionToString(
+      const std::vector<int>& treeDescription);
+  static void ValidateLength(const std::vector<int>& tree, size_t length);
+
+ private:
+  std::vector<int> tree_;
+
+  static void RecursivelyIterate(size_t length, std::vector<int>* tree,
+                                 std::vector<int>* workingTree,
+                                 float* source, float* desthi, float* destlo,
+                                 float** result) noexcept;
+};
+
+class WaveletTreeInvalidDescriptionException : public ExceptionBase {
+ public:
+  explicit WaveletTreeInvalidDescriptionException(
       const std::vector<int>& treeDescription)
   : ExceptionBase("Wavelet tree description \"" +
-                  DescriptionToString(treeDescription) + "\" is invalid.") {
-  }
-
- protected:
-  std::string DescriptionToString(const std::vector<int>& treeDescription) {
-    std::string str;
-    for (int i : treeDescription) {
-      str += std::to_string(i) + " ";
-    }
-    if (str != "") {
-      str.resize(str.size() - 1);
-    }
-    return std::move(str);
+                  WaveletFilterBank::DescriptionToString(treeDescription) +
+                  "\" is invalid.") {
   }
 };
 
@@ -49,26 +60,15 @@ class WaveletTreeDescriptionParseException : public ExceptionBase {
   }
 };
 
-class WaveletFilterBank {
+class WaveletTreeInvalidSourceLengthException : public ExceptionBase {
  public:
-  explicit WaveletFilterBank(const std::vector<int>& treeDescription);
-  explicit WaveletFilterBank(std::vector<int>&& treeDescription);
-
-  void Apply(const float* source, size_t length, float *result) noexcept;
-
-  static void ValidateDescription(const std::vector<int>& treeDescription);
-  static std::vector<int> ParseDescription(const std::string& str);
-
- private:
-  std::vector<int> tree_;
-  size_t minLength_;
-
-  static void RecursivelyIterate(size_t length, std::vector<int>* tree,
-                                 std::vector<int>* workingTree,
-                                 float* source, float* desthi, float* destlo,
-                                 float** result) noexcept;
-
-  size_t CalculateMinLength() noexcept;
+  explicit WaveletTreeInvalidSourceLengthException(
+      const std::vector<int>& treeDescription, size_t length)
+  : ExceptionBase("Input length " + std::to_string(length) +
+                  " is incompatible with tree \"" +
+                  WaveletFilterBank::DescriptionToString(treeDescription) +
+                  "\".") {
+  }
 };
 
 }  // namespace Primitives

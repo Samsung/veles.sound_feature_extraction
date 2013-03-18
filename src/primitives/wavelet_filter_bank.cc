@@ -23,28 +23,28 @@ namespace SpeechFeatureExtraction {
 namespace Primitives {
 
 WaveletFilterBank::WaveletFilterBank(const std::vector<int>& treeDescription)
-    : tree_(treeDescription),
-      minLength_(CalculateMinLength()) {
+    : tree_(treeDescription) {
   ValidateDescription(treeDescription);
-  CalculateMinLength();
 }
 
 WaveletFilterBank::WaveletFilterBank(std::vector<int>&& treeDescription)
-    : tree_(treeDescription),
-      minLength_(CalculateMinLength()) {
+    : tree_(treeDescription) {
   ValidateDescription(treeDescription);
-  CalculateMinLength();
 }
 
-size_t WaveletFilterBank::CalculateMinLength() noexcept {
-  // length / 2^M = 4, since the least wavelet dest* length is 8 / 2 = 4
-  return 1 << (*std::max_element(tree_.begin(), tree_.end()) + 2);
+void WaveletFilterBank::ValidateLength(
+    const std::vector<int>& tree, size_t length) {
+  int max = *std::max_element(tree.begin(), tree.end());
+  // length / 2^max >= 4, since the least wavelet dest* length is 8 / 2 = 4
+  if ((int)length < (1 << (max + 2)) || (int)length % (1 << max) != 0) {
+    throw WaveletTreeInvalidSourceLengthException(tree, length);
+  }
 }
 
 void WaveletFilterBank::ValidateDescription(
     const std::vector<int>& treeDescription) {
   if (treeDescription.size() < 2) {
-    throw InvalidWaveletTreeDescriptionException(treeDescription);
+    throw WaveletTreeInvalidDescriptionException(treeDescription);
   }
   std::list<int> tree(treeDescription.begin(), treeDescription.end());
   while (!tree.empty()) {
@@ -66,7 +66,7 @@ void WaveletFilterBank::ValidateDescription(
        }
     }
     if (!reduced) {
-      throw InvalidWaveletTreeDescriptionException(treeDescription);
+      throw WaveletTreeInvalidDescriptionException(treeDescription);
     }
   }
 }
@@ -102,11 +102,22 @@ std::vector<int> WaveletFilterBank::ParseDescription(const std::string& str) {
   return std::move(res);
 }
 
+std::string WaveletFilterBank::DescriptionToString(
+    const std::vector<int>& treeDescription) {
+  std::string str;
+  for (int i : treeDescription) {
+    str += std::to_string(i) + " ";
+  }
+  if (str != "") {
+    str.resize(str.size() - 1);
+  }
+  return std::move(str);
+}
+
 void WaveletFilterBank::Apply(const float* source, size_t length,
                               float *result) noexcept {
   assert(source && result);
-  assert((length & (length - 1)) == 0 && "length must be a power of 2");
-  assert(length >= minLength_);
+  ValidateLength(tree_, length);
 
   std::vector<int> tree(tree_);
   std::reverse(tree.begin(), tree.end());
@@ -144,8 +155,12 @@ void WaveletFilterBank::RecursivelyIterate(
       wavelet_apply_na(source, 8, 8, desthi, destlo);
     }
     float *desthihi, *desthilo, *destlohi, *destlolo;
-    wavelet_recycle_source(source, length, &desthihi, &desthilo,
-                           &destlohi, &destlolo);
+    if (length >= 16) {
+      wavelet_recycle_source(source, length, &desthihi, &desthilo,
+                             &destlohi, &destlolo);
+    } else {
+      desthihi = desthilo = destlohi = destlolo = nullptr;
+    }
     int next = workingTree->back() + 1;
     workingTree->pop_back();
     workingTree->push_back(next);

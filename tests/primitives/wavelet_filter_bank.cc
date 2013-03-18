@@ -15,7 +15,7 @@
 
 using SpeechFeatureExtraction::Primitives::WaveletFilterBank;
 using SpeechFeatureExtraction::Primitives::
-    InvalidWaveletTreeDescriptionException;
+    WaveletTreeInvalidDescriptionException;
 using SpeechFeatureExtraction::Primitives::
     WaveletTreeDescriptionParseException;
 
@@ -30,13 +30,13 @@ TEST(WaveletFilterBank, ValidateDescription) {
   ASSERT_NO_THROW(WaveletFilterBank::ValidateDescription(desc));
   desc.clear();
   ASSERT_THROW(WaveletFilterBank::ValidateDescription(desc),
-               InvalidWaveletTreeDescriptionException);
+               WaveletTreeInvalidDescriptionException);
   desc = { 1 };
   ASSERT_THROW(WaveletFilterBank::ValidateDescription(desc),
-               InvalidWaveletTreeDescriptionException);
+               WaveletTreeInvalidDescriptionException);
   desc = { 3, 3, 4, 4, 2, 2, 5, 5, 4, 3 };
   ASSERT_THROW(WaveletFilterBank::ValidateDescription(desc),
-               InvalidWaveletTreeDescriptionException);
+               WaveletTreeInvalidDescriptionException);
 }
 
 TEST(WaveletFilterBank, ParseDescription) {
@@ -50,17 +50,17 @@ TEST(WaveletFilterBank, ParseDescription) {
   ASSERT_THROW(WaveletFilterBank::ParseDescription("1 -1"),
                WaveletTreeDescriptionParseException);
   ASSERT_THROW(WaveletFilterBank::ParseDescription("1 1 1"),
-               InvalidWaveletTreeDescriptionException);
+               WaveletTreeInvalidDescriptionException);
 }
 
 TEST(WaveletFilterBank, Apply) {
   WaveletFilterBank wfb({ 3, 4, 4, 2, 2, 5, 5, 4, 3 });
-  float src[512];
 
+  float src[512];
   int length = sizeof(src) / sizeof(src[0]);
   float res[length];
   for (int i = 0; i < length; i++) {
-    src[i] = i;
+    src[i] = i * (1 - 2 * (i % 2));
     res[i] = .0f;
   }
 
@@ -69,6 +69,34 @@ TEST(WaveletFilterBank, Apply) {
   for (int i = 0; i < length; i++) {
     ASSERT_NE(.0f, res[i]);
   }
+
+  // 24 bands survival
+  WaveletFilterBank wfb24({ 3, 3, 3,
+                            4, 4, 4,
+                            5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+                            6, 6, 6, 6, 6, 6, 6, 6 });
+  for (int i = 0; i < length; i++) {
+    src[i] = i * (1 - 2 * (i % 2));
+    res[i] = .0f;
+  }
+  wfb24.Apply(src, length, res);
+}
+
+TEST(WaveletFilterBank, ApplyNotAPowerOf2) {
+  WaveletFilterBank wfb24({ 3, 3, 3,
+                            4, 4, 4,
+                            5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+                            6, 6, 6, 6, 6, 6, 6, 6 });
+
+  float src[320];
+  int length = sizeof(src) / sizeof(src[0]);
+  float res[length];
+
+  for (int i = 0; i < length; i++) {
+    src[i] = i * (1 - 2 * (i % 2));
+    res[i] = .0f;
+  }
+  wfb24.Apply(src, length, res);
 }
 
 #include "tests/google/src/gtest_main.cc"

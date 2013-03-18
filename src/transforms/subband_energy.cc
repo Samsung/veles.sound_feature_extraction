@@ -1,5 +1,5 @@
-/*! @file energy.cc
- *  @brief Calculate the magnitude of each complex number.
+/*! @file subband_energy.cc
+ *  @brief Calculate the subband energy.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -10,38 +10,49 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/transforms/energy.h"
+#include "src/transforms/subband_energy.h"
 #include <math.h>
 #ifdef __AVX__
 #include <immintrin.h>
 #elif defined(__ARM_NEON__)
 #include <arm_neon.h>
 #endif
+#include "src/primitives/wavelet_filter_bank.h"
 
 namespace SpeechFeatureExtraction {
+
+using Primitives::WaveletFilterBank;
+
 namespace Transforms {
 
-Energy::Energy()
-: UniformFormatTransform(SupportedParameters()) {
+SubbandEnergy::SubbandEnergy()
+: UniformFormatTransform(SupportedParameters()),
+  treeFingerprint_({ 3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+                     6, 6, 6, 6, 6, 6, 6, 6 }) {
 }
 
-void Energy::OnInputFormatChanged() {
+void SubbandEnergy::SetParameter(const std::string& name,
+                                 const std::string& value) {
+  if (name == "tree") {
+    treeFingerprint_ = WaveletFilterBank::ParseDescription(value);
+  }
+}
+
+void SubbandEnergy::OnInputFormatChanged() {
   outputFormat_->SetDuration(inputFormat_->Duration());
   outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
-  if (inputFormat_->Size() % 2 == 1) {
-    fprintf(stderr, "Input buffer size is odd (%zu), truncated\n",
-            inputFormat_->Size());
-  }
-  outputFormat_->SetSize(inputFormat_->Size() / 2);
+  WaveletFilterBank::ValidateLength(treeFingerprint_,
+                                    inputFormat_->Size());
+  outputFormat_->SetSize(treeFingerprint_.size());
 }
 
-void Energy::TypeSafeInitializeBuffers(
+void SubbandEnergy::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_->Size() / 2);
+  buffers->Initialize(in.Size(), treeFingerprint_.size());
 }
 
-void Energy::TypeSafeDo(
+void SubbandEnergy::TypeSafeDo(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
@@ -87,7 +98,7 @@ void Energy::TypeSafeDo(
   }
 }
 
-REGISTER_TRANSFORM(Energy);
+REGISTER_TRANSFORM(SubbandEnergy);
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction

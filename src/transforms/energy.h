@@ -1,4 +1,4 @@
-/*! @file complex_magnitude.h
+/*! @file energy.h
  *  @brief Calculate the magnitude of each complex number.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
