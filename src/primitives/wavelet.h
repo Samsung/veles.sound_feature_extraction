@@ -13,7 +13,7 @@
 #ifndef SRC_PRIMITIVES_WAVELET_H_
 #define SRC_PRIMITIVES_WAVELET_H_
 
-#include <spfextr/config.h>
+#include "src/config.h"
 #include <stddef.h>
 
 #ifdef __cplusplus

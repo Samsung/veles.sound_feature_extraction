@@ -13,7 +13,7 @@
 #ifndef SRC_PRIMITIVES_ARITHMETIC_INL_H_
 #define SRC_PRIMITIVES_ARITHMETIC_INL_H_
 
-#include <spfextr/config.h>
+#include "src/config.h"
 
 #ifdef __cplusplus
 #define __STDC_LIMIT_MACROS

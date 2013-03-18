@@ -14,7 +14,7 @@
 #define ENERGY_H_
 
 #include <stddef.h>
-#include <spfextr/config.h>
+#include "src/config.h"
 
 #ifdef __cplusplus
 extern "C" {

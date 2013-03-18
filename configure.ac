@@ -8,7 +8,7 @@ AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_SYSTEM
 
-AC_CONFIG_HEADERS([inc/spfextr/config.h])
+AC_CONFIG_HEADERS([src/config.h])
 
 AC_GNU_SOURCE
 AC_C_BIGENDIAN
@@ -176,7 +176,7 @@ dnl Use the modern C standard
 CFLAGS="$CFLAGS -std=c99"
 
 dnl All include paths should be relative to source root or includes directory
-CPPFLAGS="$CPPFLAGS -I\$(top_srcdir) -I\$(top_srcdir)/inc -I\$(top_builddir)/inc"
+CPPFLAGS="$CPPFLAGS -I\$(top_srcdir) -I\$(top_srcdir)/inc -I\$(top_builddir)"
          
 dnl Append debug flags             
 CFLAGS="$CFLAGS $DEBUG_FLAGS"

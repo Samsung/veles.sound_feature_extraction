@@ -13,7 +13,7 @@
 #ifndef SRC_TRANSFORM_H_
 #define SRC_TRANSFORM_H_
 
-#include <spfextr/config.h>
+#include "src/config.h"
 #include <string>
 #include <unordered_map>  // NOLINT(build/include_order)
 #include "src/buffer_format.h"

@@ -19,7 +19,7 @@ extern "C" {
 
 #ifdef __AVX__
 
-#include <spfextr/config.h>
+#include "src/config.h"
 
 #include <immintrin.h>
 

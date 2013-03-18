@@ -13,7 +13,7 @@
 #ifndef SRC_FORMATS_RAW_FORMAT_H_
 #define SRC_FORMATS_RAW_FORMAT_H_
 
-#include <spfextr/config.h>
+#include "src/config.h"
 #include <memory>
 #include "src/buffers_base.h"
 #include "src/exceptions.h"

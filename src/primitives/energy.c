@@ -21,10 +21,18 @@ float CalculateEnergy(const float *signal, size_t length) {
   float energy = .0f;
 #ifdef __AVX__
   __m256 accum = { .0f };
-  for (int j = 0; j < (int)length - 7; j += 8) {
-    __m256 vec = _mm256_loadu_ps(signal + j);
-    vec = _mm256_dp_ps(vec, vec, 0xFF);
-    accum = _mm256_add_ps(accum, vec);
+  if (align_complement_f32(signal) == 0) {
+    for (int j = 0; j < (int)length - 7; j += 8) {
+      __m256 vec = _mm256_load_ps(signal + j);
+      vec = _mm256_dp_ps(vec, vec, 0xFF);
+      accum = _mm256_add_ps(accum, vec);
+    }
+  } else {
+    for (int j = 0; j < (int)length - 7; j += 8) {
+      __m256 vec = _mm256_loadu_ps(signal + j);
+      vec = _mm256_dp_ps(vec, vec, 0xFF);
+      accum = _mm256_add_ps(accum, vec);
+    }
   }
   energy += accum[0] + accum[4];
   for (int j = ((length >> 3) << 3); j < (int)length; j++) {

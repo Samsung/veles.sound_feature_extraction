@@ -14,7 +14,7 @@
 #define SRC_PRIMITIVES_MEMORY_H_
 
 #include <string.h>
-#include "spfextr/config.h"
+#include "src/config.h"
 
 #ifdef __cplusplus
 extern "C" {

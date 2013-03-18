@@ -20,6 +20,19 @@
 extern "C" {
 #endif
 
+#ifdef __GNUC__
+
+/* malloc() function attribute */
+#define MALLOC __attribute__ ((__malloc__))
+
+/* Mark pointer parameters which must not be NULL */
+#define NOTNULL(...) __attribute__ ((__nonnull__ (__VA_ARGS__)))
+
+/* warn about unused result function attribute */
+#define WARN_UNUSED_RESULT __attribute__ ((__warn_unused_result__))
+
+#endif
+
 #if __GNUC__ >= 4
 #pragma GCC visibility push(default)
 #endif
