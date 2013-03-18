@@ -25,11 +25,9 @@ ComplexMagnitude::ComplexMagnitude()
 : UniformFormatTransform(SupportedParameters()) {
 }
 
-void ComplexMagnitude::OnInputFormatChanged() {
-  outputFormat_->SetDuration(inputFormat_->Duration());
-  outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
+void ComplexMagnitude::OnFormatChanged() {
   if (inputFormat_->Size() % 2 == 1) {
-    fprintf(stderr, "Input buffer size is odd (%zu), truncated\n",
+    fprintf(stderr, "Input buffer size is odd (%zu), truncated.\n",
             inputFormat_->Size());
   }
   outputFormat_->SetSize(inputFormat_->Size() / 2);

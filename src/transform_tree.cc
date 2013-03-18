@@ -129,8 +129,8 @@ void TransformTree::Node::Execute(
     std::unordered_map<std::string, std::shared_ptr<Buffers>>* results) {  // NOLINT(*)
   if (Parent != nullptr) {
     if (BoundBuffers == nullptr) {
-      if (*BoundTransform->OutputFormat() ==
-            *Parent->BoundTransform->InputFormat() &&
+      if (!BoundTransform->OutputFormat()->MustReallocate(
+              *BoundTransform->InputFormat()) &&
           Parent->Children.size() == 1) {
           BoundBuffers = Parent->BoundBuffers;
       } else {

@@ -128,6 +128,12 @@ class RawFormat : public BufferFormatBase<Raw<T>> {
     size_ = value;
   }
 
+ protected:
+  virtual bool MustReallocate(const BufferFormatBase<Raw<T>>& other) {
+    auto inst = reinterpret_cast<const RawFormat<T>&>(other);
+    return inst.size_ < size_;
+  }
+
  private:
   size_t size_;
   int samplingRate_;

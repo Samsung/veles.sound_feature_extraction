@@ -28,6 +28,8 @@ Window::Window()
 
 void Window::OnInputFormatChanged() {
   outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
+  // Allocate 2 extra samples to use zero-copy FFT
+  outputFormat_->SetAllocatedSize(outputFormat_->Size() + 2);
 }
 
 void Window::SetParameter(const std::string& name,
@@ -54,10 +56,10 @@ void Window::SetParameter(const std::string& name,
 }
 
 void Window::Initialize() const noexcept {
-  inDataStep_ = outputFormat_->SamplesCount();
+  inDataStep_ = outputFormat_->Size();
   outSizeEach_ = inputFormat_->Size() / inDataStep_;
   if (inputFormat_->Size() % inDataStep_ != 0) {
-    fprintf(stderr, "Input buffer size %zu is not divisible by step %i\n",
+    fprintf(stderr, "Input buffer size %zu is not divisible by step %i.\n",
             inputFormat_->Size(), inDataStep_);
   }
 }
@@ -65,8 +67,8 @@ void Window::Initialize() const noexcept {
 void Window::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Window16>* buffers) const noexcept {
-  // Allocate 2 extra samples to use zero-copy FFT
-  buffers->Initialize(in.Size() * outSizeEach_, inDataStep_ + 2);
+  buffers->Initialize(in.Size() * outSizeEach_,
+                      outputFormat_->AllocatedSize());
   window_ = std::shared_ptr<float>(
       mallocf(inDataStep_), [](float* ptr) {
     free(ptr);

@@ -26,15 +26,17 @@ DWPT::DWPT()
                        6, 6, 6, 6, 6, 6, 6, 6 }) {
 }
 
+bool DWPT::HasInverse() const noexcept {
+  return true;
+}
+
 void DWPT::SetParameter(const std::string& name, const std::string& value) {
   if (name == "tree") {
     treeFingerprint_ = WaveletFilterBank::ParseDescription(value);
   }
 }
 
-void DWPT::OnInputFormatChanged() {
-  outputFormat_->SetDuration(inputFormat_->Duration());
-  outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
+void DWPT::OnFormatChanged() {
   WaveletFilterBank::ValidateLength(treeFingerprint_,
                                     inputFormat_->Size());
   outputFormat_->SetSize(treeFingerprint_.size());
@@ -53,6 +55,7 @@ void DWPT::Initialize() const noexcept {
 void DWPT::TypeSafeDo(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
+  assert(!IsInverse() && "Not implemented yet");
   size_t length = inputFormat_->Size();
 
   #pragma omp parallel for

@@ -51,7 +51,7 @@ void Log::SetParameter(const std::string& name,
 void Log::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_->SamplesCount());
+  buffers->Initialize(in.Size(), inputFormat_->Size());
 }
 
 void Log::TypeSafeDo(
@@ -84,19 +84,19 @@ void Log::TypeSafeDo(
           output[j] = logf(input[j]);
         }
 #else
-        for (size_t j = 0; j < inputFormat_->SamplesCount(); j++) {
+        for (size_t j = 0; j < inputFormat_->Size(); j++) {
           output[j] = logf(input[j]);
         }
 #endif
         break;
       }
       case LOG_BASE_2:
-        for (size_t j = 0; j < inputFormat_->SamplesCount(); j++) {
+        for (size_t j = 0; j < inputFormat_->Size(); j++) {
           output[j] = log2f(input[j]);
         }
         break;
       case LOG_BASE_10:
-        for (size_t j = 0; j < inputFormat_->SamplesCount(); j++) {
+        for (size_t j = 0; j < inputFormat_->Size(); j++) {
           output[j] = log10f(input[j]);
         }
         break;

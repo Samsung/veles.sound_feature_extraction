@@ -27,7 +27,7 @@ class InvalidFormatException : public ExceptionBase {
  public:
   InvalidFormatException(const std::string& idMine,
                          const std::string& idYours)
-  : ExceptionBase("Attempted to copy parameters for format \"" + idMine +
+  : ExceptionBase("Attempted to cast to format \"" + idMine +
                   "\" from format \"" + idYours + "\".") {}
 };
 
@@ -45,6 +45,8 @@ class BufferFormat {
   bool operator!=(const BufferFormat& other) const noexcept;
 
   virtual std::function<void(void*)> Destructor() const noexcept = 0;  // NOLINT(*)
+
+  virtual bool MustReallocate(const BufferFormat& other) const noexcept = 0;
 
  private:
   std::string id_;

@@ -38,6 +38,11 @@ class SingleFormat : public BufferFormatBase<float> {
     *this = reinterpret_cast<const SingleFormat&>(other);
     return *this;
   }
+
+ protected:
+  virtual bool MustReallocate(const BufferFormatBase<float>& other UNUSED) {
+    return false;
+  }
 };
 
 }  // namespace Formats

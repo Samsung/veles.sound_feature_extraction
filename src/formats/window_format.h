@@ -13,7 +13,6 @@
 #ifndef SRC_FORMATS_WINDOW_FORMAT_H_
 #define SRC_FORMATS_WINDOW_FORMAT_H_
 
-#include <assert.h>
 #include "src/buffers_base.h"
 #include "src/formats/format_limits.h"
 #include "src/primitives/memory.h"
@@ -33,6 +32,26 @@ class InvalidWindowFormatSamplingRateException : public ExceptionBase {
   explicit InvalidWindowFormatSamplingRateException(int samplingRate)
   : ExceptionBase("Sampling rate " + std::to_string(samplingRate) +
                   " is not supported or invalid.") {}
+};
+
+class TooBigWindowSizeException : public ExceptionBase {
+ public:
+  explicit TooBigWindowSizeException(size_t newSize,
+                                     size_t allocated)
+  : ExceptionBase("Attempted to set window size to " +
+                  std::to_string(newSize) +
+                  " while only " + std::to_string(allocated) +
+                  " units were allocated.") {}
+};
+
+class TooSmallWindowAllocatedSizeException : public ExceptionBase {
+ public:
+  explicit TooSmallWindowAllocatedSizeException(size_t newAllocatedSize,
+                                                size_t size)
+  : ExceptionBase("Attempted to set allocated size to " +
+                  std::to_string(newAllocatedSize) +
+                  " while window size was " + std::to_string(size) +
+                  " units.") {}
 };
 
 template <typename T>
@@ -65,21 +84,24 @@ template <class T>
 class WindowFormat : public BufferFormatBase<Window<T>> {
  public:
   WindowFormat() noexcept
-  : duration_(DEFAULT_WINDOW_DURATION)
-  , samplingRate_(DEFAULT_SAMPLING_RATE)
-  , size_(SamplesCount()) {
+      : duration_(DEFAULT_WINDOW_DURATION),
+        samplingRate_(DEFAULT_SAMPLING_RATE),
+        size_(SamplesCount()),
+        allocatedSize_(size_) {
   }
 
   WindowFormat(const WindowFormat& other) noexcept
-  : duration_(other.duration_)
-  , samplingRate_(other.samplingRate_)
-  , size_(SamplesCount()) {
+      : duration_(other.duration_),
+        samplingRate_(other.samplingRate_),
+        size_(other.size_),
+        allocatedSize_(other.allocatedSize_) {
   }
 
   WindowFormat(size_t duration, int samplingRate)
-  : duration_(duration)
-  , samplingRate_(samplingRate)
-  , size_(SamplesCount()) {
+      : duration_(duration),
+        samplingRate_(samplingRate),
+        size_(SamplesCount()),
+        allocatedSize_(size_){
     ValidateDuration(duration_);
     ValidateSamplingRate(samplingRate_);
   }
@@ -100,6 +122,9 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
     ValidateDuration(value);
     duration_ = value;
     size_ = SamplesCount();
+    if (size_ > allocatedSize_) {
+      throw TooBigWindowSizeException(value, allocatedSize_);
+    }
   }
 
   int SamplingRate() const noexcept {
@@ -119,16 +144,35 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
     return size_;
   }
 
-  void SetSize(size_t value) noexcept {
-    // We may speculatively allocate only 2 extra numbers
-    assert(value <= SamplesCount() + 2);
+  void SetSize(size_t value) {
+    if (value > allocatedSize_) {
+      throw TooBigWindowSizeException(value, allocatedSize_);
+    }
     size_ = value;
+  }
+
+  size_t AllocatedSize() const noexcept {
+    return allocatedSize_;
+  }
+
+  void SetAllocatedSize(size_t value) {
+    if (size_ > value) {
+      throw TooSmallWindowAllocatedSizeException(value, size_);
+    }
+    allocatedSize_ = value;
+  }
+
+ protected:
+  virtual bool MustReallocate(const BufferFormatBase<Window<T>>& other) {
+    auto inst = reinterpret_cast<const WindowFormat<T>&>(other);
+    return inst.allocatedSize_ < allocatedSize_;
   }
 
  private:
   size_t duration_;
   int samplingRate_;
   size_t size_;
+  size_t allocatedSize_;
 
   static void ValidateDuration(size_t value) {
     if (value < MIN_WINDOW_DURATION || value > MAX_WINDOW_DURATION) {

@@ -13,6 +13,7 @@
 #ifndef SRC_BUFFERS_BASE_H_
 #define SRC_BUFFERS_BASE_H_
 
+#include "src/config.h"
 #include "src/buffer_format.h"
 #include "src/buffers.h"
 #include "src/demangle.h"
@@ -35,9 +36,22 @@ class BufferFormatBase : public BufferFormat {
     };
   }
 
+  virtual bool MustReallocate(const BufferFormat& other) const noexcept {
+    if (*this != other) {
+      return true;
+    }
+    return MustReallocate(
+        reinterpret_cast<const BufferFormatBase<T>&>(other));
+  }
+
  protected:
   std::string CutNamespaces(std::string&& str) {
     return str.substr(str.find_last_of(':') + 1, std::string::npos);
+  }
+
+  virtual bool MustReallocate(const BufferFormatBase<T>& other UNUSED)
+      const noexcept {
+    return true;
   }
 };
 

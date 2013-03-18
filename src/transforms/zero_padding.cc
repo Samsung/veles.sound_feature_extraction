@@ -1,5 +1,5 @@
-/*! @file unpack_rdft.cc
- *  @brief Unpacks data after applying RDFT.
+/*! @file zero_padding.cc
+ *  @brief Pad signal with zeros to make it's length a power of 2.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -10,51 +10,48 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/transforms/unpack_rdft.h"
+#include "src/transforms/zero_padding.h"
 #include <string>
+#include "src/primitives/arithmetic-inl.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-UnpackRDFT::UnpackRDFT()
+ZeroPadding::ZeroPadding()
   : UniformFormatTransform(SupportedParameters()) {
 }
 
-void UnpackRDFT::OnFormatChanged() {
-  if (inputFormat_->Size() % 2 == 1) {
-    outputFormat_->SetSize((inputFormat_->Size() - 1) * 2);
+void ZeroPadding::OnFormatChanged() {
+  int length = inputFormat_->Size();
+  if ((length & (length - 1)) == 0) {
+    outputFormat_->SetSize(length);
   } else {
-    outputFormat_->SetSize((inputFormat_->Size() - 2) * 2);
+    outputFormat_->SetSize(next_highest_power_of_2(length));
   }
 }
 
-void UnpackRDFT::TypeSafeInitializeBuffers(
+void ZeroPadding::TypeSafeInitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), outputFormat_->Size());
 }
 
-void UnpackRDFT::TypeSafeDo(
+void ZeroPadding::TypeSafeDo(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
-  bool realMode = inputFormat_->Size() % 2 == 1;
-  size_t offset = inputFormat_->Size();
-  size_t length = outputFormat_->Size() - offset;
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();
     if (input != output) {
-      memcpy(output, input, offset * sizeof(float));
+      memcpy(output, input, inputFormat_->Size() * sizeof(float));
     }
-    if (realMode) {
-      rmemcpyf(output + offset, input + 1, length);
-    } else {
-      crmemcpyf(output + offset, input + 2, length);
-    }
+    memsetf(output + inputFormat_->Size(),
+            outputFormat_->Size() - inputFormat_->Size(),
+            .0f);
   }
 }
 
-REGISTER_TRANSFORM(UnpackRDFT);
+REGISTER_TRANSFORM(ZeroPadding);
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction

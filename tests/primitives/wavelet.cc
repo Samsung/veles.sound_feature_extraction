@@ -16,7 +16,7 @@
 #include "src/primitives/memory.h"
 #include "src/primitives/wavelet.h"
 
-const int BENCHMARK_LENGTH = 1000000;
+const int BENCHMARK_LENGTH = 100000;
 
 TEST(Wavelet, wavelet_prepare_array) {
   float array[512];

@@ -40,9 +40,7 @@ void SubbandEnergy::SetParameter(const std::string& name,
   }
 }
 
-void SubbandEnergy::OnInputFormatChanged() {
-  outputFormat_->SetDuration(inputFormat_->Duration());
-  outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
+void SubbandEnergy::OnFormatChanged() {
   WaveletFilterBank::ValidateLength(treeFingerprint_,
                                     inputFormat_->Size());
   outputFormat_->SetSize(treeFingerprint_.size());

@@ -31,7 +31,7 @@ class RealToComplex
   TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void OnInputFormatChanged();
+  virtual void OnFormatChanged();
 
   virtual void TypeSafeInitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,

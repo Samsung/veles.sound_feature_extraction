@@ -46,7 +46,7 @@ class SubbandEnergy
  protected:
   virtual void SetParameter(const std::string& name, const std::string& value);
 
-  virtual void OnInputFormatChanged();
+  virtual void OnFormatChanged();
 
   virtual void TypeSafeInitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,

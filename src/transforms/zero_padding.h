@@ -1,5 +1,5 @@
-/*! @file rft.h
- *  @brief Discrete Fourier Transform on real input using FFT.
+/*! @file zero_padding.h
+ *  @brief Pad signal with zeros to make it's length a power of 2.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -10,26 +10,25 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_DFT_H_
-#define SRC_TRANSFORMS_DFT_H_
+#ifndef SRC_TRANSFORMS_ZERO_PADDING_H_
+#define SRC_TRANSFORMS_ZERO_PADDING_H_
 
+#include <string>
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-class RDFT
+class ZeroPadding
     : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
-  RDFT();
+  ZeroPadding();
 
-  TRANSFORM_INTRO("RDFT", "Performs Discrete Fourier Transform "
-                         "on the input signal (using real FFT).")
+  TRANSFORM_INTRO("ZeroPadding", "Pads signal with zeros to make it's length "
+                  "a power of 2.")
 
   TRANSFORM_PARAMETERS()
-
-  virtual bool HasInverse() const noexcept;
 
  protected:
   virtual void OnFormatChanged();
@@ -44,4 +43,4 @@ class RDFT
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // SRC_TRANSFORMS_DFT_H_
+#endif  // SRC_TRANSFORMS_ZERO_PADDING_H_

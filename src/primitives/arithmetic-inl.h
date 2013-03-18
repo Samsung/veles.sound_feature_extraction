@@ -662,4 +662,18 @@ INLINE NOTNULL(1, 4) void real_multiply_scalar(const float *array,
 
 #endif
 
+/*
+ * Below are the functions without SIMD instructions.
+ */
+
+INLINE int next_highest_power_of_2(int value) {
+  value--;
+  value |= value >> 1;
+  value |= value >> 2;
+  value |= value >> 4;
+  value |= value >> 8;
+  value |= value >> 16;
+  return ++value;
+}
+
 #endif  // SRC_PRIMITIVES_ARITHMETIC_INL_H_

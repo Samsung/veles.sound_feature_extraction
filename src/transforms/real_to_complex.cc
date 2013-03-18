@@ -26,9 +26,7 @@ RealToComplex::RealToComplex()
   : UniformFormatTransform(SupportedParameters()) {
 }
 
-void RealToComplex::OnInputFormatChanged() {
-  outputFormat_->SetDuration(inputFormat_->Duration() * 2);
-  outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
+void RealToComplex::OnFormatChanged() {
   outputFormat_->SetSize(inputFormat_->Size() * 2);
 }
 

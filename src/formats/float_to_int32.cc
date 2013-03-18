@@ -28,7 +28,7 @@ void FloatToInt32Window::TypeSafeDo(
     const BuffersBase<WindowF>& in,
     BuffersBase<Window32> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    float_to_int32(in[i]->Data.get(), inputFormat_->SamplesCount(),
+    float_to_int32(in[i]->Data.get(), inputFormat_->Size(),
                    (*out)[i]->Data.get());
   }
 }

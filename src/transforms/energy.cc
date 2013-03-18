@@ -25,9 +25,7 @@ Energy::Energy()
 : UniformFormatTransform(SupportedParameters()) {
 }
 
-void Energy::OnInputFormatChanged() {
-  outputFormat_->SetDuration(inputFormat_->Duration());
-  outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
+void Energy::OnFormatChanged() {
   if (inputFormat_->Size() % 2 == 1) {
     fprintf(stderr, "Input buffer size is odd (%zu), truncated\n",
             inputFormat_->Size());

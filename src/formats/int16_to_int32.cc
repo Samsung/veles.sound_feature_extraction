@@ -28,7 +28,7 @@ void Int16ToInt32Window::TypeSafeDo(
     const BuffersBase<Window16>& in,
     BuffersBase<Window32> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    int16_to_int32(in[i]->Data.get(), inputFormat_->SamplesCount(),
+    int16_to_int32(in[i]->Data.get(), inputFormat_->Size(),
                    (*out)[i]->Data.get());
   }
 }

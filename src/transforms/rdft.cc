@@ -26,9 +26,7 @@ bool RDFT::HasInverse() const noexcept {
   return true;
 }
 
-void RDFT::OnInputFormatChanged() {
-  outputFormat_->SetDuration(inputFormat_->Duration());
-  outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
+void RDFT::OnFormatChanged() {
   if (!IsInverse()) {
     outputFormat_->SetSize(inputFormat_->Size() + 2);
   } else {

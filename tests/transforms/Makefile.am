@@ -1,7 +1,8 @@
 include $(top_srcdir)/Makefile.common
 
 noinst_PROGRAMS = lowpass_filter square complex_magnitude log filter_bank \
-energy real_to_complex unpack_rdft intensity
+energy real_to_complex unpack_rdft intensity rdft dct dwpt subband_energy \
+zero_padding
 
 GTEST_INCLUDE = -I$(top_srcdir)/tests/google
 
@@ -101,6 +102,61 @@ intensity_CPPFLAGS = $(GTEST_INCLUDE)
 
 # Used libraries
 intensity_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+rdft_SOURCES = rdft.cc
+
+# Compiler options
+rdft_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+rdft_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+dct_SOURCES = dct.cc
+
+# Compiler options
+dct_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+dct_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+dwpt_SOURCES = dwpt.cc
+
+# Compiler options
+dwpt_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+dwpt_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+subband_energy_SOURCES = subband_energy.cc
+
+# Compiler options
+subband_energy_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+subband_energy_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+zero_padding_SOURCES = zero_padding.cc
+
+# Compiler options
+zero_padding_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+zero_padding_LDADD = $(top_builddir)/src/libspfextr.la  \
 $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 

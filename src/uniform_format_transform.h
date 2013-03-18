@@ -33,6 +33,10 @@ class UniformFormatTransform : public TransformBase<F, F> {
  protected:
   virtual void OnInputFormatChanged() {
     TransformBase<F, F>::outputFormat_ = TransformBase<F, F>::inputFormat_;
+    OnFormatChanged();
+  }
+
+  virtual void OnFormatChanged() {
   }
 };
 

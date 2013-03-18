@@ -14,7 +14,8 @@
 #include <gtest/gtest.h>
 #include "src/transforms/unpack_rdft.h"
 
-using namespace SpeechFeatureExtraction::Formats;
+using SpeechFeatureExtraction::Formats::WindowF;
+using SpeechFeatureExtraction::Formats::WindowFormatF;
 using SpeechFeatureExtraction::BuffersBase;
 using SpeechFeatureExtraction::Transforms::UnpackRDFT;
 

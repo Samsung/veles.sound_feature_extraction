@@ -16,6 +16,7 @@
 #elif defined(__ARM_NEON__)
 #include <arm_neon.h>
 #endif
+#include "src/primitives/memory.h"
 
 float CalculateEnergy(const float *signal, size_t length) {
   float energy = .0f;
@@ -53,10 +54,10 @@ float CalculateEnergy(const float *signal, size_t length) {
       energy += val * val;
     }
 #else
-    for (int j = 0; j < length; j++) {
-      float val = signal[j];
-      energy += val * val;
-    }
+  for (int j = 0; j < length; j++) {
+    float val = signal[j];
+    energy += val * val;
+  }
 #endif
   return energy / length;
 }
