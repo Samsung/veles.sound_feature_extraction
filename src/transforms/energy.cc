@@ -59,10 +59,10 @@ void Energy::TypeSafeDo(
       __m256 res = _mm256_hadd_ps(r1, r2);
       _mm256_store_ps(output + j / 2, res);
     }
-    for (int i = ((length >> 4) << 4); i < length; i += 2) {
-      float re = input[i];
-      float im = input[i + 1];
-      output[i / 2] = re * re + im * im;
+    for (int j = ((length >> 4) << 4); j < length; j += 2) {
+      float re = input[j];
+      float im = input[j + 1];
+      output[j / 2] = re * re + im * im;
     }
 #elif defined(__ARM_NEON__)
     for (int j = 0; j < length - 3; j += 4) {
@@ -78,10 +78,10 @@ void Energy::TypeSafeDo(
       output[j / 2] = re * re + im * im;
     }
 #else
-    for (int i = 0; i < length; i += 2) {
-      float re = input[i];
-      float im = input[i + 1];
-      output[i / 2] = sqrtf(re * re + im * im);
+    for (int j = 0; j < length; j += 2) {
+      float re = input[j];
+      float im = input[j + 1];
+      output[j / 2] = re * re + im * im;
     }
 #endif
   }

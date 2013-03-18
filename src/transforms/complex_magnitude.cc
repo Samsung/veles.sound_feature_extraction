@@ -60,32 +60,32 @@ void ComplexMagnitude::TypeSafeDo(
       res = _mm256_sqrt_ps(res);
       _mm256_store_ps(output + i / 2, res);
     }
-    for (int i = ((length >> 4) << 4); i < length; i += 2) {
-      float re = input[i];
-      float im = input[i + 1];
-      output[i / 2] = sqrtf(re * re + im * im);
+    for (int j = ((length >> 4) << 4); j < length; j += 2) {
+      float re = input[j];
+      float im = input[j + 1];
+      output[j / 2] = sqrtf(re * re + im * im);
     }
 #elif defined(__ARM_NEON__)
-    for (int i = 0; i < length - 3; i += 4) {
-      float32x4_t cvec = vld1q_f32(input + i);
+    for (int j = 0; j < length - 3; j += 4) {
+      float32x4_t cvec = vld1q_f32(input + j);
       float32x4_t sqrvec = vmulq_f32(cvec, cvec);
       float32x2_t sums = vpadd_f32(vget_high_f32(sqrvec),
                                    vget_low_f32(sqrvec));
-      vst1_f32(sums, output + i / 2);
+      vst1_f32(sums, output + j / 2);
     }
-    for (int i = 0; i < length - 3; i++) {
-      output[i] = sqrtf(output[i]);
+    for (int j = 0; j < length - 3; j++) {
+      output[j] = sqrtf(output[j]);
     }
-    for (int i = ((length >> 2) << 2); i < length; i += 2) {
-      float re = input[i];
-      float im = input[i + 1];
-      output[i / 2] = sqrtf(re * re + im * im);
+    for (int j = ((length >> 2) << 2); j < length; j += 2) {
+      float re = input[j];
+      float im = input[j + 1];
+      output[j / 2] = sqrtf(re * re + im * im);
     }
 #else
-    for (int i = 0; i < length; i += 2) {
-      float re = input[i];
-      float im = input[i + 1];
-      output[i / 2] = sqrtf(re * re + im * im);
+    for (int j = 0; j < length; j += 2) {
+      float re = input[j];
+      float im = input[j + 1];
+      output[j / 2] = sqrtf(re * re + im * im);
     }
 #endif
   }

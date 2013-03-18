@@ -60,9 +60,9 @@ class DWPT
   TRANSFORM_INTRO("DWPT", "Discrete Wavelet Packet Transform")
 
   TRANSFORM_PARAMETERS(
-      _TP_("tree", "The wavelet packet binary tree fingerprint.",
-           "3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, "
-           "6, 6, 6, 6, 6, 6, 6, 6")
+    _TP_("tree", "The wavelet packet binary tree fingerprint.",
+         "3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, "
+         "6, 6, 6, 6, 6, 6, 6, 6")
   )
 
   virtual void Initialize() const noexcept;

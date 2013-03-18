@@ -36,10 +36,12 @@ class SubbandEnergy
                   "a binary tree fingerprint identical to used in DWPT).")
 
   TRANSFORM_PARAMETERS(
-        _TP_("tree", "The subbands binary tree fingerprint.",
-             "3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, "
-             "6, 6, 6, 6, 6, 6, 6, 6")
-    )
+    _TP_("tree", "The subbands binary tree fingerprint.",
+         "3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, "
+         "6, 6, 6, 6, 6, 6, 6, 6")
+  )
+
+  virtual void Initialize() const noexcept;
 
  protected:
   virtual void SetParameter(const std::string& name, const std::string& value);
@@ -52,10 +54,11 @@ class SubbandEnergy
   const noexcept;
 
   virtual void TypeSafeDo(const BuffersBase<Formats::WindowF>& in,
-                          BuffersBase<Formats::WindowF> *out) const noexcept;
+                          BuffersBase<Formats::WindowF>* out) const noexcept;
 
  private:
   std::vector<int> treeFingerprint_;
+  mutable std::vector<int> offsets_;
 };
 
 }  // namespace Transforms
