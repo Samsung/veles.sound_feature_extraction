@@ -15,31 +15,61 @@
 
 #include <stddef.h>
 #include <vector>
+#include <unordered_map>
 #include "src/exceptions.h"
+#include "src/primitives/wavelet_types.h"
 
 namespace SpeechFeatureExtraction {
 namespace Primitives {
 
 class WaveletFilterBank {
  public:
-  explicit WaveletFilterBank(const std::vector<int>& treeDescription);
-  explicit WaveletFilterBank(std::vector<int>&& treeDescription);
+  explicit WaveletFilterBank(WaveletType type, int order,
+                             const std::vector<int>& treeDescription);
+  explicit WaveletFilterBank(WaveletType type, int order,
+                             std::vector<int>&& treeDescription);
 
   void Apply(const float* source, size_t length, float *result) noexcept;
 
+  static void ValidateOrder(WaveletType type, int order);
+  static std::string WaveletTypeToString(WaveletType type) noexcept;
+  static WaveletType ParseWaveletType(const std::string& value);
   static void ValidateDescription(const std::vector<int>& treeDescription);
   static std::vector<int> ParseDescription(const std::string& str);
   static std::string DescriptionToString(
-      const std::vector<int>& treeDescription);
+      const std::vector<int>& treeDescription) noexcept;
   static void ValidateLength(const std::vector<int>& tree, size_t length);
 
  private:
+  WaveletType type_;
+  int order_;
   std::vector<int> tree_;
 
-  static void RecursivelyIterate(size_t length, std::vector<int>* tree,
+  static const std::unordered_map<std::string, WaveletType> WaveletTypeStrMap;
+
+  static void RecursivelyIterate(WaveletType type, int order,
+                                 size_t length, std::vector<int>* tree,
                                  std::vector<int>* workingTree,
                                  float* source, float* desthi, float* destlo,
                                  float** result) noexcept;
+};
+
+class WaveletTreeInvalidOrderException : public ExceptionBase {
+ public:
+  explicit WaveletTreeInvalidOrderException(
+      WaveletType type, int order)
+  : ExceptionBase("Order " + std::to_string(order) + "is invalid for "
+                  "wavelet type \"" +
+                  WaveletFilterBank::WaveletTypeToString(type) + "\".") {
+  }
+};
+
+class WaveletTreeWaveletTypeParseException : public ExceptionBase {
+ public:
+  explicit WaveletTreeWaveletTypeParseException(
+      const std::string& value)
+  : ExceptionBase("\"" + value + "\" is an unknown wavelet type.") {
+  }
 };
 
 class WaveletTreeInvalidDescriptionException : public ExceptionBase {

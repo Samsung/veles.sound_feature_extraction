@@ -54,7 +54,8 @@ TEST(WaveletFilterBank, ParseDescription) {
 }
 
 TEST(WaveletFilterBank, Apply) {
-  WaveletFilterBank wfb({ 3, 4, 4, 2, 2, 5, 5, 4, 3 });
+  WaveletFilterBank wfb(WAVELET_TYPE_DAUBECHIES, 8,
+                        { 3, 4, 4, 2, 2, 5, 5, 4, 3 });
 
   float src[512];
   int length = sizeof(src) / sizeof(src[0]);
@@ -71,7 +72,8 @@ TEST(WaveletFilterBank, Apply) {
   }
 
   // 24 bands survival
-  WaveletFilterBank wfb24({ 3, 3, 3,
+  WaveletFilterBank wfb24(WAVELET_TYPE_DAUBECHIES, 8,
+                          { 3, 3, 3,
                             4, 4, 4,
                             5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
                             6, 6, 6, 6, 6, 6, 6, 6 });
@@ -83,7 +85,8 @@ TEST(WaveletFilterBank, Apply) {
 }
 
 TEST(WaveletFilterBank, ApplyNotAPowerOf2) {
-  WaveletFilterBank wfb24({ 3, 3, 3,
+  WaveletFilterBank wfb24(WAVELET_TYPE_DAUBECHIES, 8,
+                          { 3, 3, 3,
                             4, 4, 4,
                             5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
                             6, 6, 6, 6, 6, 6, 6, 6 });

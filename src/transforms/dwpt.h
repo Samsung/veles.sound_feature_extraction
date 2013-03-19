@@ -16,6 +16,7 @@
 #include <string>
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
+#include "src/primitives/wavelet_types.h"
 
 namespace SpeechFeatureExtraction {
 
@@ -59,10 +60,17 @@ class DWPT
 
   TRANSFORM_INTRO("DWPT", "Discrete Wavelet Packet Transform")
 
+#define DEFAULT_WAVELET_ORDER 8
+
   TRANSFORM_PARAMETERS(
     _TP_("tree", "The wavelet packet binary tree fingerprint.",
          "3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, "
          "6, 6, 6, 6, 6, 6, 6, 6")
+    _TP_("type", "The type of the wavelet to apply. Supported values are "
+                 "daub (Daubechies), coif (Coiflet) and sym (Symlet).",
+         "daub")
+    _TP_("order", "The number of coefficients in the wavelet.",
+         std::to_string(DEFAULT_WAVELET_ORDER))
   )
 
   virtual void Initialize() const noexcept;
@@ -83,6 +91,9 @@ class DWPT
 
  private:
   std::vector<int> treeFingerprint_;
+  WaveletType waveletType_;
+  int waveletOrder_;
+
   mutable std::shared_ptr<Primitives::WaveletFilterBank> filterBank_;
 };
 

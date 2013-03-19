@@ -12,7 +12,10 @@
 
 #include <gtest/gtest.h>
 #include <chrono>
+#define WAVELET_INTERNAL_USE
 #include "src/primitives/daubechies.h"
+#include "src/primitives/coiflets.h"
+#include "src/primitives/symlets.h"
 #include "src/primitives/memory.h"
 #include "src/primitives/wavelet.h"
 
@@ -24,7 +27,7 @@ TEST(Wavelet, wavelet_prepare_array) {
   for (int i = 0; i < length; i++) {
     array[i] = i;
   }
-  auto res = wavelet_prepare_array(array, length);
+  auto res = wavelet_prepare_array(8, array, length);
 
 #ifdef __AVX__
   ASSERT_EQ(0, align_complement_f32(res));
@@ -40,7 +43,7 @@ TEST(Wavelet, wavelet_prepare_array) {
 }
 
 TEST(Wavelet, wavelet_allocate_destination) {
-  auto dest = wavelet_allocate_destination(512);
+  auto dest = wavelet_allocate_destination(8, 512);
 #ifdef __AVX__
   ASSERT_EQ(0, align_complement_f32(dest));
 #endif
@@ -60,12 +63,13 @@ TEST(Wavelet, wavelet_apply_na) {
   for (int i = 0; i < length; i++) {
     array[i] = i;
   }
-  wavelet_apply_na(array, length, 8, desthi, destlo);
+  wavelet_apply_na(WAVELET_TYPE_DAUBECHIES, 8, array, length,
+                   desthi, destlo);
   int index = 5;
   float vhi = .0f, vlo = .0f;
   for (int i = 0; i < 8; i++) {
-    vlo += array[index * 2 + i] * DaubechiesF[4][i];
-    vhi += array[index * 2 + i] * DaubechiesF[4][8 - i - 1] * (i & 1 ? -1 : 1);
+    vlo += array[index * 2 + i] * DaubechiesF[3][i];
+    vhi += array[index * 2 + i] * DaubechiesF[3][8 - i - 1] * (i & 1 ? -1 : 1);
   }
   ASSERT_EQF(vlo, destlo[index]);
   ASSERT_EQF(vhi, desthi[index]);
@@ -100,13 +104,13 @@ TEST(Wavelet, wavelet_apply_na) {
       default:
         break;
     }
-    vlo += value * DaubechiesF[4][i];
-    vhi += value * DaubechiesF[4][8 - i - 1] * (i & 1 ? -1 : 1);
+    vlo += value * DaubechiesF[3][i];
+    vhi += value * DaubechiesF[3][8 - i - 1] * (i & 1 ? -1 : 1);
   }
   ASSERT_EQF(vlo, destlo[15]);
   ASSERT_EQF(vhi, desthi[15]);
 
-  wavelet_apply_na(array, 8, 8, desthi, destlo);
+  wavelet_apply_na(WAVELET_TYPE_DAUBECHIES, 8, array, 8, desthi, destlo);
 }
 
 TEST(Wavelet, wavelet_apply) {
@@ -115,12 +119,13 @@ TEST(Wavelet, wavelet_apply) {
   for (int i = 0; i < length; i++) {
     array[i] = i;
   }
-  auto prep = wavelet_prepare_array(array, length);
-  auto desthi = wavelet_allocate_destination(length);
-  auto destlo = wavelet_allocate_destination(length);
-  wavelet_apply(prep, length, desthi, destlo);
+  auto prep = wavelet_prepare_array(8, array, length);
+  auto desthi = wavelet_allocate_destination(8, length);
+  auto destlo = wavelet_allocate_destination(8, length);
+  wavelet_apply(WAVELET_TYPE_DAUBECHIES, 8, prep, length, desthi, destlo);
   float validdesthi[length / 2], validdestlo[length / 2];
-  wavelet_apply_na(array, length, 8, validdesthi, validdestlo);
+  wavelet_apply_na(WAVELET_TYPE_DAUBECHIES, 8, array, length,
+                   validdesthi, validdestlo);
   for (int i = 0; i < length / 2; i++) {
     ASSERT_EQF(validdesthi[i], desthi[i]);
     ASSERT_EQF(validdestlo[i], destlo[i]);
@@ -138,14 +143,14 @@ TEST(Wavelet, SIMDSpeedup) {
   for (int i = 0; i < length; i++) {
     array[i] = i;
   }
-  auto prep = wavelet_prepare_array(array, length);
-  auto desthi = wavelet_allocate_destination(length);
-  auto destlo = wavelet_allocate_destination(length);
+  auto prep = wavelet_prepare_array(8, array, length);
+  auto desthi = wavelet_allocate_destination(8, length);
+  auto destlo = wavelet_allocate_destination(8, length);
 
   auto checkPointStart = std::chrono::high_resolution_clock::now();
 
   for (int i = 0; i < BENCHMARK_LENGTH; i++) {
-    wavelet_apply(prep, length, desthi, destlo);
+    wavelet_apply(WAVELET_TYPE_DAUBECHIES, 8, prep, length, desthi, destlo);
   }
 
   auto checkPointFinish = std::chrono::high_resolution_clock::now();
@@ -153,7 +158,8 @@ TEST(Wavelet, SIMDSpeedup) {
   checkPointStart = std::chrono::high_resolution_clock::now();
 
   for (int i = 0; i < BENCHMARK_LENGTH; i++) {
-    wavelet_apply_na(array, length, 8, desthi, destlo);
+    wavelet_apply_na(WAVELET_TYPE_DAUBECHIES, 8, array, length,
+                     desthi, destlo);
   }
 
   checkPointFinish = std::chrono::high_resolution_clock::now();

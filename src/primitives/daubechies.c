@@ -10,6 +10,7 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
+#define WAVELET_INTERNAL_USE
 #include "src/primitives/daubechies.h"
 
 const double DaubechiesD[38][76] = {

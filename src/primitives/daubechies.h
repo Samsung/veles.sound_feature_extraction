@@ -123,5 +123,14 @@
  * Daub7 etc), which determines their frequency selectivity.
  */
 
+#ifndef SRC_PRIMITIVES_DAUBECHIES_H_
+#define SRC_PRIMITIVES_DAUBECHIES_H_
+
+#ifndef WAVELET_INTERNAL_USE
+#error This file should not be included directly into mid level code
+#endif
+
 extern const double DaubechiesD[38][76];
 extern const float  DaubechiesF[38][76];
+
+#endif  // SRC_PRIMITIVES_DAUBECHIES_H_

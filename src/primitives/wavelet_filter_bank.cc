@@ -22,23 +22,52 @@
 namespace SpeechFeatureExtraction {
 namespace Primitives {
 
-WaveletFilterBank::WaveletFilterBank(const std::vector<int>& treeDescription)
-    : tree_(treeDescription) {
+const std::unordered_map<std::string, WaveletType>
+    WaveletFilterBank::WaveletTypeStrMap = {
+  { "daub", WAVELET_TYPE_DAUBECHIES },
+  { "coif", WAVELET_TYPE_COIFLET },
+  { "sym", WAVELET_TYPE_SYMLET }
+};
+
+WaveletFilterBank::WaveletFilterBank(WaveletType type, int order,
+                                     const std::vector<int>& treeDescription)
+    : type_(type),
+      order_(order),
+      tree_(treeDescription) {
+
   ValidateDescription(treeDescription);
 }
 
-WaveletFilterBank::WaveletFilterBank(std::vector<int>&& treeDescription)
-    : tree_(treeDescription) {
+WaveletFilterBank::WaveletFilterBank(WaveletType type, int order,
+                                     std::vector<int>&& treeDescription)
+    : type_(type),
+      order_(order),
+      tree_(treeDescription) {
   ValidateDescription(treeDescription);
 }
 
-void WaveletFilterBank::ValidateLength(
-    const std::vector<int>& tree, size_t length) {
-  int max = *std::max_element(tree.begin(), tree.end());
-  // length / 2^max >= 4, since the least wavelet dest* length is 8 / 2 = 4
-  if ((int)length < (1 << (max + 2)) || (int)length % (1 << max) != 0) {
-    throw WaveletTreeInvalidSourceLengthException(tree, length);
+void WaveletFilterBank::ValidateOrder(WaveletType type,
+                                      int order) {
+  if (!wavelet_validate_order(type, order)) {
+    throw WaveletTreeInvalidOrderException(type, order);
   }
+}
+
+std::string WaveletFilterBank::WaveletTypeToString(WaveletType type) noexcept {
+  for (auto wtstrp : WaveletTypeStrMap) {
+    if (wtstrp.second == type) {
+      return wtstrp.first;
+    }
+  }
+  return "";
+}
+
+WaveletType WaveletFilterBank::ParseWaveletType(const std::string& value) {
+  auto it = WaveletTypeStrMap.find(value);
+  if (it == WaveletTypeStrMap.end()) {
+    throw WaveletTreeWaveletTypeParseException(value);
+  }
+  return it->second;
 }
 
 void WaveletFilterBank::ValidateDescription(
@@ -103,7 +132,7 @@ std::vector<int> WaveletFilterBank::ParseDescription(const std::string& str) {
 }
 
 std::string WaveletFilterBank::DescriptionToString(
-    const std::vector<int>& treeDescription) {
+    const std::vector<int>& treeDescription) noexcept {
   std::string str;
   for (int i : treeDescription) {
     str += std::to_string(i) + " ";
@@ -112,6 +141,15 @@ std::string WaveletFilterBank::DescriptionToString(
     str.resize(str.size() - 1);
   }
   return std::move(str);
+}
+
+void WaveletFilterBank::ValidateLength(
+    const std::vector<int>& tree, size_t length) {
+  int max = *std::max_element(tree.begin(), tree.end());
+  // length / 2^max >= 4, since the least wavelet dest* length is 8 / 2 = 4
+  if ((int)length < (1 << (max + 2)) || (int)length % (1 << max) != 0) {
+    throw WaveletTreeInvalidSourceLengthException(tree, length);
+  }
 }
 
 void WaveletFilterBank::Apply(const float* source, size_t length,
@@ -125,38 +163,38 @@ void WaveletFilterBank::Apply(const float* source, size_t length,
   workingTree.reserve(tree.size());
 
   auto lsrc = std::shared_ptr<float>(
-      wavelet_prepare_array(source, length), free);
+      wavelet_prepare_array(order_, source, length), free);
   auto ldesthi = std::shared_ptr<float>(
-      wavelet_allocate_destination(length), free);
+      wavelet_allocate_destination(order_, length), free);
   auto ldestlo = std::shared_ptr<float>(
-      wavelet_allocate_destination(length), free);
-  wavelet_apply(lsrc.get(), length, ldesthi.get(), ldestlo.get());
+      wavelet_allocate_destination(order_, length), free);
+  wavelet_apply(type_, order_, lsrc.get(), length,
+                ldesthi.get(), ldestlo.get());
   float *desthihi, *desthilo, *destlohi, *destlolo;
-  wavelet_recycle_source(lsrc.get(), length, &desthihi, &desthilo,
+  wavelet_recycle_source(order_, lsrc.get(), length,
+                         &desthihi, &desthilo,
                          &destlohi, &destlolo);
   workingTree.push_back(1);
   workingTree.push_back(1);
 
   while (!tree.empty()) {
-    RecursivelyIterate(length / 2, &tree, &workingTree, ldesthi.get(),
-                       desthihi, desthilo, &result);
-    RecursivelyIterate(length / 2, &tree, &workingTree, ldestlo.get(),
-                       destlohi, destlolo, &result);
+    RecursivelyIterate(type_, order_, length / 2, &tree, &workingTree,
+                       ldesthi.get(), desthihi, desthilo, &result);
+    RecursivelyIterate(type_, order_, length / 2, &tree, &workingTree,
+                       ldestlo.get(), destlohi, destlolo, &result);
   }
 }
 
 void WaveletFilterBank::RecursivelyIterate(
-    size_t length, std::vector<int> *tree, std::vector<int>* workingTree,
-    float* source, float* desthi, float* destlo, float** result) noexcept {
+    WaveletType type, int order, size_t length,
+    std::vector<int> *tree, std::vector<int>* workingTree, float* source,
+    float* desthi, float* destlo, float** result) noexcept {
   if (tree->back() != workingTree->back()) {
-    if (length > 8) {
-      wavelet_apply(source, length, desthi, destlo);
-    } else {
-      wavelet_apply_na(source, 8, 8, desthi, destlo);
-    }
+    wavelet_apply(type, order, source, length, desthi, destlo);
     float *desthihi, *desthilo, *destlohi, *destlolo;
     if (length >= 16) {
-      wavelet_recycle_source(source, length, &desthihi, &desthilo,
+      wavelet_recycle_source(order, source, length,
+                             &desthihi, &desthilo,
                              &destlohi, &destlolo);
     } else {
       desthihi = desthilo = destlohi = destlolo = nullptr;
@@ -165,10 +203,10 @@ void WaveletFilterBank::RecursivelyIterate(
     workingTree->pop_back();
     workingTree->push_back(next);
     workingTree->push_back(next);
-    RecursivelyIterate(length / 2, tree, workingTree, desthi,
-                       desthihi, desthilo, result);
-    RecursivelyIterate(length / 2, tree, workingTree, destlo,
-                       destlohi, destlolo, result);
+    RecursivelyIterate(type, order, length / 2, tree, workingTree,
+                       desthi, desthihi, desthilo, result);
+    RecursivelyIterate(type, order, length / 2, tree, workingTree,
+                       destlo, destlohi, destlolo, result);
   } else {
     memcpy(*result, source, length * sizeof(float));
     *result += length;

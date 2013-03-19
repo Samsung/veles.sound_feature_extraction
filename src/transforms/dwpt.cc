@@ -23,7 +23,9 @@ namespace Transforms {
 DWPT::DWPT()
   : UniformFormatTransform(SupportedParameters()),
     treeFingerprint_({ 3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-                       6, 6, 6, 6, 6, 6, 6, 6 }) {
+                       6, 6, 6, 6, 6, 6, 6, 6 }),
+    waveletType_(WAVELET_TYPE_DAUBECHIES),
+    waveletOrder_(DEFAULT_WAVELET_ORDER) {
 }
 
 bool DWPT::HasInverse() const noexcept {
@@ -33,6 +35,12 @@ bool DWPT::HasInverse() const noexcept {
 void DWPT::SetParameter(const std::string& name, const std::string& value) {
   if (name == "tree") {
     treeFingerprint_ = WaveletFilterBank::ParseDescription(value);
+  } else if (name == "type") {
+    waveletType_ = WaveletFilterBank::ParseWaveletType(value);
+  } else if (name == "order") {
+    int order = Parse<int>(name, value);
+    WaveletFilterBank::ValidateOrder(waveletType_, order);
+    waveletOrder_ = order;
   }
 }
 
@@ -49,7 +57,8 @@ void DWPT::TypeSafeInitializeBuffers(
 }
 
 void DWPT::Initialize() const noexcept {
-  filterBank_ = std::make_shared<WaveletFilterBank>(treeFingerprint_);
+  filterBank_ = std::make_shared<WaveletFilterBank>(
+      waveletType_, waveletOrder_, treeFingerprint_);
 }
 
 void DWPT::TypeSafeDo(
