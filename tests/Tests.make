@@ -4,7 +4,7 @@ TESTS = $(noinst_PROGRAMS)
 
 REALLOG=$(top_builddir)/$(TESTLOG)
 
-DEFAULT_TIMEOUT=5
+DEFAULT_TIMEOUT=10
 
 tests:	
 	@for dir in $(SUBDIRS); do \

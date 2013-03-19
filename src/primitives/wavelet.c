@@ -237,16 +237,21 @@ static void wavelet_apply4(WaveletType type,
   const __m256 hpvec = _mm256_load_ps(highpassC);
   const __m256 lpvec = _mm256_load_ps(lowpassC);
   size_t alength = aligned_length(length, 8);
-  for (int i = 0, di = 0; i < ilength - 6; i += 2, di++) {
-    int ex = (i / 2) % 2;
-    int offset = i + (ex > 0? ex * (alength - 10) + 8 : 0);
-    __m256 srcvec = _mm256_load_ps(src + offset);
-    __m256 vechi = _mm256_dp_ps(srcvec, hpvec, 0xFF);
-    __m256 veclo = _mm256_dp_ps(srcvec, lpvec, 0xFF);
-    desthi[di] = vechi[0];
-    destlo[di] = veclo[0];
-    desthi[di + 2] = vechi[4];
-    destlo[di + 2] = veclo[4];
+  for (int i = 0, di = 0; i < ilength - 6; i += 8, di += 4) {
+    __m256 srcvec1 = _mm256_load_ps(src + i);
+    __m256 srcvec2 = _mm256_load_ps(src + i + alength);
+    __m256 vechi1 = _mm256_dp_ps(srcvec1, hpvec, 0xFF);
+    __m256 veclo1 = _mm256_dp_ps(srcvec1, lpvec, 0xFF);
+    __m256 vechi2 = _mm256_dp_ps(srcvec2, hpvec, 0xFF);
+    __m256 veclo2 = _mm256_dp_ps(srcvec2, lpvec, 0xFF);
+    desthi[di] = vechi1[0];
+    destlo[di] = veclo1[0];
+    desthi[di + 1] = vechi2[0];
+    destlo[di + 1] = veclo2[0];
+    desthi[di + 2] = vechi1[4];
+    destlo[di + 2] = veclo1[4];
+    desthi[di + 3] = vechi2[4];
+    destlo[di + 3] = veclo2[4];
   }
 #elif defined(__ARM_NEON__)
   const float32x4_t hivec = vld1q_f32(highpassC);

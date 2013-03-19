@@ -40,6 +40,17 @@ TEST(Wavelet, wavelet_prepare_array) {
 #else
   ASSERT_EQ(0, memcmp(res, array, sizeof(array));
 #endif
+
+  res = wavelet_prepare_array(4, array, length);
+
+  #ifdef __AVX__
+    ASSERT_EQ(0, align_complement_f32(res));
+    ASSERT_EQ(0, memcmp(array, res, length * sizeof(float)));
+    ASSERT_EQ(0, memcmp(array + 2, res + length, checkSize));
+    free(res);
+  #else
+    ASSERT_EQ(0, memcmp(res, array, sizeof(array));
+  #endif
 }
 
 TEST(Wavelet, wavelet_allocate_destination) {
@@ -50,7 +61,7 @@ TEST(Wavelet, wavelet_allocate_destination) {
   free(dest);
 }
 
-#define EPSILON 0.0002f
+#define EPSILON 0.0005f
 
 #define ASSERT_EQF(a, b) do { \
   ASSERT_GT(a + EPSILON, b); \
@@ -122,14 +133,26 @@ TEST(Wavelet, wavelet_apply) {
   auto prep = wavelet_prepare_array(8, array, length);
   auto desthi = wavelet_allocate_destination(8, length);
   auto destlo = wavelet_allocate_destination(8, length);
-  wavelet_apply(WAVELET_TYPE_DAUBECHIES, 8, prep, length, desthi, destlo);
-  float validdesthi[length / 2], validdestlo[length / 2];
-  wavelet_apply_na(WAVELET_TYPE_DAUBECHIES, 8, array, length,
-                   validdesthi, validdestlo);
-  for (int i = 0; i < length / 2; i++) {
-    ASSERT_EQF(validdesthi[i], desthi[i]);
-    ASSERT_EQF(validdestlo[i], destlo[i]);
+
+  std::vector<std::pair<WaveletType, std::vector<int>>> types {
+    { WAVELET_TYPE_DAUBECHIES, { 4, 6, 8, 12, 16 } },
+    { WAVELET_TYPE_SYMLET, { 4, 6, 8, 12, 16 } },
+    { WAVELET_TYPE_COIFLET, { 6, 12 } }
+  };
+
+  for (auto tp : types) {
+    for (int order : tp.second) {
+      wavelet_apply(tp.first, order, prep, length, desthi, destlo);
+      float validdesthi[length / 2], validdestlo[length / 2];
+      wavelet_apply_na(tp.first, order, array, length,
+                       validdesthi, validdestlo);
+      for (int i = 0; i < length / 2; i++) {
+        ASSERT_EQF(validdesthi[i], desthi[i]);
+        ASSERT_EQF(validdestlo[i], destlo[i]);
+      }
+    }
   }
+
   free(desthi);
   free(destlo);
 #ifdef __AVX__
@@ -143,37 +166,43 @@ TEST(Wavelet, SIMDSpeedup) {
   for (int i = 0; i < length; i++) {
     array[i] = i;
   }
-  auto prep = wavelet_prepare_array(8, array, length);
-  auto desthi = wavelet_allocate_destination(8, length);
-  auto destlo = wavelet_allocate_destination(8, length);
 
-  auto checkPointStart = std::chrono::high_resolution_clock::now();
+  std::vector<int> orders { 4, 6, 8, 12, 16 };
 
-  for (int i = 0; i < BENCHMARK_LENGTH; i++) {
-    wavelet_apply(WAVELET_TYPE_DAUBECHIES, 8, prep, length, desthi, destlo);
-  }
+  for (int order : orders) {
+    auto prep = wavelet_prepare_array(order, array, length);
+    auto desthi = wavelet_allocate_destination(order, length);
+    auto destlo = wavelet_allocate_destination(order, length);
 
-  auto checkPointFinish = std::chrono::high_resolution_clock::now();
-  auto delta1 = checkPointFinish - checkPointStart;
-  checkPointStart = std::chrono::high_resolution_clock::now();
+    auto checkPointStart = std::chrono::high_resolution_clock::now();
 
-  for (int i = 0; i < BENCHMARK_LENGTH; i++) {
-    wavelet_apply_na(WAVELET_TYPE_DAUBECHIES, 8, array, length,
-                     desthi, destlo);
-  }
+    for (int i = 0; i < BENCHMARK_LENGTH; i++) {
+      wavelet_apply(WAVELET_TYPE_DAUBECHIES, order, prep, length, desthi, destlo);
+    }
 
-  checkPointFinish = std::chrono::high_resolution_clock::now();
-  auto delta2 = checkPointFinish - checkPointStart;
-  float ratio = (delta1.count() + .0f) / delta2.count();
-  float speedup = (delta2.count() - delta1.count() + .0f) / delta2.count();
-  printf("SIMD version took %i%% of original time. Speedup is %i%%.\n",
-         static_cast<int>(ratio * 100), static_cast<int>(speedup * 100));
+    auto checkPointFinish = std::chrono::high_resolution_clock::now();
+    auto delta1 = checkPointFinish - checkPointStart;
+    checkPointStart = std::chrono::high_resolution_clock::now();
 
-  free(desthi);
-  free(destlo);
+    for (int i = 0; i < BENCHMARK_LENGTH; i++) {
+      wavelet_apply_na(WAVELET_TYPE_DAUBECHIES, order, array, length,
+                       desthi, destlo);
+    }
+
+    checkPointFinish = std::chrono::high_resolution_clock::now();
+    auto delta2 = checkPointFinish - checkPointStart;
+    float ratio = (delta1.count() + .0f) / delta2.count();
+    float speedup = (delta2.count() - delta1.count() + .0f) / delta2.count();
+    printf("[order %i] SIMD version took %i%% of original time. "
+        "Speedup is %i%%.\n", order,
+        static_cast<int>(ratio * 100), static_cast<int>(speedup * 100));
+
+    free(desthi);
+    free(destlo);
 #ifdef __AVX__
-  free(prep);
+    free(prep);
 #endif
+  }
 }
 
 #include "tests/google/src/gtest_main.cc"
