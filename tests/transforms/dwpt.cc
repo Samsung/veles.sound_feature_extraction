@@ -38,6 +38,7 @@ class DWPTTest : public DWPT, public testing::Test {
 };
 
 TEST_F(DWPTTest, Forward) {
+  ASSERT_EQ(inputFormat_->Size(), outputFormat_->Size());
   TypeSafeDo(Input, &Output);
 }
 

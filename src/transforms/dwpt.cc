@@ -47,7 +47,6 @@ void DWPT::SetParameter(const std::string& name, const std::string& value) {
 void DWPT::OnFormatChanged() {
   WaveletFilterBank::ValidateLength(treeFingerprint_,
                                     inputFormat_->Size());
-  outputFormat_->SetSize(treeFingerprint_.size());
 }
 
 void DWPT::TypeSafeInitializeBuffers(

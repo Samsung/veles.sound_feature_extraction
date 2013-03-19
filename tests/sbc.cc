@@ -1,5 +1,5 @@
-/*! @file mfcc.cc
- *  @brief Test which checks the calculation of MFCC.
+/*! @file sbc.cc
+ *  @brief Subband based Cepstral Parameters.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -20,25 +20,25 @@ using SpeechFeatureExtraction::TransformTree;
 using SpeechFeatureExtraction::Formats::Raw16;
 using SpeechFeatureExtraction::BuffersBase;
 
-TEST(MFCC, Calculation) {
-  ASSERT_NO_THROW({
+TEST(SBC, Calculation) {
+  //ASSERT_NO_THROW({
     TransformTree tt( { 48000, 16000 } );
     // We have to apply FilterBank twice since Energy results in
     // squared magnitude
-    tt.AddChain("MFCC", { { "Window", "length=32" }, { "RDFT", "" },
-        { "Energy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
-        { "Log", "" }, /*{ "Square", "" },*/ { "UnpackRDFT", "" }, { "DCT", "" } });
+    tt.AddChain("MFCC", { { "Window", "length=32, type=rectangular" }, { "DWPT", "" },
+        { "SubbandEnergy", "" }, { "Log", "" }, /*{ "Square", "" },*/
+        { "ZeroPadding", "" }, { "DCT", "" } });
     BuffersBase<Raw16> buffers;
     buffers.Initialize(1, 48000, 0);
     memcpy(buffers[0]->Data.get(), data, sizeof(data));
     tt.PrepareForExecution();
     tt.Execute(buffers);
-    tt.Dump("/tmp/mfcc.dot");
+    tt.Dump("/tmp/sbc.dot");
     auto report = tt.ExecutionTimeReport();
     for (auto r : report) {
       printf("%s:\t%f\n", r.first.c_str(), r.second);
     }
-  });
+  //});
 }
 
 #include "tests/google/src/gtest_main.cc"

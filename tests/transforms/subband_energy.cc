@@ -50,6 +50,7 @@ float SumOfSquares(int max) {
 }
 
 TEST_F(SubbandEnergyTest, Forward) {
+  ASSERT_EQ(6, outputFormat_->Size());
   TypeSafeDo(Input, &Output);
   float* output = Output[0]->Data.get();
   int quarter = Size / 8;

@@ -37,11 +37,13 @@ class DCTTest : public DCT, public testing::Test {
 };
 
 TEST_F(DCTTest, Forward) {
+  ASSERT_EQ(inputFormat_->Size(), outputFormat_->Size());
   TypeSafeDo(Input, &Output);
 }
 
 TEST_F(DCTTest, Backward) {
   SetParameter("inverse", "true");
+  ASSERT_EQ(inputFormat_->Size(), outputFormat_->Size());
   TypeSafeDo(Input, &Output);
 }
 

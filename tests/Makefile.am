@@ -1,6 +1,6 @@
 include $(top_srcdir)/Makefile.common
 
-noinst_PROGRAMS = features_parser parameters transform_tree mfcc
+noinst_PROGRAMS = features_parser parameters transform_tree mfcc sbc
 
 GTEST_INCLUDE = -I$(top_srcdir)/tests/google
 
@@ -45,6 +45,17 @@ mfcc_CPPFLAGS = $(GTEST_INCLUDE)
 
 # Used libraries
 mfcc_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+sbc_SOURCES = sbc.cc
+
+# Compiler options
+sbc_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+sbc_LDADD = $(top_builddir)/src/libspfextr.la  \
 $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 
