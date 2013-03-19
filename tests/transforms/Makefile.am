@@ -2,7 +2,7 @@ include $(top_srcdir)/Makefile.common
 
 noinst_PROGRAMS = lowpass_filter square complex_magnitude log filter_bank \
 energy real_to_complex unpack_rdft intensity rdft dct dwpt subband_energy \
-zero_padding
+zero_padding selector
 
 GTEST_INCLUDE = -I$(top_srcdir)/tests/google
 
@@ -157,6 +157,17 @@ zero_padding_CPPFLAGS = $(GTEST_INCLUDE)
 
 # Used libraries
 zero_padding_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+selector_SOURCES = selector.cc
+
+# Compiler options
+selector_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+selector_LDADD = $(top_builddir)/src/libspfextr.la  \
 $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 
