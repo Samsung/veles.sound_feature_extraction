@@ -109,14 +109,21 @@ float *wavelet_allocate_destination(int order, size_t sourceLength) {
 void wavelet_recycle_source(int order, float *src, size_t length,
                             float **desthihi, float **desthilo,
                             float **destlohi, float **destlolo) {
-  assert(length >= 16);
-  assert(length % 4 == 0);
+  if (length == 0 || length % 4 != 0) {
+    *desthihi = NULL;
+    *desthilo = NULL;
+    *destlohi = NULL;
+    *destlolo = NULL;
+    return;
+  }
 
-  int lq =
 #ifndef __AVX__
-  length / 4;
+  int lq = length / 4;
 #else
-  aligned_length(length, 8) / (order > 4? 1 : 2);
+  int lq = aligned_length(length, 8) / (order > 4? 1 : 2);
+  if (length < 16) {
+    lq = length / 4;
+  }
 #endif
   *desthihi = src;
   *desthilo = src + lq;

@@ -1,5 +1,5 @@
-/*! @file sbc.cc
- *  @brief Subband based Cepstral Parameters.
+/*! @file wpp.cc
+ *  @brief Wavelet Packet Parameters.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -20,20 +20,20 @@ using SpeechFeatureExtraction::TransformTree;
 using SpeechFeatureExtraction::Formats::Raw16;
 using SpeechFeatureExtraction::BuffersBase;
 
-TEST(SBC, Calculation) {
+TEST(WPP, Calculation) {
   ASSERT_NO_THROW({
     TransformTree tt( { 48000, 16000 } );
     // We have to apply FilterBank twice since Energy results in
     // squared magnitude
-    tt.AddChain("SBC", { { "Window", "length=32, type=rectangular" }, { "DWPT", "" },
+    tt.AddChain("WPP", { { "Window", "length=32, type=rectangular" }, { "DWPT", "" },
         { "SubbandEnergy", "" }, { "Log", "" }, /*{ "Square", "" },*/
-        { "ZeroPadding", "" }, { "DCT", "" } });
+        { "DWPT", "order=4, tree=1 2 3 3" } });
     BuffersBase<Raw16> buffers;
     buffers.Initialize(1, 48000, 0);
     memcpy(buffers[0]->Data.get(), data, sizeof(data));
     tt.PrepareForExecution();
     tt.Execute(buffers);
-    tt.Dump("/tmp/sbc.dot");
+    tt.Dump("/tmp/wpp.dot");
     auto report = tt.ExecutionTimeReport();
     for (auto r : report) {
       printf("%s:\t%f\n", r.first.c_str(), r.second);

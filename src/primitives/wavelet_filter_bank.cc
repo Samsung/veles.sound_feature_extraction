@@ -146,8 +146,8 @@ std::string WaveletFilterBank::DescriptionToString(
 void WaveletFilterBank::ValidateLength(
     const std::vector<int>& tree, size_t length) {
   int max = *std::max_element(tree.begin(), tree.end());
-  // length / 2^max >= 4, since the least wavelet dest* length is 8 / 2 = 4
-  if ((int)length < (1 << (max + 2)) || (int)length % (1 << max) != 0) {
+  // length / 2^max >= 1
+  if (length == 0 || length % (1 << max) != 0) {
     throw WaveletTreeInvalidSourceLengthException(tree, length);
   }
 }
@@ -192,13 +192,9 @@ void WaveletFilterBank::RecursivelyIterate(
   if (tree->back() != workingTree->back()) {
     wavelet_apply(type, order, source, length, desthi, destlo);
     float *desthihi, *desthilo, *destlohi, *destlolo;
-    if (length >= 16) {
-      wavelet_recycle_source(order, source, length,
-                             &desthihi, &desthilo,
-                             &destlohi, &destlolo);
-    } else {
-      desthihi = desthilo = destlohi = destlolo = nullptr;
-    }
+    wavelet_recycle_source(order, source, length,
+                           &desthihi, &desthilo,
+                           &destlohi, &destlolo);
     int next = workingTree->back() + 1;
     workingTree->pop_back();
     workingTree->push_back(next);
