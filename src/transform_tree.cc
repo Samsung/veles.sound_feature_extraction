@@ -313,15 +313,20 @@ TransformTree::ExecutionTimeReport() const noexcept {
   auto allTime = allIt->second.ElapsedTime.count();
   for (auto cit : transformsCache_) {
     if (cit.first != "All") {
-      ret.insert(std::make_pair(cit.first, (cit.second.ElapsedTime.count() + .0f) / allTime));
+      ret.insert(std::make_pair(
+          cit.first, (cit.second.ElapsedTime.count() + .0f) / allTime));
     } else {
-      ret.insert(std::make_pair(cit.first, allTime));
+      ret.insert(std::make_pair(
+          cit.first,
+          (allTime + .0f) / std::chrono::high_resolution_clock::period().den));
     }
   }
   return std::move(ret);
 }
 
 void TransformTree::Dump(const std::string& dotFileName) const {
+  // I am very sorry for such a complicated code. Please forgive me.
+  // It just has to be here.
   const float redThreshold = 0.25f;
 
   auto timeReport = ExecutionTimeReport();
