@@ -28,8 +28,8 @@
      _a > _b ? _a : _b; \
    })
 
-static INLINE void check_length(size_t length, int order) {
-  assert(length >= (size_t)order);
+static INLINE void check_length(size_t length) {
+  assert(length > 0);
   assert(length % 2 == 0);
 }
 
@@ -43,7 +43,7 @@ static INLINE size_t aligned_length(size_t length, size_t alignment) {
 
 static INLINE NOTNULL(2, 4) void wavelet_prepare_array_memcpy(
     int order, const float *src, size_t length, float *res) {
-  check_length(length, order);
+  check_length(length);
 
   if (res != src) {
     memcpy(res, src, length * sizeof(float));
@@ -82,7 +82,7 @@ float *wavelet_prepare_array(int order, const float *src, size_t length
                              UNUSED
 #endif
 ) {
-  check_length(length, order);
+  check_length(length);
 #ifndef __AVX__
   return src;
 #else
@@ -94,7 +94,8 @@ float *wavelet_prepare_array(int order, const float *src, size_t length
 }
 
 float *wavelet_allocate_destination(int order, size_t sourceLength) {
-  check_length(sourceLength, order);
+  check_length(sourceLength);
+  assert(sourceLength % 4 == 0);
 
 #ifndef __AVX__
   float *res = mallocf(sourceLength / 2);
@@ -156,7 +157,7 @@ static INLINE NOTNULL(3, 4) void initialize_highpass_lowpass(
 void wavelet_apply_na(WaveletType type, int order,
                       const float *__restrict src, size_t length,
                       float *__restrict desthi, float *__restrict destlo) {
-  check_length(length, order);
+  check_length(length);
   assert(src && desthi && destlo);
 
   int ilength = (int)length;
@@ -211,7 +212,9 @@ void wavelet_apply_na(WaveletType type, int order,
   float highpassC[ALIGN_ORDER(order)] __attribute__ ((aligned (32))), \
         lowpassC[ALIGN_ORDER(order)] __attribute__ ((aligned (32)))
 #else
-  float highpassC[order], lowpassC[order]
+#define DECLARE_PASSC(order) float highpassC[order], lowpassC[order]
+
+#define align_complement_f32(x) 0
 #endif
 
 static void wavelet_apply4(WaveletType type,
@@ -219,11 +222,18 @@ static void wavelet_apply4(WaveletType type,
                            float *__restrict desthi,
                            float *__restrict destlo) {
 #ifdef SIMD
-  check_length(length, 4);
+  check_length(length);
   assert(src && desthi && destlo);
 
-  if (length == 4) {
+  if (align_complement_f32(src) != 0 ||
+#ifdef __AVX__
+      length < 8
+#elif defined(__ARM_NEON__)
+      length < 4
+#endif
+  ) {
     wavelet_apply_na(type, 4, src, 4, desthi, destlo);
+    return;
   }
 
   int ilength = (int)length;
@@ -309,10 +319,11 @@ static void wavelet_apply6(WaveletType type,
                            float *__restrict desthi,
                            float *__restrict destlo) {
 #ifdef SIMD
-  check_length(length, 6);
+  check_length(length);
   assert(src && desthi && destlo);
+  assert(align_complement_f32(src) == 0);
 
-  if (length == 6) {
+  if (align_complement_f32(src) != 0 || length < 8) {
     wavelet_apply_na(type, 6, src, 6, desthi, destlo);
     return;
   }
@@ -403,10 +414,9 @@ static void wavelet_apply8(WaveletType type,
                            float *__restrict desthi,
                            float *__restrict destlo) {
 #ifdef SIMD
-  check_length(length, 8);
+  check_length(length);
   assert(src && desthi && destlo);
-
-  if (length == 8) {
+  if (align_complement_f32(src) != 0 || length < 8) {
     wavelet_apply_na(type, 8, src, 8, desthi, destlo);
     return;
   }
@@ -487,10 +497,17 @@ static void wavelet_apply12(WaveletType type,
                             float *__restrict desthi,
                             float *__restrict destlo) {
 #ifdef SIMD
-  check_length(length, 12);
+  check_length(length);
   assert(src && desthi && destlo);
+  assert(align_complement_f32(src) == 0);
 
-  if (length == 12) {
+  if (align_complement_f32(src) != 0 ||
+#ifdef __AVX__
+      length < 16
+#elif defined(__ARM_NEON__)
+      length < 12
+#endif
+  ) {
     wavelet_apply_na(type, 12, src, 12, desthi, destlo);
     return;
   }
@@ -595,10 +612,11 @@ static void wavelet_apply16(WaveletType type,
                             float *__restrict desthi,
                             float *__restrict destlo) {
 #ifdef SIMD
-  check_length(length, 16);
+  check_length(length);
   assert(src && desthi && destlo);
+  assert(align_complement_f32(src) == 0);
 
-  if (length == 16) {
+  if (align_complement_f32(src) != 0 || length < 16) {
     wavelet_apply_na(type, 16, src, 16, desthi, destlo);
     return;
   }

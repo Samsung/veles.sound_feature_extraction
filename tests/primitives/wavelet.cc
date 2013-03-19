@@ -134,17 +134,17 @@ TEST(Wavelet, wavelet_apply) {
   auto desthi = wavelet_allocate_destination(8, length);
   auto destlo = wavelet_allocate_destination(8, length);
 
-  std::vector<std::pair<WaveletType, std::vector<int>>> types {
+  std::vector<std::pair<WaveletType, std::vector<int>>> wavelets {
     { WAVELET_TYPE_DAUBECHIES, { 4, 6, 8, 12, 16 } },
     { WAVELET_TYPE_SYMLET, { 4, 6, 8, 12, 16 } },
     { WAVELET_TYPE_COIFLET, { 6, 12 } }
   };
 
-  for (auto tp : types) {
-    for (int order : tp.second) {
-      wavelet_apply(tp.first, order, prep, length, desthi, destlo);
+  for (auto wp : wavelets) {
+    for (int order : wp.second) {
+      wavelet_apply(wp.first, order, prep, length, desthi, destlo);
       float validdesthi[length / 2], validdestlo[length / 2];
-      wavelet_apply_na(tp.first, order, array, length,
+      wavelet_apply_na(wp.first, order, array, length,
                        validdesthi, validdestlo);
       for (int i = 0; i < length / 2; i++) {
         ASSERT_EQF(validdesthi[i], desthi[i]);

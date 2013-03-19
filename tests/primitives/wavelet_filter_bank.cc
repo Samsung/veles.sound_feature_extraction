@@ -53,53 +53,63 @@ TEST(WaveletFilterBank, ParseDescription) {
                WaveletTreeInvalidDescriptionException);
 }
 
+std::vector<std::pair<WaveletType, std::vector<int>>> Wavelets {
+    { WAVELET_TYPE_DAUBECHIES, { 4, 6, 8, 12, 16 } },
+    { WAVELET_TYPE_SYMLET, { 4, 6, 8, 12, 16 } },
+    { WAVELET_TYPE_COIFLET, { 6, 12 } }
+  };
+
 TEST(WaveletFilterBank, Apply) {
-  WaveletFilterBank wfb(WAVELET_TYPE_DAUBECHIES, 8,
-                        { 3, 4, 4, 2, 2, 5, 5, 4, 3 });
+  for (auto wp : Wavelets) {
+    for (int order : wp.second) {
+      WaveletFilterBank wfb(wp.first, order,
+                            { 3, 4, 4, 2, 2, 5, 5, 4, 3 });
 
-  float src[512];
-  int length = sizeof(src) / sizeof(src[0]);
-  float res[length];
-  for (int i = 0; i < length; i++) {
-    src[i] = i * (1 - 2 * (i % 2));
-    res[i] = .0f;
+      float src[512];
+      int length = sizeof(src) / sizeof(src[0]);
+      float res[length];
+      for (int i = 0; i < length; i++) {
+        src[i] = i * (1 - 2 * (i % 2));
+        res[i] = .0f;
+      }
+
+      wfb.Apply(src, length, res);
+
+      // 24 bands survival
+      WaveletFilterBank wfb24(wp.first, order,
+                              { 3, 3, 3,
+                                4, 4, 4,
+                                5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+                                6, 6, 6, 6, 6, 6, 6, 6 });
+      for (int i = 0; i < length; i++) {
+        src[i] = i * (1 - 2 * (i % 2));
+        res[i] = .0f;
+      }
+      wfb24.Apply(src, length, res);
+    }
   }
-
-  wfb.Apply(src, length, res);
-
-  for (int i = 0; i < length; i++) {
-    ASSERT_NE(.0f, res[i]);
-  }
-
-  // 24 bands survival
-  WaveletFilterBank wfb24(WAVELET_TYPE_DAUBECHIES, 8,
-                          { 3, 3, 3,
-                            4, 4, 4,
-                            5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-                            6, 6, 6, 6, 6, 6, 6, 6 });
-  for (int i = 0; i < length; i++) {
-    src[i] = i * (1 - 2 * (i % 2));
-    res[i] = .0f;
-  }
-  wfb24.Apply(src, length, res);
 }
 
 TEST(WaveletFilterBank, ApplyNotAPowerOf2) {
-  WaveletFilterBank wfb24(WAVELET_TYPE_DAUBECHIES, 8,
-                          { 3, 3, 3,
-                            4, 4, 4,
-                            5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-                            6, 6, 6, 6, 6, 6, 6, 6 });
+  for (auto wp : Wavelets) {
+    for (int order : wp.second) {
+      WaveletFilterBank wfb24(wp.first, order,
+                              { 3, 3, 3,
+                                4, 4, 4,
+                                5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+                                6, 6, 6, 6, 6, 6, 6, 6 });
 
-  float src[320];
-  int length = sizeof(src) / sizeof(src[0]);
-  float res[length];
+      float src[320];
+      int length = sizeof(src) / sizeof(src[0]);
+      float res[length];
 
-  for (int i = 0; i < length; i++) {
-    src[i] = i * (1 - 2 * (i % 2));
-    res[i] = .0f;
+      for (int i = 0; i < length; i++) {
+        src[i] = i * (1 - 2 * (i % 2));
+        res[i] = .0f;
+      }
+      wfb24.Apply(src, length, res);
+    }
   }
-  wfb24.Apply(src, length, res);
 }
 
 #include "tests/google/src/gtest_main.cc"
