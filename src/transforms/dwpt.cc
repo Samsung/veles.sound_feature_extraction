@@ -23,12 +23,12 @@ const std::vector<int> DWPT::kDefaultTreeFingerprint {
 };
 
 const std::string DWPT::kDefaultWaveletType = "daub";
-
+const WaveletType DWPT::kDefaultWaveletTypeEnum = WAVELET_TYPE_DAUBECHIES;
 const int DWPT::kDefaultWaveletOrder = 8;
 
 DWPT::DWPT()
   : treeFingerprint_(kDefaultTreeFingerprint),
-    waveletType_(WaveletFilterBank::ParseWaveletType(kDefaultWaveletType)),
+    waveletType_(kDefaultWaveletTypeEnum),
     waveletOrder_(kDefaultWaveletOrder) {
   RegisterSetter("tree", [&](const std::string& value) {
     treeFingerprint_ = WaveletFilterBank::ParseDescription(value);

@@ -21,10 +21,11 @@ namespace Transforms {
 const int Window::kDefaultLength = 25;
 const int Window::kDefaultStep = 10;
 const std::string Window::kDefaultType = "hamming";
+const WindowType Window::kDefaultTypeEnum = WINDOW_TYPE_HAMMING;
 
 Window::Window()
   : step_(kDefaultStep),
-    type_(WindowTypeMap.find(kDefaultType)->second),
+    type_(kDefaultTypeEnum),
     outSizeEach_(0),
     inDataStep_(0) {
   outputFormat_->SetDuration(kDefaultLength);
@@ -45,7 +46,7 @@ Window::Window()
     step_ = pv;
     return true;
   });
-  RegisterSetter("window", [&](const std::string& value) {
+  RegisterSetter("type", [&](const std::string& value) {
     auto wti = WindowTypeMap.find(value);
     if (wti == WindowTypeMap.end()) {
       return false;

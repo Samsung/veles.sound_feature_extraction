@@ -28,6 +28,12 @@ class TransformBase : public virtual Transform,
   TransformBase() noexcept
       : inputFormat_(std::make_shared<FIN>()),
         outputFormat_(std::make_shared<FOUT>()) {
+    RegisterSetter("inverse", [&](const std::string& value) {
+      if (value != "true" && value != "false") {
+        return false;
+      }
+      return true;
+    });
   }
 
   virtual ~TransformBase() {}

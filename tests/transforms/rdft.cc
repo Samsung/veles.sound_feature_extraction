@@ -43,6 +43,7 @@ TEST_F(RDFTTest, Forward) {
 
 TEST_F(RDFTTest, Backward) {
   SetParameter("inverse", "true");
+  outputFormat_->SetSize(Size);
   Do(Input, &Output);
 }
 

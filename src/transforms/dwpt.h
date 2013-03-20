@@ -83,6 +83,7 @@ class DWPT
  private:
   static const std::vector<int> kDefaultTreeFingerprint;
   static const std::string kDefaultWaveletType;
+  static const WaveletType kDefaultWaveletTypeEnum;
   static const int kDefaultWaveletOrder;
 
   std::vector<int> treeFingerprint_;

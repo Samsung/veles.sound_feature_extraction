@@ -56,6 +56,7 @@ class Window
   static const int kDefaultLength;
   static const int kDefaultStep;
   static const std::string kDefaultType;
+  static const WindowType kDefaultTypeEnum;
 
   int step_;
   WindowType type_;

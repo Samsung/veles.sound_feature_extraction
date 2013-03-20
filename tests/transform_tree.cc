@@ -30,10 +30,16 @@ class ParentTestFormat : public BufferFormatBase<ParentChunk> {
 class ParentTestTransform
     : public TransformBase<RawFormat16, ParentTestFormat> {
  public:
+  ParentTestTransform() {
+    RegisterSetter("AmplifyFactor", [&](const std::string&) {
+      return true;
+    });
+  }
+
   TRANSFORM_INTRO("ParentTest", "")
 
   TRANSFORM_PARAMETERS(TP("AmplifyFactor", "Volume amplification factor",
-                            "1"))
+                          "1"))
 
  protected:
   virtual void SetParameter(const std::string&, const std::string&) {
@@ -62,11 +68,17 @@ class ChildTestFormat : public BufferFormatBase<ChildChunk> {
 class ChildTestTransform
     : public TransformBase<ParentTestFormat, ChildTestFormat> {
  public:
+  ChildTestTransform() {
+    RegisterSetter("AnalysisLength", [&](const std::string&) {
+      return true;
+    });
+  }
+
   TRANSFORM_INTRO("ChildTest", "")
 
   TRANSFORM_PARAMETERS(
       TP("AnalysisLength", "Length of the array with analyzed results",
-           "128"))
+         "128"))
 
  protected:
   virtual void SetParameter(const std::string&, const std::string&) {
@@ -95,8 +107,9 @@ class TransformTreeTest : public TransformTree, public testing::Test {
 };
 
 TEST_F(TransformTreeTest, AddChain) {
-  ASSERT_NO_THROW(
-      AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } }));
+  ASSERT_NO_THROW({
+      AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
+  });
 
   ASSERT_THROW({
     AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
