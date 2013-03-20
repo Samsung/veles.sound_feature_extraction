@@ -40,7 +40,7 @@ void UnpackRDFT::Do(
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();
     if (input != output) {
-      memcpy(output, input, offset * sizeof(float));
+      memcpy(output, input, offset * sizeof(input[0]));
     }
     if (realMode) {
       rmemcpyf(output + offset, input + 1, length);

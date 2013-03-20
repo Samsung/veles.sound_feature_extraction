@@ -22,12 +22,13 @@ using SpeechFeatureExtraction::BuffersBase;
 
 TEST(MFCC, Calculation) {
   ASSERT_NO_THROW({
-    TransformTree tt( { 48000, 16000 } );
+    TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
     // We have to apply FilterBank twice since Energy results in
     // squared magnitude
     tt.AddChain("MFCC", { { "Window", "length=32" }, { "RDFT", "" },
         { "Energy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
-        { "Log", "" }, /*{ "Square", "" },*/ { "UnpackRDFT", "" }, { "DCT", "" } });
+        { "Log", "" }, /*{ "Square", "" },*/ { "UnpackRDFT", "" },
+        { "DCT", "" } });
     BuffersBase<Raw16> buffers;
     buffers.Initialize(1, 48000, 0);
     memcpy(buffers[0]->Data.get(), data, sizeof(data));

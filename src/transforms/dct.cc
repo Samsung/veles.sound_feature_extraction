@@ -13,6 +13,7 @@
 #include "src/transforms/dct.h"
 #include <fftf/api.h>
 #include <string>
+#include <vector>
 #include "src/primitives/arithmetic-inl.h"
 
 namespace SpeechFeatureExtraction {

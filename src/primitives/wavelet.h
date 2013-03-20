@@ -13,8 +13,8 @@
 #ifndef SRC_PRIMITIVES_WAVELET_H_
 #define SRC_PRIMITIVES_WAVELET_H_
 
-#include "src/config.h"
 #include <stddef.h>
+#include "src/config.h"
 #include "src/primitives/wavelet_types.h"
 
 #ifdef __cplusplus
@@ -39,7 +39,7 @@ float *wavelet_prepare_array(int order, const float *src, size_t length)
 #ifdef __AVX__
     MALLOC WARN_UNUSED_RESULT
 #endif
-;
+;  // NOLINT(*)
 
 /// @brief Allocates the array which is capable of storing one of the two
 /// wavelet splitted parts of a signal (that is, desthi or destlo in

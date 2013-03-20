@@ -16,7 +16,8 @@
 #include <algorithm>
 #include <list>
 #include <memory>
-#include <boost/regex.hpp>
+#include <string>
+#include <boost/regex.hpp>  // NOLINT(build/include_order)
 #include "src/primitives/wavelet.h"
 
 namespace SpeechFeatureExtraction {
@@ -204,7 +205,7 @@ void WaveletFilterBank::RecursivelyIterate(
     RecursivelyIterate(type, order, length / 2, tree, workingTree,
                        destlo, destlohi, destlolo, result);
   } else {
-    memcpy(*result, source, length * sizeof(float));
+    memcpy(*result, source, length * sizeof(source[0]));
     *result += length;
     tree->pop_back();
     workingTree->pop_back();

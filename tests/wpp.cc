@@ -22,12 +22,12 @@ using SpeechFeatureExtraction::BuffersBase;
 
 TEST(WPP, Calculation) {
   ASSERT_NO_THROW({
-    TransformTree tt( { 48000, 16000 } );
+    TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
     // We have to apply FilterBank twice since Energy results in
     // squared magnitude
-    tt.AddChain("WPP", { { "Window", "length=32, type=rectangular" }, { "DWPT", "" },
-        { "SubbandEnergy", "" }, { "Log", "" }, /*{ "Square", "" },*/
-        { "DWPT", "order=4, tree=1 2 3 3" } });
+    tt.AddChain("WPP", { { "Window", "length=32, type=rectangular" },
+        { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
+        /*{ "Square", "" },*/ { "DWPT", "order=4, tree=1 2 3 3" } });
     BuffersBase<Raw16> buffers;
     buffers.Initialize(1, 48000, 0);
     memcpy(buffers[0]->Data.get(), data, sizeof(data));

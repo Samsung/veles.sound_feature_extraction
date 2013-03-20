@@ -39,7 +39,7 @@ void ZeroPadding::Do(
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();
     if (input != output) {
-      memcpy(output, input, inputFormat_->Size() * sizeof(float));
+      memcpy(output, input, inputFormat_->Size() * sizeof(input[0]));
     }
     memsetf(output + inputFormat_->Size(),
             outputFormat_->Size() - inputFormat_->Size(),

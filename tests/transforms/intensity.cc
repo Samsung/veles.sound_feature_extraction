@@ -14,7 +14,8 @@
 #include <math.h>
 #include "src/transforms/intensity.h"
 
-using namespace SpeechFeatureExtraction::Formats;
+using SpeechFeatureExtraction::Formats::WindowF;
+using SpeechFeatureExtraction::Formats::WindowFormatF;
 using SpeechFeatureExtraction::BuffersBase;
 using SpeechFeatureExtraction::Transforms::Intensity;
 

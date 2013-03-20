@@ -10,16 +10,14 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef AVX_EXTRA_H_
-#define AVX_EXTRA_H_
+#ifndef SRC_PRIMITIVES_AVX_EXTRA_H_
+#define SRC_PRIMITIVES_AVX_EXTRA_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #ifdef __AVX__
-
-#include "src/config.h"
 
 #include <immintrin.h>
 
@@ -31,4 +29,4 @@ float ElementAt(__m256 vector, int index);
 }
 #endif
 
-#endif  // AVX_EXTRA_H_
+#endif  // SRC_PRIMITIVES_AVX_EXTRA_H_

@@ -14,8 +14,8 @@
 #include "src/transform_base.h"
 #include "src/transform_tree.h"
 
-using namespace SpeechFeatureExtraction;
-using namespace SpeechFeatureExtraction::Formats;
+using namespace SpeechFeatureExtraction;  // NOLINT(*)
+using namespace SpeechFeatureExtraction::Formats;  // NOLINT(*)
 
 struct ParentChunk {
 };

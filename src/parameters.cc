@@ -13,7 +13,6 @@
 #include "src/parameters.h"
 #include <boost/algorithm/string/trim.hpp>
 #include <sstream>
-#include <iostream>
 
 namespace SpeechFeatureExtraction {
 

@@ -12,7 +12,7 @@
 
 #include "src/transform_tree.h"
 #include <assert.h>
-#include <fstream>
+#include <fstream>  // NOLINT(*)
 #include <iomanip>
 #include <string>
 #include <utility>
@@ -365,7 +365,8 @@ void TransformTree::Dump(const std::string& dotFileName) const {
         << "<br /><font point-size=\"10\">";
     if (includeTime) {
       fw << "<b>"
-          << std::to_string(static_cast<int>(((node.ElapsedTime.count() * 100) / allTime)))
+          << std::to_string(static_cast<int>(
+              ((node.ElapsedTime.count() * 100) / allTime)))
           << "% ("
           << std::to_string(static_cast<int>(timeReport[t->Name()] * 100))
           << "%)</b>";

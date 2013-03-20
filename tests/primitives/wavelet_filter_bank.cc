@@ -20,7 +20,7 @@ using SpeechFeatureExtraction::Primitives::
     WaveletTreeDescriptionParseException;
 
 TEST(WaveletFilterBank, ValidateDescription) {
-  std::vector<int> desc { 3, 3, 2, 2, 3, 3 };
+  std::vector<int> desc { 3, 3, 2, 2, 3, 3 };  // NOLINT(*)
   ASSERT_NO_THROW(WaveletFilterBank::ValidateDescription(desc));
   desc = { 3, 3, 2, 3, 3, 2 };
   ASSERT_NO_THROW(WaveletFilterBank::ValidateDescription(desc));
@@ -53,7 +53,7 @@ TEST(WaveletFilterBank, ParseDescription) {
                WaveletTreeInvalidDescriptionException);
 }
 
-std::vector<std::pair<WaveletType, std::vector<int>>> Wavelets {
+std::vector<std::pair<WaveletType, std::vector<int>>> Wavelets {  // NOLINT(*)
     { WAVELET_TYPE_DAUBECHIES, { 4, 6, 8, 12, 16 } },
     { WAVELET_TYPE_SYMLET, { 4, 6, 8, 12, 16 } },
     { WAVELET_TYPE_COIFLET, { 6, 12 } }
@@ -66,8 +66,8 @@ TEST(WaveletFilterBank, Apply) {
                             { 3, 4, 4, 2, 2, 5, 5, 4, 3 });
 
       float src[512];
-      int length = sizeof(src) / sizeof(src[0]);
-      float res[length];
+      const int length = sizeof(src) / sizeof(src[0]);
+      float res[length];  // NOLINT(runtime/arrays)
       for (int i = 0; i < length; i++) {
         src[i] = i * (1 - 2 * (i % 2));
         res[i] = .0f;
@@ -100,8 +100,8 @@ TEST(WaveletFilterBank, ApplyNotAPowerOf2) {
                                 6, 6, 6, 6, 6, 6, 6, 6 });
 
       float src[320];
-      int length = sizeof(src) / sizeof(src[0]);
-      float res[length];
+      const int length = sizeof(src) / sizeof(src[0]);
+      float res[length];  // NOLINT(runtime/arrays)
 
       for (int i = 0; i < length; i++) {
         src[i] = i * (1 - 2 * (i % 2));

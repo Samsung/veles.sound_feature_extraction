@@ -101,7 +101,7 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
       : duration_(duration),
         samplingRate_(samplingRate),
         size_(SamplesCount()),
-        allocatedSize_(size_){
+        allocatedSize_(size_) {
     ValidateDuration(duration_);
     ValidateSamplingRate(samplingRate_);
   }
@@ -163,7 +163,7 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
   }
 
  protected:
-  virtual bool MustReallocate(const BufferFormatBase<Window<T>>& other) {
+  virtual bool MustReallocate(const BufferFormatBase<Window<T>>& other) {  // NOLINT(*)
     auto inst = reinterpret_cast<const WindowFormat<T>&>(other);
     return inst.allocatedSize_ < allocatedSize_;
   }

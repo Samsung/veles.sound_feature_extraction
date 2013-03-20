@@ -59,7 +59,7 @@ template <typename T>
 class BuffersBase : public Buffers {
  public:
   explicit BuffersBase() noexcept
-  : Buffers(0, std::make_shared<BufferFormatBase<T>>()) {
+      : Buffers(0, std::make_shared<BufferFormatBase<T>>()) {  // NOLINT(*)
   }
 
   template <typename... TArgs>
@@ -83,7 +83,7 @@ class BuffersBase : public Buffers {
 
   virtual const std::shared_ptr<BufferFormat> Format() const noexcept {
     static const std::shared_ptr<BufferFormat> bf =
-        std::make_shared<BufferFormatBase<T>>();
+        std::make_shared<BufferFormatBase<T>>();  // NOLINT(*)
     return bf;
   }
 };

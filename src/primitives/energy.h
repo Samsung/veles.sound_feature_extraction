@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef ENERGY_H_
-#define ENERGY_H_
+#ifndef SRC_PRIMITIVES_ENERGY_H_
+#define SRC_PRIMITIVES_ENERGY_H_
 
 #include <stddef.h>
 #include "src/config.h"
@@ -26,4 +26,4 @@ float calculate_energy(const float *signal, size_t length) NOTNULL(1);
 }
 #endif
 
-#endif  // ENERGY_H_
+#endif  // SRC_PRIMITIVES_ENERGY_H_

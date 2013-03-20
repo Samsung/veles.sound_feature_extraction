@@ -15,7 +15,8 @@
 #include <gtest/gtest.h>
 #include "src/transforms/filter_bank.h"
 
-using namespace SpeechFeatureExtraction::Formats;
+using SpeechFeatureExtraction::Formats::WindowF;
+using SpeechFeatureExtraction::Formats::WindowFormatF;
 using SpeechFeatureExtraction::BuffersBase;
 using SpeechFeatureExtraction::Transforms::FilterBank;
 

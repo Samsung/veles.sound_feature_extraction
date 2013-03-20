@@ -11,6 +11,7 @@
  */
 
 #include "src/transforms/selector.h"
+#include <algorithm>
 #include <string>
 
 namespace SpeechFeatureExtraction {

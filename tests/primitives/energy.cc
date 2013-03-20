@@ -23,7 +23,7 @@
 
 TEST(Energy, calculate_energy) {
   float array[510] __attribute__((aligned(32)));
-  int length = sizeof(array) / sizeof(float);
+  const int length = sizeof(array) / sizeof(float);  // NOLINT(*)
   for (int i = 0; i < length; i++) {
     array[i] = i + 1;
   }

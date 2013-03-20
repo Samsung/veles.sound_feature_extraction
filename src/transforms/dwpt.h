@@ -14,6 +14,7 @@
 #define SRC_TRANSFORMS_DWPT_H_
 
 #include <string>
+#include <vector>
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
 #include "src/primitives/wavelet_types.h"
@@ -23,7 +24,6 @@ namespace SpeechFeatureExtraction {
 namespace Primitives {
 
 class WaveletFilterBank;
-
 }
 
 namespace Transforms {

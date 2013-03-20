@@ -13,8 +13,8 @@
 #ifndef SRC_FORMATS_RAW_FORMAT_H_
 #define SRC_FORMATS_RAW_FORMAT_H_
 
-#include "src/config.h"
 #include <memory>
+#include "src/config.h"
 #include "src/buffers_base.h"
 #include "src/exceptions.h"
 #include "src/formats/format_limits.h"
@@ -129,7 +129,7 @@ class RawFormat : public BufferFormatBase<Raw<T>> {
   }
 
  protected:
-  virtual bool MustReallocate(const BufferFormatBase<Raw<T>>& other) {
+  virtual bool MustReallocate(const BufferFormatBase<Raw<T>>& other) {  // NOLINT(*)
     auto inst = reinterpret_cast<const RawFormat<T>&>(other);
     return inst.size_ < size_;
   }

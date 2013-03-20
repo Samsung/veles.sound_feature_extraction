@@ -15,7 +15,8 @@
 #include <math.h>
 #include "src/transforms/complex_magnitude.h"
 
-using namespace SpeechFeatureExtraction::Formats;
+using SpeechFeatureExtraction::Formats::WindowF;
+using SpeechFeatureExtraction::Formats::WindowFormatF;
 using SpeechFeatureExtraction::BuffersBase;
 using SpeechFeatureExtraction::Transforms::ComplexMagnitude;
 

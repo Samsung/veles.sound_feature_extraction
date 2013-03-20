@@ -100,12 +100,12 @@ TEST(Memory, zeropadding) {
 }
 
 TEST(Memory, rmemcpyf) {
-  float src[25] __attribute__ ((aligned (32)));
-  int len = sizeof(src) / sizeof(float);
+  float src[25] __attribute__ ((aligned (32)));  // NOLINT(*)
+  const int len = sizeof(src) / sizeof(float);  // NOLINT(*)
   for (int i = 0; i < len; i++) {
     src[i] = i;
   }
-  float dest[25] __attribute__ ((aligned (32)));
+  float dest[25] __attribute__ ((aligned (32)));  // NOLINT(*)
   rmemcpyf(dest + 1, src + 1, len - 1);
   for (int i = 1; i < len; i++) {
     ASSERT_EQ(dest[i], src[len - i]);

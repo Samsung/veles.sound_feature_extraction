@@ -13,6 +13,7 @@
 #ifndef SRC_EXCEPTIONS_H_
 #define SRC_EXCEPTIONS_H_
 
+#include <exception>
 #include <string>
 
 /// @brief The general exception class. All other exception classes should

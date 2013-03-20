@@ -63,7 +63,8 @@ const noexcept {
     convolute(&dataBuffer_[0], inputFormat_->Size(),
               &filter_[0], filter_.size(),
               &dataBuffer_[0]);
-    float_to_int16(&dataBuffer_[0], inputFormat_->Size(), (*out)[i]->Data.get());
+    float_to_int16(&dataBuffer_[0], inputFormat_->Size(),
+                   (*out)[i]->Data.get());
   }
 }
 

@@ -15,7 +15,8 @@
 
 #include <stddef.h>
 #include <vector>
-#include <unordered_map>
+#include <string>
+#include <unordered_map>  // NOLINT(build/include_order)
 #include "src/exceptions.h"
 #include "src/primitives/wavelet_types.h"
 

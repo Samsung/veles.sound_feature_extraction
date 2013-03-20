@@ -23,7 +23,7 @@ const int BENCHMARK_LENGTH = 100000;
 
 TEST(Wavelet, wavelet_prepare_array) {
   float array[512];
-  int length = sizeof(array) / sizeof(float);
+  int length = sizeof(array) / sizeof(float);  // NOLINT(*)
   for (int i = 0; i < length; i++) {
     array[i] = i;
   }
@@ -31,8 +31,8 @@ TEST(Wavelet, wavelet_prepare_array) {
 
 #ifdef __AVX__
   ASSERT_EQ(0, align_complement_f32(res));
-  ASSERT_EQ(0, memcmp(array, res, length * sizeof(float)));
-  int checkSize = (length - 8) * sizeof(float);
+  ASSERT_EQ(0, memcmp(array, res, length * sizeof(float)));  // NOLINT(*)
+  int checkSize = (length - 8) * sizeof(float);  // NOLINT(*)
   ASSERT_EQ(0, memcmp(array + 2, res + length, checkSize));
   ASSERT_EQ(0, memcmp(array + 4, res + length * 2 - 8, checkSize));
   ASSERT_EQ(0, memcmp(array + 6, res + length * 3 - 16, checkSize));
@@ -45,7 +45,7 @@ TEST(Wavelet, wavelet_prepare_array) {
 
   #ifdef __AVX__
     ASSERT_EQ(0, align_complement_f32(res));
-    ASSERT_EQ(0, memcmp(array, res, length * sizeof(float)));
+    ASSERT_EQ(0, memcmp(array, res, length * sizeof(float)));  // NOLINT(*)
     ASSERT_EQ(0, memcmp(array + 2, res + length, checkSize));
     free(res);
   #else
@@ -70,7 +70,7 @@ TEST(Wavelet, wavelet_allocate_destination) {
 
 TEST(Wavelet, wavelet_apply_na) {
   float array[32], desthi[16], destlo[16];
-  int length = sizeof(array) / sizeof(float);
+  int length = sizeof(array) / sizeof(float);  // NOLINT(*)
   for (int i = 0; i < length; i++) {
     array[i] = i;
   }
@@ -126,7 +126,7 @@ TEST(Wavelet, wavelet_apply_na) {
 
 TEST(Wavelet, wavelet_apply) {
   float array[512];
-  int length = sizeof(array) / sizeof(float);
+  const int length = sizeof(array) / sizeof(float);  // NOLINT(*)
   for (int i = 0; i < length; i++) {
     array[i] = i;
   }
@@ -134,7 +134,7 @@ TEST(Wavelet, wavelet_apply) {
   auto desthi = wavelet_allocate_destination(8, length);
   auto destlo = wavelet_allocate_destination(8, length);
 
-  std::vector<std::pair<WaveletType, std::vector<int>>> wavelets {
+  std::vector<std::pair<WaveletType, std::vector<int>>> wavelets {  // NOLINT(*)
     { WAVELET_TYPE_DAUBECHIES, { 4, 6, 8, 12, 16 } },
     { WAVELET_TYPE_SYMLET, { 4, 6, 8, 12, 16 } },
     { WAVELET_TYPE_COIFLET, { 6, 12 } }
@@ -162,12 +162,12 @@ TEST(Wavelet, wavelet_apply) {
 
 TEST(Wavelet, SIMDSpeedup) {
   float array[512];
-  int length = sizeof(array) / sizeof(float);
+  const int length = sizeof(array) / sizeof(float);  // NOLINT(*)
   for (int i = 0; i < length; i++) {
     array[i] = i;
   }
 
-  std::vector<int> orders { 4, 6, 8, 12, 16 };
+  std::vector<int> orders { 4, 6, 8, 12, 16 };  // NOLINT(*)
 
   for (int order : orders) {
     auto prep = wavelet_prepare_array(order, array, length);
@@ -177,7 +177,7 @@ TEST(Wavelet, SIMDSpeedup) {
     auto checkPointStart = std::chrono::high_resolution_clock::now();
 
     for (int i = 0; i < BENCHMARK_LENGTH; i++) {
-      wavelet_apply(WAVELET_TYPE_DAUBECHIES, order, prep, length, desthi, destlo);
+      wavelet_apply(WAVELET_TYPE_DAUBECHIES, order, prep, length, desthi, destlo);  // NOLINT(*)
     }
 
     auto checkPointFinish = std::chrono::high_resolution_clock::now();

@@ -13,7 +13,9 @@
 #include <gtest/gtest.h>
 #include "src/transforms/square.h"
 
-using namespace SpeechFeatureExtraction::Formats;
+using SpeechFeatureExtraction::Formats::Raw16;
+using SpeechFeatureExtraction::Formats::Raw32;
+using SpeechFeatureExtraction::Formats::RawFormat16;
 using SpeechFeatureExtraction::BuffersBase;
 using SpeechFeatureExtraction::Transforms::SquareRaw;
 

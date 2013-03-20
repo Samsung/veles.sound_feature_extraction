@@ -13,9 +13,9 @@
 #ifndef SRC_TRANSFORM_H_
 #define SRC_TRANSFORM_H_
 
-#include "src/config.h"
 #include <string>
 #include <unordered_map>  // NOLINT(build/include_order)
+#include "src/config.h"
 #include "src/buffer_format.h"
 #include "src/buffers.h"
 #include "src/parameters.h"

@@ -16,8 +16,9 @@
 #include <immintrin.h>
 #include "src/primitives/avx_extra.h"
 #elif defined(__ARM_NEON__)
-#include <arm_neon.h>
+#include <arm_neon.h>  // NOLINT(build/include_order)
 #endif
+#include <string>  // NOLINT(*)
 #include "src/primitives/wavelet_filter_bank.h"
 #include "src/primitives/energy.h"
 
@@ -64,7 +65,7 @@ void SubbandEnergy::Do(
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();
-    for (int i = 0; i < (int)offsets_.size() - 1; i++) {
+    for (int i = 0; i < static_cast<int>(offsets_.size()) - 1; i++) {
       output[i] = calculate_energy(input + offsets_[i],
                                    offsets_[i + 1] - offsets_[i]);
     }

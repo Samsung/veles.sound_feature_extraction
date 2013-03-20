@@ -14,9 +14,9 @@
 #include "src/transforms/real_to_complex.h"
 #include <string>
 #ifdef __AVX__
-#include <immintrin.h>
+#include <immintrin.h>  // NOLINT(build/include_order)
 #elif defined(__ARM_NEON__)
-#include <arm_neon.h>
+#include <arm_neon.h>  // NOLINT(build/include_order)
 #endif
 
 namespace SpeechFeatureExtraction {
@@ -54,7 +54,7 @@ void RealToComplex::Do(
       output[i * 2 + 1] = .0f;
     }
 #else
-#error TODO: AVX2 introduces a full 256-bit permute which must be executed before _mm256_unpack*
+#error TODO: AVX2 introduces a full 256-bit permute which must be executed before _mm256_unpack*  // NOLINT(*)
 #endif
 #elif defined(__ARM_NEON__)
     const float32x4_t zeros = { .0f, .0f, .0f, .0f };

@@ -13,7 +13,8 @@
 #include <gtest/gtest.h>
 #include "src/transforms/real_to_complex.h"
 
-using namespace SpeechFeatureExtraction::Formats;
+using SpeechFeatureExtraction::Formats::WindowF;
+using SpeechFeatureExtraction::Formats::WindowFormatF;
 using SpeechFeatureExtraction::BuffersBase;
 using SpeechFeatureExtraction::Transforms::RealToComplex;
 

@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_DFT_H_
-#define SRC_TRANSFORMS_DFT_H_
+#ifndef SRC_TRANSFORMS_RDFT_H_
+#define SRC_TRANSFORMS_RDFT_H_
 
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
@@ -42,4 +42,4 @@ class RDFT
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // SRC_TRANSFORMS_DFT_H_
+#endif  // SRC_TRANSFORMS_RDFT_H_

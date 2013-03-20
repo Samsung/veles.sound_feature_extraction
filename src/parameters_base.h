@@ -55,7 +55,7 @@ class ParameterizableBase : public virtual IParameterizable {
   void SetParameter(const std::string& name, const std::string& value);
 
  protected:
-  typedef std::function<bool(const std::string&)> Setter;
+  typedef std::function<bool(const std::string&)> Setter;  // NOLINT(*)
 
   void RegisterSetter(const std::string& name, const Setter& setter) noexcept;
 
