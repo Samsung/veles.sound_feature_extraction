@@ -43,7 +43,7 @@ FormatConverter::SupportedParameters() const noexcept {
 }
 
 const std::unordered_map<std::string, std::string>&
-FormatConverter::CurrentParameters() const noexcept {
+FormatConverter::GetParameters() const noexcept {
   static const std::unordered_map<std::string, std::string> cp;
   return cp;
 }

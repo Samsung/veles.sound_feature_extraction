@@ -36,8 +36,8 @@ class FormatConverterBase
   }
 
   virtual const std::unordered_map<std::string, std::string>&
-  CurrentParameters() const noexcept {
-    return FormatConverter::CurrentParameters();
+  GetParameters() const noexcept {
+    return FormatConverter::GetParameters();
   }
 
   virtual void SetParameters(

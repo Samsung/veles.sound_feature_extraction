@@ -30,7 +30,7 @@ class FormatConverter : public virtual Transform {
   SupportedParameters() const noexcept;
 
   virtual const std::unordered_map<std::string, std::string>&
-  CurrentParameters() const noexcept;
+  GetParameters() const noexcept;
 
   virtual void SetParameters(
       const std::unordered_map<std::string, std::string>& parameters);

@@ -60,7 +60,7 @@ class Transform {
   SupportedParameters() const noexcept = 0;
 
   virtual const std::unordered_map<std::string, std::string>&
-  CurrentParameters() const noexcept = 0;
+  GetParameters() const noexcept = 0;
 
   virtual void SetParameters(
       const std::unordered_map<std::string, std::string>& parameters) = 0;

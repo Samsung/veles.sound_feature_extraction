@@ -58,7 +58,7 @@ class RootTransform : public Transform {
   }
 
   virtual const std::unordered_map<std::string, std::string>&
-  CurrentParameters() const noexcept {
+  GetParameters() const noexcept {
     static const std::unordered_map<std::string, std::string> p;
     return p;
   }
@@ -278,7 +278,7 @@ TransformTree::Execute(const Buffers& in) {
 std::shared_ptr<Transform> TransformTree::FindIdenticalTransform(
     const Transform& base) noexcept {
   std::string id = base.Name();
-  for (auto pp : base.CurrentParameters()) {
+  for (auto pp : base.GetParameters()) {
     id += pp.first;
     id += pp.second;
   }
@@ -292,7 +292,7 @@ std::shared_ptr<Transform> TransformTree::FindIdenticalTransform(
 void TransformTree::SaveTransformToCache(
     const std::shared_ptr<Transform>& t) noexcept {
   std::string id = t->Name();
-  for (auto pp : t->CurrentParameters()) {
+  for (auto pp : t->GetParameters()) {
     id += pp.first;
     id += pp.second;
   }
@@ -370,10 +370,10 @@ void TransformTree::Dump(const std::string& dotFileName) const {
           << std::to_string(static_cast<int>(timeReport[t->Name()] * 100))
           << "%)</b>";
     }
-    if (t->CurrentParameters().size() > 1 ||
-        (t->CurrentParameters().size() > 0 && t->HasInverse())) {
+    if (t->GetParameters().size() > 1 ||
+        (t->GetParameters().size() > 0 && t->HasInverse())) {
       fw << "<br /> <br />";
-      for (auto p : t->CurrentParameters()) {
+      for (auto p : t->GetParameters()) {
         if (p.first == "inverse" && !t->HasInverse()) {
           continue;
         }

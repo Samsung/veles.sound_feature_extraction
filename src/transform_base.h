@@ -48,7 +48,7 @@ class TransformBase : public virtual Transform {
   }
 
   virtual const std::unordered_map<std::string, std::string>&
-  CurrentParameters() const noexcept {
+  GetParameters() const noexcept {
     return parameters_;
   }
 
