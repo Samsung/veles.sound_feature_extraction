@@ -33,6 +33,14 @@ class UniformFormatTransform : public TransformBase<F, F> {
 
   virtual void OnFormatChanged() {
   }
+
+  virtual void DoInverse(const typename TransformBase<F, F>::OutBuffers& in,
+                         typename TransformBase<F, F>::InBuffers* out) const {
+    if (!this->HasInverse()) {
+      std::unexpected();
+    }
+    this->Do(in, out);
+  }
 };
 
 }  // namespace SpeechFeatureExtraction
