@@ -163,13 +163,13 @@ void FilterBank::Initialize() const noexcept {
   }
 }
 
-void FilterBank::TypeSafeInitializeBuffers(
+void FilterBank::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), inputFormat_->Size());
 }
 
-void FilterBank::TypeSafeDo(
+void FilterBank::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   auto filter = filterBank_.get();

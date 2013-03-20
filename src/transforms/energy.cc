@@ -33,13 +33,13 @@ void Energy::OnFormatChanged() {
   outputFormat_->SetSize(inputFormat_->Size() / 2);
 }
 
-void Energy::TypeSafeInitializeBuffers(
+void Energy::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), inputFormat_->Size() / 2);
 }
 
-void Energy::TypeSafeDo(
+void Energy::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {

@@ -24,14 +24,14 @@ namespace Formats {
 class FloatToInt16Raw
     : public RawFormatConverterBase<RawFormatF, RawFormat16> {
  protected:
-  virtual void TypeSafeDo(const BuffersBase<RawF>& in,
+  virtual void Do(const BuffersBase<RawF>& in,
                           BuffersBase<Raw16> *out) const noexcept;
 };
 
 class FloatToInt16Window
     : public WindowFormatConverterBase<WindowFormatF, WindowFormat16> {
  protected:
-  virtual void TypeSafeDo(const BuffersBase<WindowF>& in,
+  virtual void Do(const BuffersBase<WindowF>& in,
                           BuffersBase<Window16> *out) const noexcept;
 };
 

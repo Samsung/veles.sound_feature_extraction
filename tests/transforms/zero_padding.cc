@@ -33,13 +33,13 @@ class ZeroPaddingTest : public ZeroPadding, public testing::Test {
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
     format->SetAllocatedSize(Size * 2);
     SetInputFormat(format);
-    TypeSafeInitializeBuffers(Input, &Output);
+    InitializeBuffers(Input, &Output);
   }
 };
 
 TEST_F(ZeroPaddingTest, Do) {
   ASSERT_EQ(512, outputFormat_->Size());
-  TypeSafeDo(Input, &Output);
+  Do(Input, &Output);
   for (int i = Size; i < 512; i++) {
     ASSERT_EQ(.0f, Output[0]->Data.get()[i]);
   }

@@ -56,13 +56,13 @@ void SubbandEnergy::Initialize() const noexcept {
   offsets_.push_back(offset);
 }
 
-void SubbandEnergy::TypeSafeInitializeBuffers(
+void SubbandEnergy::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), treeFingerprint_.size());
 }
 
-void SubbandEnergy::TypeSafeDo(
+void SubbandEnergy::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {

@@ -29,12 +29,12 @@ class SquareRawTest : public SquareRaw, public testing::Test {
     }
     auto format = std::make_shared<RawFormat16>(32000, 16000);
     SetInputFormat(format);
-    TypeSafeInitializeBuffers(Input, &Output);
+    InitializeBuffers(Input, &Output);
   }
 };
 
 TEST_F(SquareRawTest, Do) {
-  TypeSafeDo(Input, &Output);
+  Do(Input, &Output);
   for (int i = 0; i < 32000; i++) {
     ASSERT_EQ(i * i, Output[0]->Data.get()[i]);
   }

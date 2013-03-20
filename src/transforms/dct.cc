@@ -26,13 +26,13 @@ bool DCT::HasInverse() const noexcept {
   return true;
 }
 
-void DCT::TypeSafeInitializeBuffers(
+void DCT::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), inputFormat_->Size());
 }
 
-void DCT::TypeSafeDo(
+void DCT::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   int length = outputFormat_->Size();

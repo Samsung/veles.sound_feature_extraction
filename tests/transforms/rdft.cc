@@ -33,17 +33,17 @@ class RDFTTest : public RDFT, public testing::Test {
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
     format->SetAllocatedSize(format->Size() + 2);
     SetInputFormat(format);
-    TypeSafeInitializeBuffers(Input, &Output);
+    InitializeBuffers(Input, &Output);
   }
 };
 
 TEST_F(RDFTTest, Forward) {
-  TypeSafeDo(Input, &Output);
+  Do(Input, &Output);
 }
 
 TEST_F(RDFTTest, Backward) {
   SetParameter("inverse", "true");
-  TypeSafeDo(Input, &Output);
+  Do(Input, &Output);
 }
 
 #include "tests/google/src/gtest_main.cc"

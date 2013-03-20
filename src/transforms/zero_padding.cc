@@ -30,13 +30,13 @@ void ZeroPadding::OnFormatChanged() {
   }
 }
 
-void ZeroPadding::TypeSafeInitializeBuffers(
+void ZeroPadding::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), outputFormat_->Size());
 }
 
-void ZeroPadding::TypeSafeDo(
+void ZeroPadding::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {

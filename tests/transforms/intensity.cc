@@ -32,7 +32,7 @@ class IntensityTest : public Intensity, public testing::Test {
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
-    TypeSafeInitializeBuffers(Input, &Output);
+    InitializeBuffers(Input, &Output);
   }
 };
 
@@ -44,7 +44,7 @@ class IntensityTest : public Intensity, public testing::Test {
 } while (0)
 
 TEST_F(IntensityTest, Do) {
-  TypeSafeDo(Input, &Output);
+  Do(Input, &Output);
   double res = .0;
   for (int i = 0; i < Size; i++) {
     float tmp = Input[0]->Data.get()[i];

@@ -16,7 +16,7 @@
 namespace SpeechFeatureExtraction {
 namespace Formats {
 
-void FloatToInt16Raw::TypeSafeDo(const BuffersBase<RawF>& in,
+void FloatToInt16Raw::Do(const BuffersBase<RawF>& in,
                                  BuffersBase<Raw16> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
     float_to_int16(in[i]->Data.get(), inputFormat_->Size(),
@@ -24,7 +24,7 @@ void FloatToInt16Raw::TypeSafeDo(const BuffersBase<RawF>& in,
   }
 }
 
-void FloatToInt16Window::TypeSafeDo(
+void FloatToInt16Window::Do(
     const BuffersBase<WindowF>& in,
     BuffersBase<Window16> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {

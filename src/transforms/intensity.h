@@ -31,11 +31,11 @@ class Intensity
   TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void TypeSafeInitializeBuffers(
+  virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<float>* buffers) const noexcept;
 
-  virtual void TypeSafeDo(const BuffersBase<Formats::WindowF>& in,
+  virtual void Do(const BuffersBase<Formats::WindowF>& in,
                           BuffersBase<float> *out) const noexcept;
 };
 

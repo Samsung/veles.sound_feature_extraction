@@ -32,19 +32,19 @@ class DCTTest : public DCT, public testing::Test {
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
     SetInputFormat(format);
-    TypeSafeInitializeBuffers(Input, &Output);
+    InitializeBuffers(Input, &Output);
   }
 };
 
 TEST_F(DCTTest, Forward) {
   ASSERT_EQ(inputFormat_->Size(), outputFormat_->Size());
-  TypeSafeDo(Input, &Output);
+  Do(Input, &Output);
 }
 
 TEST_F(DCTTest, Backward) {
   SetParameter("inverse", "true");
   ASSERT_EQ(inputFormat_->Size(), outputFormat_->Size());
-  TypeSafeDo(Input, &Output);
+  Do(Input, &Output);
 }
 
 #include "tests/google/src/gtest_main.cc"

@@ -33,7 +33,7 @@ class SubbandEnergyTest : public SubbandEnergy, public testing::Test {
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
     SetInputFormat(format);
-    TypeSafeInitializeBuffers(Input, &Output);
+    InitializeBuffers(Input, &Output);
     Initialize();
   }
 };
@@ -51,7 +51,7 @@ float SumOfSquares(int max) {
 
 TEST_F(SubbandEnergyTest, Do) {
   ASSERT_EQ(6, outputFormat_->Size());
-  TypeSafeDo(Input, &Output);
+  Do(Input, &Output);
   float* output = Output[0]->Data.get();
   int quarter = Size / 8;
   ASSERT_EQF(SumOfSquares(quarter) / quarter, output[0]);

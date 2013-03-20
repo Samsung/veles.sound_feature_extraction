@@ -30,13 +30,13 @@ void RealToComplex::OnFormatChanged() {
   outputFormat_->SetSize(inputFormat_->Size() * 2);
 }
 
-void RealToComplex::TypeSafeInitializeBuffers(
+void RealToComplex::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), outputFormat_->Size());
 }
 
-void RealToComplex::TypeSafeDo(
+void RealToComplex::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {

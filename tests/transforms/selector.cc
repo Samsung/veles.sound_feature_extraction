@@ -34,18 +34,18 @@ class SelectorTest : public Selector, public testing::Test {
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
     SetInputFormat(format);
-    TypeSafeInitializeBuffers(Input, &Output);
+    InitializeBuffers(Input, &Output);
   }
 };
 
 TEST_F(SelectorTest, Do) {
   ASSERT_EQ(6, outputFormat_->Size());
-  TypeSafeDo(Input, &Output);
+  Do(Input, &Output);
   ASSERT_EQ(0, memcmp(Input[0]->Data.get(),
                       Output[0]->Data.get(),
                       6 * sizeof(float)));
   SetParameter("from", "right");
-  TypeSafeDo(Input, &Output);
+  Do(Input, &Output);
   ASSERT_EQ(0, memcmp(Input[0]->Data.get() + 512 - 6,
                       Output[0]->Data.get(),
                       6 * sizeof(float)));

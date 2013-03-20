@@ -33,7 +33,7 @@ class ComplexMagnitudeTest : public ComplexMagnitude, public testing::Test {
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
-    TypeSafeInitializeBuffers(Input, &Output);
+    InitializeBuffers(Input, &Output);
   }
 };
 
@@ -45,7 +45,7 @@ class ComplexMagnitudeTest : public ComplexMagnitude, public testing::Test {
 } while (0)
 
 TEST_F(ComplexMagnitudeTest, Do) {
-  TypeSafeDo(Input, &Output);
+  Do(Input, &Output);
   for (int i = 0; i < Size / 2; i++) {
     float m = Output[0]->Data.get()[i];
     float re = i * 2;

@@ -34,13 +34,13 @@ void RDFT::OnFormatChanged() {
   }
 }
 
-void RDFT::TypeSafeInitializeBuffers(
+void RDFT::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), outputFormat_->Size());
 }
 
-void RDFT::TypeSafeDo(
+void RDFT::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   int length = outputFormat_->Size();

@@ -65,7 +65,7 @@ void Window::Initialize() const noexcept {
   }
 }
 
-void Window::TypeSafeInitializeBuffers(
+void Window::InitializeBuffers(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Window16>* buffers) const noexcept {
   buffers->Initialize(in.Size() * outSizeEach_,
@@ -80,7 +80,7 @@ void Window::TypeSafeInitializeBuffers(
   }
 }
 
-void Window::TypeSafeDo(const BuffersBase<Formats::Raw16>& in,
+void Window::Do(const BuffersBase<Formats::Raw16>& in,
                         BuffersBase<Formats::Window16> *out)
 const noexcept {
   BuffersBase<Formats::Window16>& outref = *out;

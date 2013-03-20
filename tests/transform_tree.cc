@@ -41,12 +41,12 @@ class ParentTestTransform
   virtual void SetParameter(const std::string&, const std::string&) {
   }
 
-  virtual void TypeSafeInitializeBuffers(const BuffersBase<Raw16>&,
+  virtual void InitializeBuffers(const BuffersBase<Raw16>&,
                                         BuffersBase<ParentChunk>*)
   const noexcept {
   }
 
-  virtual void TypeSafeDo(const BuffersBase<Raw16>&, BuffersBase<ParentChunk> *)
+  virtual void Do(const BuffersBase<Raw16>&, BuffersBase<ParentChunk> *)
   const noexcept {
   }
 };
@@ -76,12 +76,12 @@ class ChildTestTransform
   virtual void SetParameter(const std::string&, const std::string&) {
   }
 
-  virtual void TypeSafeInitializeBuffers(const BuffersBase<ParentChunk>&,
+  virtual void InitializeBuffers(const BuffersBase<ParentChunk>&,
                                          BuffersBase<ChildChunk>*)
   const noexcept {
   }
 
-  virtual void TypeSafeDo(const BuffersBase<ParentChunk>&,
+  virtual void Do(const BuffersBase<ParentChunk>&,
                           BuffersBase<ChildChunk> *) const noexcept {
   }
 };

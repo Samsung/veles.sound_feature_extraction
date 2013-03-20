@@ -34,7 +34,7 @@ class LogTest : public Log, public testing::Test {
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
-    TypeSafeInitializeBuffers(Input, &Output);
+    InitializeBuffers(Input, &Output);
   }
 };
 
@@ -46,7 +46,7 @@ class LogTest : public Log, public testing::Test {
 } while (0)
 
 TEST_F(LogTest, Do) {
-  TypeSafeDo(Input, &Output);
+  Do(Input, &Output);
   for (int i = 0; i < Size; i++) {
     float log = Output[0]->Data.get()[i];
     float vlog = logf((i + Size / 2.0f) / Size);

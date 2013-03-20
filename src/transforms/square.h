@@ -34,11 +34,11 @@ class SquareRaw
  protected:
   virtual void OnInputFormatChanged();
 
-  virtual void TypeSafeInitializeBuffers(
+  virtual void InitializeBuffers(
       const BuffersBase<Formats::Raw16>& in,
       BuffersBase<Formats::Raw32>* buffers) const noexcept;
 
-  virtual void TypeSafeDo(const BuffersBase<Formats::Raw16>& in,
+  virtual void Do(const BuffersBase<Formats::Raw16>& in,
                           BuffersBase<Formats::Raw32>* out) const noexcept;
 };
 
@@ -55,11 +55,11 @@ class SquareWindow
   virtual bool HasInverse() const noexcept;
 
  protected:
-  virtual void TypeSafeInitializeBuffers(
+  virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
-  virtual void TypeSafeDo(const BuffersBase<Formats::WindowF>& in,
+  virtual void Do(const BuffersBase<Formats::WindowF>& in,
                           BuffersBase<Formats::WindowF>* out) const noexcept;
 };
 

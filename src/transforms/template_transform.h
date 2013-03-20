@@ -37,11 +37,11 @@ class TemplateTransform
  protected:
   virtual void SetParameter(const std::string& name, const std::string& value);
 
-  virtual void TypeSafeInitializeBuffers(
+  virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
-  virtual void TypeSafeDo(const BuffersBase<Formats::WindowF>& in,
+  virtual void Do(const BuffersBase<Formats::WindowF>& in,
                           BuffersBase<Formats::WindowF> *out) const noexcept;
 };
 

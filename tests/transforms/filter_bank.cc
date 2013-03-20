@@ -33,7 +33,7 @@ class FilterBankTest : public FilterBank, public testing::Test {
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
-    TypeSafeInitializeBuffers(Input, &Output);
+    InitializeBuffers(Input, &Output);
     Initialize();
   }
 };
@@ -46,7 +46,7 @@ class FilterBankTest : public FilterBank, public testing::Test {
 } while (0)
 
 TEST_F(FilterBankTest, Do) {
-  TypeSafeDo(Input, &Output);
+  Do(Input, &Output);
   for (int i = 0; i < Size; i++) {
     ASSERT_EQF(100 * filterBank_.get()[i], Output[0]->Data.get()[i]);
   }

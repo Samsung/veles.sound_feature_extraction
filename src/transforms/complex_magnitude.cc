@@ -33,13 +33,13 @@ void ComplexMagnitude::OnFormatChanged() {
   outputFormat_->SetSize(inputFormat_->Size() / 2);
 }
 
-void ComplexMagnitude::TypeSafeInitializeBuffers(
+void ComplexMagnitude::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), inputFormat_->Size() / 2);
 }
 
-void ComplexMagnitude::TypeSafeDo(
+void ComplexMagnitude::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {

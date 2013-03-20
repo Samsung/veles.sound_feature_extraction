@@ -29,7 +29,7 @@ void SquareRaw::OnInputFormatChanged() {
   outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
 }
 
-void SquareRaw::TypeSafeInitializeBuffers(
+void SquareRaw::InitializeBuffers(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw32>* buffers) const noexcept {
   buffers->Initialize(in.Size(), inputFormat_->Size()
@@ -39,7 +39,7 @@ void SquareRaw::TypeSafeInitializeBuffers(
                       );  // NOLINT(whitespace/parens)
 }
 
-void SquareRaw::TypeSafeDo(
+void SquareRaw::Do(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw32>* out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");
@@ -83,13 +83,13 @@ bool SquareWindow::HasInverse() const noexcept {
   return true;
 }
 
-void SquareWindow::TypeSafeInitializeBuffers(
+void SquareWindow::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), inputFormat_->Size());
 }
 
-void SquareWindow::TypeSafeDo(
+void SquareWindow::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");

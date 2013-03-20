@@ -45,10 +45,10 @@ class Window
 
   virtual void SetParameter(const std::string& name, const std::string& value);
 
-  virtual void TypeSafeInitializeBuffers(const BuffersBase<Formats::Raw16>& in,
+  virtual void InitializeBuffers(const BuffersBase<Formats::Raw16>& in,
         BuffersBase<Formats::Window16>* buffers) const noexcept;
 
-  virtual void TypeSafeDo(const BuffersBase<Formats::Raw16>& in,
+  virtual void Do(const BuffersBase<Formats::Raw16>& in,
                           BuffersBase<Formats::Window16> *out) const noexcept;
 
  private:

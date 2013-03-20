@@ -54,14 +54,14 @@ void FirFilterBase::SetParameter(const std::string& name,
   }
 }
 
-void FirFilterBase::TypeSafeInitializeBuffers(
+void FirFilterBase::InitializeBuffers(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw16>* buffers) const noexcept {
   buffers->Initialize(in.Size(), outputFormat_->Size(),
                       in[0]->AlignmentOffset());
 }
 
-void FirFilterBase::TypeSafeDo(const BuffersBase<Formats::Raw16>& in,
+void FirFilterBase::Do(const BuffersBase<Formats::Raw16>& in,
                                BuffersBase<Formats::Raw16> *out)
 const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {

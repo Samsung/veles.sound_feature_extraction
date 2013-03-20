@@ -29,7 +29,7 @@ class RawFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
         FormatConverterBase<FIN, FOUT>::inputFormat_->Size());
   }
 
-  virtual void TypeSafeInitializeBuffers(
+  virtual void InitializeBuffers(
       const BuffersBase<typename FIN::BufferType>& in,
       BuffersBase<typename FOUT::BufferType>* buffers) const noexcept {
     buffers->Initialize(in.Size(),

@@ -48,13 +48,13 @@ void Log::SetParameter(const std::string& name,
   }
 }
 
-void Log::TypeSafeInitializeBuffers(
+void Log::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), inputFormat_->Size());
 }
 
-void Log::TypeSafeDo(
+void Log::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");

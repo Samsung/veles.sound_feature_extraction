@@ -46,13 +46,13 @@ void Selector::OnFormatChanged() {
       std::min(length_, static_cast<int>(inputFormat_->Size())));
 }
 
-void Selector::TypeSafeInitializeBuffers(
+void Selector::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), outputFormat_->Size());
 }
 
-void Selector::TypeSafeDo(
+void Selector::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   int length = outputFormat_->Size();

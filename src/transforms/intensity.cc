@@ -22,13 +22,13 @@ Intensity::Intensity()
   :TransformBase(SupportedParameters()) {
 }
 
-void Intensity::TypeSafeInitializeBuffers(
+void Intensity::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<float>* buffers) const noexcept {
   buffers->Initialize(in.Size());
 }
 
-void Intensity::TypeSafeDo(
+void Intensity::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<float> *out) const noexcept {
   int length = inputFormat_->Size();

@@ -71,7 +71,7 @@ class TransformBase : public virtual Transform {
     auto buffers = std::make_shared<BuffersBase<typename FOUT::BufferType>>();
     auto tin = reinterpret_cast<const BuffersBase<  // NOLINT(*)
         typename FIN::BufferType>&>(in);
-    TypeSafeInitializeBuffers(tin, buffers.get());
+    InitializeBuffers(tin, buffers.get());
     return buffers;
   }
 
@@ -82,7 +82,7 @@ class TransformBase : public virtual Transform {
         typename FIN::BufferType>&>(in);
     auto tout = reinterpret_cast<BuffersBase<  // NOLINT(*)
         typename FOUT::BufferType>*>(out);
-    TypeSafeDo(tin, tout);
+    Do(tin, tout);
   }
 
   virtual void DoInverse(const Buffers& in, Buffers* out) const noexcept {
@@ -90,7 +90,7 @@ class TransformBase : public virtual Transform {
         typename FOUT::BufferType>&>(in);
     auto tout = reinterpret_cast<BuffersBase<  // NOLINT(*)
         typename FIN::BufferType>*>(out);
-    TypeSafeDoInverse(tin, tout);
+    DoInverse(tin, tout);
   }
 
  protected:
@@ -104,15 +104,15 @@ class TransformBase : public virtual Transform {
                             const std::string& value UNUSED) {
   }
 
-  virtual void TypeSafeInitializeBuffers(
+  virtual void InitializeBuffers(
       const BuffersBase<typename FIN::BufferType>& in,
       BuffersBase<typename FOUT::BufferType>* buffers) const noexcept = 0;
 
-  virtual void TypeSafeDo(const BuffersBase<typename FIN::BufferType>& in,
+  virtual void Do(const BuffersBase<typename FIN::BufferType>& in,
                           BuffersBase<typename FOUT::BufferType>* out)
   const noexcept = 0;
 
-  virtual void TypeSafeDoInverse(
+  virtual void DoInverse(
       const BuffersBase<typename FOUT::BufferType>& in UNUSED,
       BuffersBase<typename FIN::BufferType>* out UNUSED) const {
     std::unexpected();

@@ -24,14 +24,14 @@ namespace Formats {
 class Int32ToInt16Raw
     : public RawFormatConverterBase<RawFormat32, RawFormat16> {
  protected:
-  virtual void TypeSafeDo(const BuffersBase<Raw32>& in,
+  virtual void Do(const BuffersBase<Raw32>& in,
                           BuffersBase<Raw16> *out) const noexcept;
 };
 
 class Int32ToInt16Window
     : public WindowFormatConverterBase<WindowFormat32, WindowFormat16> {
  protected:
-  virtual void TypeSafeDo(const BuffersBase<Window32>& in,
+  virtual void Do(const BuffersBase<Window32>& in,
                           BuffersBase<Window16> *out) const noexcept;
 };
 

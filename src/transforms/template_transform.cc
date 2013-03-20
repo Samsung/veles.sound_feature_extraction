@@ -27,12 +27,12 @@ void TemplateTransform::SetParameter(const std::string& name,
                                      const std::string& value) {
 }
 
-void TemplateTransform::TypeSafeInitializeBuffers(
+void TemplateTransform::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
 }
 
-void TemplateTransform::TypeSafeDo(
+void TemplateTransform::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
 }

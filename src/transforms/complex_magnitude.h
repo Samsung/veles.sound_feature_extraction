@@ -34,12 +34,12 @@ class ComplexMagnitude
  protected:
   virtual void OnFormatChanged();
 
-  virtual void TypeSafeInitializeBuffers(
+  virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<Formats::WindowF>* buffers)
   const noexcept;
 
-  virtual void TypeSafeDo(const BuffersBase<Formats::WindowF>& in,
+  virtual void Do(const BuffersBase<Formats::WindowF>& in,
                           BuffersBase<Formats::WindowF> *out) const noexcept;
 };
 

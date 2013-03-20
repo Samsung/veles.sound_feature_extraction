@@ -49,7 +49,7 @@ void DWPT::OnFormatChanged() {
                                     inputFormat_->Size());
 }
 
-void DWPT::TypeSafeInitializeBuffers(
+void DWPT::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), inputFormat_->Size());
@@ -60,7 +60,7 @@ void DWPT::Initialize() const noexcept {
       waveletType_, waveletOrder_, treeFingerprint_);
 }
 
-void DWPT::TypeSafeDo(
+void DWPT::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");

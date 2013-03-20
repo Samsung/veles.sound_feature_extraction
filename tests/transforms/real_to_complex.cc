@@ -32,12 +32,12 @@ class RealToComplexTest : public RealToComplex, public testing::Test {
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     format->SetAllocatedSize(Size * 2);
     SetInputFormat(format);
-    TypeSafeInitializeBuffers(Input, &Output);
+    InitializeBuffers(Input, &Output);
   }
 };
 
 TEST_F(RealToComplexTest, Do) {
-  TypeSafeDo(Input, &Output);
+  Do(Input, &Output);
   for (int i = 0; i < Size; i++) {
     ASSERT_EQ(i, Output[0]->Data.get()[i * 2]);
   }

@@ -28,13 +28,13 @@ void UnpackRDFT::OnFormatChanged() {
   }
 }
 
-void UnpackRDFT::TypeSafeInitializeBuffers(
+void UnpackRDFT::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), outputFormat_->Size());
 }
 
-void UnpackRDFT::TypeSafeDo(
+void UnpackRDFT::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF> *out) const noexcept {
   bool realMode = inputFormat_->Size() % 2 == 1;

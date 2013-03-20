@@ -34,7 +34,7 @@ class EnergyTest
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
-    TypeSafeInitializeBuffers(Input, &Output);
+    InitializeBuffers(Input, &Output);
   }
 };
 
@@ -46,7 +46,7 @@ class EnergyTest
 } while (0)
 
 TEST_F(EnergyTest, Do) {
-  TypeSafeDo(Input, &Output);
+  Do(Input, &Output);
   for (int i = 0; i < Size / 2; i++) {
     float m = Output[0]->Data.get()[i];
     float re = i * 2;
