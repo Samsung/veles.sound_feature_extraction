@@ -23,8 +23,6 @@ namespace Transforms {
 class UnpackRDFT
     : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
-  UnpackRDFT();
-
   TRANSFORM_INTRO("UnpackRDFT", "Unpacks the result after applying RDFT.")
 
   TRANSFORM_PARAMETERS()
@@ -37,7 +35,7 @@ class UnpackRDFT
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                          BuffersBase<Formats::WindowF> *out) const noexcept;
+                  BuffersBase<Formats::WindowF>* out) const noexcept;
 };
 
 }  // namespace Transforms

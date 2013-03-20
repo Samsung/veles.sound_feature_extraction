@@ -18,10 +18,6 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-DCT::DCT()
-  : UniformFormatTransform(SupportedParameters()) {
-}
-
 bool DCT::HasInverse() const noexcept {
   return true;
 }
@@ -34,7 +30,7 @@ void DCT::InitializeBuffers(
 
 void DCT::Do(
     const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF> *out) const noexcept {
+    BuffersBase<Formats::WindowF>* out) const noexcept {
   int length = outputFormat_->Size();
   std::vector<float*> inputs(in.Size()), outputs(in.Size());
   for (size_t i = 0; i < in.Size(); i++) {

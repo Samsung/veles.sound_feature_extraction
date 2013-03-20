@@ -26,20 +26,14 @@ namespace Transforms {
 class FirFilterBase
     : public UniformFormatTransform<Formats::RawFormat16> {
  public:
-  FirFilterBase(const std::unordered_map<std::string, ParameterTraits>&
-                supportedParameters) noexcept;
+  FirFilterBase() noexcept;
 
   virtual void Initialize() const noexcept;
 
  protected:
   int length_;
 
-  virtual void SetFilterParameter(const std::string& name,
-                                  const std::string& value) = 0;
-
   virtual void CalculateFilter(float* filter) const noexcept = 0;
-
-  virtual void SetParameter(const std::string& name, const std::string& value);
 
   virtual void InitializeBuffers(
       const BuffersBase<Formats::Raw16>& in,

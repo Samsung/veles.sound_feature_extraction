@@ -13,16 +13,17 @@
 #include <gtest/gtest.h>
 #include "src/parameters.h"
 
-using SpeechFeatureExtraction::Parameters::Parse;
-using SpeechFeatureExtraction::Parameters::ParseParametersException;
+using SpeechFeatureExtraction::IParameterizable;
+using SpeechFeatureExtraction::ParseParametersException;
 
 TEST(Parameters, EmptyParse) {
-  auto pp = Parse("");
+  auto pp = IParameterizable::Parse("");
   ASSERT_EQ(0, pp.size());
 }
 
 TEST(Parameters, Parse) {
-  auto pp = Parse("one=56, two = some extra , \t three with spaces= xxx ");
+  auto pp = IParameterizable::Parse(
+      "one=56, two = some extra , \t three with spaces= xxx ");
   ASSERT_EQ(3, pp.size());
   int size = 0;
   for (auto ppr : pp) {
@@ -42,7 +43,7 @@ TEST(Parameters, Parse) {
 
 TEST(Parameters, InvalidParse) {
   ASSERT_THROW({
-    auto pp = Parse("256");
+    auto pp = IParameterizable::Parse("256");
   }, ParseParametersException);
 }
 

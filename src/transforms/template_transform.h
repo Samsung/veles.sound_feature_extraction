@@ -42,7 +42,7 @@ class TemplateTransform
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                          BuffersBase<Formats::WindowF> *out) const noexcept;
+                  BuffersBase<Formats::WindowF>* out) const noexcept;
 };
 
 }  // namespace Transforms

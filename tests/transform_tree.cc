@@ -30,8 +30,6 @@ class ParentTestFormat : public BufferFormatBase<ParentChunk> {
 class ParentTestTransform
     : public TransformBase<RawFormat16, ParentTestFormat> {
  public:
-  ParentTestTransform() : TransformBase(SupportedParameters()) {}
-
   TRANSFORM_INTRO("ParentTest", "")
 
   TRANSFORM_PARAMETERS(TP("AmplifyFactor", "Volume amplification factor",
@@ -64,8 +62,6 @@ class ChildTestFormat : public BufferFormatBase<ChildChunk> {
 class ChildTestTransform
     : public TransformBase<ParentTestFormat, ChildTestFormat> {
  public:
-  ChildTestTransform() : TransformBase(SupportedParameters()) {}
-
   TRANSFORM_INTRO("ChildTest", "")
 
   TRANSFORM_PARAMETERS(

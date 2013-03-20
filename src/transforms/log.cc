@@ -28,24 +28,19 @@ const std::unordered_map<std::string, Log::LogBase> Log::LogBaseMap {
   { "10", LOG_BASE_10 }
 };
 
-Log::Log()
-: UniformFormatTransform(SupportedParameters())
-, base_(LOG_BASE_E) {
+Log::Log() : base_(LOG_BASE_E) {
+  RegisterSetter("base", [&](const std::string& value) {
+    auto lbit = LogBaseMap.find(value);
+    if (lbit == LogBaseMap.end()) {
+      return false;
+    }
+    base_ = lbit->second;
+    return true;
+  });
 }
 
 bool Log::HasInverse() const noexcept {
   return true;
-}
-
-void Log::SetParameter(const std::string& name,
-                       const std::string& value) {
-  if (name == "base") {
-    auto lbit = LogBaseMap.find(value);
-    if (lbit == LogBaseMap.end()) {
-      throw InvalidParameterValueException(name, value, Name());
-    }
-    base_ = lbit->second;
-  }
 }
 
 void Log::InitializeBuffers(
@@ -56,7 +51,7 @@ void Log::InitializeBuffers(
 
 void Log::Do(
     const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF> *out) const noexcept {
+    BuffersBase<Formats::WindowF>* out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i]->Data.get();

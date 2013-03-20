@@ -19,41 +19,41 @@ namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 Window::Window()
-: TransformBase(SupportedParameters())
-, step_(0)
-, type_(WINDOW_TYPE_HAMMING)
-, outSizeEach_(0)
-, inDataStep_(0) {
+  : step_(0),
+    type_(WINDOW_TYPE_HAMMING),
+    outSizeEach_(0),
+    inDataStep_(0) {
+  RegisterSetter("length", [&](const std::string& value) {
+    int pv = Parse<int>("length", value);
+    if (pv < MIN_WINDOW_DURATION || pv > MAX_WINDOW_DURATION) {
+      return false;
+    }
+    outputFormat_->SetAllocatedSize(pv * outputFormat_->SamplingRate() / 1000);
+    outputFormat_->SetDuration(pv);
+    return true;
+  });
+  RegisterSetter("step", [&](const std::string& value) {
+    int pv = Parse<int>("step", value);
+    if (pv < MIN_WINDOW_STEP || pv > MAX_WINDOW_STEP) {
+      return false;
+    }
+    step_ = pv;
+    return true;
+  });
+  RegisterSetter("window", [&](const std::string& value) {
+    auto wti = WindowTypeMap.find(value);
+    if (wti == WindowTypeMap.end()) {
+      return false;
+    }
+    type_ = wti->second;
+    return true;
+  });
 }
 
 void Window::OnInputFormatChanged() {
   outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
   // Allocate 2 extra samples to use zero-copy FFT
   outputFormat_->SetAllocatedSize(outputFormat_->Size() + 2);
-}
-
-void Window::SetParameter(const std::string& name,
-                          const std::string& value) {
-  if (name == "length") {
-    int pv = Parse<int>(name, value);
-    if (pv < MIN_WINDOW_DURATION || pv > MAX_WINDOW_DURATION) {
-      throw InvalidParameterValueException(name, value, Name());
-    }
-    outputFormat_->SetAllocatedSize(pv * outputFormat_->SamplingRate() / 1000);
-    outputFormat_->SetDuration(pv);
-  } else if (name == "step") {
-    int pv = Parse<int>(name, value);
-    if (pv < MIN_WINDOW_STEP || pv > MAX_WINDOW_STEP) {
-      throw InvalidParameterValueException(name, value, Name());
-    }
-    step_ = pv;
-  } else if (name == "window") {
-    auto wti = WindowTypeMap.find(value);
-    if (wti == WindowTypeMap.end()) {
-      throw InvalidParameterValueException(name, value, Name());
-    }
-    type_ = wti->second;
-  }
 }
 
 void Window::Initialize() const noexcept {

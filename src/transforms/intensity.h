@@ -24,8 +24,6 @@ namespace Transforms {
 class Intensity
     : public TransformBase<Formats::WindowFormatF, Formats::SingleFormat> {
  public:
-  Intensity();
-
   TRANSFORM_INTRO("Intensity", "Unnormalized sound intensity calculation.")
 
   TRANSFORM_PARAMETERS()

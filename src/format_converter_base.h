@@ -23,9 +23,6 @@ template <typename FIN, typename FOUT>
 class FormatConverterBase
     : public FormatConverter, public TransformBase<FIN, FOUT> {
  public:
-  FormatConverterBase() : TransformBase<FIN, FOUT>(SupportedParameters()) {
-  }
-
   virtual void SetInputFormat(const std::shared_ptr<BufferFormat>& format) {
     TransformBase<FIN, FOUT>::SetInputFormat(format);
   }

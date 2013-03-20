@@ -22,8 +22,6 @@ namespace Transforms {
 class ComplexMagnitude
     : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
-  ComplexMagnitude();
-
   TRANSFORM_INTRO("ComplexMagnitude",
                   "Calculates the magnitude of each complex number, that is, "
                   " a square root of the sum of squared real and imaginary "
@@ -40,7 +38,7 @@ class ComplexMagnitude
   const noexcept;
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                          BuffersBase<Formats::WindowF> *out) const noexcept;
+                  BuffersBase<Formats::WindowF>* out) const noexcept;
 };
 
 }  // namespace Transforms

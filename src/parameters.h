@@ -20,13 +20,6 @@
 
 namespace SpeechFeatureExtraction {
 
-struct ParameterTraits {
-  std::string Description;
-  std::string DefaultValue;
-};
-
-namespace Parameters {
-
 class ParseParametersException : public ExceptionBase {
  public:
   ParseParametersException(const std::string& text, int column)
@@ -34,12 +27,14 @@ class ParseParametersException : public ExceptionBase {
                     ": \"..." + text.substr(column, 20) +
                     (static_cast<size_t>(column) + 10 >= text.size()?
                         "\"." : "...\" .")
-                  ) {}
+                  ) {
+  }
 };
 
-std::unordered_map<std::string, std::string> Parse(const std::string& line);
-
-}  // namespace Parameters
+struct ParameterTraits {
+  std::string Description;
+  std::string DefaultValue;
+};
 
 class IParameterizable {
  public:
@@ -53,6 +48,9 @@ class IParameterizable {
 
   virtual void SetParameters(
       const std::unordered_map<std::string, std::string>& parameters) = 0;
+
+  static std::unordered_map<std::string, std::string> Parse(
+      const std::string& line);
 };
 
 }  // namespace SpeechFeatureExtraction

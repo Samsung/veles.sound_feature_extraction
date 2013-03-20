@@ -23,8 +23,6 @@ namespace Transforms {
 class SquareRaw
     : public TransformBase<Formats::RawFormat16, Formats::RawFormat32> {
  public:
-  SquareRaw();
-
   TRANSFORM_INTRO("Square", "Squares the signal (raw format).")
 
   TRANSFORM_PARAMETERS()
@@ -45,8 +43,6 @@ class SquareRaw
 class SquareWindow
     : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
-  SquareWindow();
-
   TRANSFORM_INTRO("Square", "Squares the signal (window floating point "
                             "format).")
 

@@ -19,8 +19,15 @@ namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 HighpassFilter::HighpassFilter() noexcept
-    : FirFilterBase(SupportedParameters()),
-      frequency_(DEFAULT_FILTER_HIGH_FREQUENCY) {
+    : frequency_(DEFAULT_FILTER_HIGH_FREQUENCY) {
+  RegisterSetter("frequency", [&](const std::string& value) {
+    int pv = Parse<int>("frequency", value);
+    if (pv < MIN_FILTER_FREQUENCY || pv > MAX_FILTER_FREQUENCY) {
+      return false;
+    }
+    frequency_ = pv;
+    return true;
+  });
 }
 
 void HighpassFilter::CalculateFilter(float* filter) const noexcept {
@@ -34,17 +41,6 @@ void HighpassFilter::CalculateFilter(float* filter) const noexcept {
       h = - 2.0f * frequency_ / samplingRate;
     }
     filter[n] *= h;
-  }
-}
-
-void HighpassFilter::SetFilterParameter(const std::string& name,
-                                 const std::string& value) {
-  if (name == "frequency") {
-    int pv = Parse<int>(name, value);
-    if (pv < MIN_FILTER_FREQUENCY || pv > MAX_FILTER_FREQUENCY) {
-      throw InvalidParameterValueException(name, value, Name());
-    }
-    frequency_ = pv;
   }
 }
 

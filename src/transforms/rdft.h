@@ -22,8 +22,6 @@ namespace Transforms {
 class RDFT
     : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
-  RDFT();
-
   TRANSFORM_INTRO("RDFT", "Performs Discrete Fourier Transform "
                          "on the input signal (using real FFT).")
 
@@ -39,7 +37,7 @@ class RDFT
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                          BuffersBase<Formats::WindowF> *out) const noexcept;
+                  BuffersBase<Formats::WindowF>* out) const noexcept;
 };
 
 }  // namespace Transforms

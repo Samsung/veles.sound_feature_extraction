@@ -28,16 +28,12 @@ using Primitives::WaveletFilterBank;
 namespace Transforms {
 
 SubbandEnergy::SubbandEnergy()
-: UniformFormatTransform(SupportedParameters()),
-  treeFingerprint_({ 3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+: treeFingerprint_({ 3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
                      6, 6, 6, 6, 6, 6, 6, 6 }) {
-}
-
-void SubbandEnergy::SetParameter(const std::string& name,
-                                 const std::string& value) {
-  if (name == "tree") {
+  RegisterSetter("tree", [&](const std::string& value) {
     treeFingerprint_ = WaveletFilterBank::ParseDescription(value);
-  }
+    return true;
+  });
 }
 
 void SubbandEnergy::OnFormatChanged() {
@@ -64,7 +60,7 @@ void SubbandEnergy::InitializeBuffers(
 
 void SubbandEnergy::Do(
     const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF> *out) const noexcept {
+    BuffersBase<Formats::WindowF>* out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();

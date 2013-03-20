@@ -43,8 +43,6 @@ class SubbandEnergy
   virtual void Initialize() const noexcept;
 
  protected:
-  virtual void SetParameter(const std::string& name, const std::string& value);
-
   virtual void OnFormatChanged();
 
   virtual void InitializeBuffers(
@@ -53,7 +51,7 @@ class SubbandEnergy
   const noexcept;
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                          BuffersBase<Formats::WindowF>* out) const noexcept;
+                  BuffersBase<Formats::WindowF>* out) const noexcept;
 
  private:
   std::vector<int> treeFingerprint_;

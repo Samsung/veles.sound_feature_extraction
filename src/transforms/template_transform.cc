@@ -34,7 +34,7 @@ void TemplateTransform::InitializeBuffers(
 
 void TemplateTransform::Do(
     const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF> *out) const noexcept {
+    BuffersBase<Formats::WindowF>* out) const noexcept {
 }
 
 REGISTER_TRANSFORM(TemplateTransform);

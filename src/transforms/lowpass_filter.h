@@ -33,9 +33,6 @@ class LowpassFilter : public FirFilterBase {
   )
 
  protected:
-  virtual void SetFilterParameter(const std::string& name,
-                                  const std::string& value);
-
   virtual void CalculateFilter(float *filter) const noexcept;
 
  private:

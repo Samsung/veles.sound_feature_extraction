@@ -32,7 +32,7 @@ class Int32ToFloatWindow
     : public WindowFormatConverterBase<WindowFormat32, WindowFormatF> {
  protected:
   virtual void Do(const BuffersBase<Window32>& in,
-                          BuffersBase<WindowF> *out) const noexcept;
+                          BuffersBase<WindowF>* out) const noexcept;
 };
 
 }  // namespace Formats

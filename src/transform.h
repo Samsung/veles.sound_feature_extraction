@@ -22,24 +22,7 @@
 
 namespace SpeechFeatureExtraction {
 
-class InvalidParameterNameException : public ExceptionBase {
- public:
-  InvalidParameterNameException(const std::string& name,
-                                const std::string& transformName)
-  : ExceptionBase("There is no \"" + name + "\" parameter in " +
-                  transformName + " supported parameters list.") {}
-};
-
-class InvalidParameterValueException : public ExceptionBase {
- public:
-  InvalidParameterValueException(const std::string& name,
-                                 const std::string& value,
-                                 const std::string& transformName)
-  : ExceptionBase("Parameter \"" + name + "\" is set to an invalid value \"" +
-                  value + "\" for transform " + transformName + ".") {}
-};
-
-class Transform : public IParameterizable {
+class Transform : public virtual IParameterizable {
  public:
   virtual ~Transform() {}
 

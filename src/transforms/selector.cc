@@ -17,28 +17,26 @@ namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 Selector::Selector()
-  : UniformFormatTransform(SupportedParameters()),
-    length_(12),
+  : length_(12),
     from_(ANCHOR_RIGHT) {
-}
-
-void Selector::SetParameter(const std::string& name,
-                            const std::string& value) {
-  if (name == "length") {
-    int length = Parse<int>(name, value);
+  RegisterSetter("length", [&](const std::string& value) {
+    int length = Parse<int>("length", value);
     if (length < 1) {
-      throw InvalidParameterValueException(name, value, Name());
+      return false;
     }
     length_ = length;
-  } else if (name == "from") {
+    return true;
+  });
+  RegisterSetter("from", [&](const std::string& value) {
     if (value == "left") {
       from_ = ANCHOR_LEFT;
     } else if (value == "right") {
       from_ = ANCHOR_RIGHT;
     } else {
-      throw InvalidParameterValueException(name, value, Name());
+      return false;
     }
-  }
+    return true;
+  });
 }
 
 void Selector::OnFormatChanged() {
@@ -54,7 +52,7 @@ void Selector::InitializeBuffers(
 
 void Selector::Do(
     const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF> *out) const noexcept {
+    BuffersBase<Formats::WindowF>* out) const noexcept {
   int length = outputFormat_->Size();
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i]->Data.get();

@@ -18,12 +18,25 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-FirFilterBase::FirFilterBase(
-    const std::unordered_map<std::string, ParameterTraits>&
-    supportedParameters) noexcept
-: UniformFormatTransform(supportedParameters)
-, length_(DEFAULT_FILTER_LENGTH)
-, windowType_(WINDOW_TYPE_HAMMING) {
+FirFilterBase::FirFilterBase() noexcept
+: length_(DEFAULT_FILTER_LENGTH),
+  windowType_(WINDOW_TYPE_HAMMING) {
+  RegisterSetter("length", [&](const std::string& value) {
+    int pv = Parse<int>("length", value);
+    if (pv < MIN_FILTER_LENGTH || pv > MAX_FILTER_LENGTH) {
+      return false;
+    }
+    length_ = pv;
+    return true;
+  });
+  RegisterSetter("window", [&](const std::string& value) {
+    auto wti = WindowTypeMap.find(value);
+    if (wti == WindowTypeMap.end()) {
+      return false;
+    }
+    windowType_ = wti->second;
+    return true;
+  });
 }
 
 void FirFilterBase::Initialize() const noexcept {
@@ -33,25 +46,6 @@ void FirFilterBase::Initialize() const noexcept {
   }
   CalculateFilter(&filter_[0]);
   dataBuffer_.resize(inputFormat_->Size());
-}
-
-void FirFilterBase::SetParameter(const std::string& name,
-                                 const std::string& value) {
-  if (name == "length") {
-    int pv = Parse<int>(name, value);
-    if (pv < MIN_FILTER_LENGTH || pv > MAX_FILTER_LENGTH) {
-      throw InvalidParameterValueException(name, value, Name());
-    }
-    length_ = pv;
-  } else if (name == "window") {
-    auto wti = WindowTypeMap.find(value);
-    if (wti == WindowTypeMap.end()) {
-      throw InvalidParameterValueException(name, value, Name());
-    }
-    windowType_ = wti->second;
-  } else {
-    SetFilterParameter(name, value);
-  }
 }
 
 void FirFilterBase::InitializeBuffers(

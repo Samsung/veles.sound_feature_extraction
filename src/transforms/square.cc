@@ -16,10 +16,6 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-SquareRaw::SquareRaw()
-: TransformBase(SupportedParameters()) {
-}
-
 bool SquareRaw::HasInverse() const noexcept {
   return true;
 }
@@ -73,10 +69,6 @@ void SquareRaw::Do(
     }
 #endif
   }
-}
-
-SquareWindow::SquareWindow()
-: UniformFormatTransform(SupportedParameters()) {
 }
 
 bool SquareWindow::HasInverse() const noexcept {

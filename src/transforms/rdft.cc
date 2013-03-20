@@ -18,10 +18,6 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-RDFT::RDFT()
-: UniformFormatTransform(SupportedParameters()) {
-}
-
 bool RDFT::HasInverse() const noexcept {
   return true;
 }
@@ -42,7 +38,7 @@ void RDFT::InitializeBuffers(
 
 void RDFT::Do(
     const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF> *out) const noexcept {
+    BuffersBase<Formats::WindowF>* out) const noexcept {
   int length = outputFormat_->Size();
   if (!IsInverse()) {
     length -= 2;

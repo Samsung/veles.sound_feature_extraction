@@ -22,12 +22,6 @@ namespace SpeechFeatureExtraction {
 template <typename F>
 class UniformFormatTransform : public TransformBase<F, F> {
  public:
-  UniformFormatTransform(
-      const std::unordered_map<std::string, ParameterTraits>&
-        supportedParameters)
-  : TransformBase<F, F>(supportedParameters) {
-  }
-
   virtual ~UniformFormatTransform() {}
 
  protected:

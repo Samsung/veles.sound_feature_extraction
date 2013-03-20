@@ -16,10 +16,6 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-UnpackRDFT::UnpackRDFT()
-  : UniformFormatTransform(SupportedParameters()) {
-}
-
 void UnpackRDFT::OnFormatChanged() {
   if (inputFormat_->Size() % 2 == 1) {
     outputFormat_->SetSize((inputFormat_->Size() - 1) * 2);
@@ -36,7 +32,7 @@ void UnpackRDFT::InitializeBuffers(
 
 void UnpackRDFT::Do(
     const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF> *out) const noexcept {
+    BuffersBase<Formats::WindowF>* out) const noexcept {
   bool realMode = inputFormat_->Size() % 2 == 1;
   size_t offset = inputFormat_->Size();
   size_t length = outputFormat_->Size() - offset;

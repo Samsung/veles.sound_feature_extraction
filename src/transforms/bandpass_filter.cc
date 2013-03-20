@@ -19,9 +19,24 @@ namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 BandpassFilter::BandpassFilter() noexcept
-    : FirFilterBase(SupportedParameters()),
-      frequencyHigh_(DEFAULT_FILTER_HIGH_FREQUENCY),
+    : frequencyHigh_(DEFAULT_FILTER_HIGH_FREQUENCY),
       frequencyLow_(DEFAULT_FILTER_LOW_FREQUENCY) {
+  RegisterSetter("frequency_high", [&](const std::string& value) {
+    int pv = Parse<int>("frequency_high", value);
+    if (pv < MIN_FILTER_FREQUENCY || pv > MAX_FILTER_FREQUENCY) {
+      return false;
+    }
+    frequencyHigh_ = pv;
+    return true;
+  });
+  RegisterSetter("frequency_low", [&](const std::string& value) {
+    int pv = Parse<int>("frequency_low", value);
+    if (pv < MIN_FILTER_FREQUENCY || pv > MAX_FILTER_FREQUENCY) {
+      return false;
+    }
+    frequencyLow_ = pv;
+    return true;
+  });
 }
 
 void BandpassFilter::CalculateFilter(float *filter) const noexcept {
@@ -38,23 +53,6 @@ void BandpassFilter::CalculateFilter(float *filter) const noexcept {
       h = 2.0f * (frequencyHigh_ - frequencyLow_) / samplingRate;
     }
     filter[n] *= h;
-  }
-}
-
-void BandpassFilter::SetFilterParameter(const std::string& name,
-                                        const std::string& value) {
-  if (name == "frequency_high") {
-    int pv = Parse<int>(name, value);
-    if (pv < MIN_FILTER_FREQUENCY || pv > MAX_FILTER_FREQUENCY) {
-      throw InvalidParameterValueException(name, value, Name());
-    }
-    frequencyHigh_ = pv;
-  } else if (name == "frequency_low") {
-    int pv = Parse<int>(name, value);
-    if (pv < MIN_FILTER_FREQUENCY || pv > MAX_FILTER_FREQUENCY) {
-      throw InvalidParameterValueException(name, value, Name());
-    }
-    frequencyLow_ = pv;
   }
 }
 

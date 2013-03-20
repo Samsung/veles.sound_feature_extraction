@@ -77,8 +77,6 @@ class DWPT
   virtual bool HasInverse() const noexcept;
 
  protected:
-  virtual void SetParameter(const std::string& name, const std::string& value);
-
   virtual void OnFormatChanged();
 
   virtual void InitializeBuffers(
@@ -86,7 +84,7 @@ class DWPT
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                          BuffersBase<Formats::WindowF> *out) const noexcept;
+                  BuffersBase<Formats::WindowF>* out) const noexcept;
 
  private:
   std::vector<int> treeFingerprint_;

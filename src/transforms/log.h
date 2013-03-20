@@ -44,16 +44,13 @@ class Log
 
   LogBase base_;
 
-  virtual void SetParameter(const std::string& name,
-                            const std::string& value);
-
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<Formats::WindowF>* buffers)
   const noexcept;
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                          BuffersBase<Formats::WindowF> *out) const noexcept;
+                  BuffersBase<Formats::WindowF>* out) const noexcept;
 };
 
 }  // namespace Transforms

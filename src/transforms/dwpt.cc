@@ -21,27 +21,28 @@ using Primitives::WaveletFilterBank;
 namespace Transforms {
 
 DWPT::DWPT()
-  : UniformFormatTransform(SupportedParameters()),
-    treeFingerprint_({ 3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+  : treeFingerprint_({ 3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
                        6, 6, 6, 6, 6, 6, 6, 6 }),
     waveletType_(WAVELET_TYPE_DAUBECHIES),
     waveletOrder_(DEFAULT_WAVELET_ORDER) {
+  RegisterSetter("tree", [&](const std::string& value) {
+    treeFingerprint_ = WaveletFilterBank::ParseDescription(value);
+    return true;
+  });
+  RegisterSetter("type", [&](const std::string& value) {
+    waveletType_ = WaveletFilterBank::ParseWaveletType(value);
+    return true;
+  });
+  RegisterSetter("order", [&](const std::string& value) {
+    int order = Parse<int>("order", value);
+    WaveletFilterBank::ValidateOrder(waveletType_, order);
+    waveletOrder_ = order;
+    return true;
+  });
 }
 
 bool DWPT::HasInverse() const noexcept {
   return true;
-}
-
-void DWPT::SetParameter(const std::string& name, const std::string& value) {
-  if (name == "tree") {
-    treeFingerprint_ = WaveletFilterBank::ParseDescription(value);
-  } else if (name == "type") {
-    waveletType_ = WaveletFilterBank::ParseWaveletType(value);
-  } else if (name == "order") {
-    int order = Parse<int>(name, value);
-    WaveletFilterBank::ValidateOrder(waveletType_, order);
-    waveletOrder_ = order;
-  }
 }
 
 void DWPT::OnFormatChanged() {
@@ -62,7 +63,7 @@ void DWPT::Initialize() const noexcept {
 
 void DWPT::Do(
     const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF> *out) const noexcept {
+    BuffersBase<Formats::WindowF>* out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");
   assert(filterBank_ != nullptr && "Initialize() was not called");
   size_t length = inputFormat_->Size();

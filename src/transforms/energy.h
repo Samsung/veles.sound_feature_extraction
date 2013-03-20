@@ -22,8 +22,6 @@ namespace Transforms {
 class Energy
     : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
-  Energy();
-
   TRANSFORM_INTRO("Energy",
                   "Calculates the squared magnitude of each complex number, "
                   "that is, the sum of squared real and imaginary parts.")
@@ -39,7 +37,7 @@ class Energy
   const noexcept;
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                          BuffersBase<Formats::WindowF> *out) const noexcept;
+                  BuffersBase<Formats::WindowF>* out) const noexcept;
 };
 
 }  // namespace Transforms

@@ -15,21 +15,19 @@
 
 #include <assert.h>
 #include <string>
-#include "src/transform_registry.h"
 #include "src/buffers_base.h"
+#include "src/parameters_base.h"
+#include "src/transform_registry.h"
 
 namespace SpeechFeatureExtraction {
 
 template <typename FIN, typename FOUT>
-class TransformBase : public virtual Transform {
+class TransformBase : public virtual Transform,
+                      public virtual ParameterizableBase {
  public:
-  TransformBase(const std::unordered_map<std::string, ParameterTraits>&
-                supportedParameters) noexcept
+  TransformBase() noexcept
       : inputFormat_(std::make_shared<FIN>()),
         outputFormat_(std::make_shared<FOUT>()) {
-    for (auto p : supportedParameters) {
-      parameters_.insert(std::make_pair(p.first, p.second.DefaultValue));
-    }
   }
 
   virtual ~TransformBase() {}
@@ -47,30 +45,14 @@ class TransformBase : public virtual Transform {
     return std::static_pointer_cast<BufferFormat>(outputFormat_);
   }
 
-  virtual const std::unordered_map<std::string, std::string>&
-  GetParameters() const noexcept {
-    return parameters_;
-  }
-
-  virtual void SetParameters(
-      const std::unordered_map<std::string, std::string>& parameters) {
-    for (auto p : parameters) {
-      if (parameters_.find(p.first) == parameters_.end()) {
-        throw InvalidParameterNameException(p.first, Name());
-      }
-      parameters_[p.first] = p.second;
-      SetParameter(p.first, p.second);
-    }
-  }
-
   virtual void Initialize() const noexcept {
   }
 
-  virtual std::shared_ptr<Buffers> CreateOutputBuffers(const Buffers& in) const noexcept {
+  virtual std::shared_ptr<Buffers> CreateOutputBuffers(
+      const Buffers& in) const noexcept {
     assert(*in.Format() == *inputFormat_);
-    auto buffers = std::make_shared<BuffersBase<typename FOUT::BufferType>>();
-    auto tin = reinterpret_cast<const BuffersBase<  // NOLINT(*)
-        typename FIN::BufferType>&>(in);
+    auto buffers = std::make_shared<OutBuffers>();
+    auto tin = reinterpret_cast<const InBuffers&>(in);
     InitializeBuffers(tin, buffers.get());
     return buffers;
   }
@@ -78,18 +60,14 @@ class TransformBase : public virtual Transform {
   virtual void Do(const Buffers& in, Buffers* out) const noexcept {
     assert(*in.Format() == *inputFormat_);
     assert(*out->Format() == *outputFormat_);
-    auto tin = reinterpret_cast<const BuffersBase<  // NOLINT(*)
-        typename FIN::BufferType>&>(in);
-    auto tout = reinterpret_cast<BuffersBase<  // NOLINT(*)
-        typename FOUT::BufferType>*>(out);
+    auto tin = reinterpret_cast<const InBuffers&>(in);
+    auto tout = reinterpret_cast<OutBuffers*>(out);
     Do(tin, tout);
   }
 
   virtual void DoInverse(const Buffers& in, Buffers* out) const noexcept {
-    auto tin = reinterpret_cast<const BuffersBase<  // NOLINT(*)
-        typename FOUT::BufferType>&>(in);
-    auto tout = reinterpret_cast<BuffersBase<  // NOLINT(*)
-        typename FIN::BufferType>*>(out);
+    auto tin = reinterpret_cast<const OutBuffers&>(in);
+    auto tout = reinterpret_cast<InBuffers*>(out);
     DoInverse(tin, tout);
   }
 
@@ -97,64 +75,27 @@ class TransformBase : public virtual Transform {
   std::shared_ptr<FIN> inputFormat_;
   std::shared_ptr<FOUT> outputFormat_;
 
+  typedef BuffersBase<typename FIN::BufferType> InBuffers;
+  typedef BuffersBase<typename FOUT::BufferType> OutBuffers;
+
   virtual void OnInputFormatChanged() {
   }
 
-  virtual void SetParameter(const std::string& name UNUSED,
-                            const std::string& value UNUSED) {
-  }
+  virtual void InitializeBuffers(const InBuffers& in,
+                                 OutBuffers* out)
+      const noexcept = 0;
 
-  virtual void InitializeBuffers(
-      const BuffersBase<typename FIN::BufferType>& in,
-      BuffersBase<typename FOUT::BufferType>* buffers) const noexcept = 0;
+  virtual void Do(const InBuffers& in,
+                  OutBuffers* out)
+      const noexcept = 0;
 
-  virtual void Do(const BuffersBase<typename FIN::BufferType>& in,
-                          BuffersBase<typename FOUT::BufferType>* out)
-  const noexcept = 0;
-
-  virtual void DoInverse(
-      const BuffersBase<typename FOUT::BufferType>& in UNUSED,
-      BuffersBase<typename FIN::BufferType>* out UNUSED) const {
+  virtual void DoInverse(const OutBuffers& in UNUSED,
+                         InBuffers* out UNUSED) const {
     std::unexpected();
   }
 
-  template <typename T>
-  T Parse(const std::string& name, const std::string& value) {
-    return Parse(name, value, identity<T>());
-  }
-
- private:
-  std::unordered_map<std::string, std::string> parameters_;
-  std::unordered_map<std::string, std::function<void(const std::string&)>>
-  setters_;
-
-  template<typename T>
-  struct identity {
-    typedef T type;
-  };
-
-  int Parse(const std::string& name, const std::string& value,
-            identity<int>) {
-    int pv;
-    try {
-      pv = std::stoi(value);
-    }
-    catch(...) {
-      throw InvalidParameterValueException(name, value, Name());
-    }
-    return pv;
-  }
-
-  size_t Parse(const std::string& name, const std::string& value,
-               identity<size_t>) {
-    int pv;
-    try {
-      pv = std::stoul(value);
-    }
-    catch(...) {
-      throw InvalidParameterValueException(name, value, Name());
-    }
-    return pv;
+  virtual std::string HostName() const noexcept {
+    return std::string("transform ") + Name();
   }
 };
 

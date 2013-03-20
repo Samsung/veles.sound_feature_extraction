@@ -27,44 +27,46 @@ FilterBank::ScaleTypeMap = {
 };
 
 FilterBank::FilterBank()
-  : UniformFormatTransform(SupportedParameters()),
-    type_(SCALE_TYPE_MEL),
+  : type_(SCALE_TYPE_MEL),
     length_(DEFAULT_FB_LENGTH),
     minFreq_(DEFAULT_FB_MIN_FREQ),
     maxFreq_(DEFAULT_FB_MAX_FREQ) {
+  RegisterSetter("number", [&](const std::string& value) {
+    auto pv = Parse<size_t>("number", value);
+    if (pv > 2048) {
+      return false;
+    }
+    length_ = pv;
+    return true;
+  });
+  RegisterSetter("frequency_min", [&](const std::string& value) {
+    auto pv = Parse<int>("frequency_min", value);
+    if (pv < 10 || pv >= maxFreq_) {
+      return false;
+    }
+    minFreq_ = pv;
+    return true;
+  });
+  RegisterSetter("frequency_max", [&](const std::string& value) {
+    auto pv = Parse<int>("frequency_max", value);
+    if (pv < 10 || pv <= minFreq_) {
+      return false;
+    }
+    maxFreq_ = pv;
+    return true;
+  });
+  RegisterSetter("type", [&](const std::string& value) {
+    auto tit = ScaleTypeMap.find(value);
+    if (tit == ScaleTypeMap.end()) {
+      return false;
+    }
+    type_ = tit->second;
+    return true;
+  });
 }
 
 bool FilterBank::HasInverse() const noexcept {
   return true;
-}
-
-void FilterBank::SetParameter(const std::string& name,
-                              const std::string& value) {
-  if (name == "number") {
-    auto pv = Parse<size_t>(name, value);
-    if (pv > 2048) {
-      throw InvalidParameterValueException(name, value, Name());
-    }
-    length_ = pv;
-  } else if (name == "frequency_min") {
-    auto pv = Parse<int>(name, value);
-    if (pv < 10 || pv >= maxFreq_) {
-      throw InvalidParameterValueException(name, value, Name());
-    }
-    minFreq_ = pv;
-  } else if (name == "frequency_min") {
-    auto pv = Parse<int>(name, value);
-    if (pv < 10 || pv <= minFreq_) {
-      throw InvalidParameterValueException(name, value, Name());
-    }
-    maxFreq_ = pv;
-  } else if (name == "type") {
-    auto tit = ScaleTypeMap.find(value);
-    if (tit == ScaleTypeMap.end()) {
-      throw InvalidParameterValueException(name, value, Name());
-    }
-    type_ = tit->second;
-  }
 }
 
 float FilterBank::LinearToScale(ScaleType type, float freq) {
@@ -171,7 +173,7 @@ void FilterBank::InitializeBuffers(
 
 void FilterBank::Do(
     const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF> *out) const noexcept {
+    BuffersBase<Formats::WindowF>* out) const noexcept {
   auto filter = filterBank_.get();
   int N = inputFormat_->Size();
   for (size_t i = 0; i < in.Size(); i++) {

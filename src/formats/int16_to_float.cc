@@ -26,7 +26,7 @@ void Int16ToFloatRaw::Do(const BuffersBase<Raw16>& in,
 
 void Int16ToFloatWindow::Do(
     const BuffersBase<Window16>& in,
-    BuffersBase<WindowF> *out) const noexcept {
+    BuffersBase<WindowF>* out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
     int16_to_float(in[i]->Data.get(), inputFormat_->Size(),
                    (*out)[i]->Data.get());

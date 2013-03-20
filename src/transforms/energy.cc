@@ -21,10 +21,6 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-Energy::Energy()
-: UniformFormatTransform(SupportedParameters()) {
-}
-
 void Energy::OnFormatChanged() {
   if (inputFormat_->Size() % 2 == 1) {
     fprintf(stderr, "Input buffer size is odd (%zu), truncated\n",
@@ -41,7 +37,7 @@ void Energy::InitializeBuffers(
 
 void Energy::Do(
     const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF> *out) const noexcept {
+    BuffersBase<Formats::WindowF>* out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();

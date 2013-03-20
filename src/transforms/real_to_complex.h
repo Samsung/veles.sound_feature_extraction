@@ -23,8 +23,6 @@ namespace Transforms {
 class RealToComplex
     : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
-  RealToComplex();
-
   TRANSFORM_INTRO("R2C", "Converts each real number to complex "
                          "number (imaginary part is set to zero).")
 
@@ -38,7 +36,7 @@ class RealToComplex
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                          BuffersBase<Formats::WindowF> *out) const noexcept;
+                  BuffersBase<Formats::WindowF>* out) const noexcept;
 };
 
 }  // namespace Transforms

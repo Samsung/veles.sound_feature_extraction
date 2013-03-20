@@ -18,10 +18,6 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-Intensity::Intensity()
-  :TransformBase(SupportedParameters()) {
-}
-
 void Intensity::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<float>* buffers) const noexcept {

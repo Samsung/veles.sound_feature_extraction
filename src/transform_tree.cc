@@ -190,7 +190,7 @@ void TransformTree::AddTransform(const std::string& name,
   // Create the transform "name"
   auto t = ctor();
   {
-    auto tparams = Parameters::Parse(parameters);
+    auto tparams = Transform::Parse(parameters);
     t->SetParameters(tparams);
   }
 
