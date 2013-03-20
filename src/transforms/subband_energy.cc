@@ -18,19 +18,22 @@
 #elif defined(__ARM_NEON__)
 #include <arm_neon.h>  // NOLINT(build/include_order)
 #endif
-#include <string>  // NOLINT(*)
-#include "src/primitives/wavelet_filter_bank.h"
 #include "src/primitives/energy.h"
 
 namespace SpeechFeatureExtraction {
+namespace Transforms {
 
 using Primitives::WaveletFilterBank;
 
-namespace Transforms {
+const std::vector<int> SubbandEnergy::kDefaultTreeFingerprint {
+  3, 3, 3,
+  4, 4, 4,
+  5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+  6, 6, 6, 6, 6, 6, 6, 6
+};
 
 SubbandEnergy::SubbandEnergy()
-: treeFingerprint_({ 3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-                     6, 6, 6, 6, 6, 6, 6, 6 }) {
+: treeFingerprint_(kDefaultTreeFingerprint) {
   RegisterSetter("tree", [&](const std::string& value) {
     treeFingerprint_ = WaveletFilterBank::ParseDescription(value);
     return true;

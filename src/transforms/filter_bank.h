@@ -20,10 +20,6 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-#define DEFAULT_FB_LENGTH 40
-#define DEFAULT_FB_MIN_FREQ 130
-#define DEFAULT_FB_MAX_FREQ 6854
-
 class FilterBank
     : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
@@ -38,11 +34,11 @@ class FilterBank
                  "\"mel\" and \"bark\".",
          "mel")
       TP("number", "The number of triangular filters.",
-         std::to_string(DEFAULT_FB_LENGTH))
+         std::to_string(kDefaultLength))
       TP("frequency_min", "Minimal frequency of the filter bank.",
-         std::to_string(DEFAULT_FB_MIN_FREQ))
+         std::to_string(kDefaultMinFrequency))
       TP("frequency_max", "Maximal frequency of the filter bank.",
-         std::to_string(DEFAULT_FB_MAX_FREQ))
+         std::to_string(kDefaultMaxFrequency))
   )
 
   virtual bool HasInverse() const noexcept;
@@ -57,12 +53,9 @@ class FilterBank
   };
 
   static const std::unordered_map<std::string, ScaleType> ScaleTypeMap;
-
-  ScaleType type_;
-  size_t length_;
-  int minFreq_;
-  int maxFreq_;
-  mutable std::shared_ptr<float> filterBank_;
+  static const int kDefaultLength;
+  static const int kDefaultMinFrequency;
+  static const int kDefaultMaxFrequency;
 
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
@@ -75,6 +68,12 @@ class FilterBank
 
   static float LinearToScale(ScaleType type, float freq);
   static float ScaleToLinear(ScaleType type, float value);
+
+  ScaleType type_;
+  size_t length_;
+  int minFreq_;
+  int maxFreq_;
+  mutable std::shared_ptr<float> filterBank_;
 
  private:
   /// @brief Adds a triangular filter to the filter bank.

@@ -32,11 +32,13 @@ class Window
                             "\"length\" ms of type \"type\".")
 
   TRANSFORM_PARAMETERS(
-      TP("length", "Window size in milliseconds", "25")
-      TP("step", "Distance between sequential windows in milliseconds", "10")
+      TP("length", "Window size in milliseconds",
+         std::to_string(kDefaultLength))
+      TP("step", "Distance between sequential windows in milliseconds",
+         std::to_string(kDefaultStep))
       TP("type", "Type of the window. E.g. \"rectangular\" "
                  "or \"hamming\".",
-         "hamming")
+         kDefaultType)
   )
 
   virtual void Initialize() const noexcept;
@@ -51,6 +53,10 @@ class Window
                           BuffersBase<Formats::Window16> *out) const noexcept;
 
  private:
+  static const int kDefaultLength;
+  static const int kDefaultStep;
+  static const std::string kDefaultType;
+
   int step_;
   WindowType type_;
   mutable std::shared_ptr<float> window_;

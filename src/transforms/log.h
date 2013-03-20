@@ -29,7 +29,8 @@ class Log
                   "Takes the logarithm on each real value of the signal.")
 
   TRANSFORM_PARAMETERS(
-      TP("base", "Logarithm base (2, 10 or e).", "e")
+      TP("base", "Logarithm base (2, 10 or e).",
+         LogBaseToString(kDefaultLogBase))
   )
 
   virtual bool HasInverse() const noexcept;
@@ -40,9 +41,9 @@ class Log
     LOG_BASE_10,
     LOG_BASE_E
   };
-  static const std::unordered_map<std::string, LogBase> LogBaseMap;
 
-  LogBase base_;
+  static const std::unordered_map<std::string, LogBase> LogBaseMap;
+  static const LogBase kDefaultLogBase;
 
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
@@ -51,6 +52,10 @@ class Log
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
                   BuffersBase<Formats::WindowF>* out) const noexcept;
+
+  static std::string LogBaseToString(LogBase lb) noexcept;
+
+  LogBase base_;
 };
 
 }  // namespace Transforms

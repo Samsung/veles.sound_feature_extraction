@@ -18,11 +18,16 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
+const int Window::kDefaultLength = 25;
+const int Window::kDefaultStep = 10;
+const std::string Window::kDefaultType = "hamming";
+
 Window::Window()
-  : step_(0),
-    type_(WINDOW_TYPE_HAMMING),
+  : step_(kDefaultStep),
+    type_(WindowTypeMap.find(kDefaultType)->second),
     outSizeEach_(0),
     inDataStep_(0) {
+  outputFormat_->SetDuration(kDefaultLength);
   RegisterSetter("length", [&](const std::string& value) {
     int pv = Parse<int>("length", value);
     if (pv < MIN_WINDOW_DURATION || pv > MAX_WINDOW_DURATION) {
@@ -60,7 +65,8 @@ void Window::Initialize() const noexcept {
   inDataStep_ = outputFormat_->Size();
   outSizeEach_ = inputFormat_->Size() / inDataStep_;
   if (inputFormat_->Size() % inDataStep_ != 0) {
-    fprintf(stderr, "Input buffer size %zu is not divisible by step %i.\n",
+    fprintf(stderr, "Input buffer size %zu is not divisible by step %i. "
+            "It's excess will not be processed.\n",
             inputFormat_->Size(), inDataStep_);
   }
 }

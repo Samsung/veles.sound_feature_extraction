@@ -18,14 +18,9 @@
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
 #include "src/primitives/wavelet_types.h"
+#include "src/primitives/wavelet_filter_bank.h"
 
 namespace SpeechFeatureExtraction {
-
-namespace Primitives {
-
-class WaveletFilterBank;
-}
-
 namespace Transforms {
 
 /// @brief Discrete Wavelet Packet Transform.
@@ -60,16 +55,15 @@ class DWPT
 
   TRANSFORM_INTRO("DWPT", "Discrete Wavelet Packet Transform")
 
-#define DEFAULT_WAVELET_ORDER 8
-
   TRANSFORM_PARAMETERS(
     TP("tree", "The wavelet packet binary tree fingerprint.",
-       "3 3 3 4 4 4 5 5 5 5 5 5 5 5 5 5 6 6 6 6 6 6 6 6")
+       Primitives::WaveletFilterBank::DescriptionToString(
+           kDefaultTreeFingerprint))
     TP("type", "The type of the wavelet to apply. Supported values are "
                "daub (Daubechies), coif (Coiflet) and sym (Symlet).",
-       "daub")
+       kDefaultWaveletType)
     TP("order", "The number of coefficients in the wavelet.",
-        std::to_string(DEFAULT_WAVELET_ORDER))
+        std::to_string(kDefaultWaveletOrder))
   )
 
   virtual void Initialize() const noexcept;
@@ -87,10 +81,13 @@ class DWPT
                   BuffersBase<Formats::WindowF>* out) const noexcept;
 
  private:
+  static const std::vector<int> kDefaultTreeFingerprint;
+  static const std::string kDefaultWaveletType;
+  static const int kDefaultWaveletOrder;
+
   std::vector<int> treeFingerprint_;
   WaveletType waveletType_;
   int waveletOrder_;
-
   mutable std::shared_ptr<Primitives::WaveletFilterBank> filterBank_;
 };
 

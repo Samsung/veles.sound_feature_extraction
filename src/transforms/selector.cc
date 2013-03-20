@@ -17,9 +17,12 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
+const int Selector::kDefaultLength = 12;
+const Selector::Anchor Selector::kDefaultAnchor = ANCHOR_RIGHT;
+
 Selector::Selector()
-  : length_(12),
-    from_(ANCHOR_RIGHT) {
+  : length_(kDefaultLength),
+    from_(kDefaultAnchor) {
   RegisterSetter("length", [&](const std::string& value) {
     int length = Parse<int>("length", value);
     if (length < 1) {

@@ -28,10 +28,11 @@ class Selector
   TRANSFORM_INTRO("Selector", "Selects the specified part of input.")
 
   TRANSFORM_PARAMETERS(
-      TP("length", "The number of values to pass through.", "12")
+      TP("length", "The number of values to pass through.",
+         std::to_string(kDefaultLength))
       TP("from", "The anchor of the selection. Can be either """
                  "\"left\" or \"right\".",
-         "right")
+         kDefaultAnchor == ANCHOR_LEFT? "left" : "right")
   )
 
  protected:
@@ -49,6 +50,9 @@ class Selector
     ANCHOR_LEFT,
     ANCHOR_RIGHT
   } Anchor;
+
+  static const int kDefaultLength;
+  static const Anchor kDefaultAnchor;
 
   int length_;
   Anchor from_;

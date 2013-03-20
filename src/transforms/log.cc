@@ -28,7 +28,9 @@ const std::unordered_map<std::string, Log::LogBase> Log::LogBaseMap {
   { "10", LOG_BASE_10 }
 };
 
-Log::Log() : base_(LOG_BASE_E) {
+const Log::LogBase Log::kDefaultLogBase = LOG_BASE_E;
+
+Log::Log() : base_(kDefaultLogBase) {
   RegisterSetter("base", [&](const std::string& value) {
     auto lbit = LogBaseMap.find(value);
     if (lbit == LogBaseMap.end()) {
@@ -97,6 +99,18 @@ void Log::Do(
         break;
     }
   }
+}
+
+std::string Log::LogBaseToString(LogBase lb) noexcept {
+  switch (lb) {
+    case LOG_BASE_E:
+      return "e";
+    case LOG_BASE_2:
+      return "2";
+    case LOG_BASE_10:
+      return "10";
+  }
+  return "";
 }
 
 REGISTER_TRANSFORM(Log);

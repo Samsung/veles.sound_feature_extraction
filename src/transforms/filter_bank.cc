@@ -26,11 +26,15 @@ FilterBank::ScaleTypeMap = {
     { "bark", SCALE_TYPE_BARK }
 };
 
+const int FilterBank::kDefaultLength = 40;
+const int FilterBank::kDefaultMinFrequency = 130;
+const int FilterBank::kDefaultMaxFrequency = 6854;
+
 FilterBank::FilterBank()
   : type_(SCALE_TYPE_MEL),
-    length_(DEFAULT_FB_LENGTH),
-    minFreq_(DEFAULT_FB_MIN_FREQ),
-    maxFreq_(DEFAULT_FB_MAX_FREQ) {
+    length_(kDefaultLength),
+    minFreq_(kDefaultMinFrequency),
+    maxFreq_(kDefaultMaxFrequency) {
   RegisterSetter("number", [&](const std::string& value) {
     auto pv = Parse<size_t>("number", value);
     if (pv > 2048) {

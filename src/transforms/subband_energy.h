@@ -15,6 +15,7 @@
 
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
+#include "src/primitives/wavelet_filter_bank.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
@@ -37,7 +38,8 @@ class SubbandEnergy
 
   TRANSFORM_PARAMETERS(
     TP("tree", "The subbands binary tree fingerprint.",
-       "3 3 3 4 4 4 5 5 5 5 5 5 5 5 5 5 6 6 6 6 6 6 6 6")
+       Primitives::WaveletFilterBank::DescriptionToString(
+           kDefaultTreeFingerprint))
   )
 
   virtual void Initialize() const noexcept;
@@ -54,6 +56,8 @@ class SubbandEnergy
                   BuffersBase<Formats::WindowF>* out) const noexcept;
 
  private:
+  static const std::vector<int> kDefaultTreeFingerprint;
+
   std::vector<int> treeFingerprint_;
   mutable std::vector<int> offsets_;
 };

@@ -11,20 +11,25 @@
  */
 
 #include "src/transforms/dwpt.h"
-#include <string>
-#include "src/primitives/wavelet_filter_bank.h"
 
 namespace SpeechFeatureExtraction {
+namespace Transforms {
 
 using Primitives::WaveletFilterBank;
 
-namespace Transforms {
+const std::vector<int> DWPT::kDefaultTreeFingerprint {
+  3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+  6, 6, 6, 6, 6, 6, 6, 6
+};
+
+const std::string DWPT::kDefaultWaveletType = "daub";
+
+const int DWPT::kDefaultWaveletOrder = 8;
 
 DWPT::DWPT()
-  : treeFingerprint_({ 3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-                       6, 6, 6, 6, 6, 6, 6, 6 }),
-    waveletType_(WAVELET_TYPE_DAUBECHIES),
-    waveletOrder_(DEFAULT_WAVELET_ORDER) {
+  : treeFingerprint_(kDefaultTreeFingerprint),
+    waveletType_(WaveletFilterBank::ParseWaveletType(kDefaultWaveletType)),
+    waveletOrder_(kDefaultWaveletOrder) {
   RegisterSetter("tree", [&](const std::string& value) {
     treeFingerprint_ = WaveletFilterBank::ParseDescription(value);
     return true;
