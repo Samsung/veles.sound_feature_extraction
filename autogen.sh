@@ -1,5 +1,11 @@
 #!/bin/sh
 
+if [[ ! -e "fftf" ]]; then
+	git submodule update --init
+else
+    git submodule update
+fi
+
 isubuntu="$(uname -v|grep Ubuntu)"
 
 check_prog() {

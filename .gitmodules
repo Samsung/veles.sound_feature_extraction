@@ -1,0 +1,3 @@
+[submodule "fftf"]
+	path = fftf
+	url = ssh://v.markovtsev@alserver.rnd.samsung.ru:29418/FFTF.git
