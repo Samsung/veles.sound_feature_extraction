@@ -39,7 +39,7 @@ class InvalidParameterValueException : public ExceptionBase {
                   value + "\" for transform " + transformName + ".") {}
 };
 
-class Transform {
+class Transform : public IParameterizable {
  public:
   virtual ~Transform() {}
 
@@ -55,15 +55,6 @@ class Transform {
 
   virtual const std::shared_ptr<BufferFormat> OutputFormat()
       const noexcept = 0;
-
-  virtual const std::unordered_map<std::string, ParameterTraits>&
-  SupportedParameters() const noexcept = 0;
-
-  virtual const std::unordered_map<std::string, std::string>&
-  GetParameters() const noexcept = 0;
-
-  virtual void SetParameters(
-      const std::unordered_map<std::string, std::string>& parameters) = 0;
 
   virtual void Initialize() const noexcept = 0;
 

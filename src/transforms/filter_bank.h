@@ -34,14 +34,15 @@ class FilterBank
                   "(default is mel).")
 
   TRANSFORM_PARAMETERS(
-      _TP_("type", "The type of the scale. Supported values are \"linear\","
-                   "\"mel\" and \"bark\".", "mel")
-      _TP_("number", "The number of triangular filters.",
-           std::to_string(DEFAULT_FB_LENGTH))
-      _TP_("frequency_min", "Minimal frequency of the filter bank.",
-           std::to_string(DEFAULT_FB_MIN_FREQ))
-      _TP_("frequency_max", "Maximal frequency of the filter bank.",
-           std::to_string(DEFAULT_FB_MAX_FREQ))
+      TP("type", "The type of the scale. Supported values are \"linear\","
+                 "\"mel\" and \"bark\".",
+         "mel")
+      TP("number", "The number of triangular filters.",
+         std::to_string(DEFAULT_FB_LENGTH))
+      TP("frequency_min", "Minimal frequency of the filter bank.",
+         std::to_string(DEFAULT_FB_MIN_FREQ))
+      TP("frequency_max", "Maximal frequency of the filter bank.",
+         std::to_string(DEFAULT_FB_MAX_FREQ))
   )
 
   virtual bool HasInverse() const noexcept;

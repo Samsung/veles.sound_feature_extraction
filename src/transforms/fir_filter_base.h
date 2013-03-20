@@ -56,10 +56,11 @@ class FirFilterBase
 
 #define FIR_FILTER_PARAMETERS(init) TRANSFORM_PARAMETERS( \
   FORWARD_MACROS( \
-      _TP_("length", "Window length in samples", \
-           std::to_string(DEFAULT_FILTER_LENGTH)) \
-      _TP_("window", "Type of the window. Supported values are " \
-           "\"rectangular\" and \"hamming\".", "hamming") \
+      TP("length", "Window length in samples", \
+         std::to_string(DEFAULT_FILTER_LENGTH)) \
+      TP("window", "Type of the window. Supported values are " \
+         "\"rectangular\" and \"hamming\".", \
+         "hamming") \
       init) \
 )
 

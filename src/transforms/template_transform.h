@@ -28,8 +28,8 @@ class TemplateTransform
   TRANSFORM_INTRO("!Template", "")
 
   TRANSFORM_PARAMETERS(
-      _TP_("name", "description", "default value")
-      _TP_("other_name", "description", "default value")
+      TP("name", "description", "default value")
+      TP("other_name", "description", "default value")
   )
 
   virtual void Initialize() const noexcept;

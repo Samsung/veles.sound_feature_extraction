@@ -41,6 +41,20 @@ std::unordered_map<std::string, std::string> Parse(const std::string& line);
 
 }  // namespace Parameters
 
+class IParameterizable {
+ public:
+  virtual ~IParameterizable() {}
+
+  virtual const std::unordered_map<std::string, ParameterTraits>&
+  SupportedParameters() const noexcept = 0;
+
+  virtual const std::unordered_map<std::string, std::string>&
+  GetParameters() const noexcept = 0;
+
+  virtual void SetParameters(
+      const std::unordered_map<std::string, std::string>& parameters) = 0;
+};
+
 }  // namespace SpeechFeatureExtraction
 
 #endif  // SRC_PARAMETERS_H_

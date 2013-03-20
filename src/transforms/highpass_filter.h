@@ -28,8 +28,8 @@ class HighpassFilter : public FirFilterBase {
                               "\"frequency\" shall not pass.")
 
   FIR_FILTER_PARAMETERS(
-      _TP_("frequency", "Cutoff frequency",
-                        std::to_string(DEFAULT_FILTER_LOW_FREQUENCY))
+      TP("frequency", "Cutoff frequency",
+         std::to_string(DEFAULT_FILTER_LOW_FREQUENCY))
   )
 
  protected:

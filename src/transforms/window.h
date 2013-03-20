@@ -32,10 +32,11 @@ class Window
                             "\"length\" ms of type \"type\".")
 
   TRANSFORM_PARAMETERS(
-      _TP_("length", "Window size in milliseconds", "25")
-      _TP_("step", "Distance between sequential windows in milliseconds", "10")
-      _TP_("type", "Type of the window. Supported values are \"rectangular\" "
-           "and \"hamming\".", "hamming")
+      TP("length", "Window size in milliseconds", "25")
+      TP("step", "Distance between sequential windows in milliseconds", "10")
+      TP("type", "Type of the window. Supported values are \"rectangular\" "
+                 "and \"hamming\".",
+         "hamming")
   )
 
   virtual void Initialize() const noexcept;

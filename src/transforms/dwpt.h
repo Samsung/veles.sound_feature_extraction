@@ -63,13 +63,13 @@ class DWPT
 #define DEFAULT_WAVELET_ORDER 8
 
   TRANSFORM_PARAMETERS(
-    _TP_("tree", "The wavelet packet binary tree fingerprint.",
-         "3 3 3 4 4 4 5 5 5 5 5 5 5 5 5 5 6 6 6 6 6 6 6 6")
-    _TP_("type", "The type of the wavelet to apply. Supported values are "
-                 "daub (Daubechies), coif (Coiflet) and sym (Symlet).",
-         "daub")
-    _TP_("order", "The number of coefficients in the wavelet.",
-         std::to_string(DEFAULT_WAVELET_ORDER))
+    TP("tree", "The wavelet packet binary tree fingerprint.",
+       "3 3 3 4 4 4 5 5 5 5 5 5 5 5 5 5 6 6 6 6 6 6 6 6")
+    TP("type", "The type of the wavelet to apply. Supported values are "
+               "daub (Daubechies), coif (Coiflet) and sym (Symlet).",
+       "daub")
+    TP("order", "The number of coefficients in the wavelet.",
+        std::to_string(DEFAULT_WAVELET_ORDER))
   )
 
   virtual void Initialize() const noexcept;

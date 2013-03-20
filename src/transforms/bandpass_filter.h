@@ -29,10 +29,10 @@ class BandpassFilter : public FirFilterBase {
                               "\"frequency_low\".")
 
   FIR_FILTER_PARAMETERS(
-      _TP_("frequency_high", "All frequencies higher will be cut",
-                             std::to_string(DEFAULT_FILTER_HIGH_FREQUENCY))
-      _TP_("frequency_low", "All frequencies lower will be cut",
-                            std::to_string(DEFAULT_FILTER_LOW_FREQUENCY))
+      TP("frequency_high", "All frequencies higher will be cut",
+         std::to_string(DEFAULT_FILTER_HIGH_FREQUENCY))
+      TP("frequency_low", "All frequencies lower will be cut",
+         std::to_string(DEFAULT_FILTER_LOW_FREQUENCY))
   )
 
  protected:

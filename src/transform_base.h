@@ -125,6 +125,8 @@ class TransformBase : public virtual Transform {
 
  private:
   std::unordered_map<std::string, std::string> parameters_;
+  std::unordered_map<std::string, std::function<void(const std::string&)>>
+  setters_;
 
   template<typename T>
   struct identity {
@@ -175,18 +177,18 @@ virtual const std::string& Description() const noexcept { \
 
 /// @brief Adds a new transform parameter to TRANSFORM_PARAMETERS.
 /// @note This macros should be used inside TRANSFORM_PARAMETERS only.
-#define _TP_(name, descr, defval) { name, { descr, defval } },
+#define TP(name, descr, defval) { name, { descr, defval } },
 
 /// @brief Adds SupportedParameters() implementation based on specified
-/// parameter items (@see _TP_).
-/// @param init The list of _TP_ parameters.
+/// parameter items (@see TP).
+/// @param init The list of TP parameters.
 #define TRANSFORM_PARAMETERS(init) \
     virtual const std::unordered_map<std::string, ParameterTraits>& \
 SupportedParameters() const noexcept { \
   static const std::unordered_map<std::string, ParameterTraits> sp = { \
-      _TP_("inverse", \
-           "Value indicating whether this transform is inverse.", \
-           "false") \
+      TP("inverse", \
+         "Value indicating whether this transform is inverse.", \
+         "false") \
       init \
   }; \
   return sp; \

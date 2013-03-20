@@ -34,7 +34,7 @@ class ParentTestTransform
 
   TRANSFORM_INTRO("ParentTest", "")
 
-  TRANSFORM_PARAMETERS(_TP_("AmplifyFactor", "Volume amplification factor",
+  TRANSFORM_PARAMETERS(TP("AmplifyFactor", "Volume amplification factor",
                             "1"))
 
  protected:
@@ -69,7 +69,7 @@ class ChildTestTransform
   TRANSFORM_INTRO("ChildTest", "")
 
   TRANSFORM_PARAMETERS(
-      _TP_("AnalysisLength", "Length of the array with analyzed results",
+      TP("AnalysisLength", "Length of the array with analyzed results",
            "128"))
 
  protected:

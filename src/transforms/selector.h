@@ -28,10 +28,10 @@ class Selector
   TRANSFORM_INTRO("Selector", "Selects the specified part of input.")
 
   TRANSFORM_PARAMETERS(
-      _TP_("length", "The number of values to pass through.", "12")
-      _TP_("from", "The anchor of the selection. Can be either """
-                   "\"left\" or \"right\".",
-           "right")
+      TP("length", "The number of values to pass through.", "12")
+      TP("from", "The anchor of the selection. Can be either """
+                 "\"left\" or \"right\".",
+         "right")
   )
 
  protected:

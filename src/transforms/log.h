@@ -29,7 +29,7 @@ class Log
                   "Takes the logarithm on each real value of the signal.")
 
   TRANSFORM_PARAMETERS(
-      _TP_("base", "Logarithm base (2, 10 or e).", "e")
+      TP("base", "Logarithm base (2, 10 or e).", "e")
   )
 
   virtual bool HasInverse() const noexcept;
