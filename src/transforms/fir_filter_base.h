@@ -52,8 +52,8 @@ class FirFilterBase
   FORWARD_MACROS( \
       TP("length", "Window length in samples", \
          std::to_string(DEFAULT_FILTER_LENGTH)) \
-      TP("window", "Type of the window. Supported values are " \
-         "\"rectangular\" and \"hamming\".", \
+      TP("window", "Type of the window. E.g. " \
+         "\"rectangular\" or \"hamming\".", \
          "hamming") \
       init) \
 )

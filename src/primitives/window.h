@@ -20,7 +20,8 @@
 /// @see http://en.wikipedia.org/wiki/Window_function.
 typedef enum {
   WINDOW_TYPE_RECTANGULAR,
-  WINDOW_TYPE_HAMMING
+  WINDOW_TYPE_HAMMING,
+  WINDOW_TYPE_HANNING
 } WindowType;
 
 /// @brief The map between window name and window type.

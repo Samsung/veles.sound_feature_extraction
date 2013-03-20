@@ -34,8 +34,8 @@ class Window
   TRANSFORM_PARAMETERS(
       TP("length", "Window size in milliseconds", "25")
       TP("step", "Distance between sequential windows in milliseconds", "10")
-      TP("type", "Type of the window. Supported values are \"rectangular\" "
-                 "and \"hamming\".",
+      TP("type", "Type of the window. E.g. \"rectangular\" "
+                 "or \"hamming\".",
          "hamming")
   )
 

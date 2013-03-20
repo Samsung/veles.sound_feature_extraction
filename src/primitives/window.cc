@@ -16,7 +16,8 @@
 
 const std::unordered_map<std::string, WindowType> WindowTypeMap {
   { "rectangular", WINDOW_TYPE_RECTANGULAR },
-  { "hamming", WINDOW_TYPE_HAMMING }
+  { "hamming", WINDOW_TYPE_HAMMING },
+  { "hanning", WINDOW_TYPE_HANNING }
 };
 
 /// @brief Calculates the element of Hamming window of length "length"
@@ -26,12 +27,18 @@ static float HammingWindow(int index, int length) {
   return 0.54f - 0.46f * cosf(2 * M_PI * index / (length - 1));
 }
 
+static float HanningWindow(int index, int length) {
+  return 0.5f - 0.5f * cosf(2 * M_PI * index / (length - 1));
+}
+
 float WindowElement(WindowType type, int length, int index) {
   switch (type) {
     case WINDOW_TYPE_RECTANGULAR:
       return 1.0f;
     case WINDOW_TYPE_HAMMING:
       return HammingWindow(index, length);
+    case WINDOW_TYPE_HANNING:
+      return HanningWindow(index, length);
   }
   return 0.0f;
 }
