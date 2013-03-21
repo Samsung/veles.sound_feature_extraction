@@ -48,6 +48,10 @@ class BufferFormat {
 
   virtual bool MustReallocate(const BufferFormat& other) const noexcept = 0;
 
+  virtual size_t PayloadSizeInBytes() const noexcept = 0;
+
+  virtual const void* PayloadPointer(const void* buffer) const noexcept = 0;
+
  private:
   std::string id_;
 };

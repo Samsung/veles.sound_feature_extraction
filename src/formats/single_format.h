@@ -18,7 +18,8 @@
 namespace SpeechFeatureExtraction {
 namespace Formats {
 
-class SingleFormat : public BufferFormatBase<float> {
+template<class T>
+class SingleFormat : public BufferFormatBase<T> {
  public:
   SingleFormat() noexcept {
   }
@@ -39,11 +40,23 @@ class SingleFormat : public BufferFormatBase<float> {
     return *this;
   }
 
+  virtual size_t PayloadSizeInBytes() const noexcept {
+    return sizeof(T);
+  }
+
  protected:
-  virtual bool MustReallocate(const BufferFormatBase<float>& other UNUSED) {
+  virtual bool MustReallocate(const BufferFormatBase<T>& other UNUSED) {
     return false;
   }
+
+  virtual const void* PayloadPointer(const T& item) const noexcept {
+    return &item;
+  }
 };
+
+typedef SingleFormat<float> SingleFormatF;
+typedef SingleFormat<int16_t> SingleFormat16;
+typedef SingleFormat<int32_t> SingleForma32;
 
 }  // namespace Formats
 }  // namespace SpeechFeatureExtraction

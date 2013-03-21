@@ -158,6 +158,7 @@ TransformTree::TransformTree(Formats::RawFormat16&& rootFormat) noexcept
     : root_(std::make_shared<Node>(
         nullptr, std::make_shared<RootTransform>(
             std::make_shared<Formats::RawFormat16>(rootFormat)), this)),
+      rootFormat_(std::make_shared<Formats::RawFormat16>(rootFormat)),
       treeIsPrepared_(false) {
 }
 
@@ -165,6 +166,7 @@ TransformTree::TransformTree(
     const std::shared_ptr<Formats::RawFormat16>& rootFormat) noexcept
     : root_(std::make_shared<Node>(
         nullptr, std::make_shared<RootTransform>(rootFormat), this)),
+      rootFormat_(rootFormat),
       treeIsPrepared_(false) {
 }
 
@@ -218,6 +220,10 @@ void TransformTree::AddTransform(const std::string& name,
     (*currentNode)->Children[name].push_back(newNode);
     *currentNode = newNode;
   }
+}
+
+std::shared_ptr<Formats::RawFormat16> TransformTree::RootFormat() noexcept {
+  return rootFormat_;
 }
 
 void TransformTree::AddChain(

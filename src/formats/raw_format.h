@@ -60,7 +60,7 @@ struct Raw {
   Raw(const Raw& other) : Data(other.Data) {
   }
 
-  explicit Raw(T* ptr) : Data(ptr, [](T* p) {}) {
+  explicit Raw(T* ptr) : Data(ptr, [](T*) {}) {
   }
 
   Raw& operator=(const Raw& other) {
@@ -85,18 +85,23 @@ template <typename T>
 class RawFormat : public BufferFormatBase<Raw<T>> {
  public:
   RawFormat() noexcept
-  : size_(DEFAULT_SIZE)
-  , samplingRate_(DEFAULT_SAMPLING_RATE) {
+      : size_(DEFAULT_SIZE),
+        samplingRate_(DEFAULT_SAMPLING_RATE) {
+  }
+
+  RawFormat(RawFormat&& other) noexcept
+      : size_(other.size_),
+        samplingRate_(other.samplingRate_) {
   }
 
   RawFormat(const RawFormat& other) noexcept
-  : size_(other.size_)
-  , samplingRate_(other.samplingRate_) {
+      : size_(other.size_),
+        samplingRate_(other.samplingRate_) {
   }
 
   RawFormat(size_t size, int samplingRate)
-  : size_(size)
-  , samplingRate_(samplingRate) {
+      : size_(size),
+        samplingRate_(samplingRate) {
     ValidateSize(size_);
     ValidateSamplingRate(samplingRate_);
   }
@@ -128,11 +133,19 @@ class RawFormat : public BufferFormatBase<Raw<T>> {
     size_ = value;
   }
 
+  virtual size_t PayloadSizeInBytes() const noexcept {
+    return size_ * sizeof(T);
+  }
+
  protected:
   virtual bool MustReallocate(const BufferFormatBase<Raw<T>>& other) {  // NOLINT(*)
     auto inst = reinterpret_cast<const RawFormat<T>&>(other);
     return inst.size_ < size_;
   }
+
+ virtual const void* PayloadPointer(const Raw<T>& item) const noexcept {
+   return item.Data.get();
+ }
 
  private:
   size_t size_;

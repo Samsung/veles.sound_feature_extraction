@@ -151,6 +151,10 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
     size_ = value;
   }
 
+  virtual size_t PayloadSizeInBytes() const noexcept {
+    return size_ * sizeof(T);
+  }
+
   size_t AllocatedSize() const noexcept {
     return allocatedSize_;
   }
@@ -166,6 +170,10 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
   virtual bool MustReallocate(const BufferFormatBase<Window<T>>& other) {  // NOLINT(*)
     auto inst = reinterpret_cast<const WindowFormat<T>&>(other);
     return inst.allocatedSize_ < allocatedSize_;
+  }
+
+  virtual const void* PayloadPointer(const Window<T>& item) const noexcept {
+    return item.Data.get();
   }
 
  private:

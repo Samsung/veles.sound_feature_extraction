@@ -93,6 +93,27 @@ class TreeIsNotPreparedException : public ExceptionBase {
 };
 
 class TransformTree {
+ public:
+  explicit TransformTree(Formats::RawFormat16&& rootFormat) noexcept;
+  explicit TransformTree(
+      const std::shared_ptr<Formats::RawFormat16>& rootFormat) noexcept;
+  virtual ~TransformTree() noexcept;
+
+  std::shared_ptr<Formats::RawFormat16> RootFormat() noexcept;
+
+  void AddChain(
+      const std::string& name,
+      const std::vector<std::pair<std::string, std::string>>& transforms);  // NOLINT(*)
+
+  void PrepareForExecution() noexcept;
+
+  std::unordered_map<std::string, std::shared_ptr<Buffers>> Execute(
+      const Buffers& in);
+
+  std::unordered_map<std::string, float> ExecutionTimeReport() const noexcept;
+  void Dump(const std::string& dotFileName) const;
+
+ private:
   struct Node {
     Node* Parent;
     const std::shared_ptr<Transform> BoundTransform;
@@ -117,34 +138,10 @@ class TransformTree {
         std::unordered_map<std::string, std::shared_ptr<Buffers>>* results);  // NOLINT(*)
   };
 
- public:
-  explicit TransformTree(Formats::RawFormat16&& rootFormat) noexcept;
-  explicit TransformTree(
-      const std::shared_ptr<Formats::RawFormat16>& rootFormat) noexcept;
-  virtual ~TransformTree() noexcept;
-
-  void AddChain(
-      const std::string& name,
-      const std::vector<std::pair<std::string, std::string>>& transforms);  // NOLINT(*)
-
-  void PrepareForExecution() noexcept;
-
-  std::unordered_map<std::string, std::shared_ptr<Buffers>> Execute(
-      const Buffers& in);
-
-  std::unordered_map<std::string, float> ExecutionTimeReport() const noexcept;
-  void Dump(const std::string& dotFileName) const;
-
- private:
   struct TransformCacheItem {
     std::shared_ptr<Transform> BoundTransform;
     std::chrono::high_resolution_clock::duration ElapsedTime;
   };
-
-  std::shared_ptr<Node> root_;
-  bool treeIsPrepared_;
-  std::set<std::string> chains_;
-  std::unordered_map<std::string, TransformCacheItem> transformsCache_;
 
   void AddTransform(const std::string& name,
                     const std::string& parameters,
@@ -152,6 +149,12 @@ class TransformTree {
   std::shared_ptr<Transform> FindIdenticalTransform(
       const Transform& base) noexcept;
   void SaveTransformToCache(const std::shared_ptr<Transform>& t) noexcept;
+
+  std::shared_ptr<Node> root_;
+  std::shared_ptr<Formats::RawFormat16> rootFormat_;
+  bool treeIsPrepared_;
+  std::set<std::string> chains_;
+  std::unordered_map<std::string, TransformCacheItem> transformsCache_;
 };
 
 }  // namespace SpeechFeatureExtraction

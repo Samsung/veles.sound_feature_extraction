@@ -22,7 +22,7 @@ namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 class Intensity
-    : public TransformBase<Formats::WindowFormatF, Formats::SingleFormat> {
+    : public TransformBase<Formats::WindowFormatF, Formats::SingleFormatF> {
  public:
   TRANSFORM_INTRO("Intensity", "Unnormalized sound intensity calculation.")
 

@@ -44,6 +44,14 @@ class BufferFormatBase : public BufferFormat {
         reinterpret_cast<const BufferFormatBase<T>&>(other));
   }
 
+  virtual size_t PayloadSizeInBytes() const noexcept {
+    return 0;
+  }
+
+  virtual const void* PayloadPointer(const void* buffer) const noexcept {
+    return PayloadPointer(*reinterpret_cast<const T*>(buffer));
+  }
+
  protected:
   std::string CutNamespaces(std::string&& str) {
     return str.substr(str.find_last_of(':') + 1, std::string::npos);
@@ -52,6 +60,10 @@ class BufferFormatBase : public BufferFormat {
   virtual bool MustReallocate(const BufferFormatBase<T>& other UNUSED)
       const noexcept {
     return true;
+  }
+
+  virtual const void* PayloadPointer(const T& item UNUSED) const noexcept {
+    return nullptr;
   }
 };
 

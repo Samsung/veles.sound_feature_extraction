@@ -14,7 +14,10 @@
 #include <stddef.h>
 #include "src/features_parser.h"
 #include "src/transform_tree.h"
+#include "src/transform_registry.h"
 
+using SpeechFeatureExtraction::Transform;
+using SpeechFeatureExtraction::TransformFactory;
 using SpeechFeatureExtraction::ChainNameAlreadyExistsException;
 using SpeechFeatureExtraction::TransformNotRegisteredException;
 using SpeechFeatureExtraction::ChainAlreadyExistsException;
@@ -23,25 +26,149 @@ using SpeechFeatureExtraction::RawFeaturesMap;
 using SpeechFeatureExtraction::Features::ParseFeaturesException;
 using SpeechFeatureExtraction::TransformTree;
 using SpeechFeatureExtraction::Formats::RawFormat16;
+using SpeechFeatureExtraction::Formats::Raw16;
+using SpeechFeatureExtraction::BuffersBase;
+using SpeechFeatureExtraction::Buffers;
 
 extern "C" {
 struct FeaturesConfiguration {
   std::shared_ptr<TransformTree> Tree;
 };
 
+#define CHECK_NULL(x) do { if (x == nullptr) { \
+    fprintf(stderr, "Error: " #x " is null\n"); \
+    return; \
+} } while(0)
+
+#define CHECK_NULL_RET(x, ret) do { if (x == nullptr) { \
+    fprintf(stderr, "Error: " #x " is null\n"); \
+    return ret; \
+} } while(0)
+
+void copy_string(const std::string& str, char **ptr) {
+  size_t size = str.size() + 1;
+  *ptr = new char[size];
+  memcpy(*ptr, str.c_str(), size);
+}
+
+void query_transforms_list(char ***names, int *listSize) {
+  CHECK_NULL(names);
+  CHECK_NULL(listSize);
+  *listSize = TransformFactory.size();
+  *names = new char*[*listSize];
+  int i = 0;
+  for (auto tc : TransformFactory) {
+    if (tc.second.size() == 1) {
+      copy_string(tc.first, *names + i);
+      i++;
+    } else {
+      for (auto tfc : tc.second) {
+        std::string fullName(tc.first);
+        fullName += " (";
+        fullName += tfc.first;
+        fullName += ")";
+        copy_string(fullName, *names + i);
+        i++;
+      }
+    }
+  }
+}
+
+void destroy_transform_names(char **names, int listSize) {
+  CHECK_NULL(names);
+
+  for (int i = 0; i < listSize; i++) {
+    delete[] names[i];
+  }
+  delete[] names;
+}
+
+void query_transform_details(const char *name, char **description,
+                             char ***parameterNames,
+                             char ***parameterDescriptions,
+                             char ***parameterDefaultValues,
+                             int *parametersCount) {
+  CHECK_NULL(name);
+  CHECK_NULL(description);
+  CHECK_NULL(parameterNames);
+  CHECK_NULL(parameterDescriptions);
+  CHECK_NULL(parameterDefaultValues);
+  CHECK_NULL(parametersCount);
+
+  std::string fullName(name);
+  std::string transformName(fullName);
+  std::string formatName;
+  auto bracePos = fullName.find('(');
+  if (bracePos != fullName.npos) {
+    transformName = fullName.substr(0, bracePos - 1);
+    formatName = fullName.substr(bracePos + 1);
+    formatName.resize(formatName.size() - 1);
+  }
+  auto tit = TransformFactory.find(transformName);
+  if (tit == TransformFactory.end()) {
+    fprintf(stderr, "Error: transform %s was not found.\n", fullName.c_str());
+    return;
+  }
+
+  std::shared_ptr<Transform> transformInstance;
+  if (formatName == "") {
+    transformInstance = tit->second.begin()->second();
+  } else {
+    auto tfit = tit->second.find(formatName);
+    if (tfit == tit->second.end()) {
+      fprintf(stderr, "Error: transform %s was not found.\n",
+              fullName.c_str());
+      return;
+    }
+    transformInstance = tfit->second();
+  }
+  copy_string(transformInstance->Description(), description);
+  int pCount = transformInstance->SupportedParameters().size();
+  *parametersCount = pCount;
+  *parameterNames = new char*[pCount];
+  *parameterDescriptions = new char*[pCount];
+  *parameterDefaultValues = new char*[pCount];
+  int i = 0;
+  for (auto prop : transformInstance->SupportedParameters()) {
+    copy_string(prop.first, *parameterNames + i);
+    copy_string(prop.second.Description, *parameterDescriptions + i);
+    copy_string(prop.second.DefaultValue, *parameterDefaultValues + i);
+    i++;
+  }
+}
+
+void destroy_transform_details(char *description,
+                               char **parameterNames,
+                               char **parameterDescriptions,
+                               char **parameterDefaultValues,
+                               int parametersCount) {
+  CHECK_NULL(description);
+  CHECK_NULL(parameterNames);
+  CHECK_NULL(parameterDescriptions);
+  CHECK_NULL(parameterDefaultValues);
+
+  delete[] description;
+  for (int i = 0; i < parametersCount; i++) {
+    delete[] parameterNames[i];
+    delete[] parameterDescriptions[i];
+    delete[] parameterDefaultValues[i];
+  }
+  delete[] parameterNames;
+  delete[] parameterDescriptions;
+  delete[] parameterDefaultValues;
+}
+
 FeaturesConfiguration *setup_features_extraction(
     const char *const *features, int featuresCount,
     size_t bufferSize, int samplingRate) {
-  if (features == nullptr) {
-    fprintf(stderr, "features is null\n");
-    return nullptr;
-  }
+  CHECK_NULL_RET(features, nullptr);
   if (featuresCount < 0) {
-    fprintf(stderr, "featuresCount is negative (%i)\n", featuresCount);
+    fprintf(stderr, "Error: featuresCount is negative (%i)\n", featuresCount);
     return nullptr;
   }
   if (featuresCount > MAX_FEATURES_COUNT) {
-    fprintf(stderr, "featuresCount is too big (%i > MAX_FEATURES_COUNT=%i)\n",
+    fprintf(stderr, "Error: featuresCount is too big "
+            "(%i > MAX_FEATURES_COUNT=%i)\n",
             featuresCount, MAX_FEATURES_COUNT);
     return nullptr;
   }
@@ -95,19 +222,105 @@ FeaturesConfiguration *setup_features_extraction(
 }
 
 FeatureExtractionResult extract_speech_features(
-    const FeaturesConfiguration *fc, const int16_t *buffer,
-    void ***results) {
+    const FeaturesConfiguration *fc, int16_t *buffer,
+    char ***featureNames, void ***results, int **resultLengths) {
+  CHECK_NULL_RET(fc, FEATURE_EXTRACTION_RESULT_ERROR);
+  CHECK_NULL_RET(buffer, FEATURE_EXTRACTION_RESULT_ERROR);
+  CHECK_NULL_RET(results, FEATURE_EXTRACTION_RESULT_ERROR);
+
+  BuffersBase<Raw16> buffers;
+  buffers.Initialize(1, buffer);
+
+  std::unordered_map<std::string, std::shared_ptr<Buffers>> retmap;
+  try {
+    retmap = fc->Tree->Execute(buffers);
+  }
+  catch (const std::exception& ex) {
+    fprintf(stderr, "Caught an exception with message \"%s\".", ex.what());
+    return FEATURE_EXTRACTION_RESULT_ERROR;
+  }
+  *featureNames = new char*[retmap.size()];
+  *results = new void*[retmap.size()];
+  *resultLengths = new int[retmap.size()];
+
+  int i = 0;
+  for (auto res : retmap) {
+    copy_string(res.first, *featureNames + i);
+    size_t sizeEach = res.second->Format()->PayloadSizeInBytes();
+    size_t size = sizeEach * res.second->Size();
+    (*resultLengths)[i] = size;
+    (*results)[i] = new char[size];
+    for (int j = 0; j < static_cast<int>(res.second->Size()); j++) {
+      memcpy(reinterpret_cast<char *>((*results)[i]) + j * sizeEach,
+             res.second->Format()->PayloadPointer((*res.second)[j]),
+             sizeEach);
+    }
+    i++;
+  }
   return FEATURE_EXTRACTION_RESULT_OK;
 }
 
+void report_extraction_time(const FeaturesConfiguration *fc,
+                            char ***transformNames,
+                            float **values,
+                            int *length) {
+  CHECK_NULL(fc);
+  CHECK_NULL(transformNames);
+  CHECK_NULL(values);
+  CHECK_NULL(length);
+
+  auto report = fc->Tree->ExecutionTimeReport();
+  *length = report.size();
+  *transformNames = new char*[*length];
+  *values = new float[*length];
+
+  int i = 0;
+  for (auto pair : report) {
+    copy_string(pair.first, *transformNames + i);
+    (*values)[i] = pair.second;
+    i++;
+  }
+}
+
+void destroy_extraction_time_report(char **transformNames,
+                                    float *values,
+                                    int length) {
+  CHECK_NULL(transformNames);
+  CHECK_NULL(values);
+
+  delete[] values;
+  for (int i = 0; i < length; i++) {
+    delete[] transformNames[i];
+  }
+  delete[] transformNames;
+}
+
+void report_extraction_graph(const FeaturesConfiguration *fc,
+                             const char *fileName) {
+  CHECK_NULL(fc);
+  CHECK_NULL(fileName);
+  fc->Tree->Dump(fileName);
+}
+
 void destroy_features_configuration(FeaturesConfiguration* fc) {
+  CHECK_NULL(fc);
+
   delete fc;
 }
 
-void free_results(void **results, int featuresCount) {
+void free_results(char **featureNames, void **results,
+                  int *resultLengths, int featuresCount) {
+  CHECK_NULL(featureNames);
+  CHECK_NULL(results);
+  CHECK_NULL(resultLengths);
+
   for (int i = 0; i < featuresCount; i++) {
-    free(results[i]);
+    delete[] featureNames[i];
+    delete[] reinterpret_cast<char*>(results[i]);
   }
-  free(results);
+  delete[] featureNames;
+  delete[] resultLengths;
+  delete[] results;
 }
+
 }

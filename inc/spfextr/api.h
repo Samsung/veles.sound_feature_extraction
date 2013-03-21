@@ -46,17 +46,45 @@ typedef enum {
 
 typedef struct FeaturesConfiguration FeaturesConfiguration;
 
+void query_transforms_list(char ***names, int *listSize) NOTNULL(1, 2);
+
+void destroy_transforms_list(char **names, int listSize) NOTNULL(1);
+
+void query_transform_details(const char *name, char **description,
+                             char ***parameterNames,
+                             char ***parameterDescriptions,
+                             char ***parameterDefaultValues,
+                             int *parametersCount) NOTNULL(1, 2, 3, 4, 5);
+
+void destroy_transform_details(char *description,
+                               char **parameterNames,
+                               char **parameterDescriptions,
+                               char **parameterDefaultValues,
+                               int parametersCount) NOTNULL(1, 2, 3, 4);
+
 FeaturesConfiguration *setup_features_extraction(
     const char *const *features, int featuresCount,
-    size_t bufferSize, int samplingRate);
+    size_t bufferSize, int samplingRate) NOTNULL(1) WARN_UNUSED_RESULT MALLOC;
 
 FeatureExtractionResult extract_speech_features(
-    const FeaturesConfiguration *fc, const int16_t *buffer,
-    void ***results);
+    const FeaturesConfiguration *fc, int16_t *buffer,
+    char ***featureNames, void ***results, int **resultLengths)
+    NOTNULL(1, 2, 3, 4);
 
-void destroy_features_configuration(FeaturesConfiguration *fc);
+void report_extraction_time(const FeaturesConfiguration *fc,
+                            char ***transformNames,
+                            float **values, int *length) NOTNULL(1, 2, 3, 4);
 
-void free_results(void **results, int featuresCount);
+void destroy_extraction_time_report(char **transformNames,
+                                    float *values, int length) NOTNULL(1, 2);
+
+void report_extraction_graph(const FeaturesConfiguration *fc,
+                             const char *fileName) NOTNULL(1, 2);
+
+void destroy_features_configuration(FeaturesConfiguration *fc) NOTNULL(1);
+
+void free_results(char **featureNames, void **results,
+                  int *resultLengths, int featuresCount) NOTNULL(1, 2, 3);
 
 #if __GNUC__ >= 4
 #pragma GCC visibility pop
