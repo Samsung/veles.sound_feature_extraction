@@ -1,4 +1,4 @@
-SUBDIRS=inc src $(TESTS_DIR) $(DOCS_DIR)
+SUBDIRS=$(FFTF_DIR) inc src $(TESTS_DIR) $(DOCS_DIR)
 DIST_SUBDIRS=inc src tests docs
 DISTCHECK_CONFIGURE_FLAGS = --disable-doxygen
 

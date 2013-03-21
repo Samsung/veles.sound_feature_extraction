@@ -2,6 +2,7 @@
 
 if [[ ! -e "fftf" ]]; then
 	git submodule update --init
+	fftf/autogen.sh
 else
     git submodule update
 fi

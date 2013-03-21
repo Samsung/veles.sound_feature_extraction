@@ -65,9 +65,6 @@ dnl Enable pkg-config
 m4_ifndef([PKG_PROG_PKG_CONFIG], AC_MSG_ERROR([Configuration requires pkg-config to be installed]))  
 PKG_PROG_PKG_CONFIG
 
-dnl Check FFTF
-PKG_CHECK_MODULES([FFTF], [fftf >= 1.0])  
-
 dnl Check for Doxygen
 AC_ARG_ENABLE([doxygen],
 	AS_HELP_STRING([--disable-doxygen], [Disable building HTML documentation with Doxygen])
@@ -88,6 +85,19 @@ AC_ARG_WITH([built-in-boost],
 	)]
 )
 AC_SUBST([BOOST_DIR])
+
+dnl Check whether to use the built-in FFTF
+AC_ARG_WITH([built-in-fftf],
+	AS_HELP_STRING([--with-built-in-fftf], [Use statically linked embedded FFTF]), [
+	FFTF_LIBTOOL=../fftf/src/libfftf.la
+	FFTF_DIR=fftf
+	AC_CONFIG_SUBDIRS([fftf])
+], [
+	dnl Check for installed FFTF
+	PKG_CHECK_MODULES([FFTF], [fftf >= 1.0])  
+])
+AC_SUBST([FFTF_LIBTOOL])
+AC_SUBST([FFTF_DIR])
 
 AS_IF([test "x$enable_doxygen" != "xno"], [
 	
