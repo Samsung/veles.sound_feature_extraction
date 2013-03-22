@@ -1,6 +1,6 @@
 include $(top_srcdir)/Makefile.common
 
-noinst_PROGRAMS = features_parser parameters transform_tree mfcc sbc wpp
+noinst_PROGRAMS = features_parser parameters transform_tree mfcc sbc wpp api
 
 GTEST_INCLUDE = -I$(top_srcdir)/tests/google
 
@@ -67,6 +67,17 @@ wpp_CPPFLAGS = $(GTEST_INCLUDE)
 
 # Used libraries
 wpp_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+api_SOURCES = api.cc
+
+# Compiler options
+api_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+api_LDADD = $(top_builddir)/src/libspfextr.la  \
 $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 

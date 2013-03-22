@@ -31,6 +31,12 @@ extern "C" {
 /* warn about unused result function attribute */
 #define WARN_UNUSED_RESULT __attribute__ ((__warn_unused_result__))
 
+#else
+
+#define MALLOC
+#define NOTNULL(...)
+#define WARN_UNUSED_RESULT
+
 #endif
 
 #if __GNUC__ >= 4

@@ -54,10 +54,22 @@ void copy_string(const std::string& str, char **ptr) {
 void query_transforms_list(char ***names, int *listSize) {
   CHECK_NULL(names);
   CHECK_NULL(listSize);
-  *listSize = TransformFactory.size();
-  *names = new char*[*listSize];
+
   int i = 0;
   for (auto tc : TransformFactory) {
+    if (tc.first.find("->") != std::string::npos) {
+      continue;
+    }
+    i += tc.second.size();
+  }
+
+  *listSize = i;
+  *names = new char*[*listSize];
+  i = 0;
+  for (auto tc : TransformFactory) {
+    if (tc.first.find("->") != std::string::npos) {
+      continue;
+    }
     if (tc.second.size() == 1) {
       copy_string(tc.first, *names + i);
       i++;
@@ -74,7 +86,7 @@ void query_transforms_list(char ***names, int *listSize) {
   }
 }
 
-void destroy_transform_names(char **names, int listSize) {
+void destroy_transforms_list(char **names, int listSize) {
   CHECK_NULL(names);
 
   for (int i = 0; i < listSize; i++) {
