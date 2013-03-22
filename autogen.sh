@@ -8,7 +8,7 @@ fi
 
 if [ ! -e "fftf/configure" ]; then
 	cd fftf
-	fftf/autogen.sh
+	./autogen.sh
 	cd ..
 fi
 
