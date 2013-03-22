@@ -1,10 +1,13 @@
 #!/bin/sh
 
-if [[ ! -e "fftf" ]]; then
-	git submodule update --init
-	fftf/autogen.sh
+if [ ! -e "fftf" ]; then
+	git submodule update --init	
 else
     git submodule update
+fi
+
+if [ ! -e "fftf/configure" ]; then
+	fftf/autogen.sh
 fi
 
 isubuntu="$(uname -v|grep Ubuntu)"
