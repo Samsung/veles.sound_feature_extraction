@@ -7,7 +7,9 @@ else
 fi
 
 if [ ! -e "fftf/configure" ]; then
+	cd fftf
 	fftf/autogen.sh
+	cd ..
 fi
 
 isubuntu="$(uname -v|grep Ubuntu)"
