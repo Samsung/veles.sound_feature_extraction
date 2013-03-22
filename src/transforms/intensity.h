@@ -34,7 +34,7 @@ class Intensity
       BuffersBase<float>* buffers) const noexcept;
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                          BuffersBase<float> *out) const noexcept;
+                  BuffersBase<float> *out) const noexcept;
 };
 
 }  // namespace Transforms
