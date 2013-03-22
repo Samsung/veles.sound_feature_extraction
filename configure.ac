@@ -92,6 +92,7 @@ AC_ARG_WITH([built-in-fftf],
 	FFTF_LIBTOOL=../fftf/src/libfftf.la
 	FFTF_DIR=fftf
 	AC_CONFIG_SUBDIRS([fftf])
+	CPPFLAGS="$CPPFLAGS -I\$(top_srcdir)/fftf/inc"
 ], [
 	dnl Check for installed FFTF
 	PKG_CHECK_MODULES([FFTF], [fftf >= 1.0])  
