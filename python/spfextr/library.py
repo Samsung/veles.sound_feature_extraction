@@ -46,13 +46,14 @@ class Library(object):
                 [POINTER(c_char_p), c_int]
             self._handle.destroy_transforms_list.restype = None
             self._handle.query_transform_details.argtypes = \
-                [c_char_p, POINTER(c_char_p), POINTER(POINTER(c_char_p)),
+                [c_char_p, POINTER(c_char_p), POINTER(c_char_p),
+                 POINTER(c_char_p), POINTER(POINTER(c_char_p)),
                  POINTER(POINTER(c_char_p)), POINTER(POINTER(c_char_p)),
                  POINTER(c_int)]
             self._handle.query_transform_details.restype = None
             self._handle.destroy_transform_details.argtypes = \
-                [c_char_p, POINTER(c_char_p), POINTER(c_char_p),
-                 POINTER(c_char_p), c_int]
+                [c_char_p, c_char_p, c_char_p, POINTER(c_char_p),
+                 POINTER(c_char_p), POINTER(c_char_p), c_int]
             self._handle.destroy_transform_details.restype = None
             self._handle.setup_features_extraction.argtypes = \
                 [POINTER(c_char_p), c_int, c_size_t, c_int]

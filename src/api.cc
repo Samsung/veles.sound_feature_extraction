@@ -96,6 +96,7 @@ void destroy_transforms_list(char **names, int listSize) {
 }
 
 void query_transform_details(const char *name, char **description,
+                             char **inputFormat, char **outputFormat,
                              char ***parameterNames,
                              char ***parameterDescriptions,
                              char ***parameterDefaultValues,
@@ -135,6 +136,8 @@ void query_transform_details(const char *name, char **description,
     transformInstance = tfit->second();
   }
   copy_string(transformInstance->Description(), description);
+  copy_string(transformInstance->InputFormat()->Id(), inputFormat);
+  copy_string(transformInstance->OutputFormat()->Id(), outputFormat);
   int pCount = transformInstance->SupportedParameters().size();
   *parametersCount = pCount;
   *parameterNames = new char*[pCount];
@@ -150,6 +153,7 @@ void query_transform_details(const char *name, char **description,
 }
 
 void destroy_transform_details(char *description,
+                               char *inputFormat, char *outputFormat,
                                char **parameterNames,
                                char **parameterDescriptions,
                                char **parameterDefaultValues,
@@ -160,6 +164,8 @@ void destroy_transform_details(char *description,
   CHECK_NULL(parameterDefaultValues);
 
   delete[] description;
+  delete[] inputFormat;
+  delete[] outputFormat;
   for (int i = 0; i < parametersCount; i++) {
     delete[] parameterNames[i];
     delete[] parameterDescriptions[i];

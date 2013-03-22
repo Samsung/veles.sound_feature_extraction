@@ -57,12 +57,14 @@ void query_transforms_list(char ***names, int *listSize) NOTNULL(1, 2);
 void destroy_transforms_list(char **names, int listSize) NOTNULL(1);
 
 void query_transform_details(const char *name, char **description,
+                             char **inputFormat, char **outputFormat,
                              char ***parameterNames,
                              char ***parameterDescriptions,
                              char ***parameterDefaultValues,
                              int *parametersCount) NOTNULL(1, 2, 3, 4, 5);
 
 void destroy_transform_details(char *description,
+                               char *inputFormat, char *outputFormat,
                                char **parameterNames,
                                char **parameterDescriptions,
                                char **parameterDefaultValues,

@@ -28,12 +28,14 @@ TEST(API, query_transforms_list) {
 
 TEST(API, query_transform_details) {
   char* description = nullptr;
+  char *inputFormat;
+  char *outputFormat;
   char** pnames = nullptr;
   char** pdescs = nullptr;
   char** pdefs = nullptr;
   int count = 0;
-  query_transform_details("Window", &description, &pnames, &pdescs, &pdefs,
-                          &count);
+  query_transform_details("Window", &description, &inputFormat, &outputFormat,
+                          &pnames, &pdescs, &pdefs, &count);
   ASSERT_NE(nullptr, description);
   ASSERT_NE(nullptr, pnames);
   ASSERT_NE(nullptr, pdescs);
@@ -44,7 +46,8 @@ TEST(API, query_transform_details) {
     ASSERT_NE(nullptr, pdescs[i]);
     ASSERT_NE(nullptr, pdefs[i]);
   }
-  destroy_transform_details(description, pnames, pdescs, pdefs, count);
+  destroy_transform_details(description, inputFormat, outputFormat,
+                            pnames, pdescs, pdefs, count);
 }
 
 #include "tests/google/src/gtest_main.cc"
