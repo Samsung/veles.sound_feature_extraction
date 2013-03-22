@@ -16,20 +16,27 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-TemplateTransform::TemplateTransform()
-  : UniformFormatTransform(SupportedParameters()) {
+TemplateTransform::TemplateTransform() {
+  RegisterSetter("name", [&](const std::string& value) {
+    int pv = Parse<int>("length", value);
+
+    return true;
+  });
+  RegisterSetter("other_name", [&](const std::string& value) {
+    int pv = Parse<int>("step", value);
+
+    return true;
+  });
 }
 
 void TemplateTransform::Initialize() const noexcept {
 }
 
-void TemplateTransform::SetParameter(const std::string& name,
-                                     const std::string& value) {
-}
 
 void TemplateTransform::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
+  buffers->Initialize(in.Size(), inputFormat_->Size());
 }
 
 void TemplateTransform::Do(

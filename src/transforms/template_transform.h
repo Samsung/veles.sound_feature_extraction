@@ -25,7 +25,7 @@ class TemplateTransform
  public:
   TemplateTransform();
 
-  TRANSFORM_INTRO("!Template", "")
+  TRANSFORM_INTRO("Name", "Description")
 
   TRANSFORM_PARAMETERS(
       TP("name", "description", "default value")
@@ -35,8 +35,6 @@ class TemplateTransform
   virtual void Initialize() const noexcept;
 
  protected:
-  virtual void SetParameter(const std::string& name, const std::string& value);
-
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
