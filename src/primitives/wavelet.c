@@ -176,7 +176,7 @@ void wavelet_apply_na(WaveletType type, int order,
       float reshi = .0f, reslo = .0f;
       for (int j = 0; j < order; j++) {
         int index = i + j;
-        float srcval = src[index < ilength? index : index - ilength];
+        float srcval = src[index < ilength? index : index % ilength];
         reshi += highpassC[j] * srcval;
         reslo += lowpassC[j] * srcval;
       }
@@ -305,7 +305,7 @@ static void wavelet_apply4(WaveletType type,
     float reshi = .0f, reslo = .0f;
     for (int j = 0; j < 4; j++) {
       int index = i + j;
-      float srcval = src[index < ilength? index : index - ilength];
+      float srcval = src[index < ilength? index : index % ilength];
       reshi += highpassC[j] * srcval;
       reslo += lowpassC[j] * srcval;
     }
@@ -400,7 +400,7 @@ static void wavelet_apply6(WaveletType type,
     float reshi = .0f, reslo = .0f;
     for (int j = 0; j < 6; j++) {
       int index = i + j;
-      float srcval = src[index < ilength? index : index - ilength];
+      float srcval = src[index < ilength? index : index % ilength];
       reshi += highpassC[j] * srcval;
       reslo += lowpassC[j] * srcval;
     }
@@ -483,7 +483,7 @@ static void wavelet_apply8(WaveletType type,
     float reshi = .0f, reslo = .0f;
     for (int j = 0; j < 8; j++) {
       int index = i + j;
-      float srcval = src[index < ilength? index : index - ilength];
+      float srcval = src[index < ilength? index : index % ilength];
       reshi += highpassC[j] * srcval;
       reslo += lowpassC[j] * srcval;
     }
@@ -598,7 +598,7 @@ static void wavelet_apply12(WaveletType type,
     float reshi = .0f, reslo = .0f;
     for (int j = 0; j < 12; j++) {
       int index = i + j;
-      float srcval = src[index < ilength? index : index - ilength];
+      float srcval = src[index < ilength? index : index % ilength];
       reshi += highpassC[j] * srcval;
       reslo += lowpassC[j] * srcval;
     }
@@ -700,7 +700,7 @@ static void wavelet_apply16(WaveletType type,
     float reshi = .0f, reslo = .0f;
     for (int j = 0; j < 16; j++) {
       int index = i + j;
-      float srcval = src[index < ilength? index : index - ilength];
+      float srcval = src[index < ilength? index : index % ilength];
       reshi += highpassC[j] * srcval;
       reslo += lowpassC[j] * srcval;
     }
