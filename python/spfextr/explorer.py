@@ -6,82 +6,58 @@ Created on Mar 21, 2013
 
 
 import logging
-from library import Library
 from ctypes import POINTER, c_char_p, c_int, byref
-
-
-class TransformParameter(object):
-    def __init__(self, name, description, default_value):
-        self.name = str(name)
-        self.description = str(description)
-        self.default_value = str(default_value)
-
-
-class Transform(object):
-    """
-    Stores information about a libSpeechFeatureExtraction transform.
-    """
-    def __init__(self, name, description, parameters,
-                 inputFormat, outputFormat):
-        self.name = name
-        self.description = description
-        self.parameters = parameters
-        self.input_format = inputFormat
-        self.output_format = outputFormat
-
-    def __str__(self):
-        result = self.name + "\n" + "=" * len(self.name) + "\n\n" + \
-                 self.description + "\n\nParameters:\n"
-        for param in self.parameters:
-            result += param + "\n"
-        return result
+from spfextr.library import Library
+from spfextr.transform import Transform, TransformParameter
 
 
 class Explorer(object):
-    """
+    '''
     Provides information about implemented transforms.
-    """
+    '''
 
     def __init__(self):
         if not self.transforms:
             names = POINTER(c_char_p)()
-            listSize = c_int()
+            list_size = c_int()
             logging.debug("query_transforms_list()")
-            Library().query_transforms_list(byref(names), byref(listSize))
-            logging.debug("Got the list of " + str(listSize.value) + \
+            Library().query_transforms_list(byref(names), byref(list_size))
+            logging.debug("Got the list of " + str(list_size.value) + \
                           " transforms")
             self.transforms = {}
-            for i in range(0, listSize.value):
+            for i in range(0, list_size.value):
                 description = c_char_p()
                 input_format = c_char_p()
                 output_format = c_char_p()
-                pNames = POINTER(c_char_p)()
-                pDescs = POINTER(c_char_p)()
-                pDefs = POINTER(c_char_p)()
-                pCount = c_int()
-                transformName = names[i].decode()
+                p_names = POINTER(c_char_p)()
+                p_descs = POINTER(c_char_p)()
+                p_defs = POINTER(c_char_p)()
+                p_count = c_int()
+                transform_name = names[i].decode()
                 logging.debug("query_transform_details(" + \
-                              transformName + ")")
+                              transform_name + ")")
                 Library().query_transform_details(names[i], byref(description),
                                                   byref(input_format),
                                                   byref(output_format),
-                                                  byref(pNames), byref(pDescs),
-                                                  byref(pDefs), byref(pCount))
+                                                  byref(p_names),
+                                                  byref(p_descs),
+                                                  byref(p_defs),
+                                                  byref(p_count))
                 parameters = {}
-                for j in range(0, pCount.value):
-                    pName = pNames[j].decode()
-                    parameters[pName] = TransformParameter(pNames[j].decode(),
-                                                           pDescs[j].decode(),
-                                                           pDefs[j].decode())
-                self.transforms[transformName] = Transform(transformName,
+                for j in range(0, p_count.value):
+                    p_name = p_names[j].decode()
+                    parameters[p_name] = TransformParameter(
+                        p_names[j].decode(), p_descs[j].decode(),
+                        p_defs[j].decode())
+                self.transforms[transform_name] = Transform(transform_name,
                                                            description.value,
+                                                           parameters, None,
                                                            input_format.value,
-                                                           output_format.value,
-                                                           parameters)
+                                                           output_format.value)
                 Library().destroy_transform_details(description, input_format,
-                                                    output_format, pNames,
-                                                    pDescs, pDefs, pCount)
-            Library().destroy_transforms_list(names, listSize)
+                                                    output_format, p_names,
+                                                    p_descs, p_defs, p_count)
+            Library().destroy_transforms_list(names, list_size)
             logging.debug("Done with getting transforms")
 
     def __new__(cls):
@@ -91,12 +67,3 @@ class Explorer(object):
 
     _instance = None
     transforms = None
-
-
-def main():
-    logging.basicConfig(level=logging.DEBUG)
-    Library("/home/markhor/Development/spfextr/build/src/.libs/libspfextr.so")
-    Explorer()
-
-if __name__ == '__main__':
-    main()

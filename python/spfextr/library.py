@@ -18,9 +18,9 @@ class FeaturesConfiguration(Structure):
 
 
 class Library(object):
-    """
+    '''
     Loads the spfextr.so shared library and wraps the handle.
-    """
+    '''
 
     def __init__(self, path=None):
         if not self._handle:
@@ -79,7 +79,7 @@ class Library(object):
                 [POINTER(FeaturesConfiguration)]
             self._handle.destroy_features_configuration.restype = None
             self._handle.free_results.argtypes = \
-                [POINTER(c_char_p), POINTER(c_void_p), POINTER(c_int), c_int]
+                [c_int, POINTER(c_char_p), POINTER(c_void_p), POINTER(c_int)]
             self._handle.free_results.restype = None
             logging.debug("Finished loading functions")
 
