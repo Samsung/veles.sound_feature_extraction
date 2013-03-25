@@ -46,8 +46,8 @@ extern "C" {
 #define MAX_FEATURES_COUNT 256
 
 typedef enum {
-  FEATURE_EXTRACTION_RESULT_OK,
-  FEATURE_EXTRACTION_RESULT_ERROR
+  FEATURE_EXTRACTION_RESULT_OK = 0,
+  FEATURE_EXTRACTION_RESULT_ERROR = 1
 } FeatureExtractionResult;
 
 typedef struct FeaturesConfiguration FeaturesConfiguration;
@@ -77,7 +77,7 @@ FeaturesConfiguration *setup_features_extraction(
 FeatureExtractionResult extract_speech_features(
     const FeaturesConfiguration *fc, int16_t *buffer,
     char ***featureNames, void ***results, int **resultLengths)
-    NOTNULL(1, 2, 3, 4);
+    NOTNULL(1, 2, 3, 4, 5);
 
 void report_extraction_time(const FeaturesConfiguration *fc,
                             char ***transformNames,
@@ -91,8 +91,8 @@ void report_extraction_graph(const FeaturesConfiguration *fc,
 
 void destroy_features_configuration(FeaturesConfiguration *fc) NOTNULL(1);
 
-void free_results(char **featureNames, void **results,
-                  int *resultLengths, int featuresCount) NOTNULL(1, 2, 3);
+void free_results(int featuresCount, char **featureNames,
+                  void **results, int *resultLengths) NOTNULL(2, 3, 4);
 
 #if __GNUC__ >= 4
 #pragma GCC visibility pop

@@ -35,13 +35,17 @@ struct FeaturesConfiguration {
   std::shared_ptr<TransformTree> Tree;
 };
 
+#define BLAME(x) fprintf(stderr, "Error: " #x " is null (function %s, " \
+                                 "line %i)\n", \
+                         __FUNCTION__, __LINE__)
+
 #define CHECK_NULL(x) do { if (x == nullptr) { \
-    fprintf(stderr, "Error: " #x " is null\n"); \
+    BLAME(x); \
     return; \
 } } while(0)
 
 #define CHECK_NULL_RET(x, ret) do { if (x == nullptr) { \
-    fprintf(stderr, "Error: " #x " is null\n"); \
+    BLAME(x); \
     return ret; \
 } } while(0)
 
@@ -326,19 +330,31 @@ void destroy_features_configuration(FeaturesConfiguration* fc) {
   delete fc;
 }
 
-void free_results(char **featureNames, void **results,
-                  int *resultLengths, int featuresCount) {
-  CHECK_NULL(featureNames);
-  CHECK_NULL(results);
-  CHECK_NULL(resultLengths);
+void free_results(int featuresCount, char **featureNames,
+                  void **results, int *resultLengths) {
+  if(featuresCount <= 0) {
+    fprintf(stderr, "Warning: free_results() was called with featuresCount"
+                    " <= 0, skipped");
+    return;
+  }
 
   for (int i = 0; i < featuresCount; i++) {
-    delete[] featureNames[i];
-    delete[] reinterpret_cast<char*>(results[i]);
+    if (featureNames != nullptr) {
+      delete[] featureNames[i];
+    }
+    if (results != nullptr) {
+      delete[] reinterpret_cast<char*>(results[i]);
+    }
   }
-  delete[] featureNames;
-  delete[] resultLengths;
-  delete[] results;
+  if (featureNames != nullptr) {
+    delete[] featureNames;
+  }
+  if (resultLengths != nullptr) {
+    delete[] resultLengths;
+  }
+  if (results != nullptr) {
+    delete[] results;
+  }
 }
 
 }
