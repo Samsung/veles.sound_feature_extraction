@@ -22,10 +22,12 @@ TEST(Features, Parse) {
       "MFCC[Window(length=25, step=10), DFT, MelFreq(size=16), "
           "Log10, DCT(engine=Kiss)]",
       "PLP[Window(length=25, step=10), IntensityLoudness(direction=i2l), "
-          "IDFT, AutoRegressiveAnalysis(), LPCtoCC]"
+          "IDFT, AutoRegressiveAnalysis(), LPCtoCC]",
+      "SBC [Window(length = 32), RDFT]"
   };
   auto result = Parse(lines);
-  ASSERT_EQ(result.size(), 2);
+  ASSERT_EQ(result.size(), 3);
+  result.erase("SBC");
   auto it = result.begin();
   EXPECT_STREQ("PLP", it->first.c_str());
   EXPECT_EQ(5, it->second.size());

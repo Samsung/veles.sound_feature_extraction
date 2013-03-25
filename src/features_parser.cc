@@ -50,7 +50,7 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures) {
   RawFeaturesMap ret;
 
   static const boost::regex featureRegex(
-      "(^\\w+\\d*)\\[([^\\]]+)\\]\\s*");
+      "(^\\w+\\d*)\\s*\\[([^\\]]+)\\]\\s*");
   static const boost::regex transformsRegex(
       "(\\w+\\d*\\s*(\\([^\\)]*\\))?)\\s*,\\s*");
   static const boost::regex transformsEndRegex(
