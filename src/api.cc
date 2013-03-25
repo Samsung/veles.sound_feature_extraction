@@ -56,7 +56,7 @@ void query_transforms_list(char ***names, int *listSize) {
   CHECK_NULL(listSize);
 
   int i = 0;
-  for (auto tc : TransformFactory) {
+  for (auto tc : TransformFactory::Instance().Map()) {
     if (tc.first.find("->") != std::string::npos) {
       continue;
     }
@@ -66,7 +66,7 @@ void query_transforms_list(char ***names, int *listSize) {
   *listSize = i;
   *names = new char*[*listSize];
   i = 0;
-  for (auto tc : TransformFactory) {
+  for (auto tc : TransformFactory::Instance().Map()) {
     if (tc.first.find("->") != std::string::npos) {
       continue;
     }
@@ -117,8 +117,8 @@ void query_transform_details(const char *name, char **description,
     formatName = fullName.substr(bracePos + 1);
     formatName.resize(formatName.size() - 1);
   }
-  auto tit = TransformFactory.find(transformName);
-  if (tit == TransformFactory.end()) {
+  auto tit = TransformFactory::Instance().Map().find(transformName);
+  if (tit == TransformFactory::Instance().Map().end()) {
     fprintf(stderr, "Error: transform %s was not found.\n", fullName.c_str());
     return;
   }

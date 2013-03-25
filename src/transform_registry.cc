@@ -16,13 +16,31 @@
 
 namespace SpeechFeatureExtraction {
 
-std::unordered_map<std::string,
-                   std::unordered_map<std::string,
-                                      TransformConstructor>>
-TransformFactory;
+TransformFactory::TransformFactory() {
+}
 
-void PrintRegisteredTransforms() {
-  for (auto tit : SpeechFeatureExtraction::TransformFactory) {
+TransformFactory::~TransformFactory() {
+}
+
+const TransformFactory& TransformFactory::Instance() {
+  return InstanceRW();
+}
+
+const TransformFactory::FactoryMap& TransformFactory::Map() const {
+  return map_;
+}
+
+TransformFactory& TransformFactory::InstanceRW() {
+  static TransformFactory instance;
+  return instance;
+}
+
+TransformFactory::FactoryMap& TransformFactory::MapRW() {
+  return map_;
+}
+
+void TransformFactory::PrintRegisteredTransforms() const {
+  for (auto tit : map_) {
     printf("%s\n", tit.first.c_str());
   }
 }
