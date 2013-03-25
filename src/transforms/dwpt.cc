@@ -77,7 +77,13 @@ void DWPT::Do(
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();
-    filterBank_->Apply(input, length, output);
+    if (input != output) {
+      // Force const float* Apply() overload
+      filterBank_->Apply(reinterpret_cast<const float*>(input),
+                         length, output);
+    } else {
+      filterBank_->Apply(output, length, output);
+    }
   }
 }
 

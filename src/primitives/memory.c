@@ -59,7 +59,7 @@ void *malloc_aligned(size_t size) {
 #elif defined(__ARM_NEON__)
                      64,
 #else
-                     1,
+                     32,
 #endif
                      size) != 0) {
     return NULL;

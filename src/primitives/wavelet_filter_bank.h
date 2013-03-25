@@ -31,6 +31,7 @@ class WaveletFilterBank {
                              std::vector<int>&& treeDescription);
 
   void Apply(const float* source, size_t length, float *result) noexcept;
+  void Apply(float* source, size_t length, float *result) noexcept;
 
   static void ValidateOrder(WaveletType type, int order);
   static std::string WaveletTypeToString(WaveletType type) noexcept;

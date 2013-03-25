@@ -12,6 +12,7 @@
 
 #include <gtest/gtest.h>
 #include <chrono>
+#include "src/primitives/arithmetic-inl.h"
 #define WAVELET_INTERNAL_USE
 #include "src/primitives/daubechies.h"
 #include "src/primitives/coiflets.h"
@@ -36,21 +37,21 @@ TEST(Wavelet, wavelet_prepare_array) {
   ASSERT_EQ(0, memcmp(array + 2, res + length, checkSize));
   ASSERT_EQ(0, memcmp(array + 4, res + length * 2 - 8, checkSize));
   ASSERT_EQ(0, memcmp(array + 6, res + length * 3 - 16, checkSize));
-  free(res);
 #else
   ASSERT_EQ(0, memcmp(res, array, sizeof(array)));
 #endif
+  free(res);
 
   res = wavelet_prepare_array(4, array, length);
 
-  #ifdef __AVX__
-    ASSERT_EQ(0, align_complement_f32(res));
-    ASSERT_EQ(0, memcmp(array, res, length * sizeof(float)));  // NOLINT(*)
-    ASSERT_EQ(0, memcmp(array + 2, res + length, checkSize));
-    free(res);
-  #else
-    ASSERT_EQ(0, memcmp(res, array, sizeof(array)));
-  #endif
+#ifdef __AVX__
+  ASSERT_EQ(0, align_complement_f32(res));
+  ASSERT_EQ(0, memcmp(array, res, length * sizeof(float)));  // NOLINT(*)
+  ASSERT_EQ(0, memcmp(array + 2, res + length, checkSize));
+#else
+  ASSERT_EQ(0, memcmp(res, array, sizeof(array)));
+#endif
+  free(res);
 }
 
 TEST(Wavelet, wavelet_allocate_destination) {
@@ -155,11 +156,10 @@ TEST(Wavelet, wavelet_apply) {
 
   free(desthi);
   free(destlo);
-#ifdef __AVX__
   free(prep);
-#endif
 }
 
+#ifdef SIMD
 TEST(Wavelet, SIMDSpeedup) {
   float array[512];
   const int length = sizeof(array) / sizeof(float);  // NOLINT(*)
@@ -199,10 +199,9 @@ TEST(Wavelet, SIMDSpeedup) {
 
     free(desthi);
     free(destlo);
-#ifdef __AVX__
     free(prep);
-#endif
   }
 }
+#endif
 
 #include "tests/google/src/gtest_main.cc"

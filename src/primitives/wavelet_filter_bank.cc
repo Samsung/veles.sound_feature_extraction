@@ -158,21 +158,29 @@ void WaveletFilterBank::Apply(const float* source, size_t length,
   assert(source && result);
   ValidateLength(tree_, length);
 
+  auto lsrc = std::shared_ptr<float>(
+      wavelet_prepare_array(order_, source, length), free);
+  Apply(lsrc.get(), length, result);
+}
+
+void WaveletFilterBank::Apply(float* source, size_t length,
+                              float *result) noexcept {
+  assert(source && result);
+  ValidateLength(tree_, length);
+
   std::vector<int> tree(tree_);
   std::reverse(tree.begin(), tree.end());
   std::vector<int> workingTree;
   workingTree.reserve(tree.size());
 
-  auto lsrc = std::shared_ptr<float>(
-      wavelet_prepare_array(order_, source, length), free);
   auto ldesthi = std::shared_ptr<float>(
       wavelet_allocate_destination(order_, length), free);
   auto ldestlo = std::shared_ptr<float>(
       wavelet_allocate_destination(order_, length), free);
-  wavelet_apply(type_, order_, lsrc.get(), length,
+  wavelet_apply(type_, order_, source, length,
                 ldesthi.get(), ldestlo.get());
   float *desthihi, *desthilo, *destlohi, *destlolo;
-  wavelet_recycle_source(order_, lsrc.get(), length,
+  wavelet_recycle_source(order_, source, length,
                          &desthihi, &desthilo,
                          &destlohi, &destlolo);
   workingTree.push_back(1);

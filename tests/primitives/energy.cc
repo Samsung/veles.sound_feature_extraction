@@ -13,8 +13,13 @@
 
 #include <gtest/gtest.h>
 #include "src/primitives/energy.h"
+#include "src/primitives/arithmetic-inl.h"
 
+#ifdef SIMD
 #define EPSILON 0.005f
+#else
+#define EPSILON 0.5f
+#endif
 
 #define ASSERT_EQF(a, b) do { \
   ASSERT_GT(a + EPSILON, b); \

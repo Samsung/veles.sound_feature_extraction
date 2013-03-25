@@ -93,7 +93,7 @@ const noexcept {
 #ifdef __AVX__
   int16_t intbuf[inDataStep_] __attribute__ ((aligned (32)));  // NOLINT(*)
 #endif
-  float fbuf[inDataStep_] __attribute__ ((aligned (32)));  // NOLINT(*)
+  float fbuf[inDataStep_] __attribute__ ((aligned (64)));  // NOLINT(*)
   float* window = window_.get();
 
   for (size_t i = 0; i < in.Size(); i++) {

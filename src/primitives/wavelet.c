@@ -88,13 +88,14 @@ float *wavelet_prepare_array(int order
 ) {
   check_length(length);
 #ifndef __AVX__
-  return (float*)src;
+  float *res = mallocf(length);
+  memcpy(res, src, length * sizeof(src[0]));
 #else
   size_t alength = aligned_length(length, 8);
   float *res = mallocf(alength * (order > 4? 4 : 2));
   wavelet_prepare_array_memcpy(order, src, length, res);
-  return res;
 #endif
+  return res;
 }
 
 float *wavelet_allocate_destination(int order
@@ -183,7 +184,7 @@ void wavelet_apply_na(WaveletType type, int order,
   float highpassC[order], lowpassC[order];
   initialize_highpass_lowpass(type, order, highpassC, lowpassC);
 
-  if (ilength > order) {
+  if (ilength != order) {
     for (int i = 0, di = 0; i < ilength; i += 2, di++) {
       float reshi = .0f, reslo = .0f;
       for (int j = 0; j < order; j++) {
@@ -201,7 +202,7 @@ void wavelet_apply_na(WaveletType type, int order,
         float reshi = .0f, reslo = .0f;
         for (int j = 0; j < 8; j++) {
           int index = i + j;
-          float srcval = src[index < 8? index : index - 8];
+          float srcval = src[index < 8? index : index % 8];
           reshi += highpassC[j] * srcval;
           reslo += lowpassC[j] * srcval;
         }
@@ -213,7 +214,7 @@ void wavelet_apply_na(WaveletType type, int order,
         float reshi = .0f, reslo = .0f;
         for (int j = 0; j < order; j++) {
           int index = i + j;
-          float srcval = src[index < order? index : index - order];
+          float srcval = src[index < order? index : index % order];
           reshi += highpassC[j] * srcval;
           reslo += lowpassC[j] * srcval;
         }
