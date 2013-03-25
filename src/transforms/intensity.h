@@ -13,7 +13,6 @@
 #ifndef SRC_TRANSFORMS_INTENSITY_H_
 #define SRC_TRANSFORMS_INTENSITY_H_
 
-#include <string>
 #include "src/formats/window_format.h"
 #include "src/formats/single_format.h"
 #include "src/transform_base.h"

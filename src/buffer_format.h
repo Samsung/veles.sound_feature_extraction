@@ -15,7 +15,6 @@
 
 #include <functional>
 #include <set>
-#include <string>
 #include "src/exceptions.h"
 
 namespace SpeechFeatureExtraction {

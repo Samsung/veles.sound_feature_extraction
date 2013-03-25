@@ -13,7 +13,6 @@
 #ifndef SRC_FORMAT_CONVERTER_BASE_H_
 #define SRC_FORMAT_CONVERTER_BASE_H_
 
-#include <string>
 #include "src/format_converter.h"
 #include "src/transform_base.h"
 

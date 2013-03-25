@@ -11,7 +11,6 @@
  */
 
 #include "src/transforms/fir_filter_base.h"
-#include <string>
 #include "src/primitives/convolute.h"
 #include "src/primitives/arithmetic-inl.h"
 

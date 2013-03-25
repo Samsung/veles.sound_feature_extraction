@@ -11,7 +11,6 @@
  */
 
 #include "src/transforms/template_transform.h"
-#include <string>
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {

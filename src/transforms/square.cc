@@ -28,11 +28,8 @@ void SquareRaw::OnInputFormatChanged() {
 void SquareRaw::InitializeBuffers(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw32>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_->Size()
-#ifdef __AVX__
-                      , in[0]->AlignmentOffset()
-#endif
-                      );  // NOLINT(whitespace/parens)
+  buffers->Initialize(in.Size(), inputFormat_->Size(),
+                      in[0]->AlignmentOffset());
 }
 
 void SquareRaw::Do(

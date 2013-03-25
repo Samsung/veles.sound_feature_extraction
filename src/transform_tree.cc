@@ -177,8 +177,8 @@ void TransformTree::AddTransform(const std::string& name,
                                  const std::string& parameters,
                                  std::shared_ptr<Node>* currentNode) {
   // Search for the constructor of the transform "tname"
-  auto tfit = TransformFactory.find(name);
-  if (tfit == TransformFactory.end()) {
+  auto tfit = TransformFactory::Instance().Map().find(name);
+  if (tfit == TransformFactory::Instance().Map().end()) {
     throw TransformNotRegisteredException(name);
   }
   // tfit is actually a map from input format to real constructor

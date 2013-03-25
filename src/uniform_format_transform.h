@@ -13,7 +13,6 @@
 #ifndef SRC_UNIFORM_FORMAT_TRANSFORM_H_
 #define SRC_UNIFORM_FORMAT_TRANSFORM_H_
 
-#include <string>
 #include "src/transform_base.h"
 
 namespace SpeechFeatureExtraction {

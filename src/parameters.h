@@ -14,7 +14,6 @@
 #define SRC_PARAMETERS_H_
 
 #include <memory>
-#include <string>
 #include <unordered_map>  // NOLINT(build/include_order)
 #include "src/exceptions.h"
 

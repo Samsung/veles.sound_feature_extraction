@@ -12,7 +12,6 @@
 
 #include "src/transforms/intensity.h"
 #include <math.h>
-#include <string>
 #include "src/primitives/energy.h"
 
 namespace SpeechFeatureExtraction {

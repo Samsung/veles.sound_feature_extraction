@@ -13,7 +13,6 @@
 #ifndef SRC_TRANSFORMS_BANDPASS_FILTER_H_
 #define SRC_TRANSFORMS_BANDPASS_FILTER_H_
 
-#include <string>
 #include "src/transforms/fir_filter_base.h"
 
 namespace SpeechFeatureExtraction {

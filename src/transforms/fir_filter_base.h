@@ -13,7 +13,6 @@
 #ifndef SRC_TRANSFORMS_FIR_FILTER_BASE_H_
 #define SRC_TRANSFORMS_FIR_FILTER_BASE_H_
 
-#include <string>
 #include <vector>
 #include "src/uniform_format_transform.h"
 #include "src/formats/format_limits.h"

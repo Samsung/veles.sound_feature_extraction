@@ -12,7 +12,6 @@
 
 #include "src/transforms/filter_bank.h"
 #include <math.h>
-#include <string>
 #include "src/formats/format_limits.h"
 #include "src/primitives/arithmetic-inl.h"
 

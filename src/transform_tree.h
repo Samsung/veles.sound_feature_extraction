@@ -14,10 +14,6 @@
 #define SRC_TRANSFORM_TREE_H_
 
 #include <chrono>
-#include <set>
-#include <string>
-#include <utility>
-#include <vector>
 #include "src/formats/raw_format.h"
 #include "src/exceptions.h"
 #include "src/transform.h"

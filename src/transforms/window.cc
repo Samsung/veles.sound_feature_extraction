@@ -11,7 +11,6 @@
  */
 
 #include "src/transforms/window.h"
-#include <string>
 #include "src/formats/format_limits.h"
 #include "src/primitives/arithmetic-inl.h"
 
@@ -91,8 +90,10 @@ void Window::Do(const BuffersBase<Formats::Raw16>& in,
                         BuffersBase<Formats::Window16> *out)
 const noexcept {
   BuffersBase<Formats::Window16>& outref = *out;
-  int16_t intbuf[inDataStep_] __attribute__ ((aligned (64)));  // NOLINT(*)
-  float fbuf[inDataStep_] __attribute__ ((aligned (64)));  // NOLINT(*)
+#ifdef __AVX__
+  int16_t intbuf[inDataStep_] __attribute__ ((aligned (32)));  // NOLINT(*)
+#endif
+  float fbuf[inDataStep_] __attribute__ ((aligned (32)));  // NOLINT(*)
   float* window = window_.get();
 
   for (size_t i = 0; i < in.Size(); i++) {

@@ -11,7 +11,6 @@
  */
 
 #include "src/transforms/unpack_rdft.h"
-#include <string>
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {

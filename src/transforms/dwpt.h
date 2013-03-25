@@ -13,7 +13,6 @@
 #ifndef SRC_TRANSFORMS_DWPT_H_
 #define SRC_TRANSFORMS_DWPT_H_
 
-#include <string>
 #include <vector>
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"

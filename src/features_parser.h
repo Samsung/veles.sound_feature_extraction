@@ -13,9 +13,7 @@
 #ifndef SRC_FEATURES_PARSER_H_
 #define SRC_FEATURES_PARSER_H_
 
-#include <string>
 #include <unordered_map>  // NOLINT(build/include_order)
-#include <utility>
 #include <vector>
 #include "src/exceptions.h"
 

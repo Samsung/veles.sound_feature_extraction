@@ -13,7 +13,6 @@
 #ifndef SRC_TRANSFORMS_FILTER_BANK_H_
 #define SRC_TRANSFORMS_FILTER_BANK_H_
 
-#include <string>
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
 

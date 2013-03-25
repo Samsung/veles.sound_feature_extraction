@@ -12,7 +12,6 @@
 
 #define __STDC_LIMIT_MACROS
 #include "src/transforms/real_to_complex.h"
-#include <string>
 #ifdef __AVX__
 #include <immintrin.h>  // NOLINT(build/include_order)
 #elif defined(__ARM_NEON__)

@@ -13,7 +13,6 @@
 #ifndef SRC_TRANSFORMS_WINDOW_H_
 #define SRC_TRANSFORMS_WINDOW_H_
 
-#include <string>
 #include "src/formats/raw_format.h"
 #include "src/formats/window_format.h"
 #include "src/transform_base.h"

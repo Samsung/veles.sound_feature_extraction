@@ -13,8 +13,6 @@
 #ifndef SRC_TRANSFORM_H_
 #define SRC_TRANSFORM_H_
 
-#include <string>
-#include <unordered_map>  // NOLINT(build/include_order)
 #include "src/config.h"
 #include "src/buffer_format.h"
 #include "src/buffers.h"
@@ -22,6 +20,7 @@
 
 namespace SpeechFeatureExtraction {
 
+/// @brief Transform abstract class.
 class Transform : public virtual IParameterizable {
  public:
   virtual ~Transform() {}

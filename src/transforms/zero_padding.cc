@@ -11,7 +11,6 @@
  */
 
 #include "src/transforms/zero_padding.h"
-#include <string>
 #include "src/primitives/arithmetic-inl.h"
 
 namespace SpeechFeatureExtraction {
