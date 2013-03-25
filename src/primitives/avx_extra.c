@@ -12,7 +12,9 @@
 
 #include "src/primitives/avx_extra.h"
 
+#ifdef __AVX__
 float ElementAt(__m256 vector, int index) {
   return vector[index];
 }
+#endif
 

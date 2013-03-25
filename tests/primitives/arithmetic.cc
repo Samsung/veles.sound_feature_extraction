@@ -13,6 +13,7 @@
 #include <gtest/gtest.h>
 #include "src/primitives/arithmetic-inl.h"
 
+#ifdef SIMD
 TEST(Arithmetic, int16_multiply) {
   int16_t a[16], b[16] __attribute__ ((aligned (64)));  // NOLINT(*)
   int32_t res[16] __attribute__ ((aligned (64)));  // NOLINT(*)
@@ -47,6 +48,7 @@ TEST(Arithmetic, int16_multiply) {
 #endif
 #endif
 }
+#endif
 
 /*
 void DebugPrint__m256(const char* name, __m256 vec) {

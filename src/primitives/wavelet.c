@@ -77,14 +77,18 @@ int wavelet_validate_order(WaveletType type, int order) {
   }
 }
 
-float *wavelet_prepare_array(int order, const float *src, size_t length
+float *wavelet_prepare_array(int order
+#ifndef __AVX__
+                            UNUSED
+#endif
+                            , const float *src, size_t length
 #ifndef __AVX__
                              UNUSED
 #endif
 ) {
   check_length(length);
 #ifndef __AVX__
-  return src;
+  return (float*)src;
 #else
   size_t alength = aligned_length(length, 8);
   float *res = mallocf(alength * (order > 4? 4 : 2));
@@ -93,7 +97,11 @@ float *wavelet_prepare_array(int order, const float *src, size_t length
 #endif
 }
 
-float *wavelet_allocate_destination(int order, size_t sourceLength) {
+float *wavelet_allocate_destination(int order
+#ifndef __AVX__
+                            UNUSED
+#endif
+                            , size_t sourceLength) {
   check_length(sourceLength);
   assert(sourceLength % 4 == 0);
 
@@ -106,7 +114,11 @@ float *wavelet_allocate_destination(int order, size_t sourceLength) {
   return res;
 }
 
-void wavelet_recycle_source(int order, float *src, size_t length,
+void wavelet_recycle_source(int order
+#ifndef __AVX__
+                            UNUSED
+#endif
+                            , float *src, size_t length,
                             float **desthihi, float **desthilo,
                             float **destlohi, float **destlolo) {
   if (length == 0 || length % 4 != 0) {
@@ -239,7 +251,7 @@ static void wavelet_apply4(WaveletType type,
       length < 4
 #endif
   ) {
-    wavelet_apply_na(type, 4, src, 4, desthi, destlo);
+    wavelet_apply_na(type, 4, src, length, desthi, destlo);
     return;
   }
 
@@ -318,7 +330,9 @@ static void wavelet_apply4(WaveletType type,
     wavelet_prepare_array_memcpy(4, destlo, length / 2, destlo);
   }
 #endif  // #ifdef __AVX__
-#endif  // #ifdef SIMD
+#else  // #ifdef SIMD
+  wavelet_apply_na(type, 4, src, length, desthi, destlo);
+#endif
 }
 
 static void wavelet_apply6(WaveletType type,
@@ -331,7 +345,7 @@ static void wavelet_apply6(WaveletType type,
   assert(align_complement_f32(src) == 0);
 
   if (align_complement_f32(src) != 0 || length < 8) {
-    wavelet_apply_na(type, 6, src, 6, desthi, destlo);
+    wavelet_apply_na(type, 6, src, length, desthi, destlo);
     return;
   }
 
@@ -413,7 +427,9 @@ static void wavelet_apply6(WaveletType type,
     wavelet_prepare_array_memcpy(6, destlo, length / 2, destlo);
   }
 #endif  // #ifdef __AVX__
-#endif  // #ifdef SIMD
+#else  // #ifdef SIMD
+  wavelet_apply_na(type, 6, src, length, desthi, destlo);
+#endif
 }
 
 static void wavelet_apply8(WaveletType type,
@@ -424,7 +440,7 @@ static void wavelet_apply8(WaveletType type,
   check_length(length);
   assert(src && desthi && destlo);
   if (align_complement_f32(src) != 0 || length < 8) {
-    wavelet_apply_na(type, 8, src, 8, desthi, destlo);
+    wavelet_apply_na(type, 8, src, length, desthi, destlo);
     return;
   }
 
@@ -496,7 +512,9 @@ static void wavelet_apply8(WaveletType type,
     wavelet_prepare_array_memcpy(8, destlo, length / 2, destlo);
   }
 #endif  // #ifdef __AVX__
-#endif  // #ifdef SIMD
+#else  // #ifdef SIMD
+  wavelet_apply_na(type, 8, src, length, desthi, destlo);
+#endif
 }
 
 static void wavelet_apply12(WaveletType type,
@@ -515,7 +533,7 @@ static void wavelet_apply12(WaveletType type,
       length < 12
 #endif
   ) {
-    wavelet_apply_na(type, 12, src, 12, desthi, destlo);
+    wavelet_apply_na(type, 12, src, length, desthi, destlo);
     return;
   }
 
@@ -611,7 +629,9 @@ static void wavelet_apply12(WaveletType type,
     wavelet_prepare_array_memcpy(12, destlo, length / 2, destlo);
   }
 #endif  // #ifdef __AVX__
-#endif  // #ifdef SIMD
+#else  // #ifdef SIMD
+  wavelet_apply_na(type, 12, src, length, desthi, destlo);
+#endif
 }
 
 static void wavelet_apply16(WaveletType type,
@@ -624,7 +644,7 @@ static void wavelet_apply16(WaveletType type,
   assert(align_complement_f32(src) == 0);
 
   if (align_complement_f32(src) != 0 || length < 16) {
-    wavelet_apply_na(type, 16, src, 16, desthi, destlo);
+    wavelet_apply_na(type, 16, src, length, desthi, destlo);
     return;
   }
 
@@ -713,15 +733,14 @@ static void wavelet_apply16(WaveletType type,
     wavelet_prepare_array_memcpy(16, destlo, length / 2, destlo);
   }
 #endif  // #ifdef __AVX__
-#endif  // #ifdef SIMD
+#else  // #ifdef SIMD
+  wavelet_apply_na(type, 16, src, length, desthi, destlo);
+#endif
 }
 
 void wavelet_apply(WaveletType type, int order,
                    const float *__restrict src, size_t length,
                    float *__restrict desthi, float *__restrict destlo) {
-#ifndef SIMD
-  wavelet_apply_na(type, order, src, length, desthi, destlo);
-#else
   switch (order) {
     case 4:
       wavelet_apply4(type, src, length, desthi, destlo);
@@ -742,5 +761,4 @@ void wavelet_apply(WaveletType type, int order,
       wavelet_apply_na(type, order, src, length, desthi, destlo);
       break;
   }
-#endif  // #ifndef SIMD
 }

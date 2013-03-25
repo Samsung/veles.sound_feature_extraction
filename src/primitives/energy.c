@@ -54,7 +54,7 @@ float calculate_energy(const float *signal, size_t length) {
       energy += val * val;
     }
 #else
-  for (int j = 0; j < length; j++) {
+  for (int j = 0; j < (int)length; j++) {
     float val = signal[j];
     energy += val * val;
   }

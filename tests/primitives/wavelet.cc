@@ -38,7 +38,7 @@ TEST(Wavelet, wavelet_prepare_array) {
   ASSERT_EQ(0, memcmp(array + 6, res + length * 3 - 16, checkSize));
   free(res);
 #else
-  ASSERT_EQ(0, memcmp(res, array, sizeof(array));
+  ASSERT_EQ(0, memcmp(res, array, sizeof(array)));
 #endif
 
   res = wavelet_prepare_array(4, array, length);
@@ -49,7 +49,7 @@ TEST(Wavelet, wavelet_prepare_array) {
     ASSERT_EQ(0, memcmp(array + 2, res + length, checkSize));
     free(res);
   #else
-    ASSERT_EQ(0, memcmp(res, array, sizeof(array));
+    ASSERT_EQ(0, memcmp(res, array, sizeof(array)));
   #endif
 }
 

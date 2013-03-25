@@ -17,6 +17,9 @@
 #elif defined(__ARM_NEON__)
 #include <arm_neon.h>
 #endif
+#ifndef __USE_XOPEN2K
+#define __USE_XOPEN2K
+#endif
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -40,13 +43,13 @@ int align_complement_i16(const int16_t *ptr) {
 int align_complement_i32(const int32_t *ptr) {
   return align_offset_internal(ptr) /4;
 }
+#endif
 
 void *malloc_aligned_offset(size_t size, int offset) {
   assert(offset >= 0 && offset < 32);
   void *ptr = malloc_aligned(size + offset);
   return (char *)ptr + offset;
 }
-#endif
 
 void *malloc_aligned(size_t size) {
   void *ptr;
