@@ -1,15 +1,9 @@
 #!/bin/sh
 
 if [ ! -e "fftf" ]; then
-	git submodule update --init	
+    git submodule update --init	
 else
     git submodule update
-fi
-
-if [ ! -e "fftf/configure" ]; then
-	cd fftf
-	./autogen.sh
-	cd ..
 fi
 
 isubuntu="$(uname -v|grep Ubuntu)"
@@ -71,3 +65,7 @@ if [ $W -ne 0 ]; then
 else
 	rm -f config.cache-env.tmp
 fi
+
+# autogen.sh in submodules
+# note the order: first root autogen.sh, then children
+git submodule foreach ./autogen.sh
