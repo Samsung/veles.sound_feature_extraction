@@ -50,5 +50,9 @@ TEST(API, query_transform_details) {
                             pnames, pdescs, pdefs, count);
 }
 
+TEST(API, extract_speech_features) {
+
+}
+
 #include "tests/google/src/gtest_main.cc"
 
