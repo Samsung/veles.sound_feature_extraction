@@ -1,5 +1,5 @@
 /*! @file lowpass_filter.cc
- *  @brief New file description.
+ *  @brief Lowpass filter.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

@@ -1,5 +1,5 @@
 /*! @file bandpass_filter.h
- *  @brief New file description.
+ *  @brief Bandpass filter.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
