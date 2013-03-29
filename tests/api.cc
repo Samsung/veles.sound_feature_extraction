@@ -58,5 +58,9 @@ TEST(API, report_extraction_graph) {
 
 }
 
+TEST(API, report_extraction_time) {
+
+}
+
 #include "tests/google/src/gtest_main.cc"
 
