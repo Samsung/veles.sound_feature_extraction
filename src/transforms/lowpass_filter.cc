@@ -34,7 +34,7 @@ void LowpassFilter::CalculateFilter(float *filter) const noexcept {
   int samplingRate = inputFormat_->SamplingRate();
   for (int n = 0; n < length_; n++) {
     float h;
-    if (n - wOffset != 0) {
+    if (2 * n + 1 != length_) {
       h = sinf(2 * M_PI * (n - wOffset) * frequency_ / samplingRate) /
           (M_PI * (n - wOffset));
     } else {

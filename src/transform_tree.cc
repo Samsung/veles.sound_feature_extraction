@@ -1,5 +1,5 @@
 /*! @file transform_tree.cc
- *  @brief New file description.
+ *  @brief Creating tree of transformations.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

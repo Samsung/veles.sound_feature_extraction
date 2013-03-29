@@ -41,7 +41,7 @@ class Log
     LOG_BASE_E
   };
 
-  static const std::unordered_map<std::string, LogBase> LogBaseMap;
+  static const std::unordered_map<std::string, LogBase> kLogBaseMap;
   static const LogBase kDefaultLogBase;
 
   virtual void InitializeBuffers(

@@ -17,7 +17,7 @@
 #error This file should not be included directly into mid level code
 #endif
 
-extern const double CoifletsD[5][30];
-extern const float  CoifletsF[5][30];
+extern const double kCoifletsD[5][30];
+extern const float  kCoifletsF[5][30];
 
 #endif  // SRC_PRIMITIVES_COIFLETS_H_

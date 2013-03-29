@@ -1,5 +1,5 @@
 /*! @file square.cc
- *  @brief Tests for src/transforms/square.h.
+ *  @brief Tests for SpeechFeatureExtraction::Transforms::SquareRaw.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

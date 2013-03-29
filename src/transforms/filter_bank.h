@@ -51,7 +51,7 @@ class FilterBank
     SCALE_TYPE_BARK
   };
 
-  static const std::unordered_map<std::string, ScaleType> ScaleTypeMap;
+  static const std::unordered_map<std::string, ScaleType> kScaleTypeMap;
   static const int kDefaultLength;
   static const int kDefaultMinFrequency;
   static const int kDefaultMaxFrequency;

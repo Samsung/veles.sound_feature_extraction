@@ -13,7 +13,7 @@
 #define WAVELET_INTERNAL_USE
 #include "src/primitives/symlets.h"
 
-const double SymletsD[38][76] = {
+const double kSymletsD[38][76] = {
   // 1 (2)
     { 0.5,
       0.5 },
@@ -1573,7 +1573,7 @@ const double SymletsD[38][76] = {
      1.433630654002215e-12 }
 };
 
-const float SymletsF[38][76] = {
+const float kSymletsF[38][76] = {
   // 1 (2)
   { 0.5f,
     0.5f },

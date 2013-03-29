@@ -47,7 +47,7 @@ class WaveletFilterBank {
   int order_;
   std::vector<int> tree_;
 
-  static const std::unordered_map<std::string, WaveletType> WaveletTypeStrMap;
+  static const std::unordered_map<std::string, WaveletType> kWaveletTypeStrMap;
 
   static void RecursivelyIterate(WaveletType type, int order,
                                  size_t length, std::vector<int>* tree,

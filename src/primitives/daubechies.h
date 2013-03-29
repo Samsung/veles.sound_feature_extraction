@@ -142,7 +142,7 @@
 #error This file should not be included directly into mid level code
 #endif
 
-extern const double DaubechiesD[38][76];
-extern const float  DaubechiesF[38][76];
+extern const double kDaubechiesD[38][76];
+extern const float  kDaubechiesF[38][76];
 
 #endif  // SRC_PRIMITIVES_DAUBECHIES_H_

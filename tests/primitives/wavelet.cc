@@ -80,8 +80,8 @@ TEST(Wavelet, wavelet_apply_na) {
   int index = 5;
   float vhi = .0f, vlo = .0f;
   for (int i = 0; i < 8; i++) {
-    vlo += array[index * 2 + i] * DaubechiesF[3][i];
-    vhi += array[index * 2 + i] * DaubechiesF[3][8 - i - 1] * (i & 1 ? -1 : 1);
+    vlo += array[index * 2 + i] * kDaubechiesF[3][i];
+    vhi += array[index * 2 + i] * kDaubechiesF[3][8 - i - 1] * (i & 1 ? -1 : 1);
   }
   ASSERT_EQF(vlo, destlo[index]);
   ASSERT_EQF(vhi, desthi[index]);
@@ -116,8 +116,8 @@ TEST(Wavelet, wavelet_apply_na) {
       default:
         break;
     }
-    vlo += value * DaubechiesF[3][i];
-    vhi += value * DaubechiesF[3][8 - i - 1] * (i & 1 ? -1 : 1);
+    vlo += value * kDaubechiesF[3][i];
+    vhi += value * kDaubechiesF[3][8 - i - 1] * (i & 1 ? -1 : 1);
   }
   ASSERT_EQF(vlo, destlo[15]);
   ASSERT_EQF(vhi, desthi[15]);

@@ -1,5 +1,5 @@
 /*! @file avx_extra.c
- *  @brief New file description.
+ *  @brief AVX ElementAt.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

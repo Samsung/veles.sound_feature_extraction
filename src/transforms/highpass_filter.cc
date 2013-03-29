@@ -1,5 +1,5 @@
 /*! @file highpass_filter.cc
- *  @brief New file description.
+ *  @brief Highpass filter.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

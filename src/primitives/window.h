@@ -1,5 +1,5 @@
 /*! @file window.h
- *  @brief New file description.
+ *  @brief Hannig, Hamming and Rectangular window types.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -30,7 +30,7 @@ typedef enum {
 /// WindowTypeMap["hamming"] == WINDOW_TYPE_HAMMING
 /// @endcode
 /// is true.
-extern const std::unordered_map<std::string, WindowType> WindowTypeMap;
+extern const std::unordered_map<std::string, WindowType> kWindowTypeMap;
 
 /// @brief Returns the window element at the specified index.
 /// @param type The window type.

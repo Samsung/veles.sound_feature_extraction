@@ -1,5 +1,5 @@
 /*! @file window.c
- *  @brief New file description.
+ *  @brief Hannig, Hamming and Rectangular window types.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -14,7 +14,7 @@
 #include "src/primitives/window.h"
 #include <math.h>
 
-const std::unordered_map<std::string, WindowType> WindowTypeMap {
+const std::unordered_map<std::string, WindowType> kWindowTypeMap {
   { "rectangular", WINDOW_TYPE_RECTANGULAR },
   { "hamming", WINDOW_TYPE_HAMMING },
   { "hanning", WINDOW_TYPE_HANNING }
