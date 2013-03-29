@@ -1,5 +1,5 @@
-/*! @file template_transform.cc
- *  @brief New file description.
+/*! @file square.cc
+ *  @brief Square the input signal.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
