@@ -54,5 +54,9 @@ TEST(API, extract_speech_features) {
 
 }
 
+TEST(API, report_extraction_graph) {
+
+}
+
 #include "tests/google/src/gtest_main.cc"
 
