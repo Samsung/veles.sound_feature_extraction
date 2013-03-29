@@ -1,5 +1,5 @@
 /*! @file lowpass_filter.cc
- *  @brief Tests for src/parameters.h.
+ *  @brief Tests for SpeechFeatureExtraction::Transforms::LowpassFilter.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

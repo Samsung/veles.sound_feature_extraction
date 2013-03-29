@@ -17,7 +17,7 @@
 #error This file should not be included directly into mid level code
 #endif
 
-extern const double SymletsD[38][76];
-extern const float  SymletsF[38][76];
+extern const double kSymletsD[38][76];
+extern const float  kSymletsF[38][76];
 
 #endif  // SRC_PRIMITIVES_SYMLETS_H_

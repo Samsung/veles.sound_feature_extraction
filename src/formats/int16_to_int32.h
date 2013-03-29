@@ -1,5 +1,5 @@
 /*! @file int16_to_int32.h
- *  @brief New file description.
+ *  @brief int16 to int32 converter.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

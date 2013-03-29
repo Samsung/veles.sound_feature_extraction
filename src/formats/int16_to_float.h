@@ -1,5 +1,5 @@
 /*! @file int16_to_float.h
- *  @brief New file description.
+ *  @brief int16 to float converter.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

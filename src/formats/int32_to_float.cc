@@ -1,5 +1,5 @@
 /*! @file int32_to_float.cc
- *  @brief New file description.
+ *  @brief int32 to float converter.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

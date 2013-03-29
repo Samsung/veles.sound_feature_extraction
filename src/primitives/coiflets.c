@@ -13,7 +13,7 @@
 #define WAVELET_INTERNAL_USE
 #include "src/primitives/coiflets.h"
 
-const double CoifletsD[5][30] = {
+const double kCoifletsD[5][30] = {
   // 1 (6)
   { -5.14297284710e-02,
      2.38929728471e-01,
@@ -115,7 +115,7 @@ const double CoifletsD[5][30] = {
     -6.73000000000e-08 }
 };
 
-const float CoifletsF[5][30] = {
+const float kCoifletsF[5][30] = {
   // 1 (6)
   {-5.1429728e-02f,
     2.3892973e-01f,

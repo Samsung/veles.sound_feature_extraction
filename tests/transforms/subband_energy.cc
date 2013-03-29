@@ -1,5 +1,5 @@
 /*! @file subband_energy.cc
- *  @brief New file description.
+ *  @brief Tests for SpeechFeatureExtraction::Transforms::SubbandEnergy.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

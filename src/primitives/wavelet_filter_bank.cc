@@ -24,7 +24,7 @@ namespace SpeechFeatureExtraction {
 namespace Primitives {
 
 const std::unordered_map<std::string, WaveletType>
-    WaveletFilterBank::WaveletTypeStrMap = {
+    WaveletFilterBank::kWaveletTypeStrMap = {
   { "daub", WAVELET_TYPE_DAUBECHIES },
   { "coif", WAVELET_TYPE_COIFLET },
   { "sym", WAVELET_TYPE_SYMLET }
@@ -55,7 +55,7 @@ void WaveletFilterBank::ValidateOrder(WaveletType type,
 }
 
 std::string WaveletFilterBank::WaveletTypeToString(WaveletType type) noexcept {
-  for (auto wtstrp : WaveletTypeStrMap) {
+  for (auto wtstrp : kWaveletTypeStrMap) {
     if (wtstrp.second == type) {
       return wtstrp.first;
     }
@@ -64,8 +64,8 @@ std::string WaveletFilterBank::WaveletTypeToString(WaveletType type) noexcept {
 }
 
 WaveletType WaveletFilterBank::ParseWaveletType(const std::string& value) {
-  auto it = WaveletTypeStrMap.find(value);
-  if (it == WaveletTypeStrMap.end()) {
+  auto it = kWaveletTypeStrMap.find(value);
+  if (it == kWaveletTypeStrMap.end()) {
     throw WaveletTreeWaveletTypeParseException(value);
   }
   return it->second;

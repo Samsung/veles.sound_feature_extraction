@@ -1,5 +1,5 @@
 /*! @file window_format_converter_base.h
- *  @brief New file description.
+ *  @brief WindowFormatConverterBase class definition.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

@@ -64,13 +64,13 @@ int wavelet_validate_order(WaveletType type, int order) {
   size_t uorder = (size_t)order;
   switch (type) {
     case WAVELET_TYPE_DAUBECHIES:
-      return (uorder <= sizeof(DaubechiesF[0]) / sizeof(DaubechiesF[0][0])) &&
+      return (uorder <= sizeof(kDaubechiesF[0]) / sizeof(kDaubechiesF[0][0])) &&
              (uorder % 2 == 0);
     case WAVELET_TYPE_COIFLET:
-      return (uorder <= sizeof(CoifletsF[0]) / sizeof(CoifletsF[0][0])) &&
+      return (uorder <= sizeof(kCoifletsF[0]) / sizeof(kCoifletsF[0][0])) &&
              (uorder % 6 == 0);
     case WAVELET_TYPE_SYMLET:
-      return (uorder <= sizeof(SymletsF[0]) / sizeof(SymletsF[0][0])) &&
+      return (uorder <= sizeof(kSymletsF[0]) / sizeof(kSymletsF[0][0])) &&
              (uorder % 2 == 0);
     default:
       return 0;
@@ -151,22 +151,22 @@ static INLINE NOTNULL(3, 4) void initialize_highpass_lowpass(
     float val;
     switch (type) {
       case WAVELET_TYPE_DAUBECHIES:
-        assert(uorder <= sizeof(DaubechiesF[0]) / sizeof(DaubechiesF[0][0]) &&
+        assert(uorder <= sizeof(kDaubechiesF[0]) / sizeof(kDaubechiesF[0][0]) &&
                uorder % 2 == 0 &&
                "Supported Daubechies orders are 2..76 (even numbers only)");
-        val =  DaubechiesF[order / 2 - 1][i];
+        val =  kDaubechiesF[order / 2 - 1][i];
         break;
       case WAVELET_TYPE_COIFLET:
-        assert(uorder <= sizeof(CoifletsF[0]) / sizeof(CoifletsF[0][0]) &&
+        assert(uorder <= sizeof(kCoifletsF[0]) / sizeof(kCoifletsF[0][0]) &&
                uorder % 6 == 0 &&
                "Supported Coiflet orders are 6, 12, 18, 24 and 30");
-        val = CoifletsF[order / 6 - 1][i];
+        val = kCoifletsF[order / 6 - 1][i];
         break;
       case WAVELET_TYPE_SYMLET:
-        assert(uorder <= sizeof(SymletsF[0]) / sizeof(SymletsF[0][0]) &&
+        assert(uorder <= sizeof(kSymletsF[0]) / sizeof(kSymletsF[0][0]) &&
                uorder % 2 == 0 &&
                "Supported Daubechies orders are 2..76 (even numbers only)");
-        val = SymletsF[order / 2 - 1][i];
+        val = kSymletsF[order / 2 - 1][i];
         break;
     }
     lowpass[i] = val;

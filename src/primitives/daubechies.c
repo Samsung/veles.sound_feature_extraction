@@ -13,7 +13,7 @@
 #define WAVELET_INTERNAL_USE
 #include "src/primitives/daubechies.h"
 
-const double DaubechiesD[38][76] = {
+const double kDaubechiesD[38][76] = {
   // 1 (2)
   {  7.071067811865475244008443621048490392848359376884740365883398e-01,
      7.071067811865475244008443621048490392848359376884740365883398e-01 },
@@ -1574,7 +1574,7 @@ const double DaubechiesD[38][76] = {
     -1.716152451088744188732404281737964277713026087224248235541071e-18 }
 };
 
-const float DaubechiesF[38][76] = {
+const float kDaubechiesF[38][76] = {
   // 1 (2)
   { 7.0710678e-01f,
     7.0710678e-01f },

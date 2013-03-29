@@ -21,7 +21,7 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-const std::unordered_map<std::string, Log::LogBase> Log::LogBaseMap {
+const std::unordered_map<std::string, Log::LogBase> Log::kLogBaseMap {
   { "e", LOG_BASE_E },
   { "2", LOG_BASE_2 },
   { "10", LOG_BASE_10 }
@@ -31,8 +31,8 @@ const Log::LogBase Log::kDefaultLogBase = LOG_BASE_E;
 
 Log::Log() : base_(kDefaultLogBase) {
   RegisterSetter("base", [&](const std::string& value) {
-    auto lbit = LogBaseMap.find(value);
-    if (lbit == LogBaseMap.end()) {
+    auto lbit = kLogBaseMap.find(value);
+    if (lbit == kLogBaseMap.end()) {
       return false;
     }
     base_ = lbit->second;

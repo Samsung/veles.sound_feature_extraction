@@ -1,5 +1,5 @@
 /*! @file raw_format_converter_base.h
- *  @brief New file description.
+ *  @brief RawFormatConverterBase class definition.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

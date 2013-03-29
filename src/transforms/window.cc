@@ -46,8 +46,8 @@ Window::Window()
     return true;
   });
   RegisterSetter("type", [&](const std::string& value) {
-    auto wti = WindowTypeMap.find(value);
-    if (wti == WindowTypeMap.end()) {
+    auto wti = kWindowTypeMap.find(value);
+    if (wti == kWindowTypeMap.end()) {
       return false;
     }
     type_ = wti->second;

@@ -29,8 +29,8 @@ FirFilterBase::FirFilterBase() noexcept
     return true;
   });
   RegisterSetter("window", [&](const std::string& value) {
-    auto wti = WindowTypeMap.find(value);
-    if (wti == WindowTypeMap.end()) {
+    auto wti = kWindowTypeMap.find(value);
+    if (wti == kWindowTypeMap.end()) {
       return false;
     }
     windowType_ = wti->second;

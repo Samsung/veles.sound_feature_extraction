@@ -19,7 +19,7 @@ namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 const std::unordered_map<std::string, FilterBank::ScaleType>
-FilterBank::ScaleTypeMap = {
+FilterBank::kScaleTypeMap = {
     { "linear", SCALE_TYPE_LINEAR },
     { "mel", SCALE_TYPE_MEL },
     { "bark", SCALE_TYPE_BARK }
@@ -59,8 +59,8 @@ FilterBank::FilterBank()
     return true;
   });
   RegisterSetter("type", [&](const std::string& value) {
-    auto tit = ScaleTypeMap.find(value);
-    if (tit == ScaleTypeMap.end()) {
+    auto tit = kScaleTypeMap.find(value);
+    if (tit == kScaleTypeMap.end()) {
       return false;
     }
     type_ = tit->second;
