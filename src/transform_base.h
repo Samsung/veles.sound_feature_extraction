@@ -57,24 +57,24 @@ class TransformBase : public virtual Transform,
   virtual std::shared_ptr<Buffers> CreateOutputBuffers(
       const Buffers& in) const noexcept {
     assert(*in.Format() == *inputFormat_);
-    auto buffers = std::make_shared<OutBuffers>();
-    auto tin = reinterpret_cast<const InBuffers&>(in);
-    InitializeBuffers(tin, buffers.get());
+    auto buffers = std::make_shared<OutBuffers>(
+        std::static_pointer_cast<BufferFormatBase<typename FOUT::BufferType>>(
+            outputFormat_));
+    InitializeBuffers(reinterpret_cast<const InBuffers&>(in),
+                      buffers.get());
     return buffers;
   }
 
   virtual void Do(const Buffers& in, Buffers* out) const noexcept {
     assert(*in.Format() == *inputFormat_);
     assert(*out->Format() == *outputFormat_);
-    auto tin = reinterpret_cast<const InBuffers&>(in);
-    auto tout = reinterpret_cast<OutBuffers*>(out);
-    Do(tin, tout);
+    Do(reinterpret_cast<const InBuffers&>(in),
+       reinterpret_cast<OutBuffers*>(out));
   }
 
   virtual void DoInverse(const Buffers& in, Buffers* out) const noexcept {
-    auto tin = reinterpret_cast<const OutBuffers&>(in);
-    auto tout = reinterpret_cast<InBuffers*>(out);
-    DoInverse(tin, tout);
+    DoInverse(reinterpret_cast<const OutBuffers&>(in),
+              reinterpret_cast<InBuffers*>(out));
   }
 
  protected:

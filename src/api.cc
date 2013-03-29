@@ -11,6 +11,7 @@
  */
 
 #include <spfextr/api.h>
+#include <assert.h>
 #include <stddef.h>
 #include "src/features_parser.h"
 #include "src/transform_tree.h"
@@ -269,6 +270,7 @@ FeatureExtractionResult extract_speech_features(
   for (auto res : retmap) {
     copy_string(res.first, *featureNames + i);
     size_t sizeEach = res.second->Format()->PayloadSizeInBytes();
+    assert(sizeEach > 0);
     size_t size = sizeEach * res.second->Size();
     (*resultLengths)[i] = size;
     (*results)[i] = new char[size];

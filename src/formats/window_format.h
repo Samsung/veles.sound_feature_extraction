@@ -151,7 +151,7 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
     size_ = value;
   }
 
-  virtual size_t PayloadSizeInBytes() const noexcept {
+  size_t PayloadSizeInBytes() const noexcept {
     return size_ * sizeof(T);
   }
 

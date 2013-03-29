@@ -70,8 +70,12 @@ class BufferFormatBase : public BufferFormat {
 template <typename T>
 class BuffersBase : public Buffers {
  public:
-  explicit BuffersBase() noexcept
+  BuffersBase() noexcept
       : Buffers(0, std::make_shared<BufferFormatBase<T>>()) {  // NOLINT(*)
+  }
+
+  explicit BuffersBase(std::shared_ptr<BufferFormatBase<T>> format) noexcept  // NOLINT(*)
+      : Buffers(0, format) {
   }
 
   template <typename... TArgs>
@@ -93,11 +97,13 @@ class BuffersBase : public Buffers {
     return reinterpret_cast<const T*>(Buffers::operator [](index));  // NOLINT(*)
   }
 
-  virtual const std::shared_ptr<BufferFormat> Format() const noexcept {
-    static const std::shared_ptr<BufferFormat> bf =
-        std::make_shared<BufferFormatBase<T>>();  // NOLINT(*)
-    return bf;
+  const std::shared_ptr<BufferFormatBase<T>> CastedFormat() const noexcept {
+    return std::static_pointer_cast<BufferFormatBase<T>>(Format());
   }
+
+private:
+  BuffersBase(const BuffersBase<T>& other) = delete;
+  BuffersBase& operator=(const BuffersBase<T>& other) = delete;
 };
 
 }  // namespace SpeechFeatureExtraction

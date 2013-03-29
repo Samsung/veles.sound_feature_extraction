@@ -51,7 +51,26 @@ TEST(API, query_transform_details) {
 }
 
 TEST(API, extract_speech_features) {
-
+  const char *feature = "MFCC [Window(length=32), RDFT, Energy, FilterBank, "
+      "FilterBank, Log, Square, UnpackRDFT, DCT, Selector(length=24)]";
+  auto config = setup_features_extraction(&feature, 1, 48000, 16000);
+  ASSERT_NE(nullptr, config);
+  auto buffer = new int16_t[48000];
+  for (int i = 0; i < static_cast<int>(sizeof(buffer) / 2); i++) {
+    buffer[i] = 1;
+  }
+  char **featureNames = nullptr;
+  float **results = nullptr;
+  int *lengths = nullptr;
+  extract_speech_features(config, buffer, &featureNames,
+                          reinterpret_cast<void ***>(&results), &lengths);
+  ASSERT_NE(nullptr, featureNames);
+  ASSERT_NE(nullptr, results);
+  ASSERT_NE(nullptr, lengths);
+  ASSERT_GT(lengths[0], 0);
+  free_results(1, featureNames, reinterpret_cast<void **>(results), lengths);
+  destroy_features_configuration(config);
+  delete[] buffer;
 }
 
 TEST(API, report_extraction_graph) {
