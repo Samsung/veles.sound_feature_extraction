@@ -17,7 +17,7 @@ namespace SpeechFeatureExtraction {
 namespace Transforms {
 
 const int Selector::kDefaultLength = 12;
-const Selector::Anchor Selector::kDefaultAnchor = ANCHOR_RIGHT;
+const Selector::Anchor Selector::kDefaultAnchor = ANCHOR_LEFT;
 
 Selector::Selector()
   : length_(kDefaultLength),
@@ -57,17 +57,14 @@ void Selector::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* out) const noexcept {
   int length = outputFormat_->Size();
+  int offset = (from_ == ANCHOR_LEFT? 0 : inputFormat_->Size() - length);
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();
     if (input != output) {
-      memcpy(output,
-             input + (from_ == ANCHOR_LEFT? 0 : inputFormat_->Size() - length),
-             length * sizeof(input[0]));
+      memcpy(output, input + offset, length * sizeof(input[0]));
     } else {
-      memmove(output,
-              input + (from_ == ANCHOR_LEFT? 0 : inputFormat_->Size() - length),
-              length * sizeof(input[0]));
+      memmove(output, input + offset, length * sizeof(input[0]));
     }
   }
 }
