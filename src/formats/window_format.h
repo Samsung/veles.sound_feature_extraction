@@ -167,7 +167,8 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
   }
 
  protected:
-  virtual bool MustReallocate(const BufferFormatBase<Window<T>>& other) {  // NOLINT(*)
+  virtual bool MustReallocate(const BufferFormatBase<Window<T>>& other) // NOLINT(*)
+      const noexcept {
     auto inst = reinterpret_cast<const WindowFormat<T>&>(other);
     return inst.allocatedSize_ < allocatedSize_;
   }

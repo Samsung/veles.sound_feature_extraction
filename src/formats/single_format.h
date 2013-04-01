@@ -45,7 +45,8 @@ class SingleFormat : public BufferFormatBase<T> {
   }
 
  protected:
-  virtual bool MustReallocate(const BufferFormatBase<T>& other UNUSED) {
+  virtual bool MustReallocate(const BufferFormatBase<T>& other UNUSED)
+      const noexcept {
     return false;
   }
 

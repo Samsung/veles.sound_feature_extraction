@@ -138,7 +138,8 @@ class RawFormat : public BufferFormatBase<Raw<T>> {
   }
 
  protected:
-  virtual bool MustReallocate(const BufferFormatBase<Raw<T>>& other) {  // NOLINT(*)
+  virtual bool MustReallocate(const BufferFormatBase<Raw<T>>& other)
+      const noexcept{  // NOLINT(*)
     auto inst = reinterpret_cast<const RawFormat<T>&>(other);
     return inst.size_ < size_;
   }
