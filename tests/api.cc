@@ -71,6 +71,9 @@ TEST(API, extract_speech_features) {
   ASSERT_NE(nullptr, results);
   ASSERT_NE(nullptr, lengths);
   ASSERT_GT(lengths[0], 0);
+  for (int i = 0; i < lengths[0] / 4; i++) {
+    ASSERT_EQ(results[0][i], results[0][i]);
+  }
   free_results(1, featureNames, reinterpret_cast<void **>(results), lengths);
   destroy_features_configuration(config);
   delete[] buffer;
