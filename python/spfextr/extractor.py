@@ -14,7 +14,7 @@ from spfextr.library import Library
 
 class Extractor(object):
     '''
-    Speech feature extractor
+    Speech feature extractor.
     '''
 
     def __init__(self, features, buffer_size, sampling_rate):
@@ -38,6 +38,9 @@ class Extractor(object):
         logging.debug("Destroyed config " + str(self._config))
 
     def calculate(self, buffer):
+        '''
+        Calculates the speech features.
+        '''
         if not self._config:
             logging.error("Unable to calculate features")
             return None
@@ -53,11 +56,14 @@ class Extractor(object):
             return None
         ret = {}
         for i in range(0, len(self.features)):
+            length = rlengths[i] // 4
             logging.debug(self.features[i].name + " yielded " + \
-                          str(rlengths[i]) + " results")
+                          str(length) + " results")
+            res_type = c_float * length
+            array_pointer = cast(results[i], POINTER(res_type))
             ret[fnames[i].decode()] = numpy.frombuffer(
-                cast(results[i], POINTER(c_float)), dtype=numpy.float32,
-                count=rlengths[i])
+                array_pointer.contents, dtype=numpy.float32,
+                count=length)
         ret["RAW"] = results
         null_results = POINTER(c_void_p)()
         Library().free_results(len(self.features), fnames, null_results,
@@ -65,6 +71,9 @@ class Extractor(object):
         return ret
 
     def free_results(self, results):
+        '''
+        Disposes the resources allocated for calculation results.
+        '''
         if results:
             null_fnames = POINTER(c_char_p)()
             null_rlengths = POINTER(c_int)()

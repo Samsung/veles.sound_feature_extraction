@@ -43,9 +43,9 @@ class Transform(object):
         return result
 
     def join(self):
-        """
+        '''
         Constructs a string which describes this transform and it's parameters.
-        """
+        '''
         res = self.name
         if self.parameters:
             res += "("
