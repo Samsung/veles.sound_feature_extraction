@@ -79,7 +79,7 @@ api_CPPFLAGS = $(GTEST_INCLUDE)
 # Used libraries
 api_LDADD = $(top_builddir)/src/libspfextr.la  \
 $(top_builddir)/tests/google/lib_gtest.la \
-$(ALL_LIBS)
+-lboost_regex $(ALL_LIBS)
 
 SUBDIRS = google primitives transforms
 

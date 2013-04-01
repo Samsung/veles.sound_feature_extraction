@@ -347,7 +347,8 @@ void TransformTree::Dump(const std::string& dotFileName) const {
   }
   float redShift = redThreshold * maxTimeRatio;
   const int initialLight = 0x30;
-  auto allTime = timeReport["All"];
+  auto allTime = timeReport["All"] *
+      std::chrono::high_resolution_clock::period().den;
 
   std::ofstream fw;
   fw.exceptions(std::ifstream::failbit | std::ifstream::badbit);
