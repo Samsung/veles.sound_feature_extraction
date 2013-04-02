@@ -63,7 +63,7 @@ void Selector::Do(
     auto output = (*out)[i]->Data.get();
     if (input != output) {
       memcpy(output, input + offset, length * sizeof(input[0]));
-    } else {
+    } else if (from_ == ANCHOR_RIGHT) {
       memmove(output, input + offset, length * sizeof(input[0]));
     }
   }

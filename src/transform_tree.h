@@ -128,6 +128,9 @@ class TransformTree {
   bool ValidateAfterEachTransform() const noexcept;
   void SetValidateAfterEachTransform(bool value) noexcept;
 
+  bool DumpBuffersAfterEachTransform() const noexcept;
+  void SetDumpBuffersAfterEachTransform(bool value) noexcept;
+
  private:
   struct Node {
     Node* Parent;
@@ -171,6 +174,7 @@ class TransformTree {
   std::set<std::string> chains_;
   std::unordered_map<std::string, TransformCacheItem> transformsCache_;
   bool validateAfterEachTransform_;
+  bool dumpBuffersAfterEachTransform_;
 };
 
 }  // namespace SpeechFeatureExtraction

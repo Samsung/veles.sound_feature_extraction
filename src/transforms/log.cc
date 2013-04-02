@@ -54,13 +54,13 @@ void Log::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");
+  int length = inputFormat_->Size();
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();
     switch (base_) {
       case LOG_BASE_E: {
 #ifdef __AVX__
-        int length = inputFormat_->Size();
         for (int j = 0; j < length - 7; j += 8) {
           __m256 vec = _mm256_load_ps(input + j);
           vec = log256_ps(vec);
@@ -87,12 +87,12 @@ void Log::Do(
         break;
       }
       case LOG_BASE_2:
-        for (size_t j = 0; j < inputFormat_->Size(); j++) {
+        for (int j = 0; j < length; j++) {
           output[j] = log2f(input[j]);
         }
         break;
       case LOG_BASE_10:
-        for (size_t j = 0; j < inputFormat_->Size(); j++) {
+        for (int j = 0; j < length; j++) {
           output[j] = log10f(input[j]);
         }
         break;

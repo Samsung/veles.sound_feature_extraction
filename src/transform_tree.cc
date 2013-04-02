@@ -132,7 +132,8 @@ void TransformTree::Node::Execute(
       if (!BoundTransform->OutputFormat()->MustReallocate(
               *BoundTransform->InputFormat()) &&
           Parent->Children.size() == 1) {
-          BoundBuffers = Parent->BoundBuffers;
+          BoundBuffers = std::make_shared<Buffers>(
+              *Parent->BoundBuffers, BoundTransform->OutputFormat());
       } else {
           BoundBuffers = BoundTransform->CreateOutputBuffers(
               *Parent->BoundBuffers);
@@ -146,6 +147,7 @@ void TransformTree::Node::Execute(
     if (ChainName != "") {
       (*results)[ChainName] = BoundBuffers;
     }
+
     if (Host->ValidateAfterEachTransform()) {
       try {
         BoundBuffers->Validate();
@@ -154,6 +156,13 @@ void TransformTree::Node::Execute(
         throw TransformResultedInInvalidBuffersException(BoundTransform->Name(),
                                                          e.what());
       }
+    }
+
+    if (Host->DumpBuffersAfterEachTransform()) {
+      printf("Buffers after %s\n", BoundTransform->Name().c_str());
+      printf("==============%s\n",
+             std::string(BoundTransform->Name().size(), '=').c_str());
+      printf("%s\n", BoundBuffers->Dump().c_str());
     }
   }
   for (auto tnodepair : Children) {
@@ -169,7 +178,8 @@ TransformTree::TransformTree(Formats::RawFormat16&& rootFormat) noexcept
             std::make_shared<Formats::RawFormat16>(rootFormat)), this)),
       rootFormat_(std::make_shared<Formats::RawFormat16>(rootFormat)),
       treeIsPrepared_(false),
-      validateAfterEachTransform_(false) {
+      validateAfterEachTransform_(false),
+      dumpBuffersAfterEachTransform_(false) {
 }
 
 TransformTree::TransformTree(
@@ -178,7 +188,8 @@ TransformTree::TransformTree(
         nullptr, std::make_shared<RootTransform>(rootFormat), this)),
       rootFormat_(rootFormat),
       treeIsPrepared_(false),
-      validateAfterEachTransform_(false) {
+      validateAfterEachTransform_(false),
+      dumpBuffersAfterEachTransform_(false) {
 }
 
 TransformTree::~TransformTree() noexcept {
@@ -447,6 +458,14 @@ bool TransformTree::ValidateAfterEachTransform() const noexcept {
 
 void TransformTree::SetValidateAfterEachTransform(bool value) noexcept {
   validateAfterEachTransform_ = value;
+}
+
+bool TransformTree::DumpBuffersAfterEachTransform() const noexcept {
+  return dumpBuffersAfterEachTransform_;
+}
+
+void TransformTree::SetDumpBuffersAfterEachTransform(bool value) noexcept {
+  dumpBuffersAfterEachTransform_ = value;
 }
 
 }  // namespace SpeechFeatureExtraction

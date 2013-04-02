@@ -63,6 +63,14 @@ class SingleFormat : public BufferFormatBase<T> {
       }
     }
   }
+
+  virtual std::string Dump(const BuffersBase<T>& buffers) const noexcept {
+    std::string ret;
+    for (size_t i = 0; i < buffers.Size(); i++) {
+      ret += std::to_string(i) + ":\t" + std::to_string(*buffers[i]) + "\n";
+    }
+    return ret;
+  }
 };
 
 typedef SingleFormat<float> SingleFormatF;

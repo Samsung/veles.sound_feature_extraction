@@ -37,6 +37,10 @@ class ParentTestFormat : public BufferFormatBase<ParentChunk> {
 
   virtual void Validate(const BuffersBase<ParentChunk>&) const {
   }
+
+  virtual std::string Dump(const BuffersBase<ParentChunk>&) const noexcept {
+    return "";
+  }
 };
 
 class ParentTestTransform
@@ -86,6 +90,10 @@ class ChildTestFormat : public BufferFormatBase<ChildChunk> {
   }
 
   virtual void Validate(const BuffersBase<ChildChunk>&) const {
+  }
+
+  virtual std::string Dump(const BuffersBase<ChildChunk>&) const noexcept {
+    return "";
   }
 };
 

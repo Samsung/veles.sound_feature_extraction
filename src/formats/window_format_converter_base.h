@@ -23,14 +23,12 @@ class WindowFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
   virtual ~WindowFormatConverterBase() {}
 
   virtual void OnInputFormatChanged() {
-    FormatConverterBase<FIN, FOUT>::outputFormat_->SetAllocatedSize(
-        FormatConverterBase<FIN, FOUT>::inputFormat_->AllocatedSize());
-    FormatConverterBase<FIN, FOUT>::outputFormat_->SetDuration(
-        FormatConverterBase<FIN, FOUT>::inputFormat_->Duration());
-    FormatConverterBase<FIN, FOUT>::outputFormat_->SetSamplingRate(
-        FormatConverterBase<FIN, FOUT>::inputFormat_->SamplingRate());
-    FormatConverterBase<FIN, FOUT>::outputFormat_->SetSize(
-        FormatConverterBase<FIN, FOUT>::inputFormat_->Size());
+    auto outputFormat = FormatConverterBase<FIN, FOUT>::outputFormat_;
+    auto inputFormat = FormatConverterBase<FIN, FOUT>::inputFormat_;
+    outputFormat->SetAllocatedSize(inputFormat->AllocatedSize());
+    outputFormat->SetDuration(inputFormat->Duration());
+    outputFormat->SetSamplingRate(inputFormat->SamplingRate());
+    outputFormat->SetSize(inputFormat->Size());
   }
 
   virtual void InitializeBuffers(
@@ -38,7 +36,7 @@ class WindowFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
       BuffersBase<typename FOUT::BufferType>* buffers) const noexcept {
       buffers->Initialize(
           in.Size(),
-          FormatConverterBase<FIN, FOUT>::inputFormat_->SamplesCount());
+          FormatConverterBase<FIN, FOUT>::inputFormat_->AllocatedSize());
   }
 };
 

@@ -144,27 +144,31 @@ class RawFormat : public BufferFormatBase<Raw<T>> {
     return inst.size_ < size_;
   }
 
- virtual const void* PayloadPointer(const Raw<T>& item) const noexcept {
-   return item.Data.get();
- }
+  virtual const void* PayloadPointer(const Raw<T>& item) const noexcept {
+    return item.Data.get();
+  }
 
- virtual void Validate(const BuffersBase<Raw<T>>& buffers) const {
-   for (size_t i = 0; i < buffers.Size(); i++) {
-     bool allZeros = true;
-     for (size_t j = 0; j < size_; j++) {
-       T value = buffers[i]->Data.get()[j];
-       if (value != value) {
-         throw InvalidBuffersException(this->Id(), i,
-                                       std::string("[") + std::to_string(j) +
-                                       "] = " + std::to_string(value));
-       }
-       allZeros &= (value == 0);
-     }
-     if (allZeros) {
-       throw InvalidBuffersException(this->Id(), i, "all zeros");
-     }
-   }
- }
+  virtual void Validate(const BuffersBase<Raw<T>>& buffers) const {
+    for (size_t i = 0; i < buffers.Size(); i++) {
+      bool allZeros = true;
+      for (size_t j = 0; j < size_; j++) {
+        T value = buffers[i]->Data.get()[j];
+        if (value != value) {
+          throw InvalidBuffersException(this->Id(), i,
+                                        std::string("[") + std::to_string(j) +
+                                        "] = " + std::to_string(value));
+        }
+        allZeros &= (value == 0);
+      }
+      if (allZeros) {
+        throw InvalidBuffersException(this->Id(), i, "all zeros");
+      }
+    }
+  }
+
+  virtual std::string Dump(const BuffersBase<Raw<T>>& buffers UNUSED) const noexcept {
+    return "TODO";
+  }
 
  private:
   size_t size_;

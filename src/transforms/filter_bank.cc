@@ -171,8 +171,9 @@ void FilterBank::Initialize() const noexcept {
   auto filter = filterBank_.get();
   for (size_t i = 0; i < inputFormat_->Size(); i++) {
     if (filter[i] == .0f) {
-      filter[i] = 0.001f;
+      filter[i] = 0.0001f;
     }
+    assert(filter[i] >= .0f);
   }
 }
 

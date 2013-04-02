@@ -140,6 +140,7 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
     return duration_ * samplingRate_ / 1000;
   }
 
+  /// @brief Returns the current buffer size in data units (sizeof(T)).
   size_t Size() const noexcept {
     return size_;
   }
@@ -155,6 +156,7 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
     return size_ * sizeof(T);
   }
 
+  /// @brief Returns the allocated buffer size in data units (sizeof(T)).
   size_t AllocatedSize() const noexcept {
     return allocatedSize_;
   }
@@ -193,6 +195,24 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
         throw InvalidBuffersException(this->Id(), i, "all zeros");
       }
     }
+  }
+
+  virtual std::string Dump(const BuffersBase<Window<T>>& buffers) const noexcept {
+    std::string ret("Length each: ");
+    ret += std::to_string(size_) + "\n";
+    ret += "Allocated size: " + std::to_string(allocatedSize_) + "\n";
+    for (size_t i = 0; i < buffers.Size(); i++) {
+      ret += "----" + std::to_string(i) + "----\n";
+      for (size_t j = 0; j < size_; j++) {
+        ret += std::to_string(buffers[i]->Data.get()[j]);
+        ret += "\t";
+        if (((j + 1) % 10) == 0) {
+          ret += "\n";
+        }
+      }
+      ret += "\n";
+    }
+    return ret;
   }
 
  private:

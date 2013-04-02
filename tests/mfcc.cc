@@ -28,7 +28,7 @@ TEST(MFCC, Calculation) {
     // squared magnitude
     tt.AddChain("MFCC", { { "Window", "length=32" }, { "RDFT", "" },
         { "Energy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
-        { "Log", "" }, /*{ "Square", "" },*/ { "UnpackRDFT", "" },
+        { "Log", "" }, { "Square", "" }, { "Selector", "length=256" },
         { "DCT", "" } });
     BuffersBase<Raw16> buffers(tt.RootFormat());
     buffers.Initialize(1, 48000, 0);
@@ -43,6 +43,27 @@ TEST(MFCC, Calculation) {
       printf("%s:\t%f\n", r.first.c_str(), r.second);
     }
   });
+}
+
+TEST(MFCC, CalculationTrivial) {
+  TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
+  tt.SetValidateAfterEachTransform(true);
+  //tt.SetDumpBuffersAfterEachTransform(true);
+  // We have to apply FilterBank twice since Energy results in
+  // squared magnitude
+  tt.AddChain("MFCC", { { "Window", "length=32" }, { "RDFT", "" },
+      { "Energy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
+      { "Log", "" }, { "Square", "" }, { "Selector", "length=256" },
+      { "DCT", "" } });
+  BuffersBase<Raw16> buffers(tt.RootFormat());
+  buffers.Initialize(1, 48000, 0);
+  for (int i = 0; i < 48000; i++) {
+    buffers[0]->Data.get()[i] = 1.0f;
+  }
+  tt.PrepareForExecution();
+  auto res = tt.Execute(buffers);
+  ASSERT_EQ(1, res.size());
+  res["MFCC"]->Validate();
 }
 
 #include "tests/google/src/gtest_main.cc"

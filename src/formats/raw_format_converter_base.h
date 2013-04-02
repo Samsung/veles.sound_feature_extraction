@@ -23,10 +23,10 @@ class RawFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
   virtual ~RawFormatConverterBase() {}
 
   virtual void OnInputFormatChanged() {
-    FormatConverterBase<FIN, FOUT>::outputFormat_->SetSamplingRate(
-        FormatConverterBase<FIN, FOUT>::inputFormat_->SamplingRate());
-    FormatConverterBase<FIN, FOUT>::outputFormat_->SetSize(
-        FormatConverterBase<FIN, FOUT>::inputFormat_->Size());
+    auto outputFormat = FormatConverterBase<FIN, FOUT>::outputFormat_;
+    auto inputFormat = FormatConverterBase<FIN, FOUT>::inputFormat_;
+    outputFormat->SetSamplingRate(inputFormat->SamplingRate());
+    outputFormat->SetSize(inputFormat->Size());
   }
 
   virtual void InitializeBuffers(

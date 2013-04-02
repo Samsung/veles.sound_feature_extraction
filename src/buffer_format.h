@@ -55,6 +55,8 @@ class BufferFormat {
 
   virtual void Validate(const Buffers& buffers) const = 0;
 
+  virtual std::string Dump(const Buffers& buffers) const = 0;
+
  private:
   std::string id_;
 };

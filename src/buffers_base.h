@@ -71,6 +71,17 @@ class BufferFormatBase : public BufferFormat {
     Validate(reinterpret_cast<const BuffersBase<T>&>(buffers));
   }
 
+  virtual std::string Dump(const Buffers& buffers) const noexcept {
+    if (*this != *buffers.Format()) {
+      throw InvalidFormatException(Id(), buffers.Format()->Id());
+    }
+    std::string ret("Buffers count: ");
+    ret += std::to_string(buffers.Size());
+    ret += "\n";
+    ret += Dump(reinterpret_cast<const BuffersBase<T>&>(buffers));
+    return std::move(ret);
+  }
+
  protected:
   std::string CutNamespaces(std::string&& str) {
     return str.substr(str.find_last_of(':') + 1, std::string::npos);
@@ -82,6 +93,8 @@ class BufferFormatBase : public BufferFormat {
   virtual const void* PayloadPointer(const T& item) const noexcept = 0;
 
   virtual void Validate(const BuffersBase<T>& buffers) const = 0;
+
+  virtual std::string Dump(const BuffersBase<T>& buffers) const noexcept = 0;
 };
 
 template <typename T>

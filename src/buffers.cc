@@ -39,6 +39,12 @@ Buffers::Buffers(const Buffers& other) noexcept
       buffers_(other.buffers_) {
 }
 
+Buffers::Buffers(const Buffers& other,
+                 const std::shared_ptr<BufferFormat>& format) noexcept
+    : format_(format),
+      buffers_(other.buffers_) {
+}
+
 Buffers& Buffers::operator=(const Buffers& other) noexcept {
   assert(format_ == other.format_);
   buffers_ = other.buffers_;
@@ -87,6 +93,10 @@ const void *const *Buffers::Data() const noexcept {
 
 void Buffers::Validate() const {
   Format()->Validate(*this);
+}
+
+std::string Buffers::Dump() const noexcept {
+  return Format()->Dump(*this);
 }
 
 } /* namespace SpeechFeatureExtraction */

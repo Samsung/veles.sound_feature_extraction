@@ -23,6 +23,8 @@ class Buffers {
  public:
   Buffers(size_t size, const std::shared_ptr<BufferFormat>& format) noexcept;
   Buffers(const Buffers& other) noexcept;
+  Buffers(const Buffers& other,
+          const std::shared_ptr<BufferFormat>& format) noexcept;
   Buffers& operator=(const Buffers& other) noexcept;
 
   virtual ~Buffers() noexcept {}
@@ -35,6 +37,8 @@ class Buffers {
   const void* const* Data() const noexcept;
 
   void Validate() const;
+
+  std::string Dump() const noexcept;
 
   virtual const std::shared_ptr<BufferFormat> Format() const noexcept;
 
