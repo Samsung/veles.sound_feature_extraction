@@ -148,7 +148,7 @@ static INLINE NOTNULL(3, 4) void initialize_highpass_lowpass(
     WaveletType type, int order, float *highpass, float *lowpass) {
   size_t uorder = (size_t)order;
   for (int i = 0; i < order; i++) {
-    float val;
+    float val = .0f;
     switch (type) {
       case WAVELET_TYPE_DAUBECHIES:
         assert(uorder <= sizeof(kDaubechiesF[0]) / sizeof(kDaubechiesF[0][0]) &&
