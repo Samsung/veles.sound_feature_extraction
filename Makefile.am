@@ -12,3 +12,7 @@ export TESTLOG ?= tests.log
 tests:
 	@rm -f $(TESTLOG) 
 	@cd tests; $(MAKE) tests
+	@if [ -n "$$(grep '\[FAILED\]' $$TESTLOG)" ]; then \
+		echo "One or more tests failed"; \
+		exit 1; \
+	fi

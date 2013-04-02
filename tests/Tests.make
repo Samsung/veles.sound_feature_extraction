@@ -33,6 +33,7 @@ tests:
 		echo -e "\033[01;32m[DONE]\033[00m $$et"; \
 	else \
 		echo -e "\033[01;31m[FAIL]\033[00m $$et"; \
+		echo "[FAILED]" >>$(REALLOG); \
 	fi; \
 	done
 	
