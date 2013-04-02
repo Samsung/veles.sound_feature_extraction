@@ -18,13 +18,13 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         logging.basicConfig(level=logging.DEBUG)
+        Library("/home/markhor/Development/spfextr/build/src/"
+                ".libs/libspfextr.so")
 
     def tearDown(self):
         pass
 
     def testExtractor(self):
-        Library("/home/markhor/Development/spfextr/build/src/"
-                ".libs/libspfextr.so")
         extr = Extractor([Features("MFCC",
                                    [Transform("Window",
                                               parameters={"length": "32"}),
@@ -33,7 +33,8 @@ class Test(unittest.TestCase):
                                     Transform("FilterBank"),
                                     Transform("FilterBank"),
                                     Transform("Log"),
-                                    Transform("UnpackRDFT"),
+                                    Transform("Selector",
+                                              parameters={"length": "256"}),
                                     Transform("DCT"),
                                     Transform("Selector",
                                               parameters={"length": "24"})]
@@ -41,6 +42,7 @@ class Test(unittest.TestCase):
                          48000, 16000)
         buffer = numpy.ones((48000,), dtype=numpy.int16)
         results = extr.calculate(buffer)
+        print("Calculated results:")
         print(results["MFCC"])
         extr.free_results(results)
 
