@@ -23,16 +23,19 @@ using SpeechFeatureExtraction::BuffersBase;
 TEST(SBC, Calculation) {
   ASSERT_NO_THROW({
     TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
+    tt.SetValidateAfterEachTransform(true);
     // We have to apply FilterBank twice since Energy results in
     // squared magnitude
     tt.AddChain("SBC", { { "Window", "length=32, type=rectangular" },
         { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
         /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" } });
-    BuffersBase<Raw16> buffers;
+    BuffersBase<Raw16> buffers(tt.RootFormat());
     buffers.Initialize(1, 48000, 0);
     memcpy(buffers[0]->Data.get(), data, sizeof(data));
     tt.PrepareForExecution();
-    tt.Execute(buffers);
+    auto res = tt.Execute(buffers);
+    ASSERT_EQ(1, res.size());
+    res["SBC"]->Validate();
     tt.Dump("/tmp/sbc.dot");
     auto report = tt.ExecutionTimeReport();
     for (auto r : report) {

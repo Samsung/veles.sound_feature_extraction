@@ -25,6 +25,18 @@ class ParentTestFormat : public BufferFormatBase<ParentChunk> {
   BufferFormat& operator=(const BufferFormat&) {
     return *this;
   }
+
+  virtual bool MustReallocate(const BufferFormatBase<ParentChunk>&)
+      const noexcept {
+    return true;
+  }
+
+  virtual const void* PayloadPointer(const ParentChunk&) const noexcept {
+    return nullptr;
+  }
+
+  virtual void Validate(const BuffersBase<ParentChunk>&) const {
+  }
 };
 
 class ParentTestTransform
@@ -62,6 +74,18 @@ class ChildTestFormat : public BufferFormatBase<ChildChunk> {
  public:
   BufferFormat& operator=(const BufferFormat&) {
     return *this;
+  }
+
+  virtual bool MustReallocate(const BufferFormatBase<ChildChunk>&)
+      const noexcept {
+    return true;
+  }
+
+  virtual const void* PayloadPointer(const ChildChunk&) const noexcept {
+    return nullptr;
+  }
+
+  virtual void Validate(const BuffersBase<ChildChunk>&) const {
   }
 };
 

@@ -88,6 +88,22 @@ class TreeIsNotPreparedException : public ExceptionBase {
   }
 };
 
+class TransformResultedInInvalidBuffersException : public ExceptionBase {
+ public:
+  TransformResultedInInvalidBuffersException(const std::string& transform,
+                                             const std::string& inner)
+  : ExceptionBase("Transform " + transform +
+                  " resulted in invalid buffers. " + inner) {
+  }
+};
+
+class InvalidInputBuffersException : public ExceptionBase {
+ public:
+  InvalidInputBuffersException(const std::string& message)
+  : ExceptionBase("Invalid input data. " + message) {
+  }
+};
+
 class TransformTree {
  public:
   explicit TransformTree(Formats::RawFormat16&& rootFormat) noexcept;
@@ -108,6 +124,9 @@ class TransformTree {
 
   std::unordered_map<std::string, float> ExecutionTimeReport() const noexcept;
   void Dump(const std::string& dotFileName) const;
+
+  bool ValidateAfterEachTransform() const noexcept;
+  void SetValidateAfterEachTransform(bool value) noexcept;
 
  private:
   struct Node {
@@ -151,6 +170,7 @@ class TransformTree {
   bool treeIsPrepared_;
   std::set<std::string> chains_;
   std::unordered_map<std::string, TransformCacheItem> transformsCache_;
+  bool validateAfterEachTransform_;
 };
 
 }  // namespace SpeechFeatureExtraction

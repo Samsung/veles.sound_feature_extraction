@@ -148,6 +148,24 @@ class RawFormat : public BufferFormatBase<Raw<T>> {
    return item.Data.get();
  }
 
+ virtual void Validate(const BuffersBase<Raw<T>>& buffers) const {
+   for (size_t i = 0; i < buffers.Size(); i++) {
+     bool allZeros = true;
+     for (size_t j = 0; j < size_; j++) {
+       T value = buffers[i]->Data.get()[j];
+       if (value != value) {
+         throw InvalidBuffersException(this->Id(), i,
+                                       std::string("[") + std::to_string(j) +
+                                       "] = " + std::to_string(value));
+       }
+       allZeros &= (value == 0);
+     }
+     if (allZeros) {
+       throw InvalidBuffersException(this->Id(), i, "all zeros");
+     }
+   }
+ }
+
  private:
   size_t size_;
   int samplingRate_;

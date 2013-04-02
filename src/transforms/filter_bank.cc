@@ -157,7 +157,7 @@ void FilterBank::Initialize() const noexcept {
       [](float* ptr) {
         free(ptr);
       });
-  memsetf(filterBank_.get(), inputFormat_->Size(), 0.0f);
+  memsetf(filterBank_.get(), inputFormat_->Size(), .0f);
 
   float scaleMin = LinearToScale(type_, minFreq_);
   float scaleMax = LinearToScale(type_, maxFreq_);
@@ -165,6 +165,14 @@ void FilterBank::Initialize() const noexcept {
 
   for (size_t i = 0; i < length_; i++) {
     AddTriangularFilter(scaleMin + dsc * i, dsc);
+  }
+
+  // Avoid zeros in filter since taking a logarithm from 0 is undefined.
+  auto filter = filterBank_.get();
+  for (size_t i = 0; i < inputFormat_->Size(); i++) {
+    if (filter[i] == .0f) {
+      filter[i] = 0.001f;
+    }
   }
 }
 
@@ -178,19 +186,20 @@ void FilterBank::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* out) const noexcept {
   auto filter = filterBank_.get();
-  int N = inputFormat_->Size();
+  int length = inputFormat_->Size();
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();
 #ifdef SIMD
-    for (int i = 0; i < N - FLOAT_STEP + 1; i += FLOAT_STEP) {
+    for (int i = 0; i < length - FLOAT_STEP + 1; i += FLOAT_STEP) {
       real_multiply(input + i, filter + i, output + i);
     }
-    for (int i = (N >> FLOAT_STEP_LOG2) << FLOAT_STEP_LOG2; i < N; i++) {
+    for (int i = (length >> FLOAT_STEP_LOG2) << FLOAT_STEP_LOG2;
+        i < length; i++) {
       output[i] = input[i] * filter[i];
     }
 #else
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < length; i++) {
       output[i] = input[i] * filter[i];
     }
 #endif

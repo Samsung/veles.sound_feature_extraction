@@ -22,7 +22,7 @@ Buffers::Buffers(size_t size,
   assert(size <= (1 << 20));
   auto buffers = new std::vector<void*>();
   buffers->resize(size);
-  auto destroy = format_->Destructor();
+  auto destroy = format_ != nullptr? format_->Destructor() : [](void*){};
   buffers_ = std::shared_ptr<std::vector<void*>>( // NOLINT(*)
       buffers, [=](std::vector<void*>* vec) {
     for (size_t i = 0; i < vec->size(); i++) {
@@ -83,6 +83,10 @@ void Buffers::Set(size_t index, void* buffer) noexcept {
 
 const void *const *Buffers::Data() const noexcept {
   return reinterpret_cast<const void *const *>(&(*buffers_)[0]);
+}
+
+void Buffers::Validate() const {
+  Format()->Validate(*this);
 }
 
 } /* namespace SpeechFeatureExtraction */

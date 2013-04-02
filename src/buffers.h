@@ -25,8 +25,7 @@ class Buffers {
   Buffers(const Buffers& other) noexcept;
   Buffers& operator=(const Buffers& other) noexcept;
 
-  virtual ~Buffers() noexcept {
-  }
+  virtual ~Buffers() noexcept {}
 
   size_t Size() const noexcept;
 
@@ -34,6 +33,8 @@ class Buffers {
   const void* operator[](size_t index) const noexcept;
 
   const void* const* Data() const noexcept;
+
+  void Validate() const;
 
   virtual const std::shared_ptr<BufferFormat> Format() const noexcept;
 

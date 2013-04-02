@@ -146,6 +146,15 @@ void TransformTree::Node::Execute(
     if (ChainName != "") {
       (*results)[ChainName] = BoundBuffers;
     }
+    if (Host->ValidateAfterEachTransform()) {
+      try {
+        BoundBuffers->Validate();
+      }
+      catch(const InvalidBuffersException& e) {
+        throw TransformResultedInInvalidBuffersException(BoundTransform->Name(),
+                                                         e.what());
+      }
+    }
   }
   for (auto tnodepair : Children) {
     for (auto tnode : tnodepair.second) {
@@ -159,7 +168,8 @@ TransformTree::TransformTree(Formats::RawFormat16&& rootFormat) noexcept
         nullptr, std::make_shared<RootTransform>(
             std::make_shared<Formats::RawFormat16>(rootFormat)), this)),
       rootFormat_(std::make_shared<Formats::RawFormat16>(rootFormat)),
-      treeIsPrepared_(false) {
+      treeIsPrepared_(false),
+      validateAfterEachTransform_(false) {
 }
 
 TransformTree::TransformTree(
@@ -167,7 +177,8 @@ TransformTree::TransformTree(
     : root_(std::make_shared<Node>(
         nullptr, std::make_shared<RootTransform>(rootFormat), this)),
       rootFormat_(rootFormat),
-      treeIsPrepared_(false) {
+      treeIsPrepared_(false),
+      validateAfterEachTransform_(false) {
 }
 
 TransformTree::~TransformTree() noexcept {
@@ -268,6 +279,14 @@ TransformTree::Execute(const Buffers& in) {
     results.insert(std::make_pair(name, nullptr));
   }
   root_->BoundBuffers = std::make_shared<Buffers>(in);
+  if (ValidateAfterEachTransform()) {
+    try {
+      root_->BoundBuffers->Validate();
+    }
+    catch(const InvalidBuffersException& e) {
+      throw InvalidInputBuffersException(e.what());
+    }
+  }
   auto checkPointStart = std::chrono::high_resolution_clock::now();
   root_->Execute(&results);
   auto checkPointFinish = std::chrono::high_resolution_clock::now();
@@ -420,6 +439,14 @@ void TransformTree::Dump(const std::string& dotFileName) const {
     }
   });
   fw << "}" << std::endl;
+}
+
+bool TransformTree::ValidateAfterEachTransform() const noexcept {
+  return validateAfterEachTransform_;
+}
+
+void TransformTree::SetValidateAfterEachTransform(bool value) noexcept {
+  validateAfterEachTransform_ = value;
 }
 
 }  // namespace SpeechFeatureExtraction

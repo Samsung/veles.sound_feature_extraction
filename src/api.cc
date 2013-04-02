@@ -213,11 +213,11 @@ FeaturesConfiguration *setup_features_extraction(
   }
 
   auto format = std::make_shared<RawFormat16>(bufferSize, samplingRate);
-  auto fconfig = new FeaturesConfiguration();
-  fconfig->Tree = std::make_shared<TransformTree>(format);
+  auto config = new FeaturesConfiguration();
+  config->Tree = std::make_shared<TransformTree>(format);
   for (auto featpair : featmap) {
     try {
-      fconfig->Tree->AddChain(featpair.first, featpair.second);
+      config->Tree->AddChain(featpair.first, featpair.second);
     }
     catch(const ChainNameAlreadyExistsException& cnaee) {
       fprintf(stderr, "Failed to construct the transform tree. %s\n",
@@ -240,8 +240,11 @@ FeaturesConfiguration *setup_features_extraction(
       return nullptr;
     }
   }
-  fconfig->Tree->PrepareForExecution();
-  return fconfig;
+  config->Tree->PrepareForExecution();
+#ifdef DEBUG
+  config->Tree->SetValidateAfterEachTransform(true);
+#endif
+  return config;
 }
 
 FeatureExtractionResult extract_speech_features(
@@ -251,7 +254,7 @@ FeatureExtractionResult extract_speech_features(
   CHECK_NULL_RET(buffer, FEATURE_EXTRACTION_RESULT_ERROR);
   CHECK_NULL_RET(results, FEATURE_EXTRACTION_RESULT_ERROR);
 
-  BuffersBase<Raw16> buffers;
+  BuffersBase<Raw16> buffers(fc->Tree->RootFormat());
   buffers.Initialize(1, buffer);
 
   std::unordered_map<std::string, std::shared_ptr<Buffers>> retmap;

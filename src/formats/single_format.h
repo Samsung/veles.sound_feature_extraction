@@ -53,6 +53,16 @@ class SingleFormat : public BufferFormatBase<T> {
   virtual const void* PayloadPointer(const T& item) const noexcept {
     return &item;
   }
+
+  virtual void Validate(const BuffersBase<T>& buffers) const {
+    for (size_t i = 0; i < buffers.Size(); i++) {
+      T value = *buffers[i];
+      if (value != value) {
+        throw InvalidBuffersException(this->Id(), i,
+                                      std::to_string(value));
+      }
+    }
+  }
 };
 
 typedef SingleFormat<float> SingleFormatF;

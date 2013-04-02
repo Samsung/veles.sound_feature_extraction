@@ -167,7 +167,7 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
   }
 
  protected:
-  virtual bool MustReallocate(const BufferFormatBase<Window<T>>& other) // NOLINT(*)
+  virtual bool MustReallocate(const BufferFormatBase<Window<T>>& other)
       const noexcept {
     auto inst = reinterpret_cast<const WindowFormat<T>&>(other);
     return inst.allocatedSize_ < allocatedSize_;
@@ -175,6 +175,24 @@ class WindowFormat : public BufferFormatBase<Window<T>> {
 
   virtual const void* PayloadPointer(const Window<T>& item) const noexcept {
     return item.Data.get();
+  }
+
+  virtual void Validate(const BuffersBase<Window<T>>& buffers) const {
+    for (size_t i = 0; i < buffers.Size(); i++) {
+      bool allZeros = true;
+      for (size_t j = 0; j < size_; j++) {
+        T value = buffers[i]->Data.get()[j];
+        if (value != value) {
+          throw InvalidBuffersException(this->Id(), i,
+                                        std::string("[") + std::to_string(j) +
+                                        "] = " + std::to_string(value));
+        }
+        allZeros &= (value == 0);
+      }
+      if (allZeros) {
+        throw InvalidBuffersException(this->Id(), i, "all zeros");
+      }
+    }
   }
 
  private:

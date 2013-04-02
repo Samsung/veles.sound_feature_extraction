@@ -30,6 +30,8 @@ class InvalidFormatException : public ExceptionBase {
                   "\" from format \"" + idYours + "\".") {}
 };
 
+class Buffers;
+
 class BufferFormat {
  public:
   explicit BufferFormat(const std::string& id) noexcept;
@@ -50,6 +52,8 @@ class BufferFormat {
   virtual size_t PayloadSizeInBytes() const noexcept = 0;
 
   virtual const void* PayloadPointer(const void* buffer) const noexcept = 0;
+
+  virtual void Validate(const Buffers& buffers) const = 0;
 
  private:
   std::string id_;

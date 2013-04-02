@@ -158,13 +158,24 @@ void WaveletFilterBank::Apply(const float* source, size_t length,
   assert(source && result);
   ValidateLength(tree_, length);
 
-  auto lsrc = std::shared_ptr<float>(
-      wavelet_prepare_array(order_, source, length), free);
-  Apply(lsrc.get(), length, result);
+  // Support zero-copy
+  auto lsrc =
+#ifndef __AVX__
+      (source == result)? result :
+#endif
+      wavelet_prepare_array(order_, source, length);
+  ApplyInternal(lsrc, length, result);
+#ifndef __AVX__
+  if (source != result) {
+#endif
+  free(lsrc);
+#ifndef __AVX__
+  }
+#endif
 }
 
-void WaveletFilterBank::Apply(float* source, size_t length,
-                              float *result) noexcept {
+void WaveletFilterBank::ApplyInternal(float* source, size_t length,
+                                      float *result) noexcept {
   assert(source && result);
   ValidateLength(tree_, length);
 

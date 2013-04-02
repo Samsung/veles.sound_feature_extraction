@@ -56,6 +56,7 @@ class TransformBase : public virtual Transform,
 
   virtual std::shared_ptr<Buffers> CreateOutputBuffers(
       const Buffers& in) const noexcept {
+    assert(in.Format() != nullptr);
     assert(*in.Format() == *inputFormat_);
     auto buffers = std::make_shared<OutBuffers>(
         std::static_pointer_cast<BufferFormatBase<typename FOUT::BufferType>>(

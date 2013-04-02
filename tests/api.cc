@@ -10,8 +10,9 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-
+#define __STDC_LIMIT_MACROS
 #include <gtest/gtest.h>
+#include <math.h>
 #include <spfextr/api.h>
 #include <boost/regex.hpp>
 #include <fstream>
@@ -59,8 +60,8 @@ TEST(API, extract_speech_features) {
   auto config = setup_features_extraction(&feature, 1, 48000, 16000);
   ASSERT_NE(nullptr, config);
   auto buffer = new int16_t[48000];
-  for (int i = 0; i < static_cast<int>(sizeof(buffer) / 2); i++) {
-    buffer[i] = 1;
+  for (int i = 0; i < 48000; i++) {
+    buffer[i] = sinf(i / 4.0f) * INT16_MAX;
   }
   char **featureNames = nullptr;
   float **results = nullptr;
@@ -84,8 +85,8 @@ FeaturesConfiguration* test_calculate_features() {
       "FilterBank, Log, Square, UnpackRDFT, DCT, Selector(length=24)]";
   auto config = setup_features_extraction(&feature, 1, 48000, 16000);
   auto buffer = new int16_t[48000];
-  for (int i = 0; i < static_cast<int>(sizeof(buffer) / 2); i++) {
-    buffer[i] = 1;
+  for (int i = 0; i < 48000; i++) {
+    buffer[i] = sinf(i / 4.0f) * INT16_MAX;
   }
   char **featureNames = nullptr;
   float **results = nullptr;

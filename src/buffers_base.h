@@ -20,6 +20,18 @@
 
 namespace SpeechFeatureExtraction {
 
+class InvalidBuffersException : public ExceptionBase {
+ public:
+  InvalidBuffersException(const std::string& format,
+                          size_t index, const std::string& value)
+  : ExceptionBase("Buffers[" + std::to_string(index) +
+                  "] is invalid (" + value + "). Format is " +
+                  format + ".") {}
+};
+
+template <typename T>
+class BuffersBase;
+
 template <typename T>
 class BufferFormatBase : public BufferFormat {
  public:
@@ -52,26 +64,31 @@ class BufferFormatBase : public BufferFormat {
     return PayloadPointer(*reinterpret_cast<const T*>(buffer));
   }
 
+  virtual void Validate(const Buffers& buffers) const {
+    if (*this != *buffers.Format()) {
+      throw InvalidFormatException(Id(), buffers.Format()->Id());
+    }
+    Validate(reinterpret_cast<const BuffersBase<T>&>(buffers));
+  }
+
  protected:
   std::string CutNamespaces(std::string&& str) {
     return str.substr(str.find_last_of(':') + 1, std::string::npos);
   }
 
-  virtual bool MustReallocate(const BufferFormatBase<T>& other UNUSED)
-      const noexcept {
-    return true;
-  }
+  virtual bool MustReallocate(const BufferFormatBase<T>& other) const noexcept
+      = 0;
 
-  virtual const void* PayloadPointer(const T& item UNUSED) const noexcept {
-    return nullptr;
-  }
+  virtual const void* PayloadPointer(const T& item) const noexcept = 0;
+
+  virtual void Validate(const BuffersBase<T>& buffers) const = 0;
 };
 
 template <typename T>
 class BuffersBase : public Buffers {
  public:
   BuffersBase() noexcept
-      : Buffers(0, std::make_shared<BufferFormatBase<T>>()) {  // NOLINT(*)
+      : Buffers(0, nullptr) {
   }
 
   explicit BuffersBase(std::shared_ptr<BufferFormatBase<T>> format) noexcept  // NOLINT(*)
