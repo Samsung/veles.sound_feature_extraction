@@ -37,23 +37,23 @@ void DCT::Do(
     inputs[i] = in[i]->Data.get();
     outputs[i] = (*out)[i]->Data.get();
   }
-  auto fftPlan = fftf_init_batch(
-      FFTF_TYPE_DCT,
-      IsInverse()? FFTF_DIRECTION_BACKWARD : FFTF_DIRECTION_FORWARD,
-      FFTF_DIMENSION_1D,
-      &length,
-      FFTF_NO_OPTIONS,
-      in.Size(),
-      &inputs[0], &outputs[0]);
+  auto fftPlan = std::unique_ptr<FFTFInstance, void (*)(FFTFInstance *)>(
+      fftf_init_batch(
+          FFTF_TYPE_DCT,
+          IsInverse()? FFTF_DIRECTION_BACKWARD : FFTF_DIRECTION_FORWARD,
+          FFTF_DIMENSION_1D,
+          &length,
+          FFTF_NO_OPTIONS,
+          in.Size(),
+          &inputs[0], &outputs[0]),
+      fftf_destroy);
 
-  fftf_calc(fftPlan);
+  fftf_calc(fftPlan.get());
   if (IsInverse()) {
     for (size_t i = 0; i < in.Size(); i++) {
       real_multiply_scalar(outputs[i], length, 0.5f / length, outputs[i]);
     }
   }
-
-  fftf_destroy(fftPlan);
 }
 
 REGISTER_TRANSFORM(DCT);
