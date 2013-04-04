@@ -79,6 +79,9 @@ class ParameterizableBase : public virtual IParameterizable {
     typedef T type;
   };
 
+  bool Parse(const std::string& name, const std::string& value,
+             identity<bool>);
+
   int Parse(const std::string& name, const std::string& value,
             identity<int>);
 

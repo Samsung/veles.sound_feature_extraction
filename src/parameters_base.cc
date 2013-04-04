@@ -70,6 +70,16 @@ void ParameterizableBase::InitializeValues() const noexcept {
   }
 }
 
+bool ParameterizableBase::Parse(const std::string& name,
+                                const std::string& value,
+                                identity<bool>) {
+  bool ret = (value == "true");
+  if (!ret && value != "false") {
+    throw InvalidParameterValueException(name, value, HostName());
+  }
+  return ret;
+}
+
 int ParameterizableBase::Parse(const std::string& name,
                                const std::string& value,
                                identity<int>) {
