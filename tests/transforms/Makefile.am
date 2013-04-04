@@ -2,7 +2,7 @@ include $(top_srcdir)/Makefile.common
 
 noinst_PROGRAMS = lowpass_filter square complex_magnitude log filter_bank \
 energy real_to_complex unpack_rdft intensity rdft dct dwpt subband_energy \
-zero_padding selector hps
+zero_padding selector hps window
 
 GTEST_INCLUDE = -I$(top_srcdir)/tests/google
 
@@ -179,6 +179,17 @@ hps_CPPFLAGS = $(GTEST_INCLUDE)
 
 # Used libraries
 hps_LDADD = $(top_builddir)/src/libspfextr.la  \
+$(top_builddir)/tests/google/lib_gtest.la \
+$(ALL_LIBS)
+
+# Sources 
+window_SOURCES = window.cc
+
+# Compiler options
+window_CPPFLAGS = $(GTEST_INCLUDE)
+
+# Used libraries
+window_LDADD = $(top_builddir)/src/libspfextr.la  \
 $(top_builddir)/tests/google/lib_gtest.la \
 $(ALL_LIBS)
 

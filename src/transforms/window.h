@@ -15,16 +15,16 @@
 
 #include "src/formats/raw_format.h"
 #include "src/formats/window_format.h"
-#include "src/transform_base.h"
+#include "src/uniform_format_transform.h"
 #include "src/primitives/window.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-class Window
+class RawToWindow
     : public TransformBase<Formats::RawFormat16, Formats::WindowFormat16> {
  public:
-  Window();
+  RawToWindow();
 
   TRANSFORM_INTRO("Window", "Splits the raw input signal into numerous "
                             "windows stepping \"step\" ms with length "
@@ -49,7 +49,7 @@ class Window
         BuffersBase<Formats::Window16>* buffers) const noexcept;
 
   virtual void Do(const BuffersBase<Formats::Raw16>& in,
-                          BuffersBase<Formats::Window16> *out) const noexcept;
+                  BuffersBase<Formats::Window16> *out) const noexcept;
 
  private:
   static const int kDefaultLength;
@@ -62,6 +62,48 @@ class Window
   mutable std::shared_ptr<float> window_;
   mutable int outSizeEach_;
   mutable int inDataStep_;
+};
+
+class Window
+    : public UniformFormatTransform<Formats::WindowFormatF> {
+  friend class RawToWindow;
+ public:
+  Window();
+
+  TRANSFORM_INTRO("Window", "Applies a window function to each window.")
+
+  TRANSFORM_PARAMETERS(
+      TP("type", "Type of the window. E.g. \"rectangular\" "
+                 "or \"hamming\".",
+         kDefaultType)
+      TP("predft", "Apply Discrete Fourier Transform to window function.",
+         std::to_string(kDefaultPreDft))
+  )
+
+  virtual void Initialize() const noexcept;
+
+ protected:
+  virtual void InitializeBuffers(const BuffersBase<Formats::WindowF>& in,
+        BuffersBase<Formats::WindowF>* buffers) const noexcept;
+
+  virtual void Do(const BuffersBase<Formats::WindowF>& in,
+                  BuffersBase<Formats::WindowF> *out) const noexcept;
+
+ private:
+  static const std::string kDefaultType;
+  static const WindowType kDefaultTypeEnum;
+  static const bool kDefaultPreDft;
+
+  WindowType type_;
+  bool preDft_;
+  mutable std::shared_ptr<float> window_;
+
+  static std::shared_ptr<float> InitializeWindow(int length,
+                                                 WindowType type,
+                                                 int allocSize = -1) noexcept;
+
+  static void ApplyWindow(const float* window, int length,
+                          const float* input, float* output) noexcept;
 };
 
 }  // namespace Transforms
