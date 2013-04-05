@@ -1,5 +1,5 @@
 /*! @file window.h
- *  @brief Hannig, Hamming and Rectangular window types.
+ *  @brief Hannig, Half-Hanning, Hamming and Rectangular window types.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -21,7 +21,8 @@
 typedef enum {
   WINDOW_TYPE_RECTANGULAR,
   WINDOW_TYPE_HAMMING,
-  WINDOW_TYPE_HANNING
+  WINDOW_TYPE_HANNING,
+  WINDOW_TYPE_HALF_HANNING
 } WindowType;
 
 /// @brief The map between window name and window type.
