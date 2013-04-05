@@ -35,6 +35,8 @@ class Fork
   static const std::string kCloningFactorAttributeName;
 
  protected:
+  static const int kDefaultFactor;
+
   virtual void OnFormatChanged();
 
   virtual void InitializeBuffers(
@@ -45,8 +47,6 @@ class Fork
                   BuffersBase<Formats::WindowF>* out) const noexcept;
 
  private:
-  static const int kDefaultFactor;
-
   int factor_;
 };
 

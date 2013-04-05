@@ -30,6 +30,9 @@ class AttributeNotFoundException : public ExceptionBase {
 /// key-value pairs which are optional to the underlying object.
 class Attributes {
  public:
+  Attributes() : attrs_(std::make_shared<AttributesMap>()) {
+  }
+
   virtual ~Attributes() noexcept {
   }
 
@@ -74,8 +77,9 @@ class Attributes {
   }
 
  private:
-  std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<void>>>
-  attrs_;
+  typedef std::unordered_map<std::string, std::shared_ptr<void>> AttributesMap;
+
+  std::shared_ptr<AttributesMap> attrs_;
 };
 
 }  // namespace SpeechFeatureExtraction

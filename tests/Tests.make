@@ -1,4 +1,10 @@
-TESTS = $(noinst_PROGRAMS)
+AM_DEFAULT_SOURCE_EXT = .cc
+
+AM_CPPFLAGS = -I$(top_srcdir)/tests/google
+AM_LDFLAGS = $(top_builddir)/src/libspfextr.la \
+       $(top_builddir)/tests/google/lib_gtest.la
+
+noinst_PROGRAMS = $(TESTS)
 
 .PHONY: tests
 
@@ -36,5 +42,3 @@ tests:
 		echo "[FAILED]" >>$(REALLOG); \
 	fi; \
 	done
-	
-ALL_LIBS =
