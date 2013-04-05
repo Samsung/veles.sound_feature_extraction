@@ -13,6 +13,7 @@
 #ifndef SRC_FORMATS_WINDOW_FORMAT_H_
 #define SRC_FORMATS_WINDOW_FORMAT_H_
 
+#include "src/attributes.h"
 #include "src/buffers_base.h"
 #include "src/formats/format_limits.h"
 #include "src/primitives/memory.h"
@@ -81,7 +82,10 @@ typedef Window<int32_t> Window32;
 typedef Window<float> WindowF;
 
 template <class T>
-class WindowFormat : public BufferFormatBase<Window<T>> {
+class WindowFormat
+    : public BufferFormatBase<Window<T>>,
+      public Attributes
+{
  public:
   WindowFormat() noexcept
       : duration_(DEFAULT_WINDOW_DURATION),
