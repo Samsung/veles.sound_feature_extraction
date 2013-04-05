@@ -1,3 +1,20 @@
+if PARALLEL_BUILD
+
+$(PARALLEL_SUBDIRS)::
+	$(MAKE) -C $@ $(MAKECMDGOALS)
+
+all-local:: $(PARALLEL_SUBDIRS)
+
+clean-local:: $(PARALLEL_SUBDIRS)
+
+SUBDIRS = $(DEPENDENCY_SUBDIRS)
+
+else
+
+SUBDIRS = $(DEPENDENCY_SUBDIRS) $(PARALLEL_SUBDIRS)
+	
+endif
+
 AM_DEFAULT_SOURCE_EXT = .cc
 
 AM_CPPFLAGS = -I$(top_srcdir)/tests/google
@@ -13,8 +30,8 @@ REALLOG=$(top_builddir)/$(TESTLOG)
 DEFAULT_TIMEOUT=10
 
 tests:	
-	@for dir in $(SUBDIRS); do \
-	cd $$dir; $(MAKE) --no-print-directory tests; cd ..; \
+	@for dir in $(PARALLEL_SUBDIRS); do \
+		cd $$dir; $(MAKE) --no-print-directory tests; cd ..; \
 	done
 	@echo [~~~~~~~~~~] >>$(REALLOG)
 	@echo Running tests in $(srcdir) >>$(REALLOG)

@@ -47,10 +47,10 @@ passed
 ])
 
 dnl Use the best march
-AS_IF([test ${host%%-*} == i686 -o ${host%%-*} == x86_64 ], [
+AS_IF([test ${target%%-*} == i686 -o ${target%%-*} == x86_64 ], [
 	CPPFLAGS="$CPPFLAGS -march=native" 
 ]) 
-AS_IF([test ${host%%-*} == arm], [
+AS_IF([test ${target%%-*} == arm], [
 	CPPFLAGS="$CPPFLAGS -march=armv7-a -mfpu=neon" 
 ]) 
 
@@ -66,9 +66,12 @@ m4_ifndef([PKG_PROG_PKG_CONFIG], AC_MSG_ERROR([Configuration requires pkg-config
 PKG_PROG_PKG_CONFIG
 
 dnl Check for Doxygen
-AC_ARG_ENABLE([doxygen],
-	AS_HELP_STRING([--disable-doxygen], [Disable building HTML documentation with Doxygen])
+AC_ARG_ENABLE([parallel_build],
+	AS_HELP_STRING([--enable-parallel-build], [Disable building subdirectories in parallel])
 )
+AM_CONDITIONAL([PARALLEL_BUILD], [test "x$enable_parallel_build" == "xyes"])
+
+echo $enable_parallel_build
 
 dnl Check whether to use the built-in Boost
 AC_ARG_WITH([built-in-boost],
@@ -99,6 +102,11 @@ AC_ARG_WITH([built-in-fftf],
 ])
 AC_SUBST([FFTF_LIBTOOL])
 AC_SUBST([FFTF_DIR])
+
+dnl Check for Doxygen
+AC_ARG_ENABLE([doxygen],
+	AS_HELP_STRING([--disable-doxygen], [Disable building HTML documentation with Doxygen])
+)
 
 AS_IF([test "x$enable_doxygen" != "xno"], [
 	

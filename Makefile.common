@@ -1,0 +1,14 @@
+if PARALLEL_BUILD
+
+SUBDIRS =
+
+$(PARALLEL_SUBDIRS)::
+	$(MAKE) -C $@ $(MAKECMDGOALS)
+	
+all clean: $(PARALLEL_SUBDIRS)
+	
+else
+
+SUBDIRS = $(PARALLEL_SUBDIRS)
+	
+endif
