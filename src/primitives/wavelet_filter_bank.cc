@@ -184,9 +184,9 @@ void WaveletFilterBank::ApplyInternal(float* source, size_t length,
   std::vector<int> workingTree;
   workingTree.reserve(tree.size());
 
-  auto ldesthi = std::shared_ptr<float>(
+  auto ldesthi = std::unique_ptr<float, void(*)(void*)>(
       wavelet_allocate_destination(order_, length), free);
-  auto ldestlo = std::shared_ptr<float>(
+  auto ldestlo = std::unique_ptr<float, void(*)(void*)>(
       wavelet_allocate_destination(order_, length), free);
   wavelet_apply(type_, order_, source, length,
                 ldesthi.get(), ldestlo.get());

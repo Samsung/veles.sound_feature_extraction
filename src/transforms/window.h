@@ -21,6 +21,53 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
+//// @brief Applies a window function to each window.
+class Window
+    : public UniformFormatTransform<Formats::WindowFormatF> {
+  friend class RawToWindow;
+ public:
+  Window();
+
+  TRANSFORM_INTRO("Window", "Applies a window function to each window.")
+
+  TRANSFORM_PARAMETERS(
+      TP("type", "Type of the window. E.g. \"rectangular\" "
+                 "or \"hamming\".",
+         kDefaultType)
+      TP("predft", "Apply Discrete Fourier Transform to window function.",
+         std::to_string(kDefaultPreDft))
+  )
+
+  virtual void Initialize() const noexcept;
+
+ protected:
+  virtual void InitializeBuffers(
+      const BuffersBase<Formats::WindowF>& in,
+      BuffersBase<Formats::WindowF>* buffers) const noexcept;
+
+  virtual void Do(const BuffersBase<Formats::WindowF>& in,
+                  BuffersBase<Formats::WindowF> *out) const noexcept;
+
+ private:
+  typedef std::unique_ptr<float, void(*)(void*)> WindowContentsPtr;
+
+  static const std::string kDefaultType;
+  static const WindowType kDefaultTypeEnum;
+  static const bool kDefaultPreDft;
+
+  WindowType type_;
+  bool preDft_;
+  mutable WindowContentsPtr window_;
+
+  static WindowContentsPtr InitializeWindow(int length,
+                                            WindowType type,
+                                            int allocSize = -1) noexcept;
+
+  static void ApplyWindow(const float* window, int length,
+                          const float* input, float* output) noexcept;
+};
+
+/// @brief Splits the raw stream into numerous small chunks aka windows.
 class RawToWindow
     : public TransformBase<Formats::RawFormat16, Formats::WindowFormat16> {
  public:
@@ -59,51 +106,9 @@ class RawToWindow
 
   int step_;
   WindowType type_;
-  mutable std::shared_ptr<float> window_;
   mutable int outSizeEach_;
   mutable int inDataStep_;
-};
-
-class Window
-    : public UniformFormatTransform<Formats::WindowFormatF> {
-  friend class RawToWindow;
- public:
-  Window();
-
-  TRANSFORM_INTRO("Window", "Applies a window function to each window.")
-
-  TRANSFORM_PARAMETERS(
-      TP("type", "Type of the window. E.g. \"rectangular\" "
-                 "or \"hamming\".",
-         kDefaultType)
-      TP("predft", "Apply Discrete Fourier Transform to window function.",
-         std::to_string(kDefaultPreDft))
-  )
-
-  virtual void Initialize() const noexcept;
-
- protected:
-  virtual void InitializeBuffers(const BuffersBase<Formats::WindowF>& in,
-        BuffersBase<Formats::WindowF>* buffers) const noexcept;
-
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::WindowF> *out) const noexcept;
-
- private:
-  static const std::string kDefaultType;
-  static const WindowType kDefaultTypeEnum;
-  static const bool kDefaultPreDft;
-
-  WindowType type_;
-  bool preDft_;
-  mutable std::shared_ptr<float> window_;
-
-  static std::shared_ptr<float> InitializeWindow(int length,
-                                                 WindowType type,
-                                                 int allocSize = -1) noexcept;
-
-  static void ApplyWindow(const float* window, int length,
-                          const float* input, float* output) noexcept;
+  mutable Window::WindowContentsPtr window_;
 };
 
 }  // namespace Transforms

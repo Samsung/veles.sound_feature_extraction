@@ -30,7 +30,8 @@ RawToWindow::RawToWindow()
   : step_(kDefaultStep),
     type_(kDefaultTypeEnum),
     outSizeEach_(0),
-    inDataStep_(0) {
+    inDataStep_(0),
+    window_(nullptr, free) {
   outputFormat_->SetDuration(kDefaultLength);
   RegisterSetter("length", [&](const std::string& value) {
     int pv = Parse<int>("length", value);
@@ -120,7 +121,8 @@ const noexcept {
 
 Window::Window()
   : type_(kDefaultTypeEnum),
-    preDft_(kDefaultPreDft) {
+    preDft_(kDefaultPreDft),
+    window_(nullptr, free) {
   RegisterSetter("type", [&](const std::string& value) {
     auto wti = kWindowTypeMap.find(value);
     if (wti == kWindowTypeMap.end()) {
@@ -135,24 +137,21 @@ Window::Window()
   });
 }
 
-std::shared_ptr<float> Window::InitializeWindow(int length,
-                                                WindowType type,
-                                                int allocSize) noexcept {
+Window::WindowContentsPtr Window::InitializeWindow(int length,
+                                                   WindowType type,
+                                                   int allocSize) noexcept {
   if (allocSize == -1) {
     allocSize = length;
   }
 
-  auto window = std::shared_ptr<float>(
-      mallocf(allocSize), [](float* ptr) {
-    free(ptr);
-  });
+  auto window = WindowContentsPtr(mallocf(allocSize), free);
 
   auto windowContents = window.get();
   for (int i = 0; i < length; i++) {
     windowContents[i] = WindowElement(type, length, i);
   }
 
-  return window;
+  return std::move(window);
 }
 
 void Window::ApplyWindow(const float* window, int length,

@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <stddef.h>
 #include "src/features_parser.h"
+#include "src/make_unique.h"
 #include "src/transform_tree.h"
 #include "src/transform_registry.h"
 
@@ -33,7 +34,7 @@ using SpeechFeatureExtraction::Buffers;
 
 extern "C" {
 struct FeaturesConfiguration {
-  std::shared_ptr<TransformTree> Tree;
+  std::unique_ptr<TransformTree> Tree;
 };
 
 #define BLAME(x) fprintf(stderr, "Error: " #x " is null (function %s, " \
@@ -214,7 +215,7 @@ FeaturesConfiguration *setup_features_extraction(
 
   auto format = std::make_shared<RawFormat16>(bufferSize, samplingRate);
   auto config = new FeaturesConfiguration();
-  config->Tree = std::make_shared<TransformTree>(format);
+  config->Tree = std::make_unique<TransformTree>(format);
   for (auto featpair : featmap) {
     try {
       config->Tree->AddChain(featpair.first, featpair.second);

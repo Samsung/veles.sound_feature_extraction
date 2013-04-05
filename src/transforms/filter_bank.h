@@ -72,7 +72,7 @@ class FilterBank
   size_t length_;
   int minFreq_;
   int maxFreq_;
-  mutable std::shared_ptr<float> filterBank_;
+  mutable std::unique_ptr<float, void(*)(void*)> filterBank_;
 
  private:
   /// @brief Adds a triangular filter to the filter bank.

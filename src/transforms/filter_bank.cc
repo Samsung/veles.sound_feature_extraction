@@ -33,7 +33,8 @@ FilterBank::FilterBank()
   : type_(SCALE_TYPE_MEL),
     length_(kDefaultLength),
     minFreq_(kDefaultMinFrequency),
-    maxFreq_(kDefaultMaxFrequency) {
+    maxFreq_(kDefaultMaxFrequency),
+    filterBank_(nullptr, free) {
   RegisterSetter("number", [&](const std::string& value) {
     auto pv = Parse<size_t>("number", value);
     if (pv > 2048) {
@@ -152,11 +153,7 @@ void FilterBank::AddTriangularFilter(float center, float halfWidth) const {
 }
 
 void FilterBank::Initialize() const noexcept {
-  filterBank_ = std::shared_ptr<float>(
-      mallocf(inputFormat_->Size()),
-      [](float* ptr) {
-        free(ptr);
-      });
+  filterBank_ = std::unique_ptr<float, void(*)(void*)>(mallocf(inputFormat_->Size()), free);
   memsetf(filterBank_.get(), inputFormat_->Size(), .0f);
 
   float scaleMin = LinearToScale(type_, minFreq_);

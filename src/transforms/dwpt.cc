@@ -11,6 +11,7 @@
  */
 
 #include "src/transforms/dwpt.h"
+#include "src/make_unique.h"
 
 namespace SpeechFeatureExtraction {
 namespace Transforms {
@@ -62,7 +63,7 @@ void DWPT::InitializeBuffers(
 }
 
 void DWPT::Initialize() const noexcept {
-  filterBank_ = std::make_shared<WaveletFilterBank>(
+  filterBank_ = std::make_unique<WaveletFilterBank>(
       waveletType_, waveletOrder_, treeFingerprint_);
 }
 

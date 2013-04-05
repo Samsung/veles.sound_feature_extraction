@@ -88,7 +88,7 @@ class DWPT
   std::vector<int> treeFingerprint_;
   WaveletType waveletType_;
   int waveletOrder_;
-  mutable std::shared_ptr<Primitives::WaveletFilterBank> filterBank_;
+  mutable std::unique_ptr<Primitives::WaveletFilterBank> filterBank_;
 };
 
 }  // namespace Transforms
