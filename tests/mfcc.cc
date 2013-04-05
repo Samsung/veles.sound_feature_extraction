@@ -58,7 +58,7 @@ TEST(MFCC, CalculationTrivial) {
   BuffersBase<Raw16> buffers(tt.RootFormat());
   buffers.Initialize(1, 48000, 0);
   for (int i = 0; i < 48000; i++) {
-    buffers[0]->Data.get()[i] = 1.0f;
+    buffers[0]->Data.get()[i] = 128;
   }
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
