@@ -1,5 +1,5 @@
-/*! @file fork.h
- *  @brief Window cloning.
+/*! @file frequency_bands.h
+ *  @brief Cut the frequency bands from a signal.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_FORK_H_
-#define SRC_TRANSFORMS_FORK_H_
+#ifndef SRC_TRANSFORMS_TEMPLATE_TRANSFORM_H_
+#define SRC_TRANSFORMS_TEMPLATE_TRANSFORM_H_
 
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
@@ -19,26 +19,25 @@
 namespace SpeechFeatureExtraction {
 namespace Transforms {
 
-class Fork
+class FrequencyBands
     : public UniformFormatTransform<Formats::WindowFormatF> {
-  friend class FrequencyBands;
  public:
-  Fork();
+  FrequencyBands();
 
-  TRANSFORM_INTRO("Fork", "Clones the windows, increasing their number by "
-                          "a factor of \"factor\".")
+  TRANSFORM_INTRO("FrequencyBands", "Cut the frequency bands from sequential windows.")
 
   TRANSFORM_PARAMETERS(
-      TP("factor", "Windows number multiplier value.",
-         std::to_string(kDefaultFactor))
+      TP("number", "The number of bands. It should be the same as the cloning "
+                   "factor of Fork. You may set the bands configuration by hand "
+                   "with \"bands\" parameter, \"number\" will be discarded then.",
+         std::to_string(kDefaultBandsNumber))
+      TP("bands", "Bands configuration. Overrides \"number\".",
+         kDefaultBandsConfig)
   )
 
-  static const std::string kCloningFactorAttributeName;
-
  protected:
-  static const int kDefaultFactor;
-
-  virtual void OnFormatChanged();
+  static const int kDefaultBandsNumber;
+  static const std::string kDefaultBandsConfig;
 
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
@@ -48,9 +47,10 @@ class Fork
                   BuffersBase<Formats::WindowF>* out) const noexcept;
 
  private:
-  int factor_;
+  int bandsNumber_;
+  std::string bandsConfig_;
 };
 
 }  // namespace Transforms
 }  // namespace SpeechFeatureExtraction
-#endif  // SRC_TRANSFORMS_FORK_H_
+#endif  // SRC_TRANSFORMS_TEMPLATE_TRANSFORM_H_
