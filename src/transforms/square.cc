@@ -36,35 +36,40 @@ void SquareRaw::Do(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw32>* out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");
-  int arrayLength = outputFormat_->Size();
   for (size_t i = 0; i < in.Size(); i++) {
-    auto inArray = in[i]->Data.get();
-    auto outArray = (*out)[i]->Data.get();
+    Do(true, in[i]->Data.get(), outputFormat_->Size(), (*out)[i]->Data.get());
+  }
+}
 
+void SquareRaw::Do(bool simd, const int16_t* input, int length,
+                   int32_t* output) noexcept {
+  if (simd) {
 #ifdef SIMD
     int startIndex = 0;
 #ifdef __AVX__
-    startIndex = align_complement_i16(inArray);
+    startIndex = align_complement_i16(input);
 
     for (int j = 0; j < startIndex; j++) {
-      outArray[j] = inArray[j] * inArray[j];
+      output[j] = input[j] * input[j];
     }
 #endif
-    for (int j = startIndex; j < arrayLength - INT16MUL_STEP + 1;
+    for (int j = startIndex; j < length - INT16MUL_STEP + 1;
         j += INT16MUL_STEP) {
-      int16_multiply(inArray + j, inArray + j, outArray + j);
+      int16_multiply(input + j, input + j, output + j);
     }
 
-    for (int j = startIndex + (((arrayLength - startIndex)
+    for (int j = startIndex + (((length - startIndex)
             >> INT16MUL_STEP_LOG2) << INT16MUL_STEP_LOG2);
-         j < arrayLength; j++) {
-      outArray[j] = inArray[j] * inArray[j];
+         j < length; j++) {
+      output[j] = input[j] * input[j];
     }
+  } else {
 #else
-    for (int j = 0; j < arrayLength; j++) {
-      outArray[j] = inArray[j] * inArray[j];
-    }
+  } {
 #endif
+    for (int j = 0; j < length; j++) {
+      output[j] = input[j] * input[j];
+    }
   }
 }
 
@@ -82,23 +87,29 @@ void SquareWindow::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");
-  int arrayLength = outputFormat_->Size();
   for (size_t i = 0; i < in.Size(); i++) {
-    auto inArray = in[i]->Data.get();
-    auto outArray = (*out)[i]->Data.get();
+    Do(true, in[i]->Data.get(), outputFormat_->Size(), (*out)[i]->Data.get());
+  }
+}
+
+void SquareWindow::Do(bool simd, const float* input, int length,
+                      float* output) noexcept {
+  if (simd) {
 #ifdef SIMD
-    for (int j = 0; j < arrayLength - FLOAT_STEP + 1; j += FLOAT_STEP) {
-      real_multiply(inArray + j, inArray + j, outArray + j);
+    for (int j = 0; j < length - FLOAT_STEP + 1; j += FLOAT_STEP) {
+      real_multiply(input + j, input + j, output + j);
     }
-    for (int j = ((arrayLength >> FLOAT_STEP_LOG2) << FLOAT_STEP_LOG2);
-        j < arrayLength; j++) {
-      outArray[j] = inArray[j] * inArray[j];
+    for (int j = ((length >> FLOAT_STEP_LOG2) << FLOAT_STEP_LOG2);
+        j < length; j++) {
+      output[j] = input[j] * input[j];
     }
+  } else {
 #else
-    for (int j = 0; j < arrayLength; j++) {
-      outArray[j] = inArray[j] * inArray[j];
-    }
+  } {
 #endif
+    for (int j = 0; j < length; j++) {
+      output[j] = input[j] * input[j];
+    }
   }
 }
 

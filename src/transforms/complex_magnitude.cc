@@ -39,9 +39,13 @@ void ComplexMagnitude::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    auto input = in[i]->Data.get();
-    auto output = (*out)[i]->Data.get();
-    int length = inputFormat_->Size();
+    Do(true, in[i]->Data.get(), inputFormat_->Size(), (*out)[i]->Data.get());
+  }
+}
+
+void ComplexMagnitude::Do(bool simd, const float* input, int length,
+                          float* output) noexcept {
+  if (simd) {
 #ifdef __AVX__
     for (int i = 0; i < length - 15; i += 16) {
       __m256 vec1 = _mm256_load_ps(input + i);
@@ -59,6 +63,7 @@ void ComplexMagnitude::Do(
       float im = input[j + 1];
       output[j / 2] = sqrtf(re * re + im * im);
     }
+  } else {
 #elif defined(__ARM_NEON__)
     for (int j = 0; j < length - 3; j += 4) {
       float32x4_t cvec = vld1q_f32(input + j);
@@ -75,13 +80,15 @@ void ComplexMagnitude::Do(
       float im = input[j + 1];
       output[j / 2] = sqrtf(re * re + im * im);
     }
+  } else {
 #else
+  } {
+#endif
     for (int j = 0; j < length; j += 2) {
       float re = input[j];
       float im = input[j + 1];
       output[j / 2] = sqrtf(re * re + im * im);
     }
-#endif
   }
 }
 

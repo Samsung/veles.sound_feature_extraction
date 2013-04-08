@@ -54,12 +54,16 @@ void Log::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");
-  int length = inputFormat_->Size();
   for (size_t i = 0; i < in.Size(); i++) {
-    auto input = in[i]->Data.get();
-    auto output = (*out)[i]->Data.get();
-    switch (base_) {
-      case LOG_BASE_E: {
+    Do(true, in[i]->Data.get(), inputFormat_->Size(), (*out)[i]->Data.get());
+  }
+}
+
+void Log::Do(bool simd, const float* input, int length,
+             float* output) const noexcept {
+  switch (base_) {
+    case LOG_BASE_E: {
+      if (simd) {
 #ifdef __AVX__
         for (int j = 0; j < length - 7; j += 8) {
           __m256 vec = _mm256_load_ps(input + j);
@@ -69,6 +73,7 @@ void Log::Do(
         for (int j = ((length >> 3) << 3); j < length; j++) {
           output[j] = logf(input[j]);
         }
+      } else {
 #elif defined(__ARM_NEON__)
         int length = inputFormat_->Size();
         for (int j = 0; j < length - 3; j += 4) {
@@ -79,24 +84,26 @@ void Log::Do(
         for (int j = ((length >> 2) << 2); j < length; j++) {
           output[j] = logf(input[j]);
         }
+      } else {
 #else
+      } {
+#endif
         for (size_t j = 0; j < inputFormat_->Size(); j++) {
           output[j] = logf(input[j]);
         }
-#endif
-        break;
       }
-      case LOG_BASE_2:
-        for (int j = 0; j < length; j++) {
-          output[j] = log2f(input[j]);
-        }
-        break;
-      case LOG_BASE_10:
-        for (int j = 0; j < length; j++) {
-          output[j] = log10f(input[j]);
-        }
-        break;
+      break;
     }
+    case LOG_BASE_2:
+      for (int j = 0; j < length; j++) {
+        output[j] = log2f(input[j]);
+      }
+      break;
+    case LOG_BASE_10:
+      for (int j = 0; j < length; j++) {
+        output[j] = log10f(input[j]);
+      }
+      break;
   }
 }
 

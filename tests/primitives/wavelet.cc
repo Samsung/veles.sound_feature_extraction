@@ -159,6 +159,7 @@ TEST(Wavelet, wavelet_apply) {
   free(prep);
 }
 
+#ifdef BENCHMARK
 #ifdef SIMD
 TEST(Wavelet, SIMDSpeedup) {
   float array[512];
@@ -202,6 +203,7 @@ TEST(Wavelet, SIMDSpeedup) {
     free(prep);
   }
 }
+#endif
 #endif
 
 #include "tests/google/src/gtest_main.cc"

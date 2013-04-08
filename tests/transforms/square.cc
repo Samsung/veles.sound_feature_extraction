@@ -15,9 +15,12 @@
 
 using SpeechFeatureExtraction::Formats::Raw16;
 using SpeechFeatureExtraction::Formats::Raw32;
+using SpeechFeatureExtraction::Formats::WindowF;
 using SpeechFeatureExtraction::Formats::RawFormat16;
+using SpeechFeatureExtraction::Formats::WindowFormatF;
 using SpeechFeatureExtraction::BuffersBase;
 using SpeechFeatureExtraction::Transforms::SquareRaw;
+using SpeechFeatureExtraction::Transforms::SquareWindow;
 
 class SquareRawTest : public SquareRaw, public testing::Test {
  public:
@@ -35,11 +38,47 @@ class SquareRawTest : public SquareRaw, public testing::Test {
   }
 };
 
+class SquareWindowTest : public SquareWindow, public testing::Test {
+ public:
+  BuffersBase<WindowF> Input;
+  BuffersBase<WindowF> Output;
+  int Size;
+
+  virtual void SetUp() {
+    Size = 378;
+    Input.Initialize(1, Size);
+    for (int i = 0; i < Size; i++) {
+      Input[0]->Data.get()[i] = i;
+    }
+    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
+    SetInputFormat(format);
+    InitializeBuffers(Input, &Output);
+  }
+};
+
 TEST_F(SquareRawTest, Do) {
   Do(Input, &Output);
   for (int i = 0; i < 32000; i++) {
     ASSERT_EQ(i * i, Output[0]->Data.get()[i]);
   }
 }
+
+#define EPSILON 0.01f
+
+#define ASSERT_EQF(a, b) do { \
+  ASSERT_GT(a + EPSILON, b); \
+  ASSERT_LT(a - EPSILON, b); \
+} while (0)
+
+TEST_F(SquareWindowTest, Do) {
+  Do(Input, &Output);
+  for (int i = 0; i < Size; i++) {
+    ASSERT_EQF(i * i, Output[0]->Data.get()[i]);
+  }
+}
+
+#define CLASS_NAME SquareWindowTest
+#define ITER_COUNT 300000
+#include "tests/transforms/benchmark.inc"
 
 #include "tests/google/src/gtest_main.cc"

@@ -35,9 +35,13 @@ void RealToComplex::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    auto input = in[i]->Data.get();
-    auto output = (*out)[i]->Data.get();
-    int length = inputFormat_->Size();
+    Do(true, in[i]->Data.get(), inputFormat_->Size(), (*out)[i]->Data.get());
+  }
+}
+
+void RealToComplex::Do(bool simd, const float* input, int length,
+                       float* output) noexcept {
+  if (simd) {
 #ifdef __AVX__
 #ifndef __AVX2__
     const __m128 zeros = _mm_set_ps(.0f, .0f, .0f, .0f);
@@ -55,6 +59,7 @@ void RealToComplex::Do(
 #else
 #error TODO: AVX2 introduces a full 256-bit permute which must be executed before _mm256_unpack*  // NOLINT(*)
 #endif
+  } else {
 #elif defined(__ARM_NEON__)
     const float32x4_t zeros = { .0f, .0f, .0f, .0f };
     for (int i = 0; i < length - 3; i += 4) {
@@ -67,12 +72,14 @@ void RealToComplex::Do(
       output[i * 2] = input[i];
       output[i * 2 + 1] = .0f;
     }
+  } else {
 #else
+  } {
+#endif
     for (int i = 0; i < length; i++) {
       output[i * 2] = input[i];
       output[i * 2 + 1] = .0f;
     }
-#endif
   }
 }
 

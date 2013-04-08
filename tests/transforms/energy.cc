@@ -56,4 +56,8 @@ TEST_F(EnergyTest, Do) {
   }
 }
 
+#define CLASS_NAME EnergyTest
+#define ITER_COUNT 500000
+#include "tests/transforms/benchmark.inc"
+
 #include "tests/google/src/gtest_main.cc"

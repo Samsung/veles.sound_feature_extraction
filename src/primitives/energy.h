@@ -20,7 +20,11 @@
 extern "C" {
 #endif
 
-float calculate_energy(const float *signal, size_t length) NOTNULL(1);
+/// @brief Squares each value of signal and sums the results.
+/// @param simd Value indicating whether to use SIMD acceleration.
+/// @param signal The source array of floating point numbers.
+/// length The number of items in the array.
+float calculate_energy(int simd, const float *signal, size_t length) NOTNULL(2);
 
 #ifdef __cplusplus
 }

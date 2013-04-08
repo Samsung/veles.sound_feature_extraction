@@ -1,5 +1,5 @@
 /*! @file fork.cc
- *  @brief New file description.
+ *  @brief Window cloning.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

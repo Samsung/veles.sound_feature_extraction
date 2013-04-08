@@ -43,7 +43,7 @@ passed
 			  [Mark pointer parameters which must not be NULL])
 ], [
 	AC_MSG_RESULT([no])
-	AC_MSG_ERROR([Building this project requires GCC >= 4.5.0])
+	AC_MSG_ERROR([Building this project requires GCC compatible >= 4.5.0])
 ])
 
 dnl Use the best march
@@ -65,13 +65,11 @@ dnl Enable pkg-config
 m4_ifndef([PKG_PROG_PKG_CONFIG], AC_MSG_ERROR([Configuration requires pkg-config to be installed]))  
 PKG_PROG_PKG_CONFIG
 
-dnl Check for Doxygen
+dnl Check whether to build subdirectories in parallel
 AC_ARG_ENABLE([parallel_build],
 	AS_HELP_STRING([--enable-parallel-build], [Disable building subdirectories in parallel])
 )
 AM_CONDITIONAL([PARALLEL_BUILD], [test "x$enable_parallel_build" == "xyes"])
-
-echo $enable_parallel_build
 
 dnl Check whether to use the built-in Boost
 AC_ARG_WITH([built-in-boost],
@@ -105,7 +103,7 @@ AC_SUBST([FFTF_DIR])
 
 dnl Check for Doxygen
 AC_ARG_ENABLE([doxygen],
-	AS_HELP_STRING([--disable-doxygen], [Disable building HTML documentation with Doxygen])
+	AS_HELP_STRING([--disable-doxygen], [Enable building HTML documentation with Doxygen])
 )
 
 AS_IF([test "x$enable_doxygen" != "xno"], [
@@ -165,6 +163,14 @@ AM_COND_IF([TESTS], [
 	CPPFLAGS="$CPPFLAGS -fvisibility=hidden"
 ])
 AC_SUBST([TESTS_DIR])
+
+dnl Check whether to conduct test benchmarks
+AC_ARG_ENABLE([benchmarks],
+	AS_HELP_STRING([--enable-benchmarks], [Enable executing SIMD speedup benchmarks during tests evaluation])
+)
+AS_IF([test "x$enable_benchmarks" == "xyes"], [
+	CPPFLAGS="$CPPFLAGS -DBENCHMARK"
+])
 
 dnl Link with Makefile.am in source directories
 AC_CONFIG_FILES(Makefile $PACKAGE.pc

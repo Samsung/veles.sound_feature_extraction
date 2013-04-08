@@ -54,4 +54,11 @@ TEST_F(IntensityTest, Do) {
   ASSERT_EQF(logf(res / Size), *Output[0]);
 }
 
+#define CLASS_NAME IntensityTest
+#define ITER_COUNT 500000
+#define BENCH_FUNC(a, b, c) logf(calculate_energy(a, b, c))
+#define NO_OUTPUT
+#include "src/primitives/energy.h"
+#include "tests/transforms/benchmark.inc"
+
 #include "tests/google/src/gtest_main.cc"

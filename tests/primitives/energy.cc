@@ -27,13 +27,19 @@
 } while (0)
 
 TEST(Energy, calculate_energy) {
-  float array[510] __attribute__((aligned(32)));
-  const int length = sizeof(array) / sizeof(float);  // NOLINT(*)
+  const int length = 510;
+  float array[length] __attribute__((aligned(32)));
   for (int i = 0; i < length; i++) {
     array[i] = i + 1;
   }
-  float result = calculate_energy(array, length);
+  float result = calculate_energy(true, array, length);
   ASSERT_EQF((length + 1) * (2 * length + 1.0f) / 6, result);
 }
+
+#define TEST_NAME Energy
+#define ITER_COUNT 500000
+#define BENCH_FUNC calculate_energy
+#define NO_OUTPUT
+#include "tests/transforms/benchmark.inc"
 
 #include "tests/google/src/gtest_main.cc"

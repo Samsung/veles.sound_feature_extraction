@@ -52,6 +52,9 @@ class Log
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
                   BuffersBase<Formats::WindowF>* out) const noexcept;
 
+  void Do(bool simd, const float* input, int length,
+          float* output) const noexcept;
+
   static std::string LogBaseToString(LogBase lb) noexcept;
 
   LogBase base_;

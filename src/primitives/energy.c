@@ -18,28 +18,31 @@
 #endif
 #include "src/primitives/memory.h"
 
-float calculate_energy(const float *signal, size_t length) {
+float calculate_energy(int simd, const float *signal, size_t length) {
   float energy = .0f;
+  int ilength = (int)length;
+  if (simd) {
 #ifdef __AVX__
-  __m256 accum = { .0f };
-  if (align_complement_f32(signal) == 0) {
-    for (int j = 0; j < (int)length - 7; j += 8) {
+    __m256 accum = { .0f };
+    int startIndex = align_complement_f32(signal);
+    for (int j = 0; j < startIndex; j++) {
+      float val = signal[j];
+      energy += val * val;
+    }
+
+    for (int j = startIndex; j < ilength - 7; j += 8) {
       __m256 vec = _mm256_load_ps(signal + j);
       vec = _mm256_dp_ps(vec, vec, 0xFF);
       accum = _mm256_add_ps(accum, vec);
     }
-  } else {
-    for (int j = 0; j < (int)length - 7; j += 8) {
-      __m256 vec = _mm256_loadu_ps(signal + j);
-      vec = _mm256_dp_ps(vec, vec, 0xFF);
-      accum = _mm256_add_ps(accum, vec);
+    energy += accum[0] + accum[4];
+
+    for (int j = startIndex + (((length - startIndex) >> 3) << 3);
+        j < ilength; j++) {
+      float val = signal[j];
+      energy += val * val;
     }
-  }
-  energy += accum[0] + accum[4];
-  for (int j = ((length >> 3) << 3); j < (int)length; j++) {
-    float val = signal[j];
-    energy += val * val;
-  }
+  } else {
 #elif defined(__ARM_NEON__)
     float32x4_t accum = { .0f };
     for (int j = 0; j < length - 3; j += 4) {
@@ -49,15 +52,18 @@ float calculate_energy(const float *signal, size_t length) {
     float32x2_t sums = vpadd_f32(vget_high_f32(accum),
                                  vget_low_f32(accum));
     energy += vget_lane_f32(sums, 0) + vget_lane_f32(sums, 1);
-    for (int j = ((length >> 2) << 2); j < (int)length; j++) {
+    for (int j = ((length >> 2) << 2); j < ilength; j++) {
       float val = signal[j];
       energy += val * val;
     }
+  } else {
 #else
-  for (int j = 0; j < (int)length; j++) {
-    float val = signal[j];
-    energy += val * val;
-  }
+  } {
 #endif
+    for (int j = 0; j < ilength; j++) {
+      float val = signal[j];
+      energy += val * val;
+    }
+  }
   return energy / length;
 }

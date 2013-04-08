@@ -54,5 +54,8 @@ TEST_F(LogTest, Do) {
   }
 }
 
+#define CLASS_NAME LogTest
+#include "tests/transforms/benchmark.inc"
+
 #include "tests/google/src/gtest_main.cc"
 

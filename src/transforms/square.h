@@ -37,7 +37,10 @@ class SquareRaw
       BuffersBase<Formats::Raw32>* buffers) const noexcept;
 
   virtual void Do(const BuffersBase<Formats::Raw16>& in,
-                          BuffersBase<Formats::Raw32>* out) const noexcept;
+                  BuffersBase<Formats::Raw32>* out) const noexcept;
+
+  static void Do(bool simd, const int16_t* input, int length,
+                 int32_t* output) noexcept;
 };
 
 class SquareWindow
@@ -56,7 +59,10 @@ class SquareWindow
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                          BuffersBase<Formats::WindowF>* out) const noexcept;
+                  BuffersBase<Formats::WindowF>* out) const noexcept;
+
+  static void Do(bool simd, const float* input, int length,
+                 float* output) noexcept;
 };
 
 }  // namespace Transforms

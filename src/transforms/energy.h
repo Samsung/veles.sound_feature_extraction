@@ -38,6 +38,9 @@ class Energy
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
                   BuffersBase<Formats::WindowF>* out) const noexcept;
+
+  static void Do(bool simd, const float* input, int length,
+                 float* output) noexcept;
 };
 
 }  // namespace Transforms

@@ -55,4 +55,7 @@ TEST_F(ComplexMagnitudeTest, Do) {
   }
 }
 
+#define CLASS_NAME ComplexMagnitudeTest
+#include "tests/transforms/benchmark.inc"
+
 #include "tests/google/src/gtest_main.cc"
