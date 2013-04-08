@@ -56,7 +56,8 @@ void ComplexToReal::Do(bool simd, const float* input, int length,
       output[i / 2] = input[i];
     }
   } else {
-#elif defined(__ARM_NEON__) //TODO(a.shapichev): ARM_NEON implementation of C2R convertation
+#elif defined(__ARM_NEON__)
+    // TODO(a.shapichev): ARM_NEON implementation of C2R conversion
   } else {
 #else
   } {

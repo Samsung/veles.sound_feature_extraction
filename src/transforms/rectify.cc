@@ -48,7 +48,8 @@ void Rectify::Do(bool simd, const float* input, int length,
       output[i] = abs(input[i]);
     }
   } else {
-#elif defined(__ARM_NEON__) //TODO(a.shapichev) : ARM_NEON implementation of rectification
+#elif defined(__ARM_NEON__)
+    // TODO(a.shapichev) : ARM_NEON implementation of rectification
   } else {
 #else
   } {
