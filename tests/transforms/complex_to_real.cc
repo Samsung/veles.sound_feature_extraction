@@ -20,7 +20,7 @@ using SpeechFeatureExtraction::BuffersBase;
 using SpeechFeatureExtraction::Transforms::ComplexToReal;
 
 class ComplexToRealTest
-    :public ComplexToReal, public testing::Test {
+    : public ComplexToReal, public testing::Test {
  public:
   BuffersBase<WindowF> Input;
   BuffersBase<WindowF> Output;
