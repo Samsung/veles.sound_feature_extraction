@@ -48,7 +48,7 @@ TEST_F(ComplexToRealTest, Do) {
 }
 
 #define CLASS_NAME ComplexToRealTest
-#define ITER_COUNT 500000
+#define ITER_COUNT 800000
 #include "tests/transforms/benchmark.inc"
 
 #include "tests/google/src/gtest_main.cc"
