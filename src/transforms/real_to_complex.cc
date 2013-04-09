@@ -44,15 +44,16 @@ void RealToComplex::Do(bool simd, const float* input, int length,
   if (simd) {
 #ifdef __AVX__
 #ifndef __AVX2__
-    const __m128 zeros = _mm_set_ps(.0f, .0f, .0f, .0f);
-    for (int i = 0; i < length - 3; i += 4) {
-      __m128 vec = _mm_load_ps(input + i);
-      __m128 low = _mm_unpacklo_ps(vec, zeros);
-      __m128 high = _mm_unpackhi_ps(vec, zeros);
-      _mm_store_ps(output + 2 * i, low);
-      _mm_store_ps(output + 2 * i + 4, high);
+    for (int i = 0; i < length - 7; i += 8) {
+      __m256 vec = _mm256_load_ps(input + i);
+      __m256 low = _mm256_unpacklo_ps(vec, _mm256_setzero_ps());
+      __m256 high = _mm256_unpackhi_ps(vec, _mm256_setzero_ps());
+      __m256 reslow = _mm256_permute2f128_ps(low, high, 32);
+      __m256 reshigh = _mm256_permute2f128_ps(low, high, 49);
+      _mm256_store_ps(output + 2 * i, reslow);
+      _mm256_store_ps(output + 2 * i + 8, reshigh);
     }
-    for (int i = ((length >> 2) << 2); i < length; i++) {
+    for (int i = ((length >> 3) << 3); i < length; i++) {
       output[i * 2] = input[i];
       output[i * 2 + 1] = .0f;
     }

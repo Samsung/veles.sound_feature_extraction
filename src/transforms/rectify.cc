@@ -38,18 +38,32 @@ void Rectify::Do(bool simd, const float* input, int length,
                  float* output) noexcept {
   if (simd) {
 #ifdef __AVX__
-    for (int i = 0; i < length - 7; i += 8) {
+    const __m256 SIGNMASK =  _mm256_set1_ps(-0.f);
+    // Unroll 1 time
+    for (int i = 0; i < length - 15; i += 16) {
       __m256 vec1 = _mm256_load_ps(input + i);
-      __m256 vec2 = _mm256_sub_ps(_mm256_setzero_ps(), vec1);
-      vec1 = _mm256_max_ps(vec1, vec2);
-      _mm256_store_ps(output + i, vec1);
+      __m256 vec2 = _mm256_load_ps(input + i + 8);
+      __m256 vecabs1 = _mm256_andnot_ps(SIGNMASK, vec1);
+      __m256 vecabs2 = _mm256_andnot_ps(SIGNMASK, vec2);
+      _mm256_store_ps(output + i, vecabs1);
+      _mm256_store_ps(output + i + 8, vecabs2);
     }
-    for (int i = ((length >> 3) << 3); i < length; i++) {
+    for (int i = ((length >> 4) << 4); i < length; i++) {
       output[i] = abs(input[i]);
     }
   } else {
 #elif defined(__ARM_NEON__)
-    // TODO(a.shapichev) : ARM_NEON implementation of rectification
+    for (int i = 0; i < length - 7; i += 8) {
+      float32x4_t vec1 = vld1q_f32(input + i);
+      float32x4_t vec2 = vld1q_f32(input + i + 4);
+      float32x4_t res1 = vabsq_f32(vec1);
+      float32x4_t res2 = vabsq_f32(vec2);
+      v1stq_f32(res1, output + i);
+      v1stq_f32(res2, output + i + 4);
+    }
+    for (int i = ((length >> 3) << 3); i < length; i += 2) {
+      output[i / 2] = input[i];
+    }
   } else {
 #else
   } {

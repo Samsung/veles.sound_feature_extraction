@@ -65,17 +65,22 @@ void ComplexMagnitude::Do(bool simd, const float* input, int length,
     }
   } else {
 #elif defined(__ARM_NEON__)
-    for (int j = 0; j < length - 3; j += 4) {
-      float32x4_t cvec = vld1q_f32(input + j);
-      float32x4_t sqrvec = vmulq_f32(cvec, cvec);
-      float32x2_t sums = vpadd_f32(vget_high_f32(sqrvec),
-                                   vget_low_f32(sqrvec));
-      vst1_f32(sums, output + j / 2);
+    for (int j = 0; j < length - 7; j += 8) {
+      float32x4_t cvec1 = vld1q_f32(input + j);
+      float32x4_t cvec2 = vld1q_f32(input + j + 4);
+      float32x4_t sqrvec1 = vmulq_f32(cvec1, cvec1);
+      float32x4_t sqrvec2 = vmulq_f32(cvec2, cvec2);
+      float32x2_t sums1 = vpadd_f32(vget_high_f32(sqrvec1),
+                                    vget_low_f32(sqrvec1));
+      float32x2_t sums2 = vpadd_f32(vget_high_f32(sqrvec2),
+                                    vget_low_f32(sqrvec2));
+      vst1_f32(sums1, output + j / 2);
+      vst1_f32(sums2, output + j / 2 + 2);
     }
-    for (int j = 0; j < length - 3; j++) {
+    for (int j = 0; j < length - 7; j++) {
       output[j] = sqrtf(output[j]);
     }
-    for (int j = ((length >> 2) << 2); j < length; j += 2) {
+    for (int j = ((length >> 3) << 3); j < length; j += 2) {
       float re = input[j];
       float im = input[j + 1];
       output[j / 2] = sqrtf(re * re + im * im);
