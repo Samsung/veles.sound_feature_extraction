@@ -61,7 +61,7 @@ PKG_PROG_PKG_CONFIG
 
 dnl Check whether to build subdirectories in parallel
 AC_ARG_ENABLE([parallel_build],
-	AS_HELP_STRING([--enable-parallel-build], [Disable building subdirectories in parallel])
+	AS_HELP_STRING([--enable-parallel-build], [Enable building subdirectories in parallel])
 )
 AM_CONDITIONAL([PARALLEL_BUILD], [test "x$enable_parallel_build" == "xyes"])
 
@@ -97,7 +97,7 @@ AC_SUBST([FFTF_DIR])
 
 dnl Check for Doxygen
 AC_ARG_ENABLE([doxygen],
-	AS_HELP_STRING([--disable-doxygen], [Enable building HTML documentation with Doxygen])
+	AS_HELP_STRING([--disable-doxygen], [Disable building HTML documentation with Doxygen])
 )
 
 AS_IF([test "x$enable_doxygen" != "xno"], [
@@ -172,8 +172,8 @@ AC_ARG_ENABLE([coverage],
 	               [Enable code coverage generation (this option depends on debug and tests switches)])
 )
 AS_IF([test "x$enable_test_coverage" == "xyes" -a "x$enable_debug" == "xyes" -a "x$enable_tests" != "xno"], [
-	CPPFLAGS="$CPPFLAGS -fprofile-arcs -ftest-coverage"
-	LDFLAGS="$LDFLAGS -lgcov"
+	CPPFLAGS="$CPPFLAGS --coverage"
+	LDFLAGS="$LDFLAGS --coverage"
 ])
 
 dnl Link with Makefile.am in source directories
