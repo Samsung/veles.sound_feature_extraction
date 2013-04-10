@@ -9,7 +9,7 @@ pkgconfig_DATA = @PACKAGE@.pc
 
 export TESTLOG ?= tests.log
 
-tests:
+tests: all
 	@rm -f $(TESTLOG) 
 	@cd tests; $(MAKE) tests
 	@if [ -n "$$(grep '\[FAILED\]' $$TESTLOG)" ]; then \

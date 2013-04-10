@@ -15,4 +15,5 @@ lib_gtest_la_CPPFLAGS = -I$(top_srcdir)/tests/google
 
 .PHONY: tests
 
-tests:
+tests: all
+	@echo >/dev/null

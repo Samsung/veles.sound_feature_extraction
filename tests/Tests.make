@@ -6,12 +6,16 @@ $(PARALLEL_SUBDIRS)::
 all-local:: $(PARALLEL_SUBDIRS)
 
 clean-local:: $(PARALLEL_SUBDIRS)
+	rm -f *.xml
 
 SUBDIRS = $(DEPENDENCY_SUBDIRS)
 
 else
 
 SUBDIRS = $(DEPENDENCY_SUBDIRS) $(PARALLEL_SUBDIRS)
+
+clean-local::
+	rm -f *.xml
 	
 endif
 
@@ -29,7 +33,7 @@ REALLOG=$(top_builddir)/$(TESTLOG)
 
 DEFAULT_TIMEOUT=10
 
-tests:	
+tests:
 	@for dir in $(PARALLEL_SUBDIRS); do \
 		cd $$dir; $(MAKE) --no-print-directory tests; cd ..; \
 	done
@@ -48,9 +52,9 @@ tests:
 		continue; \
 	fi; \
 	if [ -z "$(TIMEOUT)" ]; then \
-		timeout $(DEFAULT_TIMEOUT) ./$$et &>>$(REALLOG); \
+		timeout $(DEFAULT_TIMEOUT) ./$$et --gtest_output="xml:$$et.xml" &>>$(REALLOG); \
 	else \
-		timeout $(TIMEOUT) ./$$et &>>$(REALLOG); \
+		timeout $(TIMEOUT) ./$$et --gtest_output="xml:$$et.xml" &>>$(REALLOG); \
 	fi; \
 	if [ "$$?" -eq "0" ]; then \
 		echo -e "\033[01;32m[DONE]\033[00m $$et"; \
