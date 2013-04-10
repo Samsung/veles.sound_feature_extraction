@@ -20,9 +20,11 @@ dnl Initialize automake
 AM_INIT_AUTOMAKE([1.11 dist-xz foreign color-tests])
 dnl Nicely formatted make output
 AM_SILENT_RULES([yes])
+dnl Rebuild everything be default
+AM_MAINTAINER_MODE([enable])
 
 dnl This allows us specify individual liking flags for each target
-AM_PROG_CC_C_O 
+AM_PROG_CC_C_O
 
 dnl Check for GCC version
 AC_MSG_CHECKING([whether gcc version is >= 4.5.0])
@@ -46,23 +48,15 @@ passed
 	AC_MSG_ERROR([Building this project requires GCC compatible >= 4.5.0])
 ])
 
-dnl Use the best march
-AS_IF([test ${target%%-*} == i686 -o ${target%%-*} == x86_64 ], [
-	CPPFLAGS="$CPPFLAGS -march=native" 
-]) 
-AS_IF([test ${target%%-*} == arm], [
-	CPPFLAGS="$CPPFLAGS -march=armv7-a -mfpu=neon" 
-]) 
-
 dnl Initialize Libtool
 LT_INIT
 
 dnl Check if Libtool is present
-dnl Libtool is used for building share libraries 
-AC_PROG_LIBTOOL     
+dnl Libtool is used for building share libraries
+AC_PROG_LIBTOOL
 
-dnl Enable pkg-config    
-m4_ifndef([PKG_PROG_PKG_CONFIG], AC_MSG_ERROR([Configuration requires pkg-config to be installed]))  
+dnl Enable pkg-config
+m4_ifndef([PKG_PROG_PKG_CONFIG], AC_MSG_ERROR([Configuration requires pkg-config to be installed]))
 PKG_PROG_PKG_CONFIG
 
 dnl Check whether to build subdirectories in parallel
@@ -96,7 +90,7 @@ AC_ARG_WITH([built-in-fftf],
 	CPPFLAGS="$CPPFLAGS -I\$(top_srcdir)/fftf/inc"
 ], [
 	dnl Check for installed FFTF
-	PKG_CHECK_MODULES([FFTF], [fftf >= 1.0])  
+	PKG_CHECK_MODULES([FFTF], [fftf >= 1.0])
 ])
 AC_SUBST([FFTF_LIBTOOL])
 AC_SUBST([FFTF_DIR])
@@ -143,13 +137,13 @@ AC_ARG_ENABLE([debug],
               AS_HELP_STRING([--enable-debug], [Build in debug mode]),
               [DEBUG_FLAGS="-O0 -DDEBUG -Wextra" enable_debug=yes],
               [enable_debug=no])
-AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)                                     
+AM_CONDITIONAL(DEBUG, test "x$enable_debug" == "xyes")
 
 dnl Check whether to build tests
 AC_ARG_ENABLE([tests],
 	AS_HELP_STRING([--disable-tests], [Disable building tests])
 )
-AM_CONDITIONAL(TESTS, test x$enable_tests != xno)
+AM_CONDITIONAL(TESTS, test "x$enable_tests" != "xno")
 AM_COND_IF([TESTS], [	
 	TESTS_DIR=tests
 	AC_CONFIG_FILES(tests/Makefile
@@ -172,15 +166,25 @@ AS_IF([test "x$enable_benchmarks" == "xyes"], [
 	CPPFLAGS="$CPPFLAGS -DBENCHMARK"
 ])
 
+dnl Check whether to generate test coverage
+AC_ARG_ENABLE([coverage],
+	AS_HELP_STRING([--enable-test-coverage],
+	               [Enable code coverage generation (this option depends on debug and tests switches)])
+)
+AS_IF([test "x$enable_test_coverage" == "xyes" -a "x$enable_debug" == "xyes" -a "x$enable_tests" != "xno"], [
+	CPPFLAGS="$CPPFLAGS -fprofile-arcs -ftest-coverage"
+	LDFLAGS="$LDFLAGS -lgcov"
+])
+
 dnl Link with Makefile.am in source directories
 AC_CONFIG_FILES(Makefile $PACKAGE.pc
 				inc/Makefile
-                src/Makefile  
+                src/Makefile
                 src/boost/Makefile
-                src/formats/Makefile   
-                src/transforms/Makefile  
-                src/primitives/Makefile  
-                )           
+                src/formats/Makefile
+                src/transforms/Makefile
+                src/primitives/Makefile
+                )
 
 dnl Security xFLAGS
 SECURITYFLAGS="-fstack-protector --param=ssp-buffer-size=4 -D_FORTIFY_SOURCE=2 -Wall -Wno-comment -Wformat-security"
@@ -191,7 +195,7 @@ LDFLAGS="$LDFLAGS -Wl,-z,relro -Wl,--hash-style=gnu"
 dnl Compile with -rdynamic
 LDFLAGS="$LDFLAGS -rdynamic"
 
-dnl Use the latest C++ standard 
+dnl Use the latest C++ standard
 CXXFLAGS="$CXXFLAGS -std=c++0x"
 
 dnl Warn of unused precompiled headers
@@ -202,12 +206,20 @@ CFLAGS="$CFLAGS -std=c99"
 
 dnl All include paths should be relative to source root or includes directory
 CPPFLAGS="$CPPFLAGS -I\$(top_srcdir) -I\$(top_srcdir)/inc -I\$(top_builddir)"
-         
-dnl Append debug flags             
-CFLAGS="$CFLAGS $DEBUG_FLAGS"
-CXXFLAGS="$CXXFLAGS $DEBUG_FLAGS"   
 
-dnl Use OpenMP             
-CPPFLAGS="$CPPFLAGS -fopenmp"  
-                
+dnl Append debug flags
+CFLAGS="$CFLAGS $DEBUG_FLAGS"
+CXXFLAGS="$CXXFLAGS $DEBUG_FLAGS"
+
+dnl Use OpenMP
+CPPFLAGS="$CPPFLAGS -fopenmp"
+
+dnl Use the best march
+AS_IF([test ${target%%-*} == i686 -o ${target%%-*} == x86_64], [
+	CPPFLAGS="$CPPFLAGS -march=native"
+])
+AS_IF([test ${target%%-*} == arm], [
+	CPPFLAGS="$CPPFLAGS -march=armv7-a -mfpu=neon"
+])
+
 AC_OUTPUT
