@@ -40,10 +40,7 @@ class LogTest : public Log, public testing::Test {
 
 #define EPSILON 0.000075f
 
-#define ASSERT_EQF(a, b) do { \
-  ASSERT_GT(a + EPSILON, b); \
-  ASSERT_LT(a - EPSILON, b); \
-} while (0)
+#define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(LogTest, Do) {
   Do(Input, &Output);

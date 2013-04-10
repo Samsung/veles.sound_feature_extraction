@@ -65,10 +65,7 @@ TEST_F(SquareRawTest, Do) {
 
 #define EPSILON 0.01f
 
-#define ASSERT_EQF(a, b) do { \
-  ASSERT_GT(a + EPSILON, b); \
-  ASSERT_LT(a - EPSILON, b); \
-} while (0)
+#define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(SquareWindowTest, Do) {
   Do(Input, &Output);

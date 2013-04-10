@@ -21,10 +21,7 @@
 #define EPSILON 0.5f
 #endif
 
-#define ASSERT_EQF(a, b) do { \
-  ASSERT_GT(a + EPSILON, b); \
-  ASSERT_LT(a - EPSILON, b); \
-} while (0)
+#define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST(Energy, calculate_energy) {
   const int length = 510;

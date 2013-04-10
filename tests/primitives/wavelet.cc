@@ -64,10 +64,7 @@ TEST(Wavelet, wavelet_allocate_destination) {
 
 #define EPSILON 0.0005f
 
-#define ASSERT_EQF(a, b) do { \
-  ASSERT_GT(a + EPSILON, b); \
-  ASSERT_LT(a - EPSILON, b); \
-} while (0)
+#define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST(Wavelet, wavelet_apply_na) {
   float array[32], desthi[16], destlo[16];

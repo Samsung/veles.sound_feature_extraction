@@ -16,10 +16,7 @@
 
 #define EPSILON 0.0001f
 
-#define ASSERT_EQF(a, b) do { \
-  ASSERT_GT(a + EPSILON, b); \
-  ASSERT_LT(a - EPSILON, b); \
-} while (0)
+#define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST(Window, Rectangular) {
   ASSERT_EQ(1.0f, WindowElement(WINDOW_TYPE_RECTANGULAR, 4, 0));

@@ -40,10 +40,7 @@ class SubbandEnergyTest : public SubbandEnergy, public testing::Test {
 
 #define EPSILON 0.005f
 
-#define ASSERT_EQF(a, b) do { \
-  ASSERT_GT(a + EPSILON, b); \
-  ASSERT_LT(a - EPSILON, b); \
-} while (0)
+#define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 float SumOfSquares(int max) {
   return max * (max + 1) * (2 * max + 1.0f) / 6;
