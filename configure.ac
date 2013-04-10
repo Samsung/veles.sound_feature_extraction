@@ -173,7 +173,7 @@ AC_ARG_ENABLE([coverage],
 )
 AS_IF([test "x$enable_test_coverage" == "xyes" -a "x$enable_debug" == "xyes" -a "x$enable_tests" != "xno"], [
 	CPPFLAGS="$CPPFLAGS --coverage"
-	LDFLAGS="$LDFLAGS --coverage"
+	LDFLAGS="$LDFLAGS -lgcov"
 ])
 
 dnl Link with Makefile.am in source directories
