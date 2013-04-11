@@ -38,8 +38,8 @@
 									<listOptionValue builtIn="false" value="__MMX__"/>
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.1369339968" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/spfextr}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/spfextr/fftf/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/fftf/inc&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.342605218" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -57,9 +57,9 @@
 									<listOptionValue builtIn="false" value="__GXX_EXPERIMENTAL_CXX0X__"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.1495967515" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/spfextr}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/spfextr/fftf/inc}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/spfextr/tests/google}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/fftf/inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/tests/google&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.900762215" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
