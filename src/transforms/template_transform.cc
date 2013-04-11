@@ -12,7 +12,7 @@
 
 #include "src/transforms/template_transform.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 TemplateTransform::TemplateTransform() {
@@ -46,4 +46,4 @@ void TemplateTransform::Do(
 REGISTER_TRANSFORM(TemplateTransform);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

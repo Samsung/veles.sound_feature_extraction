@@ -18,7 +18,7 @@
 #include "src/formats/format_limits.h"
 #include "src/primitives/memory.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Formats {
 
 class InvalidWindowFormatDurationException : public ExceptionBase {
@@ -243,5 +243,5 @@ typedef WindowFormat<int32_t> WindowFormat32;
 typedef WindowFormat<float> WindowFormatF;
 
 }  // namespace Formats
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_FORMATS_WINDOW_FORMAT_H_

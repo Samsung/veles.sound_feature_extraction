@@ -18,7 +18,7 @@
 #include "src/exceptions.h"
 #include "src/transform.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 class ChainNameAlreadyExistsException : public ExceptionBase {
  public:
@@ -177,5 +177,5 @@ class TransformTree {
   bool dumpBuffersAfterEachTransform_;
 };
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORM_TREE_H_

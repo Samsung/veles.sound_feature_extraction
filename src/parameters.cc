@@ -14,7 +14,7 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <sstream>
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 std::unordered_map<std::string, std::string> IParameterizable::Parse(
     const std::string& line) {
@@ -37,4 +37,4 @@ std::unordered_map<std::string, std::string> IParameterizable::Parse(
   return std::move(parameters);
 }
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

@@ -1,5 +1,5 @@
 /*! @file dwpt.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::DWPT.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::DWPT.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,10 +13,10 @@
 #include <gtest/gtest.h>
 #include "src/transforms/dwpt.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::DWPT;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::DWPT;
 
 class DWPTTest : public DWPT, public testing::Test {
  public:

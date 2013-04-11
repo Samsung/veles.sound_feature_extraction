@@ -16,9 +16,9 @@
 #include "src/formats/raw_format.h"
 #include "tests/speech_sample.inc"
 
-using SpeechFeatureExtraction::TransformTree;
-using SpeechFeatureExtraction::Formats::Raw16;
-using SpeechFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::TransformTree;
+using SoundFeatureExtraction::Formats::Raw16;
+using SoundFeatureExtraction::BuffersBase;
 
 TEST(SBC, Calculation) {
   ASSERT_NO_THROW({

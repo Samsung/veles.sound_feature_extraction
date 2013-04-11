@@ -18,7 +18,7 @@
 #include <arm_neon.h>
 #endif
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 void Diffrect::OnFormatChanged() {
@@ -81,4 +81,4 @@ void Diffrect::Do(bool simd, const float* input, int length,
 REGISTER_TRANSFORM(Diffrect);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

@@ -7,8 +7,8 @@ Created on Mar 25, 2013
 
 import logging
 import unittest
-from spfextr.library import Library
-from spfextr.explorer import Explorer
+from SoundFeatureExtraction.library import Library
+from SoundFeatureExtraction.explorer import Explorer
 
 
 class Test(unittest.TestCase):
@@ -20,8 +20,8 @@ class Test(unittest.TestCase):
         pass
 
     def testExplorer(self):
-        Library("/home/markhor/Development/spfextr/build/src/"
-                ".libs/libspfextr.so")
+        Library("/home/markhor/Development/SoundFeatureExtraction/build/src/"
+                ".libs/libSoundFeatureExtraction.so")
         Explorer()
 
 

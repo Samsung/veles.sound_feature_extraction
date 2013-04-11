@@ -10,7 +10,7 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <spfextr/api.h>
+#include <SoundFeatureExtraction/api.h>
 #include <assert.h>
 #include <stddef.h>
 #include "src/features_parser.h"
@@ -18,19 +18,19 @@
 #include "src/transform_tree.h"
 #include "src/transform_registry.h"
 
-using SpeechFeatureExtraction::Transform;
-using SpeechFeatureExtraction::TransformFactory;
-using SpeechFeatureExtraction::ChainNameAlreadyExistsException;
-using SpeechFeatureExtraction::TransformNotRegisteredException;
-using SpeechFeatureExtraction::ChainAlreadyExistsException;
-using SpeechFeatureExtraction::IncompatibleTransformFormatException;
-using SpeechFeatureExtraction::RawFeaturesMap;
-using SpeechFeatureExtraction::Features::ParseFeaturesException;
-using SpeechFeatureExtraction::TransformTree;
-using SpeechFeatureExtraction::Formats::RawFormat16;
-using SpeechFeatureExtraction::Formats::Raw16;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Buffers;
+using SoundFeatureExtraction::Transform;
+using SoundFeatureExtraction::TransformFactory;
+using SoundFeatureExtraction::ChainNameAlreadyExistsException;
+using SoundFeatureExtraction::TransformNotRegisteredException;
+using SoundFeatureExtraction::ChainAlreadyExistsException;
+using SoundFeatureExtraction::IncompatibleTransformFormatException;
+using SoundFeatureExtraction::RawFeaturesMap;
+using SoundFeatureExtraction::Features::ParseFeaturesException;
+using SoundFeatureExtraction::TransformTree;
+using SoundFeatureExtraction::Formats::RawFormat16;
+using SoundFeatureExtraction::Formats::Raw16;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Buffers;
 
 extern "C" {
 struct FeaturesConfiguration {
@@ -206,7 +206,7 @@ FeaturesConfiguration *setup_features_extraction(
   }
   RawFeaturesMap featmap;
   try {
-    featmap = SpeechFeatureExtraction::Features::Parse(lines);
+    featmap = SoundFeatureExtraction::Features::Parse(lines);
   }
   catch(const ParseFeaturesException& pfe) {
     fprintf(stderr, "Failed to parse features. %s\n", pfe.what());

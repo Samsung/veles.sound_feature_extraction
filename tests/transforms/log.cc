@@ -1,5 +1,5 @@
 /*! @file log.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::Log.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::Log.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -15,10 +15,10 @@
 #include <math.h>
 #include "src/transforms/log.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::Log;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::Log;
 
 class LogTest : public Log, public testing::Test {
  public:

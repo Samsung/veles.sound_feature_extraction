@@ -1,5 +1,5 @@
 /*! @file square.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::SquareRaw.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::SquareRaw.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,14 +13,14 @@
 #include <gtest/gtest.h>
 #include "src/transforms/square.h"
 
-using SpeechFeatureExtraction::Formats::Raw16;
-using SpeechFeatureExtraction::Formats::Raw32;
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::RawFormat16;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::SquareRaw;
-using SpeechFeatureExtraction::Transforms::SquareWindow;
+using SoundFeatureExtraction::Formats::Raw16;
+using SoundFeatureExtraction::Formats::Raw32;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::RawFormat16;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::SquareRaw;
+using SoundFeatureExtraction::Transforms::SquareWindow;
 
 class SquareRawTest : public SquareRaw, public testing::Test {
  public:

@@ -17,7 +17,7 @@
 #include "src/formats/single_format.h"
 #include "src/transform_base.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Intensity
@@ -37,5 +37,5 @@ class Intensity
 };
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORMS_INTENSITY_H_

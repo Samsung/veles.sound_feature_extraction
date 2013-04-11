@@ -1,5 +1,5 @@
 /*! @file real_to_complex.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::RealToComplex.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::RealToComplex.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,10 +13,10 @@
 #include <gtest/gtest.h>
 #include "src/transforms/real_to_complex.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::RealToComplex;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::RealToComplex;
 
 class RealToComplexTest : public RealToComplex, public testing::Test {
  public:

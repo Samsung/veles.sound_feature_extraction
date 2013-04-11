@@ -17,7 +17,7 @@
 #include <vector>
 #include "src/buffer_format.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 class Buffers {
  public:
@@ -54,5 +54,5 @@ class Buffers {
   std::shared_ptr<std::vector<void*>> buffers_;
 };
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_BUFFERS_H_

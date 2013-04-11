@@ -1,17 +1,17 @@
 include $(top_srcdir)/Makefile.common
 
-lib_LTLIBRARIES = libspfextr.la
+lib_LTLIBRARIES = libSoundFeatureExtraction.la
 
 #######################################
-# Build information for libspfextr.la
+# Build information for libSoundFeatureExtraction.la
 
 # Source files
-libspfextr_la_SOURCES = api.cc buffers.cc buffer_format.cc features_parser.cc \
+libSoundFeatureExtraction_la_SOURCES = api.cc buffers.cc buffer_format.cc features_parser.cc \
 parameters.cc transform.cc transform_registry.cc transform_tree.cc \
 format_converter.cc demangle.cc parameters_base.cc
 
 # Used libraries
-libspfextr_la_LIBADD = transforms/lib_transforms.la formats/lib_formats.la \
+libSoundFeatureExtraction_la_LIBADD = transforms/lib_transforms.la formats/lib_formats.la \
 primitives/lib_primitives.la $(FFTF_LIBTOOL) @FFTF_LIBS@ -lboost_regex
 
 PARALLEL_SUBDIRS = $(BOOST_DIR) transforms formats primitives

@@ -18,7 +18,7 @@
 #include "src/formats/single_format.h"
 #include "src/transform_base.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 /// @brief Harmonic Product Spectrum calculation.
@@ -42,5 +42,5 @@ class Hps
 };
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORMS_HPS_H_

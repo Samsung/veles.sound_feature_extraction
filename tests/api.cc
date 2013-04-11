@@ -1,5 +1,5 @@
 /*! @file api.cc
- *  @brief Tests for libSpeechFeatureExtraction API.
+ *  @brief Tests for libSoundFeatureExtraction API.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,7 +13,7 @@
 #define __STDC_LIMIT_MACROS
 #include <gtest/gtest.h>
 #include <math.h>
-#include <spfextr/api.h>
+#include <SoundFeatureExtraction/api.h>
 #include <boost/regex.hpp>
 #include <fstream>
 #include <streambuf>

@@ -1,5 +1,5 @@
 /*! @file intensity.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::Intensity.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::Intensity.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -14,10 +14,10 @@
 #include <math.h>
 #include "src/transforms/intensity.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::Intensity;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::Intensity;
 
 class IntensityTest : public Intensity, public testing::Test {
  public:

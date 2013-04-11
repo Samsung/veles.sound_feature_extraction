@@ -1,5 +1,5 @@
 /*! @file subband_energy.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::SubbandEnergy.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::SubbandEnergy.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,10 +13,10 @@
 #include <gtest/gtest.h>
 #include "src/transforms/subband_energy.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::SubbandEnergy;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::SubbandEnergy;
 
 class SubbandEnergyTest : public SubbandEnergy, public testing::Test {
  public:

@@ -8,18 +8,18 @@ Created on Mar 25, 2013
 import logging
 import numpy
 import unittest
-from spfextr.extractor import Extractor
-from spfextr.features import Features
-from spfextr.library import Library
-from spfextr.transform import Transform
+from SoundFeatureExtraction.extractor import Extractor
+from SoundFeatureExtraction.features import Features
+from SoundFeatureExtraction.library import Library
+from SoundFeatureExtraction.transform import Transform
 
 
 class Test(unittest.TestCase):
 
     def setUp(self):
         logging.basicConfig(level=logging.DEBUG)
-        Library("/home/markhor/Development/spfextr/build/src/"
-                ".libs/libspfextr.so")
+        Library("/home/markhor/Development/SoundFeatureExtraction/build/src/"
+                ".libs/libSoundFeatureExtraction.so")
 
     def tearDown(self):
         pass

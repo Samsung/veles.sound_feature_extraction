@@ -15,7 +15,7 @@
 #include "src/formats/format_limits.h"
 #include "src/primitives/arithmetic-inl.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 const std::unordered_map<std::string, FilterBank::ScaleType>
@@ -207,4 +207,4 @@ void FilterBank::Do(
 REGISTER_TRANSFORM(FilterBank);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

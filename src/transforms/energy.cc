@@ -18,7 +18,7 @@
 #include <arm_neon.h>
 #endif
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 void Energy::OnFormatChanged() {
@@ -91,4 +91,4 @@ void Energy::Do(bool simd, const float* input, int length,
 REGISTER_TRANSFORM(Energy);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

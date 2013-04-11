@@ -15,7 +15,7 @@
 
 #include "src/parameters.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 class InvalidParameterNameException : public ExceptionBase {
  public:
@@ -89,6 +89,6 @@ class ParameterizableBase : public virtual IParameterizable {
                identity<size_t>);
 };
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 
 #endif  // SRC_PARAMETERS_BASE_H_

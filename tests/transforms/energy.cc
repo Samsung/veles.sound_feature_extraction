@@ -1,5 +1,5 @@
 /*! @file energy.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::Energy.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::Energy.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -15,10 +15,10 @@
 #include <math.h>
 #include "src/transforms/energy.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::Energy;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::Energy;
 
 class EnergyTest
     : public Energy, public testing::Test {

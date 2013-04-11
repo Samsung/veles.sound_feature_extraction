@@ -15,7 +15,7 @@
 
 #include "src/transform_base.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 /// @brief Common base of transforms which do not change the buffer format.
 template <typename F>
@@ -42,6 +42,6 @@ class UniformFormatTransform : public TransformBase<F, F> {
   }
 };
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 
 #endif  // SRC_UNIFORM_FORMAT_TRANSFORM_H_

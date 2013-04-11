@@ -12,7 +12,7 @@
 
 #include "src/transforms/unpack_rdft.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 void UnpackRDFT::OnFormatChanged() {
@@ -52,4 +52,4 @@ void UnpackRDFT::Do(
 REGISTER_TRANSFORM(UnpackRDFT);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

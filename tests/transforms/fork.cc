@@ -1,5 +1,5 @@
 /*! @file fork.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::Fork.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::Fork.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,10 +13,10 @@
 #include <gtest/gtest.h>
 #include "src/transforms/fork.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::Fork;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::Fork;
 
 class ForkTest : public Fork, public testing::Test {
  public:

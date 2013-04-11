@@ -19,7 +19,7 @@
 #include "src/parameters_base.h"
 #include "src/transform_registry.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 template <typename FIN, typename FOUT>
 class TransformBase : public virtual Transform,
@@ -142,5 +142,5 @@ SupportedParameters() const noexcept { \
   return sp; \
 }
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORM_BASE_H_

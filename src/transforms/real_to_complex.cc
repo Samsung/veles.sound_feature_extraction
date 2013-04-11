@@ -18,7 +18,7 @@
 #include <arm_neon.h>  // NOLINT(build/include_order)
 #endif
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 void RealToComplex::OnFormatChanged() {
@@ -87,4 +87,4 @@ void RealToComplex::Do(bool simd, const float* input, int length,
 REGISTER_TRANSFORM(RealToComplex);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

@@ -1,5 +1,5 @@
 /*! @file filter_bank.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::FilterBank.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::FilterBank.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -15,10 +15,10 @@
 #include <gtest/gtest.h>
 #include "src/transforms/filter_bank.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::FilterBank;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::FilterBank;
 
 class FilterBankTest : public FilterBank, public testing::Test {
  public:

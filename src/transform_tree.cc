@@ -20,7 +20,7 @@
 #include "src/format_converter.h"
 #include "src/transform_registry.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 class RootTransform : public Transform {
  public:
@@ -468,4 +468,4 @@ void TransformTree::SetDumpBuffersAfterEachTransform(bool value) noexcept {
   dumpBuffersAfterEachTransform_ = value;
 }
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

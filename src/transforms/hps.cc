@@ -13,7 +13,7 @@
 #include "src/transforms/hps.h"
 #include <string>
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 const int Hps::kCoefficientsNumber = 3;
@@ -51,4 +51,4 @@ void Hps::Do(
 REGISTER_TRANSFORM(Hps);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

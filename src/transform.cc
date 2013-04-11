@@ -17,7 +17,7 @@
 
 using boost::algorithm::replace_all_copy;
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 std::shared_ptr<Transform> Transform::Clone() const noexcept {
   auto copy = TransformFactory::Instance().Map()
@@ -53,6 +53,6 @@ std::string Transform::HtmlEscapedName() const noexcept {
       Name(), "&", "&amp;"), ">", "&gt;"), "<", "&lt;"), "!", "");
 }
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 
 

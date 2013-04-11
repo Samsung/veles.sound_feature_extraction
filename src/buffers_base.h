@@ -18,7 +18,7 @@
 #include "src/buffers.h"
 #include "src/demangle.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 class InvalidBuffersException : public ExceptionBase {
  public:
@@ -137,6 +137,6 @@ private:
   BuffersBase& operator=(const BuffersBase<T>& other) = delete;
 };
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 
 #endif  // SRC_BUFFERS_BASE_H_

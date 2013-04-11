@@ -20,7 +20,7 @@
 #include <boost/regex.hpp>  // NOLINT(build/include_order)
 #include "src/primitives/wavelet.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Primitives {
 
 const std::unordered_map<std::string, WaveletType>
@@ -232,4 +232,4 @@ void WaveletFilterBank::RecursivelyIterate(
 }
 
 }  // namespace Primitives
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

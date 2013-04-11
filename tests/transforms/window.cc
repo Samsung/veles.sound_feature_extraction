@@ -1,5 +1,5 @@
 /*! @file window.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::Window.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::Window.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -14,10 +14,10 @@
 #include <gtest/gtest.h>
 #include "src/transforms/window.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::Window;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::Window;
 
 class UnpackRDFTTest : public Window, public testing::Test {
  public:

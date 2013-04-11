@@ -12,7 +12,7 @@
 
 #include "src/transforms/fork.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 const int Fork::kDefaultFactor = 4;
@@ -60,4 +60,4 @@ void Fork::Do(
 REGISTER_TRANSFORM(Fork);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

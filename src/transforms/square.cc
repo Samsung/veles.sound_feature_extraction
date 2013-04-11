@@ -13,7 +13,7 @@
 #include "src/transforms/square.h"
 #include "src/primitives/arithmetic-inl.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 bool SquareRaw::HasInverse() const noexcept {
@@ -117,4 +117,4 @@ REGISTER_TRANSFORM(SquareRaw);
 REGISTER_TRANSFORM(SquareWindow);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

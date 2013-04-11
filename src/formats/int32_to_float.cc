@@ -13,7 +13,7 @@
 #include "src/formats/int32_to_float.h"
 #include "src/primitives/arithmetic-inl.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Formats {
 
 void Int32ToFloatRaw::Do(const BuffersBase<Raw32>& in,
@@ -37,4 +37,4 @@ REGISTER_TRANSFORM(Int32ToFloatRaw);
 REGISTER_TRANSFORM(Int32ToFloatWindow);
 
 }  // namespace Formats
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

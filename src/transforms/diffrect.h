@@ -16,7 +16,7 @@
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Diffrect
@@ -41,5 +41,5 @@ class Diffrect
 };
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORMS_DIFFRECT_H_

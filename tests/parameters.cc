@@ -13,8 +13,8 @@
 #include <gtest/gtest.h>
 #include "src/parameters.h"
 
-using SpeechFeatureExtraction::IParameterizable;
-using SpeechFeatureExtraction::ParseParametersException;
+using SoundFeatureExtraction::IParameterizable;
+using SoundFeatureExtraction::ParseParametersException;
 
 TEST(Parameters, EmptyParse) {
   auto pp = IParameterizable::Parse("");

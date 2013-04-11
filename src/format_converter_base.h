@@ -16,7 +16,7 @@
 #include "src/format_converter.h"
 #include "src/transform_base.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 template <typename FIN, typename FOUT>
 class FormatConverterBase
@@ -47,7 +47,7 @@ class FormatConverterBase
   virtual void OnInputFormatChanged() = 0;
 };
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 
 
 #endif  // SRC_FORMAT_CONVERTER_BASE_H_

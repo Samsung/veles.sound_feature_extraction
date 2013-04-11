@@ -19,7 +19,7 @@ class FeaturesConfiguration(Structure):
 
 class Library(object):
     '''
-    Loads the spfextr.so shared library and wraps the handle.
+    Loads the SoundFeatureExtraction.so shared library and wraps the handle.
     '''
 
     def __init__(self, path=None):
@@ -27,7 +27,7 @@ class Library(object):
             if not path:
                 logging.warning("Library path was not specified, "
                                  "will use the default")
-                path = "libspfextr.so"
+                path = "libSoundFeatureExtraction.so"
             try:
                 logging.debug("Trying to load " + path + "...")
                 self._handle = cdll.LoadLibrary(path)

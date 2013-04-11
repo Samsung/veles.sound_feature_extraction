@@ -18,7 +18,7 @@
 #include "src/primitives/neon_mathfun.h"
 #endif
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 const std::unordered_map<std::string, Log::LogBase> Log::kLogBaseMap {
@@ -122,4 +122,4 @@ std::string Log::LogBaseToString(LogBase lb) noexcept {
 REGISTER_TRANSFORM(Log);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

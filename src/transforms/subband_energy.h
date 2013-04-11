@@ -17,7 +17,7 @@
 #include "src/uniform_format_transform.h"
 #include "src/primitives/wavelet_filter_bank.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 /// @brief Calculates the energy of the sub-signals for each subband.
@@ -63,5 +63,5 @@ class SubbandEnergy
 };
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORMS_SUBBAND_ENERGY_H_

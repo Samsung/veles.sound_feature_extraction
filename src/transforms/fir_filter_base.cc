@@ -14,7 +14,7 @@
 #include "src/primitives/convolute.h"
 #include "src/primitives/arithmetic-inl.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 FirFilterBase::FirFilterBase() noexcept
@@ -68,4 +68,4 @@ const noexcept {
 }
 
 }  // namespace Formats
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

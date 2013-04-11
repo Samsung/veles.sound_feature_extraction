@@ -20,7 +20,7 @@
 #include "src/formats/format_limits.h"
 #include "src/primitives/memory.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Formats {
 
 class InvalidRawFormatSizeException : public ExceptionBase {
@@ -192,5 +192,5 @@ typedef RawFormat<int32_t> RawFormat32;
 typedef RawFormat<float> RawFormatF;
 
 }  // namespace Formats
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_FORMATS_RAW_FORMAT_H_

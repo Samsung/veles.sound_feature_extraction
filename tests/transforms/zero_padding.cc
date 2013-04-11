@@ -1,5 +1,5 @@
 /*! @file zero_padding.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::ZeroPadding.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::ZeroPadding.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,10 +13,10 @@
 #include <gtest/gtest.h>
 #include "src/transforms/zero_padding.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::ZeroPadding;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::ZeroPadding;
 
 class ZeroPaddingTest : public ZeroPadding, public testing::Test {
  public:

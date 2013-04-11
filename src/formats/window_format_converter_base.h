@@ -15,7 +15,7 @@
 
 #include "src/format_converter_base.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 template <typename FIN, typename FOUT>
 class WindowFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
@@ -40,6 +40,6 @@ class WindowFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
   }
 };
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 
 #endif  // SRC_FORMATS_WINDOW_FORMAT_CONVERTER_BASE_H_

@@ -14,7 +14,7 @@
 #include <assert.h>
 #include <string.h>
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 Buffers::Buffers(size_t size,
                  const std::shared_ptr<BufferFormat>& format) noexcept
@@ -99,4 +99,4 @@ std::string Buffers::Dump() const noexcept {
   return Format()->Dump(*this);
 }
 
-} /* namespace SpeechFeatureExtraction */
+} /* namespace SoundFeatureExtraction */

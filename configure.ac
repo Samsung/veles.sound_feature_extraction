@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT(spfextr, 1.0)
+AC_INIT(SoundFeatureExtraction, 1.0)
 AC_PREREQ(2.68)
 AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_MACRO_DIR([m4])
@@ -177,7 +177,7 @@ AS_IF([test "x$enable_test_coverage" == "xyes" -a "x$enable_debug" == "xyes" -a 
 ])
 
 dnl Link with Makefile.am in source directories
-AC_CONFIG_FILES(Makefile $PACKAGE.pc
+AC_CONFIG_FILES(Makefile lib$PACKAGE_NAME.pc
 				inc/Makefile
                 src/Makefile
                 src/boost/Makefile

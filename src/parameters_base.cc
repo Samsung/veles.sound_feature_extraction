@@ -12,7 +12,7 @@
 
 #include "src/parameters_base.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 const std::unordered_map<std::string, std::string>&
 ParameterizableBase::GetParameters() const noexcept {
@@ -106,4 +106,4 @@ size_t ParameterizableBase::Parse(const std::string& name,
   return pv;
 }
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

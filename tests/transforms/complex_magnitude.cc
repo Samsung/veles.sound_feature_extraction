@@ -1,5 +1,5 @@
 /*! @file complex_magnitude.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::ComplexMagnitude.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::ComplexMagnitude.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -15,10 +15,10 @@
 #include <math.h>
 #include "src/transforms/complex_magnitude.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::ComplexMagnitude;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::ComplexMagnitude;
 
 class ComplexMagnitudeTest : public ComplexMagnitude, public testing::Test {
  public:

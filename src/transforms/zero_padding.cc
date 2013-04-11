@@ -13,7 +13,7 @@
 #include "src/transforms/zero_padding.h"
 #include "src/primitives/arithmetic-inl.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 void ZeroPadding::OnFormatChanged() {
@@ -49,4 +49,4 @@ void ZeroPadding::Do(
 REGISTER_TRANSFORM(ZeroPadding);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

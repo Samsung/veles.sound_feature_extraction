@@ -17,7 +17,7 @@
 #include <arm_neon.h>  // NOLINT(build/include_order)
 #endif
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 void Rectify::InitializeBuffers(
@@ -77,4 +77,4 @@ void Rectify::Do(bool simd, const float* input, int length,
 REGISTER_TRANSFORM(Rectify);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

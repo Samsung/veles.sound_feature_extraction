@@ -18,7 +18,7 @@
 #include "src/uniform_format_transform.h"
 #include "src/primitives/window.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 //// @brief Applies a window function to each window.
@@ -112,5 +112,5 @@ class RawToWindow
 };
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORMS_WINDOW_H_

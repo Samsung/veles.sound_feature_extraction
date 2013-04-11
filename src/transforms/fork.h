@@ -16,7 +16,7 @@
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Fork
@@ -52,5 +52,5 @@ class Fork
 };
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORMS_FORK_H_

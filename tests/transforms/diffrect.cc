@@ -1,5 +1,5 @@
 /*! @file diffrect.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::Diffrect.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::Diffrect.
  *  @author Shapichev Alexey <a.shapichev@samsung.com>
  *  @version 1.0
  *
@@ -14,10 +14,10 @@
 #include <gtest/gtest.h>
 #include "src/transforms/diffrect.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::Diffrect;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::Diffrect;
 
 class DiffrectTest
     :public Diffrect, public testing::Test {

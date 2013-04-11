@@ -1,5 +1,5 @@
 /*! @file dct.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::DCT.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::DCT.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,10 +13,10 @@
 #include <gtest/gtest.h>
 #include "src/transforms/dct.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::DCT;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::DCT;
 
 class DCTTest : public DCT, public testing::Test {
  public:

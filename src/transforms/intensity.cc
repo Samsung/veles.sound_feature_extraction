@@ -14,7 +14,7 @@
 #include <math.h>
 #include "src/primitives/energy.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 void Intensity::InitializeBuffers(
@@ -35,4 +35,4 @@ void Intensity::Do(
 REGISTER_TRANSFORM(Intensity);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

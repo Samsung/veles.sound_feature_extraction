@@ -9,7 +9,7 @@ import logging
 from ctypes import c_char_p, c_int16, c_float, POINTER, c_void_p, c_int, \
                    byref, cast
 import numpy
-from spfextr.library import Library
+from SoundFeatureExtraction.library import Library
 
 
 class Extractor(object):

@@ -13,7 +13,7 @@
 #include "src/transforms/selector.h"
 #include <algorithm>
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 const int Selector::kDefaultLength = 12;
@@ -72,4 +72,4 @@ void Selector::Do(
 REGISTER_TRANSFORM(Selector);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

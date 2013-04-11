@@ -15,7 +15,7 @@
 
 #include "src/transform.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 class FormatConverter : public virtual Transform {
  public:
@@ -44,7 +44,7 @@ class FormatConverter : public virtual Transform {
   mutable std::string description_;
 };
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 
 
 #endif  // SRC_FORMAT_CONVERTER_H_

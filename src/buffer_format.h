@@ -17,7 +17,7 @@
 #include <set>
 #include "src/exceptions.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 namespace Formats {
 }  // namespace Formats
@@ -64,5 +64,5 @@ class BufferFormat {
 #define CAST_FORMAT(other, sibling, var) \
     const sibling& var = reinterpret_cast<const sibling&>(other)
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_BUFFER_FORMAT_H_

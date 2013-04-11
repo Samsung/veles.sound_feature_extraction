@@ -18,7 +18,7 @@
 #include <arm_neon.h>
 #endif
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 void ComplexMagnitude::OnFormatChanged() {
@@ -100,4 +100,4 @@ void ComplexMagnitude::Do(bool simd, const float* input, int length,
 REGISTER_TRANSFORM(ComplexMagnitude);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

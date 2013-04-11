@@ -18,7 +18,7 @@
 #include <unordered_map>
 #include "src/exceptions.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 class AttributeNotFoundException : public ExceptionBase {
  public:
@@ -82,5 +82,5 @@ class Attributes {
   std::shared_ptr<AttributesMap> attrs_;
 };
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_ATTRIBUTES_H_

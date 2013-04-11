@@ -16,7 +16,7 @@
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Energy
@@ -44,5 +44,5 @@ class Energy
 };
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORMS_ENERGY_H_

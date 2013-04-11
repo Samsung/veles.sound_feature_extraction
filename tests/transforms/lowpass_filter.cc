@@ -1,5 +1,5 @@
 /*! @file lowpass_filter.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::LowpassFilter.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::LowpassFilter.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -18,7 +18,7 @@
 
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
-using SpeechFeatureExtraction::Transforms::LowpassFilter;
+using SoundFeatureExtraction::Transforms::LowpassFilter;
 
 class LowpassFilterTest : public LowpassFilter, public testing::Test {
  public:

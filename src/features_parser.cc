@@ -13,7 +13,7 @@
 #include "src/features_parser.h"
 #include <boost/regex.hpp>
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 namespace Features {
 
@@ -104,4 +104,4 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures) {
 
 }  // namespace Features
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

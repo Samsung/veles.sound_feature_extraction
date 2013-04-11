@@ -13,10 +13,10 @@
 #include <gtest/gtest.h>
 #include "src/primitives/wavelet_filter_bank.h"
 
-using SpeechFeatureExtraction::Primitives::WaveletFilterBank;
-using SpeechFeatureExtraction::Primitives::
+using SoundFeatureExtraction::Primitives::WaveletFilterBank;
+using SoundFeatureExtraction::Primitives::
     WaveletTreeInvalidDescriptionException;
-using SpeechFeatureExtraction::Primitives::
+using SoundFeatureExtraction::Primitives::
     WaveletTreeDescriptionParseException;
 
 TEST(WaveletFilterBank, ValidateDescription) {

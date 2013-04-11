@@ -18,7 +18,7 @@
 #include "src/formats/window_format.h"
 #include "src/formats/window_format_converter_base.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Formats {
 
 class FloatToInt32Raw
@@ -36,5 +36,5 @@ class FloatToInt32Window
 };
 
 }  // namespace Formats
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_FORMATS_FLOAT_TO_INT32_H_

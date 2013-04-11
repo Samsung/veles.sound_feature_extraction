@@ -15,7 +15,7 @@
 #include <vector>
 #include "src/primitives/arithmetic-inl.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 bool RDFT::HasInverse() const noexcept {
@@ -70,4 +70,4 @@ void RDFT::Do(
 REGISTER_TRANSFORM(RDFT);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

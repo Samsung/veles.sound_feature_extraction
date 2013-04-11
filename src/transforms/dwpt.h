@@ -19,7 +19,7 @@
 #include "src/primitives/wavelet_types.h"
 #include "src/primitives/wavelet_filter_bank.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 /// @brief Discrete Wavelet Packet Transform.
@@ -92,5 +92,5 @@ class DWPT
 };
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORMS_DWPT_H_

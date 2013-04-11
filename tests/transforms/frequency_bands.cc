@@ -1,5 +1,5 @@
 /*! @file frequency_bands.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::FrequencyBands.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::FrequencyBands.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -14,10 +14,10 @@
 #include <gtest/gtest.h>
 #include "src/transforms/frequency_bands.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::FrequencyBands;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::FrequencyBands;
 
 class FrequencyBandsTest : public FrequencyBands, public testing::Test {
  public:
@@ -134,7 +134,7 @@ TEST_F(FrequencyBandsTest, TooBigBands) {
 TEST_F(FrequencyBandsTest, InvalidBands) {
   ASSERT_THROW({
     SetParameter("bands", "2000 3000 15000 8000");
-  }, SpeechFeatureExtraction::InvalidParameterValueException);
+  }, SoundFeatureExtraction::InvalidParameterValueException);
 }
 
 #include "tests/google/src/gtest_main.cc"

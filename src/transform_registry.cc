@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <string>
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 TransformFactory::TransformFactory() {
 }
@@ -45,4 +45,4 @@ void TransformFactory::PrintRegisteredTransforms() const {
   }
 }
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

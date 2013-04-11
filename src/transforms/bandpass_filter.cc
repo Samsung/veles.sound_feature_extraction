@@ -14,7 +14,7 @@
 #include <math.h>
 #include "src/formats/format_limits.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 BandpassFilter::BandpassFilter() noexcept
@@ -58,4 +58,4 @@ void BandpassFilter::CalculateFilter(float *filter) const noexcept {
 REGISTER_TRANSFORM(BandpassFilter);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

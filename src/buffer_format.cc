@@ -12,7 +12,7 @@
 
 #include "src/buffer_format.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 BufferFormat::BufferFormat(const std::string& id) noexcept
 : id_(id) {
@@ -39,4 +39,4 @@ bool BufferFormat::operator!=(const BufferFormat& other) const noexcept {
   return this->id_ != other.id_;
 }
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

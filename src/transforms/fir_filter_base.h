@@ -19,7 +19,7 @@
 #include "src/formats/raw_format.h"
 #include "src/primitives/window.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class FirFilterBase
@@ -58,5 +58,5 @@ class FirFilterBase
 )
 
 }  // namespace Formats
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORMS_FIR_FILTER_BASE_H_

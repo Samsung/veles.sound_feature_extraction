@@ -1,5 +1,5 @@
 /*! @file rectify.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::RECTIFY.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::RECTIFY.
  *  @author Shapichev Alexey <a.shapichev@samsung.com>
  *  @version 1.0
  *
@@ -14,10 +14,10 @@
 #include <math.h>
 #include "src/transforms/rectify.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::Rectify;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::Rectify;
 
 class RectifyTest : public Rectify, public testing::Test {
  public:

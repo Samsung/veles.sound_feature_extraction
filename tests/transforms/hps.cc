@@ -1,5 +1,5 @@
 /*! @file hps.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::HPS.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::HPS.
  *  @author Shapichev Alexey <a.shapichev@samsung.com>
  *  @version 1.0
  *
@@ -15,10 +15,10 @@
 #include "src/transforms/hps.h"
 #include "tests/transforms/hps_test.inc"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::Hps;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::Hps;
 
 class HpsTest : public Hps, public testing::Test {
  public:

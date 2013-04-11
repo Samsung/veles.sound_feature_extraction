@@ -17,7 +17,7 @@
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class SquareRaw
@@ -66,5 +66,5 @@ class SquareWindow
 };
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORMS_SQUARE_H_

@@ -15,7 +15,7 @@
 #include "src/formats/format_limits.h"
 #include "src/primitives/arithmetic-inl.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 const int RawToWindow::kDefaultLength = 25;
@@ -212,4 +212,4 @@ REGISTER_TRANSFORM(RawToWindow);
 REGISTER_TRANSFORM(Window);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

@@ -15,7 +15,7 @@
 #include <vector>
 #include "src/primitives/arithmetic-inl.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 bool DCT::HasInverse() const noexcept {
@@ -59,4 +59,4 @@ void DCT::Do(
 REGISTER_TRANSFORM(DCT);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

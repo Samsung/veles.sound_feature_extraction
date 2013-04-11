@@ -13,7 +13,7 @@
 #include "src/transforms/dwpt.h"
 #include "src/make_unique.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 using Primitives::WaveletFilterBank;
@@ -85,4 +85,4 @@ void DWPT::Do(
 REGISTER_TRANSFORM(DWPT);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

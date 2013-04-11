@@ -16,7 +16,7 @@
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class ZeroPadding
@@ -39,5 +39,5 @@ class ZeroPadding
 };
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORMS_ZERO_PADDING_H_

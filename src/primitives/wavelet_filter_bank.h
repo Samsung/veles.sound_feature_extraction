@@ -20,7 +20,7 @@
 #include "src/exceptions.h"
 #include "src/primitives/wavelet_types.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Primitives {
 
 class WaveletFilterBank {
@@ -105,5 +105,5 @@ class WaveletTreeInvalidSourceLengthException : public ExceptionBase {
 };
 
 }  // namespace Primitives
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_PRIMITIVES_WAVELET_FILTER_BANK_H_

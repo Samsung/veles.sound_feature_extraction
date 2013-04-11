@@ -1,5 +1,5 @@
 /*! @file unpack_rdft.cc
- *  @brief Tests for SpeechFeatureExtraction::Transforms::UnpackRDFT.
+ *  @brief Tests for SoundFeatureExtraction::Transforms::UnpackRDFT.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -14,10 +14,10 @@
 #include <gtest/gtest.h>
 #include "src/transforms/unpack_rdft.h"
 
-using SpeechFeatureExtraction::Formats::WindowF;
-using SpeechFeatureExtraction::Formats::WindowFormatF;
-using SpeechFeatureExtraction::BuffersBase;
-using SpeechFeatureExtraction::Transforms::UnpackRDFT;
+using SoundFeatureExtraction::Formats::WindowF;
+using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::BuffersBase;
+using SoundFeatureExtraction::Transforms::UnpackRDFT;
 
 class UnpackRDFTTest : public UnpackRDFT, public testing::Test {
  public:

@@ -18,7 +18,7 @@
 #include "src/buffers.h"
 #include "src/parameters.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 /// @brief Transform abstract class.
 class Transform : public virtual IParameterizable {
@@ -72,5 +72,5 @@ class Transform : public virtual IParameterizable {
   /// @}
 };
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORM_H_

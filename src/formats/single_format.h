@@ -15,7 +15,7 @@
 
 #include "src/buffers_base.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Formats {
 
 template<class T>
@@ -78,7 +78,7 @@ typedef SingleFormat<int16_t> SingleFormat16;
 typedef SingleFormat<int32_t> SingleForma32;
 
 }  // namespace Formats
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 
 
 #endif  // SRC_FORMATS_SINGLE_FORMAT_H_

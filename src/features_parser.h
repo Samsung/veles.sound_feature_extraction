@@ -17,7 +17,7 @@
 #include <vector>
 #include "src/exceptions.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 
 typedef std::vector<
     std::pair<
@@ -51,7 +51,7 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures);
 
 }  // namespace Features
 
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 
 
 #endif  // SRC_FEATURES_PARSER_H_

@@ -1,1 +1,1 @@
-pkginclude_HEADERS = spfextr/api.h
+pkginclude_HEADERS = SoundFeatureExtraction/api.h

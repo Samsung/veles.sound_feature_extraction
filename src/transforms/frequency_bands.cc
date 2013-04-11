@@ -15,7 +15,7 @@
 #include "src/transforms/fork.h"
 #include "src/primitives/memory.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 const int FrequencyBands::kDefaultBandsNumber = Fork::kDefaultFactor;
@@ -121,4 +121,4 @@ void FrequencyBands::Do(
 REGISTER_TRANSFORM(FrequencyBands);
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction

@@ -15,7 +15,7 @@
 
 #include "src/transforms/fir_filter_base.h"
 
-namespace SpeechFeatureExtraction {
+namespace SoundFeatureExtraction {
 namespace Transforms {
 
 /// @brief Discards the frequencies which are higher than the threshold.
@@ -39,5 +39,5 @@ class LowpassFilter : public FirFilterBase {
 };
 
 }  // namespace Transforms
-}  // namespace SpeechFeatureExtraction
+}  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORMS_LOWPASS_FILTER_H_
