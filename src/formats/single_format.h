@@ -13,7 +13,57 @@
 #ifndef SRC_FORMATS_SINGLE_FORMAT_H_
 #define SRC_FORMATS_SINGLE_FORMAT_H_
 
+#include <stdexcept>
 #include "src/buffers_base.h"
+
+namespace SoundFeatureExtraction {
+namespace Formats {
+
+template<uint8_t L, typename F = float>
+struct FixedArray {
+  static_assert(std::is_arithmetic<F>(), "F must be an arithmetic type");
+  F Data[L];
+
+  F& operator[](int index) {
+    if (index < 0 || index > L - 1) {
+      throw std::out_of_range("index");
+    }
+    return Data[index];
+  }
+
+  F operator[](int index) const {
+    if (index < 0 || index > L - 1) {
+      throw std::out_of_range("index");
+    }
+    return Data[index];
+  }
+
+  bool operator!=(const FixedArray& other) {
+    for (int i = 0; i < L; i++) {
+      if (Data[i] != other[i]) {
+        return true;
+      }
+    }
+    return false;
+  }
+};
+
+}  // namespace Formats
+}  // namespace SoundFeatureExtraction
+
+namespace std {
+  template<uint8_t L, typename F>
+  inline string to_string(
+      const SoundFeatureExtraction::Formats::FixedArray<L, F>& __val) {
+    std::string res("[");
+    for (int i = 0; i < L; i++) {
+      res += std::to_string(__val[i]) + ", ";
+    }
+    res = res.substr(0, res.size() - 2);
+    res += "]";
+    return std::move(res);
+  }
+}  // namespace std
 
 namespace SoundFeatureExtraction {
 namespace Formats {
@@ -79,6 +129,7 @@ typedef SingleFormat<int32_t> SingleForma32;
 
 }  // namespace Formats
 }  // namespace SoundFeatureExtraction
+
 
 
 #endif  // SRC_FORMATS_SINGLE_FORMAT_H_
