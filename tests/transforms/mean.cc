@@ -41,7 +41,7 @@ class MeanTest
   }
 };
 
-#define EPSILON 0.0001f
+#define EPSILON 0.15f
 
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
@@ -49,23 +49,43 @@ TEST_F(MeanTest, Do) {
   Do(Input, &Output);
 
   float amean =.0f;
-  float gmean = 1.f;
-  float tmpg = 1.0f;
-  for (int i = 0; i < Size; i++) {
-    float val = Input[0]->Data.get()[i];
+  float gmean = 1.f, tmp = 1.f;
+  for (int j = 0; j < Size; j++) {
+    float val = Input[0]->Data.get()[j];
     amean += val;
-    tmpg *= val;
-    if (i % 8 == 0) {
-      gmean *= powf(tmpg, 1.f / Size);
-      tmpg = 1.0f;
+    float multmp = tmp * val;
+    if (multmp == std::numeric_limits<float>::infinity()) {
+      gmean *= powf(tmp, 1.f / Size);
+      tmp = val;
+    } else {
+      tmp = multmp;
     }
   }
   amean /= Size;
-  gmean *= powf(tmpg, 1.f / Size);
+  gmean *= powf(tmp, 1.f / Size);
   ASSERT_EQF(amean, (*Output[0])
       [SoundFeatureExtraction::Transforms::MEAN_TYPE_ARITHMETIC]);
   ASSERT_EQF(gmean, (*Output[0])
       [SoundFeatureExtraction::Transforms::MEAN_TYPE_GEOMETRIC]);
+  ASSERT_EQF(amean,
+             Do(false, Input[0]->Data.get(), Size,
+                SoundFeatureExtraction::Transforms::MEAN_TYPE_ARITHMETIC));
+  ASSERT_EQF(gmean,
+             Do(false, Input[0]->Data.get(), Size,
+                SoundFeatureExtraction::Transforms::MEAN_TYPE_GEOMETRIC));
 }
+
+#define EXTRA_PARAM SoundFeatureExtraction::Transforms::MEAN_TYPE_ARITHMETIC
+#define CLASS_NAME MeanTest
+#define ITER_COUNT 500000
+#define NO_OUTPUT
+#define BENCH_NAME BenchmarkArithmetic
+#include "tests/transforms/benchmark.inc"
+
+#undef EXTRA_PARAM
+#define EXTRA_PARAM SoundFeatureExtraction::Transforms::MEAN_TYPE_GEOMETRIC
+#undef BENCH_NAME
+#define BENCH_NAME BenchmarkGeometric
+#include "tests/transforms/benchmark.inc"
 
 #include "tests/google/src/gtest_main.cc"

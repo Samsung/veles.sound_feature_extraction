@@ -13,11 +13,12 @@
 #include "src/transforms/mean.h"
 #include <math.h>
 #ifdef __AVX__
-#include <immintrin.h>
+#include "src/primitives/avx_mathfun.h"
 #elif defined(__ARM_NEON__)
-#include <arm_neon.h>
+#include "src/primitives/neon_mathfun.h"
 #endif
 #include <boost/regex.hpp>
+#include <limits>
 #include "src/primitives/energy.h"
 #include "src/primitives/avx_extra.h"
 
@@ -98,7 +99,7 @@ float Mean::Do(bool simd, const float* input, size_t length,
         }
       } else {
 #elif defined(__ARM_NEON__)
-        float32x4_t accum = { .0f, .0f, .0f, .0f };
+        float32x4_t accum = vdupq_n_f32(.0f);
         for (int j = 0; j < ilength - 3; j += 4) {
           float32x4_t vec = vld1q_f32(input + j);
           accum = vaddq_f32(accum, vec);
@@ -120,18 +121,87 @@ float Mean::Do(bool simd, const float* input, size_t length,
       return res;
     }
     case MEAN_TYPE_GEOMETRIC: {
-      float res = 1.f, tmp = 1.f, power = 1.f / ilength;
-      for (int j = 0; j < ilength; j++) {
-        tmp *= input[j];
-        if (j % 8 == 0) {
-          res *= powf(tmp, power);
-          tmp = 1.f;
+      const float power = 1.f / ilength;
+      if (simd) {
+#ifdef __AVX__
+        __m256 res = _mm256_set1_ps(1.f), tmp = _mm256_set1_ps(1.f);
+        const __m256 powvec = _mm256_set1_ps(power);
+        const __m256 infvec = _mm256_set1_ps(std::numeric_limits<float>::infinity());
+        for (int j = 0; j < ilength - 7; j += 8) {
+          __m256 vec = _mm256_load_ps(input + j);
+          __m256 mulvec = _mm256_mul_ps(tmp, vec);
+          __m256 cmpvec = _mm256_cmp_ps(mulvec, infvec, _CMP_EQ_UQ);
+          // I do not know how to check fast if at least one element is inf;
+          // Using 2 hadd and 2 comparisons
+          cmpvec = _mm256_hadd_ps(cmpvec, cmpvec);
+          cmpvec = _mm256_hadd_ps(cmpvec, cmpvec);
+          if (ElementAt(cmpvec, 0) != 0 || ElementAt(cmpvec, 1) != 0) {
+            tmp = pow256_ps(tmp, powvec);
+            res = _mm256_mul_ps(res, tmp);
+            tmp = vec;
+          } else {
+            tmp = mulvec;
+          }
         }
+        tmp = pow256_ps(tmp, powvec);
+        res = _mm256_mul_ps(res, tmp);
+        float sctmp = 1.f;
+        for (int j = ((ilength >> 3) << 3); j < ilength; j++) {
+          sctmp *= input[j];
+        }
+        float scres = powf(sctmp, power);
+        for (int j = 0; j < 8; j++) {
+          scres *= ElementAt(res, j);
+        }
+        return scres;
+      } else {
+#elif defined(__ARM_NEON__)
+        float32x4_t res = vdupq_n_f32(1.0f), tmp = vdupq_n_f32(1.0f),
+            powvec = vdupq_n_f32(power),
+            infvec = vdupq_n_f32(std::numeric_limits<float>::infinity());
+
+        for (int j = 0; j < ilength - 7; j += 8) {
+          float32x4_t vec = vld1q_f32(input + j);
+          float32x4_t mulvec = vmulq_f32(tmp, vec);
+          uint32x4_t cmpvec = vceqq_f32(mulvec, infvec);
+          uint64x2_t cmpvec2 = vpaddlq_u32(cmprec);
+          if (cmpvec2[0] != 0 || cmpvec2[1] != 0) {
+            tmp = pow_ps(tmp, powvec);
+            res = vmulq_f32(res, tmp);
+            tmp = vec;
+          } else {
+            tmp = mulvec;
+          }
+        }
+        tmp = pow_ps(tmp, powvec);
+        res = vmulq_f32(res, tmp);
+        float sctmp = 1.f;
+        for (int j = ((ilength >> 2) << 2); j < ilength; j += 2) {
+          sctmp *= input[j];
+        }
+        float scres = powf(sctmp, power);
+        scres *= res[0] * res[1] * res[2] * res[3];
+        return scres;
+      } else {
+#else
+      } {
+#endif
+        float res = 1.f, tmp = 1.f;
+        for (int j = 0; j < ilength; j++) {
+          float val = input[j];
+          float multmp = tmp * val;
+          if (multmp == std::numeric_limits<float>::infinity()) {
+            res *= powf(tmp, power);
+            tmp = val;
+          } else {
+            tmp = multmp;
+          }
+        }
+        if (tmp != 1.f) {
+          res *= powf(tmp, power);
+        }
+        return res;
       }
-      if (tmp != 1.f) {
-        res *= powf(tmp, power);
-      }
-      return res;
     }
     default:
       break;
