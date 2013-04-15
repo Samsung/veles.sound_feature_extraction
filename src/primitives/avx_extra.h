@@ -20,8 +20,20 @@ extern "C" {
 #ifdef __AVX__
 
 #include <immintrin.h>
+#include "src/config.h"
 
 float ElementAt(__m256 vector, int index);
+
+INLINE unsigned long long __xgetbv() {
+  unsigned int index = 0;
+#if defined(__GNUC__) && __GNUC_PREREQ(4, 4)
+  unsigned int eax, edx;
+  __asm__ __volatile__("xgetbv" : "=a"(eax), "=d"(edx) : "c"(index));
+  return ((unsigned long long)edx << 32) | eax;
+#else
+  return 0;
+#endif
+}
 
 #endif  // __AVX__
 
