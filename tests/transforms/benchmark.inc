@@ -33,10 +33,14 @@
 #define BENCH_FUNC Do
 #endif
 
+#ifndef BENCH_NAME
+#define BENCH_NAME Benchmark
+#endif
+
 #ifdef CLASS_NAME
-TEST_F(CLASS_NAME, Benchmark) {
+TEST_F(CLASS_NAME, BENCH_NAME) {
 #else
-TEST(TEST_NAME, Benchmark) {
+TEST(TEST_NAME, BENCH_NAME) {
 #endif
   const int iter_count = ITER_COUNT;
 
@@ -55,6 +59,9 @@ TEST(TEST_NAME, Benchmark) {
 #ifndef NO_OUTPUT
                , output
 #endif
+#ifdef EXTRA_PARAM
+               , EXTRA_PARAM
+#endif
                );
   }
   auto checkPointFinish = std::chrono::high_resolution_clock::now();
@@ -64,6 +71,9 @@ TEST(TEST_NAME, Benchmark) {
     BENCH_FUNC(false, input, length
 #ifndef NO_OUTPUT
                , output
+#endif
+#ifdef EXTRA_PARAM
+               , EXTRA_PARAM
 #endif
                );
   }
