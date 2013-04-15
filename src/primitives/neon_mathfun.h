@@ -51,7 +51,7 @@ typedef int32x4_t v4si;  // vector of 4 uint32
 /* natural logarithm computed for 4 simultaneous float 
    return NaN for x <= 0
 */
-v4sf log_ps(v4sf x) {
+inline v4sf log_ps(v4sf x) {
   v4sf one = vdupq_n_f32(1);
 
   x = vmaxq_f32(x, vdupq_n_f32(0)); /* force flush to zero on denormal values */
@@ -136,7 +136,7 @@ v4sf log_ps(v4sf x) {
 #define c_cephes_exp_p5 5.0000001201E-1
 
 /* exp() computed for 4 float at once */
-v4sf exp_ps(v4sf x) {
+inline v4sf exp_ps(v4sf x) {
   v4sf tmp, fx;
 
   v4sf one = vdupq_n_f32(1);
@@ -222,7 +222,7 @@ v4sf exp_ps(v4sf x) {
    almost no extra price so both sin_ps and cos_ps make use of
    sincos_ps..
   */
-void sincos_ps(v4sf x, v4sf *ysin, v4sf *ycos) { // any x
+inline void sincos_ps(v4sf x, v4sf *ysin, v4sf *ycos) { // any x
   v4sf xmm1, xmm2, xmm3, y;
 
   v4su emm2;
@@ -289,15 +289,22 @@ void sincos_ps(v4sf x, v4sf *ysin, v4sf *ycos) { // any x
   *ycos = vbslq_f32(sign_mask_cos, yc, vnegq_f32(yc));
 }
 
-v4sf sin_ps(v4sf x) {
+inline v4sf sin_ps(v4sf x) {
   v4sf ysin, ycos; 
   sincos_ps(x, &ysin, &ycos); 
   return ysin;
 }
 
-v4sf cos_ps(v4sf x) {
+inline v4sf cos_ps(v4sf x) {
   v4sf ysin, ycos; 
   sincos_ps(x, &ysin, &ycos); 
   return ycos;
+}
+
+inline v4sf pow_ps(v4sf y, v4sf x) {
+  v4sf logvec = log_ps(y);
+  v4sf expvec = vmulq_f32(logvec, x);
+  v4sf ret = exp_ps(expvec);
+  return ret;
 }
 #endif  // SRC_PRIMITIVES_NEON_MATHFUN_H_

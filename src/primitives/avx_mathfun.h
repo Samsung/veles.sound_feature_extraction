@@ -155,7 +155,7 @@ AVX2_INTOP_USING_SSE2(add_epi32)
 /* natural logarithm computed for 8 simultaneous float 
    return NaN for x <= 0
 */
-v8sf log256_ps(v8sf x) {
+inline v8sf log256_ps(v8sf x) {
   v8si imm0;
   v8sf one = *(v8sf*)_ps256_1;
 
@@ -241,7 +241,7 @@ _PS256_CONST(cephes_exp_p3, 4.1665795894E-2);
 _PS256_CONST(cephes_exp_p4, 1.6666665459E-1);
 _PS256_CONST(cephes_exp_p5, 5.0000001201E-1);
 
-v8sf exp256_ps(v8sf x) {
+inline v8sf exp256_ps(v8sf x) {
   v8sf tmp = _mm256_setzero_ps(), fx;
   v8si imm0;
   v8sf one = *(v8sf*)_ps256_1;
@@ -321,7 +321,7 @@ _PS256_CONST(cephes_FOPI, 1.27323954473516); // 4 / M_PI
    surprising but correct result.
 
 */
-v8sf sin256_ps(v8sf x) { // any x
+inline v8sf sin256_ps(v8sf x) { // any x
   v8sf xmm1, xmm2 = _mm256_setzero_ps(), xmm3, sign_bit, y;
   v8si imm0, imm2;
 
@@ -448,7 +448,7 @@ v8sf sin256_ps(v8sf x) { // any x
 }
 
 /* almost the same as sin_ps */
-v8sf cos256_ps(v8sf x) { // any x
+inline v8sf cos256_ps(v8sf x) { // any x
   v8sf xmm1, xmm2 = _mm256_setzero_ps(), xmm3, y;
   v8si imm0, imm2;
 
@@ -565,7 +565,7 @@ v8sf cos256_ps(v8sf x) { // any x
 
 /* since sin256_ps and cos256_ps are almost identical, sincos256_ps could replace both of them..
    it is almost as fast, and gives you a free cosine with your sine */
-void sincos256_ps(v8sf x, v8sf *s, v8sf *c) {
+inline void sincos256_ps(v8sf x, v8sf *s, v8sf *c) {
 
   v8sf xmm1, xmm2, xmm3 = _mm256_setzero_ps(), sign_bit_sin, y;
   v8si imm0, imm2, imm4;
@@ -713,4 +713,11 @@ void sincos256_ps(v8sf x, v8sf *s, v8sf *c) {
   *c = _mm256_xor_ps(xmm2, sign_bit_cos);
 }
 
+/// @brief Calculates y^x.
+inline v8sf pow256_ps(v8sf y, v8sf x) {
+  v8sf logvec = log256_ps(y);
+  v8sf expvec = _mm256_mul_ps(logvec, x);
+  v8sf ret = exp256_ps(expvec);
+  return ret;
+}
 #endif // SRC_PRIMITIVES_AVX_MATHFUN_H_
