@@ -36,26 +36,28 @@ void DebugPrintConvolution(const char* name, const float* vec) {
 }
 
 TEST(convolute, convolute) {
-  float x[1024];
-  for (int i = 0; i < static_cast<int>(sizeof(x) / sizeof(x[0])); i++) {
+  const int xlen = 1024;
+  const int hlen = 50;
+
+  float x[xlen];
+  for (int i = 0; i < xlen; i++) {
     x[i] = 1.0f;
   }
-  float h[50];
-  for (int i = 0; i < static_cast<int>(sizeof(h) / sizeof(h[0])); i++) {
+  float h[hlen];
+  for (int i = 0; i < hlen; i++) {
     h[i] = i / (sizeof(h) / sizeof(h[0]) - 1.0f);
   }
 
-  float verif[sizeof(x) / sizeof(x[0])];
-  convolute_reference(x, sizeof(x) / sizeof(x[0]),
-                      h, sizeof(h) / sizeof(h[0]), verif);
+  float verif[xlen];
+  convolute_reference(x, xlen, h, hlen, verif);
   DebugPrintConvolution("BRUTE-FORCE", verif);
 
-  float res[sizeof(x) / sizeof(x[0])];
-  convolute(x, sizeof(x) / sizeof(x[0]), h, sizeof(h) / sizeof(h[0]), res);
+  float res[xlen];
+  convolute(x, xlen, h, hlen, res);
   DebugPrintConvolution("OVERLAP-SAVE", res);
 
   int firstDifferenceIndex = -1;
-  for (int i = 0; i < static_cast<int>(sizeof(x) / sizeof(x[0])); i++) {
+  for (int i = 0; i < xlen; i++) {
     float delta = res[i] - verif[i];
     if (delta * delta > 1E-10 && firstDifferenceIndex == -1) {
       firstDifferenceIndex = i;
