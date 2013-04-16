@@ -8,6 +8,6 @@ square.cc rdft.cc dct.cc complex_magnitude.cc spectral_energy.cc filter_bank.cc 
 log.cc real_to_complex.cc unpack_rdft.cc intensity.cc dwpt.cc subband_energy.cc \
 zero_padding.cc selector.cc hps.cc fork.cc complex_to_real.cc rectify.cc \
 frequency_bands.cc diffrect.cc mean.cc sfm.cc argminmax.cc energy.cc \
-centroid.cc
+centroid.cc zerocrossings.cc
 
 lib_transforms_la_CPPFLAGS =
