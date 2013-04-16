@@ -14,6 +14,7 @@
 #define SRC_FORMATS_SINGLE_FORMAT_H_
 
 #include <stdexcept>
+#include <tuple>
 #include "src/buffers_base.h"
 
 namespace SoundFeatureExtraction {
@@ -62,6 +63,29 @@ namespace std {
     res = res.substr(0, res.size() - 2);
     res += "]";
     return std::move(res);
+  }
+
+  template<size_t index, typename... Args>
+  inline void to_string(int realIndex,
+                        const std::tuple<Args...>& __val,
+                        std::string* result) {
+    if (realIndex == index) {
+      *result += std::to_string(std::get<index>(__val)) + ", ";
+      to_string<index + 1 < sizeof...(Args)? index + 1 : 0>(index + 1,
+                                                            __val, result);
+    }
+  }
+
+  template<typename... Args>
+  inline string to_string(const std::tuple<Args...>& __val) {
+    if (sizeof...(Args) > 0) {
+      std::string res("[");
+      to_string<0>(0, __val, &res);
+      res = res.substr(0, res.size() - 2);
+      res += "]";
+      return std::move(res);
+    }
+    return "[]";
   }
 }  // namespace std
 
