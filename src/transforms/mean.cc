@@ -99,7 +99,7 @@ float Mean::Do(bool simd, const float* input, size_t length,
         }
       } else {
 #elif defined(__ARM_NEON__)
-        float32x4_t accum = vdupq_n_f32(.0f);
+        float32x4_t accum = vdupq_n_f32(0.f);
         for (int j = 0; j < ilength - 3; j += 4) {
           float32x4_t vec = vld1q_f32(input + j);
           accum = vaddq_f32(accum, vec);
@@ -112,7 +112,7 @@ float Mean::Do(bool simd, const float* input, size_t length,
 #else
       } {
  #endif
-        res = .0f;
+        res = 0.f;
         for (int j = 0; j < ilength; j++) {
           res += input[j];
         }
@@ -206,7 +206,7 @@ float Mean::Do(bool simd, const float* input, size_t length,
     default:
       break;
   }
-  return .0f;
+  return 0.f;
 }
 
 REGISTER_TRANSFORM(Mean);

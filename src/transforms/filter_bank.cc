@@ -154,7 +154,7 @@ void FilterBank::AddTriangularFilter(float center, float halfWidth) const {
 
 void FilterBank::Initialize() const noexcept {
   filterBank_ = std::unique_ptr<float, void(*)(void*)>(mallocf(inputFormat_->Size()), free);
-  memsetf(filterBank_.get(), inputFormat_->Size(), .0f);
+  memsetf(filterBank_.get(), inputFormat_->Size(), 0.f);
 
   float scaleMin = LinearToScale(type_, minFreq_);
   float scaleMax = LinearToScale(type_, maxFreq_);
@@ -167,10 +167,10 @@ void FilterBank::Initialize() const noexcept {
   // Avoid zeros in filter since taking a logarithm from 0 is undefined.
   auto filter = filterBank_.get();
   for (size_t i = 0; i < inputFormat_->Size(); i++) {
-    if (filter[i] == .0f) {
+    if (filter[i] == 0.f) {
       filter[i] = 0.0001f;
     }
-    assert(filter[i] >= .0f);
+    assert(filter[i] >= 0.f);
   }
 }
 

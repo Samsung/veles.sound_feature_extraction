@@ -48,7 +48,7 @@ class MeanTest
 TEST_F(MeanTest, Do) {
   Do(Input, &Output);
 
-  float amean =.0f;
+  float amean =0.f;
   float gmean = 1.f, tmp = 1.f;
   for (int j = 0; j < Size; j++) {
     float val = Input[0]->Data.get()[j];

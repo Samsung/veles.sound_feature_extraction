@@ -19,11 +19,11 @@
 #include "src/primitives/memory.h"
 
 float calculate_energy(int simd, const float *signal, size_t length) {
-  float energy = .0f;
+  float energy = 0.f;
   int ilength = (int)length;
   if (simd) {
 #ifdef __AVX__
-    __m256 accum = { .0f };
+    __m256 accum = { 0.f };
     int startIndex = align_complement_f32(signal);
     for (int j = 0; j < startIndex; j++) {
       float val = signal[j];
@@ -44,7 +44,7 @@ float calculate_energy(int simd, const float *signal, size_t length) {
     }
   } else {
 #elif defined(__ARM_NEON__)
-    float32x4_t accum = { .0f };
+    float32x4_t accum = { 0.f };
     for (int j = 0; j < length - 3; j += 4) {
       float32x4_t vec = vld1q_f32(signal + j);
       accum = vmlaq_f32(accum, vec, vec);

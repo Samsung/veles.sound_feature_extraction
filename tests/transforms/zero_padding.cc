@@ -41,7 +41,7 @@ TEST_F(ZeroPaddingTest, Do) {
   ASSERT_EQ(512, outputFormat_->Size());
   Do(Input, &Output);
   for (int i = Size; i < 512; i++) {
-    ASSERT_EQ(.0f, Output[0]->Data.get()[i]);
+    ASSERT_EQ(0.f, Output[0]->Data.get()[i]);
   }
 }
 

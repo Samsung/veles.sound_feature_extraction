@@ -148,7 +148,7 @@ static INLINE NOTNULL(3, 4) void initialize_highpass_lowpass(
     WaveletType type, int order, float *highpass, float *lowpass) {
   size_t uorder = (size_t)order;
   for (int i = 0; i < order; i++) {
-    float val = .0f;
+    float val = 0.f;
     switch (type) {
       case WAVELET_TYPE_DAUBECHIES:
         assert(uorder <= sizeof(kDaubechiesF[0]) / sizeof(kDaubechiesF[0][0]) &&
@@ -186,7 +186,7 @@ void wavelet_apply_na(WaveletType type, int order,
 
   if (ilength != order) {
     for (int i = 0, di = 0; i < ilength; i += 2, di++) {
-      float reshi = .0f, reslo = .0f;
+      float reshi = 0.f, reslo = 0.f;
       for (int j = 0; j < order; j++) {
         int index = i + j;
         float srcval = src[index < ilength? index : index % ilength];
@@ -199,7 +199,7 @@ void wavelet_apply_na(WaveletType type, int order,
   } else {
     if (order == 8) {
       for (int i = 0, di = 0; i < 8; i += 2, di++) {
-        float reshi = .0f, reslo = .0f;
+        float reshi = 0.f, reslo = 0.f;
         for (int j = 0; j < 8; j++) {
           int index = i + j;
           float srcval = src[index < 8? index : index % 8];
@@ -211,7 +211,7 @@ void wavelet_apply_na(WaveletType type, int order,
       }
     } else {
       for (int i = 0, di = 0; i < order; i += 2, di++) {
-        float reshi = .0f, reslo = .0f;
+        float reshi = 0.f, reslo = 0.f;
         for (int j = 0; j < order; j++) {
           int index = i + j;
           float srcval = src[index < order? index : index % order];
@@ -315,7 +315,7 @@ static void wavelet_apply4(WaveletType type,
   for (int i = ilength - 2, di = (ilength - 2) / 2;
 #endif
        i < ilength; i += 2, di++) {
-    float reshi = .0f, reslo = .0f;
+    float reshi = 0.f, reslo = 0.f;
     for (int j = 0; j < 4; j++) {
       int index = i + j;
       float srcval = src[index < ilength? index : index % ilength];
@@ -355,10 +355,10 @@ static void wavelet_apply6(WaveletType type,
   initialize_highpass_lowpass(type, 6, highpassC, lowpassC);
 
 #ifdef __AVX__
-  highpassC[6] = .0f;
-  highpassC[7] = .0f;
-  lowpassC[6] = .0f;
-  lowpassC[7] = .0f;
+  highpassC[6] = 0.f;
+  highpassC[7] = 0.f;
+  lowpassC[6] = 0.f;
+  lowpassC[7] = 0.f;
   const __m256 hpvec = _mm256_load_ps(highpassC);
   const __m256 lpvec = _mm256_load_ps(lowpassC);
   size_t alength = aligned_length(length, 8);
@@ -412,7 +412,7 @@ static void wavelet_apply6(WaveletType type,
   for (int i = ilength - 4, di = (ilength - 4) / 2;
 #endif
        i < ilength; i += 2, di++) {
-    float reshi = .0f, reslo = .0f;
+    float reshi = 0.f, reslo = 0.f;
     for (int j = 0; j < 6; j++) {
       int index = i + j;
       float srcval = src[index < ilength? index : index % ilength];
@@ -497,7 +497,7 @@ static void wavelet_apply8(WaveletType type,
   // Finish with the extended end
   for (int i = ilength - 6, di = (ilength - 6) / 2;
        i < ilength; i += 2, di++) {
-    float reshi = .0f, reslo = .0f;
+    float reshi = 0.f, reslo = 0.f;
     for (int j = 0; j < 8; j++) {
       int index = i + j;
       float srcval = src[index < ilength? index : index % ilength];
@@ -543,14 +543,14 @@ static void wavelet_apply12(WaveletType type,
   initialize_highpass_lowpass(type, 12, highpassC, lowpassC);
 
 #ifdef __AVX__
-  highpassC[12] = .0f;
-  highpassC[13] = .0f;
-  highpassC[14] = .0f;
-  highpassC[15] = .0f;
-  lowpassC[12] = .0f;
-  lowpassC[13] = .0f;
-  lowpassC[14] = .0f;
-  lowpassC[15] = .0f;
+  highpassC[12] = 0.f;
+  highpassC[13] = 0.f;
+  highpassC[14] = 0.f;
+  highpassC[15] = 0.f;
+  lowpassC[12] = 0.f;
+  lowpassC[13] = 0.f;
+  lowpassC[14] = 0.f;
+  lowpassC[15] = 0.f;
   const __m256 hpvec1 = _mm256_load_ps(highpassC);
   const __m256 lpvec1 = _mm256_load_ps(lowpassC);
   const __m256 hpvec2 = _mm256_load_ps(&highpassC[8]);
@@ -614,7 +614,7 @@ static void wavelet_apply12(WaveletType type,
   for (int i = ilength - 10, di = (ilength - 10) / 2;
 #endif
        i < ilength; i += 2, di++) {
-    float reshi = .0f, reslo = .0f;
+    float reshi = 0.f, reslo = 0.f;
     for (int j = 0; j < 12; j++) {
       int index = i + j;
       float srcval = src[index < ilength? index : index % ilength];
@@ -718,7 +718,7 @@ static void wavelet_apply16(WaveletType type,
   // Finish with the extended end
   for (int i = ilength - 14, di = (ilength - 14) / 2;
        i < ilength; i += 2, di++) {
-    float reshi = .0f, reslo = .0f;
+    float reshi = 0.f, reslo = 0.f;
     for (int j = 0; j < 16; j++) {
       int index = i + j;
       float srcval = src[index < ilength? index : index % ilength];

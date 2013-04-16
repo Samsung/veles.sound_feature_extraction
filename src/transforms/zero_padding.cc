@@ -42,7 +42,7 @@ void ZeroPadding::Do(
     }
     memsetf(output + inputFormat_->Size(),
             outputFormat_->Size() - inputFormat_->Size(),
-            .0f);
+            0.f);
   }
 }
 

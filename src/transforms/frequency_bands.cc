@@ -102,11 +102,11 @@ void FrequencyBands::Do(
     for (int j = 0; j < bandsNumber_; j++) {
       if (j > 0) {
         memsetf((*out)[i + j]->Data.get(),
-                bands[j - 1], .0f);
+                bands[j - 1], 0.f);
       }
       if (j < bandsNumber_ - 1) {
         memsetf((*out)[i + j]->Data.get() + bands[j],
-                inputFormat_->Size() - bands[j], .0f);
+                inputFormat_->Size() - bands[j], 0.f);
       }
       if ((*out)[i + j]->Data.get() != in[i + j]->Data.get()) {
         int offset = j > 0? bands[j - 1] : 0;

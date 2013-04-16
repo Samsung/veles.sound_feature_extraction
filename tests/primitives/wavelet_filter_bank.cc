@@ -70,7 +70,7 @@ TEST(WaveletFilterBank, Apply) {
       float res[length];  // NOLINT(runtime/arrays)
       for (int i = 0; i < length; i++) {
         src[i] = i * (1 - 2 * (i % 2));
-        res[i] = .0f;
+        res[i] = 0.f;
       }
 
       wfb.Apply(src, length, res);
@@ -83,7 +83,7 @@ TEST(WaveletFilterBank, Apply) {
                                 6, 6, 6, 6, 6, 6, 6, 6 });
       for (int i = 0; i < length; i++) {
         src[i] = i * (1 - 2 * (i % 2));
-        res[i] = .0f;
+        res[i] = 0.f;
       }
       wfb24.Apply(src, length, res);
     }
@@ -105,7 +105,7 @@ TEST(WaveletFilterBank, ApplyNotAPowerOf2) {
 
       for (int i = 0; i < length; i++) {
         src[i] = i * (1 - 2 * (i % 2));
-        res[i] = .0f;
+        res[i] = 0.f;
       }
       wfb24.Apply(src, length, res);
     }

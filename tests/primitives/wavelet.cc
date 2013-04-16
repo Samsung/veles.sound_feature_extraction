@@ -75,16 +75,16 @@ TEST(Wavelet, wavelet_apply_na) {
   wavelet_apply_na(WAVELET_TYPE_DAUBECHIES, 8, array, length,
                    desthi, destlo);
   int index = 5;
-  float vhi = .0f, vlo = .0f;
+  float vhi = 0.f, vlo = 0.f;
   for (int i = 0; i < 8; i++) {
     vlo += array[index * 2 + i] * kDaubechiesF[3][i];
     vhi += array[index * 2 + i] * kDaubechiesF[3][8 - i - 1] * (i & 1 ? -1 : 1);
   }
   ASSERT_EQF(vlo, destlo[index]);
   ASSERT_EQF(vhi, desthi[index]);
-  vhi = vlo = .0f;
+  vhi = vlo = 0.f;
   for (int i = 0; i < 8; i++) {
-    float value = .0f;
+    float value = 0.f;
     switch (i) {
       case 0:
         value = array[30];
@@ -189,8 +189,8 @@ TEST(Wavelet, SIMDSpeedup) {
 
     checkPointFinish = std::chrono::high_resolution_clock::now();
     auto delta2 = checkPointFinish - checkPointStart;
-    float ratio = (delta1.count() + .0f) / delta2.count();
-    float speedup = (delta2.count() - delta1.count() + .0f) / delta2.count();
+    float ratio = (delta1.count() + 0.f) / delta2.count();
+    float speedup = (delta2.count() - delta1.count() + 0.f) / delta2.count();
     printf("[order %i] SIMD version took %i%% of original time. "
         "Speedup is %i%%.\n", order,
         static_cast<int>(ratio * 100), static_cast<int>(speedup * 100));

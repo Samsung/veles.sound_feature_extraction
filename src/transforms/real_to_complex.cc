@@ -55,14 +55,14 @@ void RealToComplex::Do(bool simd, const float* input, int length,
     }
     for (int i = ((length >> 3) << 3); i < length; i++) {
       output[i * 2] = input[i];
-      output[i * 2 + 1] = .0f;
+      output[i * 2 + 1] = 0.f;
     }
 #else
 #error TODO: AVX2 introduces a full 256-bit permute which must be executed before _mm256_unpack*  // NOLINT(*)
 #endif
   } else {
 #elif defined(__ARM_NEON__)
-    const float32x4_t zeros = { .0f, .0f, .0f, .0f };
+    const float32x4_t zeros = { 0.f, 0.f, 0.f, 0.f };
     for (int i = 0; i < length - 3; i += 4) {
       float32x4_t vec = vld1q_f32(input + i);
       float32x4x2_t res = vzipq_f32(vec, zeros);
@@ -71,7 +71,7 @@ void RealToComplex::Do(bool simd, const float* input, int length,
 
     for (int i = ((length >> 2) << 2); i < length; i++) {
       output[i * 2] = input[i];
-      output[i * 2 + 1] = .0f;
+      output[i * 2 + 1] = 0.f;
     }
   } else {
 #else
@@ -79,7 +79,7 @@ void RealToComplex::Do(bool simd, const float* input, int length,
 #endif
     for (int i = 0; i < length; i++) {
       output[i * 2] = input[i];
-      output[i * 2 + 1] = .0f;
+      output[i * 2 + 1] = 0.f;
     }
   }
 }

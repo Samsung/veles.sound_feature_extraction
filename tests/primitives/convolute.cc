@@ -19,7 +19,7 @@ void convolute_reference(const float *__restrict x, size_t xLength,
                          const float *__restrict h, size_t hLength,
                          float *__restrict result) {
   for (int n = 0; n < static_cast<int>(xLength); n++) {
-    float sum = .0f;
+    float sum = 0.f;
     for (int m = 0; m < static_cast<int>(hLength) && m <= n; m++) {
       sum += h[m] * x[n - m];
     }

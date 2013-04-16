@@ -24,7 +24,7 @@ static void convolute_circular(const float *__restrict x,
                                size_t N,
                                float *__restrict result) {
   for (int n = 0; n < (int)N; n++) {
-    float sum = .0f;
+    float sum = 0.f;
     for (int m = 0; m <= n; m++) {
       sum += x[m] * h[n - m];
     }
@@ -87,10 +87,10 @@ void convolute(const float *__restrict x, size_t xLength,
         int cl = xLength - i + M - 1;
         memcpy(fftBoilerPlate, x + i - (M - 1),
                cl * sizeof(float));
-        memsetf(fftBoilerPlate + cl, L - cl, .0f);
+        memsetf(fftBoilerPlate + cl, L - cl, 0.f);
       }
     } else {
-      memsetf(fftBoilerPlate, M - 1, .0f);
+      memsetf(fftBoilerPlate, M - 1, 0.f);
       memcpy(fftBoilerPlate + M - 1, x, step * sizeof(float));
     }
     fftf_calc(fftPlan);

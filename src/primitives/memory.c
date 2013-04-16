@@ -120,7 +120,7 @@ float *zeropaddingex(const float *ptr, size_t length, size_t *newLength,
   *newLength = nl;
   float *ret = mallocf(nl + additionalLength);
   memcpy(ret, ptr, length * sizeof(float));
-  memsetf(ret + length, nl - length, .0f);
+  memsetf(ret + length, nl - length, 0.f);
   return ret;
 }
 

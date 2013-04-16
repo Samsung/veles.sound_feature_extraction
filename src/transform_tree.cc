@@ -350,11 +350,11 @@ TransformTree::ExecutionTimeReport() const noexcept {
   for (auto cit : transformsCache_) {
     if (cit.first != "All") {
       ret.insert(std::make_pair(
-          cit.first, (cit.second.ElapsedTime.count() + .0f) / allTime));
+          cit.first, (cit.second.ElapsedTime.count() + 0.f) / allTime));
     } else {
       ret.insert(std::make_pair(
           cit.first,
-          (allTime + .0f) / std::chrono::high_resolution_clock::period().den));
+          (allTime + 0.f) / std::chrono::high_resolution_clock::period().den));
     }
   }
   return std::move(ret);
