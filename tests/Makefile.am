@@ -1,4 +1,4 @@
-TESTS = features_parser parameters transform_tree mfcc sbc wpp api
+TESTS = features_parser parameters transform_tree mfcc sbc wpp api sfm
 
 api_LDADD = -lboost_regex
 
