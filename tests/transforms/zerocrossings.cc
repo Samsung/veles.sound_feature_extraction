@@ -43,6 +43,8 @@ class ZeroCrossingsTest : public ZeroCrossings, public testing::Test {
 TEST_F(ZeroCrossingsTest, Do) {
   Do(Input, &Output);
   ASSERT_EQ(Size / 2 + 1, *Output[0]);
+  int slowres = Do(false, Input[0]->Data.get(), Size);
+  ASSERT_EQ(Size / 2 + 1, slowres);
 }
 
 #define CLASS_NAME ZeroCrossingsTest
