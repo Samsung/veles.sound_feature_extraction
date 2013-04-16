@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_CENTROID_H_
-#define SRC_TRANSFORMS_CENTROID_H_
+#ifndef SRC_TRANSFORMS_ZEROCROSSINGS_H_
+#define SRC_TRANSFORMS_ZEROCROSSINGS_H_
 
 #include "src/formats/window_format.h"
 #include "src/formats/single_format.h"
@@ -41,4 +41,4 @@ class ZeroCrossings
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction
-#endif  // SRC_TRANSFORMS_CENTROID_H_
+#endif  // SRC_TRANSFORMS_ZEROCROSSINGS_H_
