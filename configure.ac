@@ -133,10 +133,9 @@ AS_IF([test "x$enable_doxygen" != "xno"], [
 AC_SUBST([DOCS_DIR])
 
 dnl Check for debug configuration
-AC_ARG_ENABLE([debug],
-              AS_HELP_STRING([--enable-debug], [Build in debug mode]),
+AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [Build in debug mode]),
               [DEBUG_FLAGS="-O0 -DDEBUG -Wextra" enable_debug=yes],
-              [enable_debug=no])
+              [enable_debug=no CPPFLAGS="$CPPFLAGS -flto" LDFLAGS="$LDFLAGS -flto"])
 AM_CONDITIONAL(DEBUG, test "x$enable_debug" == "xyes")
 
 dnl Check whether to build tests
