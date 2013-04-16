@@ -20,7 +20,7 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-/// @brief Calculates f$\frac{\displaystyle\sum_{f=0}^{SamplingRate / 2}{f
+/// @brief Calculates \f$\frac{\displaystyle\sum_{f=0}^{SamplingRate / 2}{f
 /// Value[f]}}{\displaystyle\sum_{f=0}^{SamplingRate / 2}{Value[f]}}\f$.
 class Centroid
     : public TransformBase<Formats::WindowFormatF, Formats::SingleFormatF> {
