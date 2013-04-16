@@ -81,8 +81,10 @@ TEST(TEST_NAME, BENCH_NAME) {
   auto delta2 = checkPointFinish - checkPointStart;
   float ratio = (delta1.count() + .0f) / delta2.count();
   float speedup = (delta2.count() - delta1.count() + .0f) / delta2.count();
-  printf("SIMD version took %i%% of original time. Speedup is %i%%.\n",
-      static_cast<int>(ratio * 100), static_cast<int>(speedup * 100));
+  printf("SIMD version took %i%% of original time. Speedup is %i%% "
+         "(%.1f times).\n",
+         static_cast<int>(ratio * 100), static_cast<int>(speedup * 100),
+         1.f / (1.f - speedup));
 }
 
 #endif
