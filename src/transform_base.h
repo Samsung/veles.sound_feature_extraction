@@ -56,6 +56,7 @@ class TransformBase : public virtual Transform,
 
   virtual std::shared_ptr<Buffers> CreateOutputBuffers(
       const Buffers& in) const noexcept {
+    assert(&in != nullptr);
     assert(in.Format() != nullptr);
     assert(*in.Format() == *inputFormat_);
     auto buffers = std::make_shared<OutBuffers>(
@@ -67,6 +68,8 @@ class TransformBase : public virtual Transform,
   }
 
   virtual void Do(const Buffers& in, Buffers* out) const noexcept {
+    assert(&in != nullptr);
+    assert(out != nullptr);
     assert(*in.Format() == *inputFormat_);
     assert(*out->Format() == *outputFormat_);
     Do(reinterpret_cast<const InBuffers&>(in),
@@ -74,6 +77,10 @@ class TransformBase : public virtual Transform,
   }
 
   virtual void DoInverse(const Buffers& in, Buffers* out) const noexcept {
+    assert(&in != nullptr);
+    assert(out != nullptr);
+    assert(*in.Format() == *outputFormat_);
+    assert(*out->Format() == *inputFormat_);
     DoInverse(reinterpret_cast<const OutBuffers&>(in),
               reinterpret_cast<InBuffers*>(out));
   }

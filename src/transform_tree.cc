@@ -85,7 +85,7 @@ class RootTransform : public Transform {
 
 TransformTree::Node::Node(Node* parent,
                           const std::shared_ptr<Transform>& boundTransform,
-                          TransformTree* host)
+                          TransformTree* host) noexcept
 : Parent(parent)
 , BoundTransform(boundTransform)
 , BoundBuffers(nullptr)
@@ -114,7 +114,7 @@ void TransformTree::Node::ActionOnEachNode(
 
 std::shared_ptr<TransformTree::Node>
 TransformTree::Node::FindIdenticalChildTransform(
-        const Transform& base) {
+    const Transform& base) const noexcept {
   auto tv = Children.find(base.Name());
   if (tv == Children.end()) return nullptr;
   for (auto node : tv->second) {
@@ -125,20 +125,37 @@ TransformTree::Node::FindIdenticalChildTransform(
   return nullptr;
 }
 
-void TransformTree::Node::Execute(
-    std::unordered_map<std::string, std::shared_ptr<Buffers>>* results) {  // NOLINT(*)
-  if (Parent != nullptr) {
-    if (BoundBuffers == nullptr) {
-      if (!BoundTransform->OutputFormat()->MustReallocate(
-              *BoundTransform->InputFormat()) &&
-          Parent->Children.size() == 1) {
-          BoundBuffers = std::make_shared<Buffers>(
-              *Parent->BoundBuffers, BoundTransform->OutputFormat());
-      } else {
-          BoundBuffers = BoundTransform->CreateOutputBuffers(
-              *Parent->BoundBuffers);
-      }
+void TransformTree::Node::AllocateBuffers(size_t visitedChildrenCount) noexcept {
+  if (Parent != nullptr && BoundBuffers == nullptr) {
+    if (!BoundTransform->OutputFormat()->MustReallocate(
+            *BoundTransform->InputFormat()) &&
+        Parent->Children.size() == visitedChildrenCount + 1) {
+      // Recycle the parent's buffers
+      BoundBuffers = std::make_shared<Buffers>(*Parent->BoundBuffers,
+                                               BoundTransform->OutputFormat());
+    } else {
+      // Honestly allocate the buffers
+      BoundBuffers = BoundTransform->CreateOutputBuffers(
+          *Parent->BoundBuffers);
     }
+  } else {
+    // I am the root and can have only one raw buffer
+    auto buffers = std::make_shared<BuffersBase<Formats::Raw16>>(
+        Host->RootFormat());
+    buffers->Initialize(1, nullptr);
+    BoundBuffers = buffers;
+  }
+  int childrenIndex = 0;
+  for (auto tnodepair : Children) {
+    for (auto tnode : tnodepair.second) {
+      tnode->AllocateBuffers(childrenIndex++);
+    }
+  }
+}
+
+void TransformTree::Node::Execute(
+    std::unordered_map<std::string, std::shared_ptr<Buffers>>* results) {
+  if (Parent != nullptr) {
     auto checkPointStart = std::chrono::high_resolution_clock::now();
     BoundTransform->Do(*Parent->BoundBuffers, BoundBuffers.get());
     auto checkPointFinish = std::chrono::high_resolution_clock::now();
@@ -244,13 +261,14 @@ void TransformTree::AddTransform(const std::string& name,
   }
 }
 
-std::shared_ptr<Formats::RawFormat16> TransformTree::RootFormat() noexcept {
+std::shared_ptr<Formats::RawFormat16> TransformTree::RootFormat()
+    const noexcept {
   return rootFormat_;
 }
 
 void TransformTree::AddChain(
     const std::string& name,
-    const std::vector<std::pair<std::string, std::string>>& transforms) {  // NOLINT(*)
+    const std::vector<std::pair<std::string, std::string>>& transforms) {
   if (treeIsPrepared_) {
     throw TreeIsPreparedException();
   }
@@ -270,15 +288,19 @@ void TransformTree::AddChain(
   chains_.insert(name);
 }
 
-void TransformTree::PrepareForExecution() noexcept {
-  treeIsPrepared_ = true;
+void TransformTree::PrepareForExecution() {
+  if (treeIsPrepared_) {
+    throw TreeAlreadyPreparedException();
+  }
   root_->ActionOnEachTransform([](const Transform& t) {
     t.Initialize();
   });
+  root_->AllocateBuffers(0);
+  treeIsPrepared_ = true;
 }
 
 std::unordered_map<std::string, std::shared_ptr<Buffers>>
-TransformTree::Execute(const Buffers& in) {
+TransformTree::Execute(const Formats::Raw16& in) {
   if (!treeIsPrepared_) {
     throw TreeIsNotPreparedException();
   }
@@ -289,7 +311,8 @@ TransformTree::Execute(const Buffers& in) {
   for (auto name : chains_) {
     results.insert(std::make_pair(name, nullptr));
   }
-  root_->BoundBuffers = std::make_shared<Buffers>(in);
+  std::static_pointer_cast<BuffersBase<Formats::Raw16>>(root_->BoundBuffers)
+      ->Initialize(1, in);
   if (ValidateAfterEachTransform()) {
     try {
       root_->BoundBuffers->Validate();

@@ -27,9 +27,8 @@ TEST(MFCC, Calculation) {
     tt.AddChain("SFM", { { "Window", "length=32" }, { "RDFT", "" },
         { "ComplexMagnitude", "" }, { "Mean", "types=arithmetic geometric" },
         { "SFM", "" } });
-    BuffersBase<Raw16> buffers(tt.RootFormat());
-    buffers.Initialize(1, 48000, 0);
-    memcpy(buffers[0]->Data.get(), data, sizeof(data));
+    Raw16 buffers(48000, 0);
+    memcpy(buffers.Data.get(), data, sizeof(data));
     tt.PrepareForExecution();
     auto res = tt.Execute(buffers);
     ASSERT_EQ(1, res.size());

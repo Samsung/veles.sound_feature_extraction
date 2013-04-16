@@ -88,6 +88,13 @@ class TreeIsNotPreparedException : public ExceptionBase {
   }
 };
 
+class TreeAlreadyPreparedException : public ExceptionBase {
+ public:
+  TreeAlreadyPreparedException()
+  : ExceptionBase("Transform tree has already been prepared for execution.") {
+  }
+};
+
 class TransformResultedInInvalidBuffersException : public ExceptionBase {
  public:
   TransformResultedInInvalidBuffersException(const std::string& transform,
@@ -111,16 +118,16 @@ class TransformTree {
       const std::shared_ptr<Formats::RawFormat16>& rootFormat) noexcept;
   virtual ~TransformTree() noexcept;
 
-  std::shared_ptr<Formats::RawFormat16> RootFormat() noexcept;
+  std::shared_ptr<Formats::RawFormat16> RootFormat() const noexcept;
 
   void AddChain(
       const std::string& name,
-      const std::vector<std::pair<std::string, std::string>>& transforms);  // NOLINT(*)
+      const std::vector<std::pair<std::string, std::string>>& transforms);
 
-  void PrepareForExecution() noexcept;
+  void PrepareForExecution();
 
   std::unordered_map<std::string, std::shared_ptr<Buffers>> Execute(
-      const Buffers& in);
+      const Formats::Raw16& in);
 
   std::unordered_map<std::string, float> ExecutionTimeReport() const noexcept;
   void Dump(const std::string& dotFileName) const;
@@ -133,27 +140,30 @@ class TransformTree {
 
  private:
   struct Node {
-    Node* Parent;
-    const std::shared_ptr<Transform> BoundTransform;
-    std::shared_ptr<Buffers> BoundBuffers;
-    std::unordered_map<std::string, std::vector<std::shared_ptr<Node>>>  // NOLINT(*)
-    Children;
-    std::string ChainName;
-    TransformTree* Host;
-    std::chrono::high_resolution_clock::duration ElapsedTime;
-
     Node(Node* parent, const std::shared_ptr<Transform>& boundTransform,
-         TransformTree* host = nullptr);
+         TransformTree* host = nullptr) noexcept;
 
-    std::shared_ptr<Node> FindIdenticalChildTransform(const Transform& base);
+    std::shared_ptr<Node> FindIdenticalChildTransform(const Transform& base)
+        const noexcept;
 
     void ActionOnEachTransform(
         const std::function<void(const Transform&)> action);
     void ActionOnEachNode(
         const std::function<void(const Node&)> action);
 
+    void AllocateBuffers(size_t visitedChildrenCount) noexcept;
+
     void Execute(
-        std::unordered_map<std::string, std::shared_ptr<Buffers>>* results);  // NOLINT(*)
+        std::unordered_map<std::string, std::shared_ptr<Buffers>>* results);
+
+    Node* Parent;
+    const std::shared_ptr<Transform> BoundTransform;
+    std::shared_ptr<Buffers> BoundBuffers;
+    std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<Node>>> Children;
+    std::string ChainName;
+    TransformTree* Host;
+    std::chrono::high_resolution_clock::duration ElapsedTime;
   };
 
   struct TransformCacheItem {

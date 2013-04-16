@@ -255,12 +255,9 @@ FeatureExtractionResult extract_speech_features(
   CHECK_NULL_RET(buffer, FEATURE_EXTRACTION_RESULT_ERROR);
   CHECK_NULL_RET(results, FEATURE_EXTRACTION_RESULT_ERROR);
 
-  BuffersBase<Raw16> buffers(fc->Tree->RootFormat());
-  buffers.Initialize(1, buffer);
-
   std::unordered_map<std::string, std::shared_ptr<Buffers>> retmap;
   try {
-    retmap = fc->Tree->Execute(buffers);
+    retmap = fc->Tree->Execute(Raw16(buffer));
   }
   catch (const std::exception& ex) {
     fprintf(stderr, "Caught an exception with message \"%s\".", ex.what());

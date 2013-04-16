@@ -132,7 +132,7 @@ TEST(Wavelet, wavelet_apply) {
   auto desthi = wavelet_allocate_destination(8, length);
   auto destlo = wavelet_allocate_destination(8, length);
 
-  std::vector<std::pair<WaveletType, std::vector<int>>> wavelets {  // NOLINT(*)
+  std::vector<std::pair<WaveletType, std::vector<int>>> wavelets {
     { WAVELET_TYPE_DAUBECHIES, { 4, 6, 8, 12, 16 } },
     { WAVELET_TYPE_SYMLET, { 4, 6, 8, 12, 16 } },
     { WAVELET_TYPE_COIFLET, { 6, 12 } }

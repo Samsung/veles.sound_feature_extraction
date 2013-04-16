@@ -29,9 +29,8 @@ TEST(SBC, Calculation) {
     tt.AddChain("SBC", { { "Window", "length=32, type=rectangular" },
         { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
         /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" } });
-    BuffersBase<Raw16> buffers(tt.RootFormat());
-    buffers.Initialize(1, 48000, 0);
-    memcpy(buffers[0]->Data.get(), data, sizeof(data));
+    Raw16 buffers(48000, 0);
+    memcpy(buffers.Data.get(), data, sizeof(data));
     tt.PrepareForExecution();
     auto res = tt.Execute(buffers);
     ASSERT_EQ(1, res.size());

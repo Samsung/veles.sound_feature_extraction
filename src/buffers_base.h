@@ -105,7 +105,7 @@ class BuffersBase : public Buffers {
   }
 
   explicit BuffersBase(
-      const std::shared_ptr<BufferFormatBase<T>>& format) noexcept  // NOLINT(*)
+      const std::shared_ptr<BufferFormatBase<T>>& format) noexcept
       : Buffers(0, format) {
   }
 

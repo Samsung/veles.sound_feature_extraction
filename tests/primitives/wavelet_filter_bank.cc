@@ -53,7 +53,7 @@ TEST(WaveletFilterBank, ParseDescription) {
                WaveletTreeInvalidDescriptionException);
 }
 
-std::vector<std::pair<WaveletType, std::vector<int>>> Wavelets {  // NOLINT(*)
+std::vector<std::pair<WaveletType, std::vector<int>>> Wavelets {
     { WAVELET_TYPE_DAUBECHIES, { 4, 6, 8, 12, 16 } },
     { WAVELET_TYPE_SYMLET, { 4, 6, 8, 12, 16 } },
     { WAVELET_TYPE_COIFLET, { 6, 12 } }

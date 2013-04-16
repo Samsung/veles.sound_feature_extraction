@@ -30,9 +30,8 @@ TEST(MFCC, Calculation) {
         { "SFM", "" } });
     tt.AddChain("DominantFrequency", { { "Window", "length=32" }, { "RDFT", "" },
         { "ComplexMagnitude", "" }, { "ArgMinMax", "extremum=max" } });
-    BuffersBase<Raw16> buffers(tt.RootFormat());
-    buffers.Initialize(1, 48000, 0);
-    memcpy(buffers[0]->Data.get(), data, sizeof(data));
+    Raw16 buffers(48000, 0);
+    memcpy(buffers.Data.get(), data, sizeof(data));
     tt.PrepareForExecution();
     auto res = tt.Execute(buffers);
     ASSERT_EQ(3, res.size());

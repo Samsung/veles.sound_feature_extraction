@@ -30,9 +30,8 @@ TEST(MFCC, Calculation) {
         { "SpectralEnergy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
         { "Log", "" }, { "Square", "" }, { "Selector", "length=256" },
         { "DCT", "" } });
-    BuffersBase<Raw16> buffers(tt.RootFormat());
-    buffers.Initialize(1, 48000, 0);
-    memcpy(buffers[0]->Data.get(), data, sizeof(data));
+    Raw16 buffers(48000, 0);
+    memcpy(buffers.Data.get(), data, sizeof(data));
     tt.PrepareForExecution();
     auto res = tt.Execute(buffers);
     ASSERT_EQ(1, res.size());
@@ -55,10 +54,9 @@ TEST(MFCC, CalculationTrivial) {
       { "SpectralEnergy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
       { "Log", "" }, { "Square", "" }, { "Selector", "length=256" },
       { "DCT", "" } });
-  BuffersBase<Raw16> buffers(tt.RootFormat());
-  buffers.Initialize(1, 48000, 0);
+  Raw16 buffers(48000, 0);
   for (int i = 0; i < 48000; i++) {
-    buffers[0]->Data.get()[i] = 128;
+    buffers.Data.get()[i] = 128;
   }
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
