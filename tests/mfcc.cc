@@ -27,7 +27,7 @@ TEST(MFCC, Calculation) {
     // We have to apply FilterBank twice since Energy results in
     // squared magnitude
     tt.AddChain("MFCC", { { "Window", "length=32" }, { "RDFT", "" },
-        { "Energy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
+        { "SpectralEnergy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
         { "Log", "" }, { "Square", "" }, { "Selector", "length=256" },
         { "DCT", "" } });
     BuffersBase<Raw16> buffers(tt.RootFormat());
@@ -52,7 +52,7 @@ TEST(MFCC, CalculationTrivial) {
   // We have to apply FilterBank twice since Energy results in
   // squared magnitude
   tt.AddChain("MFCC", { { "Window", "length=32" }, { "RDFT", "" },
-      { "Energy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
+      { "SpectralEnergy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
       { "Log", "" }, { "Square", "" }, { "Selector", "length=256" },
       { "DCT", "" } });
   BuffersBase<Raw16> buffers(tt.RootFormat());

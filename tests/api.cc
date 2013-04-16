@@ -55,8 +55,9 @@ TEST(API, query_transform_details) {
 }
 
 TEST(API, extract_speech_features) {
-  const char *feature = "MFCC [Window(length=32), RDFT, Energy, FilterBank, "
-      "FilterBank, Log, Square, UnpackRDFT, DCT, Selector(length=24)]";
+  const char *feature = "MFCC [Window(length=32), RDFT, SpectralEnergy,"
+      "FilterBank, FilterBank, Log, Square, UnpackRDFT, DCT, "
+      "Selector(length=24)]";
   auto config = setup_features_extraction(&feature, 1, 48000, 16000);
   ASSERT_NE(nullptr, config);
   auto buffer = new int16_t[48000];
@@ -81,8 +82,9 @@ TEST(API, extract_speech_features) {
 }
 
 FeaturesConfiguration* test_calculate_features() {
-  const char *feature = "MFCC [Window(length=32), RDFT, Energy, FilterBank, "
-      "FilterBank, Log, Square, UnpackRDFT, DCT, Selector(length=24)]";
+  const char *feature = "MFCC [Window(length=32), RDFT, SpectralEnergy, "
+      "FilterBank, FilterBank, Log, Square, UnpackRDFT, DCT, "
+      "Selector(length=24)]";
   auto config = setup_features_extraction(&feature, 1, 48000, 16000);
   auto buffer = new int16_t[48000];
   for (int i = 0; i < 48000; i++) {

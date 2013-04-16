@@ -1,4 +1,4 @@
-/*! @file energy.cc
+/*! @file spectral_energy.cc
  *  @brief Calculate the magnitude of each complex number.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -10,7 +10,7 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/transforms/energy.h"
+#include "src/transforms/spectral_energy.h"
 #include <math.h>
 #ifdef __AVX__
 #include <immintrin.h>
@@ -21,7 +21,7 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void Energy::OnFormatChanged() {
+void SpectralEnergy::OnFormatChanged() {
   if (inputFormat_->Size() % 2 == 1) {
     fprintf(stderr, "Input buffer size is odd (%zu), truncated\n",
             inputFormat_->Size());
@@ -29,13 +29,13 @@ void Energy::OnFormatChanged() {
   outputFormat_->SetSize(inputFormat_->Size() / 2);
 }
 
-void Energy::InitializeBuffers(
+void SpectralEnergy::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), inputFormat_->Size() / 2);
 }
 
-void Energy::Do(
+void SpectralEnergy::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
@@ -43,7 +43,7 @@ void Energy::Do(
   }
 }
 
-void Energy::Do(bool simd, const float* input, int length,
+void SpectralEnergy::Do(bool simd, const float* input, int length,
                 float* output) noexcept {
   if (simd) {
 #ifdef __AVX__
@@ -88,7 +88,7 @@ void Energy::Do(bool simd, const float* input, int length,
   }
 }
 
-REGISTER_TRANSFORM(Energy);
+REGISTER_TRANSFORM(SpectralEnergy);
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction

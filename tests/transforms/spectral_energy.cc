@@ -1,5 +1,5 @@
-/*! @file energy.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::Energy.
+/*! @file spectralenergy.cc
+ *  @brief Tests for SoundFeatureExtraction::Transforms::SpectralEnergy.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,15 +13,15 @@
 
 #include <gtest/gtest.h>
 #include <math.h>
-#include "src/transforms/energy.h"
+#include "src/transforms/spectral_energy.h"
 
 using SoundFeatureExtraction::Formats::WindowF;
 using SoundFeatureExtraction::Formats::WindowFormatF;
 using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::Energy;
+using SoundFeatureExtraction::Transforms::SpectralEnergy;
 
-class EnergyTest
-    : public Energy, public testing::Test {
+class SpectralEnergyTest
+    : public SpectralEnergy, public testing::Test {
  public:
   BuffersBase<WindowF> Input;
   BuffersBase<WindowF> Output;
@@ -43,7 +43,7 @@ class EnergyTest
 
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
-TEST_F(EnergyTest, Do) {
+TEST_F(SpectralEnergyTest, Do) {
   Do(Input, &Output);
   for (int i = 0; i < Size / 2; i++) {
     float m = Output[0]->Data.get()[i];
@@ -53,7 +53,7 @@ TEST_F(EnergyTest, Do) {
   }
 }
 
-#define CLASS_NAME EnergyTest
+#define CLASS_NAME SpectralEnergyTest
 #define ITER_COUNT 500000
 #include "tests/transforms/benchmark.inc"
 

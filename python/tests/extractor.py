@@ -29,7 +29,7 @@ class Test(unittest.TestCase):
                                    [Transform("Window",
                                               parameters={"length": "32"}),
                                     Transform("RDFT"),
-                                    Transform("Energy"),
+                                    Transform("SpectralEnergy"),
                                     Transform("FilterBank"),
                                     Transform("FilterBank"),
                                     Transform("Log"),

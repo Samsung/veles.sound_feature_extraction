@@ -432,13 +432,24 @@ void TransformTree::Dump(const std::string& dotFileName) const {
     }
     fw << "</font>>]" << std::endl;
   });
-  fw << "\tOther [label=<Other";
+  // Output "Other"
+  fw << "\tOther [";
+  if (includeTime && timeReport["Other"] > redShift) {
+    fw << "style=\"filled\", fillcolor=\"#";
+    int light = 255 - (timeReport["Other"] - redShift) /
+        (maxTimeRatio - redShift) * (255 - initialLight);
+    // this is crazy printing of smth like ff4040
+    fw << "ff" << std::hex << std::setw(2) << std::setfill('0') << light
+       << std::setw(2) << std::setfill('0') << light << "\", ";
+  }
+  fw << "label=<Other";
   if (includeTime) {
     fw << "<br /><font point-size=\"10\"><b>"
-        << std::to_string(static_cast<int>(timeReport["Other"]))
+        << std::to_string(static_cast<int>(timeReport["Other"] * 100))
         << "%</b></font>";
   }
   fw << ">]" << std::endl << std::endl;
+  // Output the node connections
   root_->ActionOnEachNode([&](const Node& node) {
     for (auto child : node.Children) {
       for (auto childNode : child.second) {

@@ -1,4 +1,4 @@
-/*! @file energy.h
+/*! @file spectral_energy.h
  *  @brief Calculate the magnitude of each complex number.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_ENERGY_H_
-#define SRC_TRANSFORMS_ENERGY_H_
+#ifndef SRC_TRANSFORMS_SPECTRAL_ENERGY_H_
+#define SRC_TRANSFORMS_SPECTRAL_ENERGY_H_
 
 #include "src/formats/window_format.h"
 #include "src/uniform_format_transform.h"
@@ -19,10 +19,10 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-class Energy
+class SpectralEnergy
     : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
-  TRANSFORM_INTRO("Energy",
+  TRANSFORM_INTRO("SpectralEnergy",
                   "Calculates the squared magnitude of each complex number, "
                   "that is, the sum of squared real and imaginary parts.")
 
@@ -45,4 +45,4 @@ class Energy
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction
-#endif  // SRC_TRANSFORMS_ENERGY_H_
+#endif  // SRC_TRANSFORMS_SPECTRAL_ENERGY_H_
