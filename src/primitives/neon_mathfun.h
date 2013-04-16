@@ -307,4 +307,24 @@ inline v4sf pow_ps(v4sf y, v4sf x) {
   v4sf ret = exp_ps(expvec);
   return ret;
 }
+
+inline v4sf sqrt_ps(v4sf val) {
+  v4sf est = vrsqrteq_f32(val);
+  // Perform 4 iterations
+  v4sf vec = vmulq_f32(est, est);
+  vec = vrsqrtsq_f32(val, vec);
+  est = vmulq_f32(vec, est);
+  vec = vmulq_f32(est, est);
+  vec = vrsqrtsq_f32(val, vec);
+  est = vmulq_f32(vec, est);
+  vec = vmulq_f32(est, est);
+  vec = vrsqrtsq_f32(val, vec);
+  est = vmulq_f32(vec, est);
+  vec = vmulq_f32(est, est);
+  vec = vrsqrtsq_f32(val, vec);
+  est = vmulq_f32(vec, est);
+  // Multiply by val
+  est = vmulq_f32(est, val);
+  return est;
+}
 #endif  // SRC_PRIMITIVES_NEON_MATHFUN_H_

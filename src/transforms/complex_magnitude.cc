@@ -15,7 +15,7 @@
 #ifdef __AVX__
 #include <immintrin.h>
 #elif defined(__ARM_NEON__)
-#include <arm_neon.h>
+#include "src/primitives/neon_mathfun.h"
 #endif
 
 namespace SoundFeatureExtraction {
@@ -74,11 +74,9 @@ void ComplexMagnitude::Do(bool simd, const float* input, int length,
                                     vget_low_f32(sqrvec1));
       float32x2_t sums2 = vpadd_f32(vget_high_f32(sqrvec2),
                                     vget_low_f32(sqrvec2));
-      vst1_f32(sums1, output + j / 2);
-      vst1_f32(sums2, output + j / 2 + 2);
-    }
-    for (int j = 0; j < length - 7; j++) {
-      output[j] = sqrtf(output[j]);
+      float32x4_t sums = vcombine_f32(sums1, sums2);
+      sums = sqrt_ps(sums);
+      vst1q_f32(sums, output + j / 2);
     }
     for (int j = ((length >> 3) << 3); j < length; j += 2) {
       float re = input[j];
