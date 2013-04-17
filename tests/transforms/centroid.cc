@@ -52,7 +52,6 @@ TEST_F(CentroidTest, Do) {
 #define CLASS_NAME CentroidTest
 #define ITER_COUNT 400000
 #define NO_OUTPUT
-#include "src/primitives/energy.h"
 #include "tests/transforms/benchmark.inc"
 
 #include "tests/google/src/gtest_main.cc"
