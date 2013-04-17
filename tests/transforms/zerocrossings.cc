@@ -16,10 +16,13 @@
 
 using SoundFeatureExtraction::Formats::WindowF;
 using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::Raw16;
+using SoundFeatureExtraction::Formats::RawFormat16;
 using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::ZeroCrossings;
+using SoundFeatureExtraction::Transforms::ZeroCrossingsWindow;
+using SoundFeatureExtraction::Transforms::ZeroCrossingsRaw;
 
-class ZeroCrossingsTest : public ZeroCrossings, public testing::Test {
+class ZeroCrossingsWindowTest : public ZeroCrossingsWindow, public testing::Test {
  public:
   BuffersBase<WindowF> Input;
   BuffersBase<int32_t> Output;
@@ -40,16 +43,49 @@ class ZeroCrossingsTest : public ZeroCrossings, public testing::Test {
   }
 };
 
-TEST_F(ZeroCrossingsTest, Do) {
+TEST_F(ZeroCrossingsWindowTest, Do) {
   Do(Input, &Output);
   ASSERT_EQ(Size / 2 + 1, *Output[0]);
   int slowres = Do(false, Input[0]->Data.get(), Size);
   ASSERT_EQ(Size / 2 + 1, slowres);
 }
 
-#define CLASS_NAME ZeroCrossingsTest
+#define CLASS_NAME ZeroCrossingsWindowTest
 #define ITER_COUNT 400000
 #define NO_OUTPUT
+#include "tests/transforms/benchmark.inc"
+
+class ZeroCrossingsRawTest : public ZeroCrossingsRaw, public testing::Test {
+ public:
+  BuffersBase<Raw16> Input;
+  BuffersBase<int32_t> Output;
+  int Size;
+
+  virtual void SetUp() {
+    Size = 1024;
+    Input.Initialize(1, Size, 2);
+    for (int i = 0; i < Size; i++) {
+      // Always liked exotic functions
+      Input[0]->Data.get()[i] = sinf(i * M_PI / 2) * 1024;
+    }
+    Input[0]->Data.get()[3] = 1024;
+    auto format = std::make_shared<RawFormat16>(Size, 18000);
+    SetInputFormat(format);
+    InitializeBuffers(Input, &Output);
+  }
+};
+
+TEST_F(ZeroCrossingsRawTest, Do) {
+  Do(Input, &Output);
+  ASSERT_EQ(Size / 2, *Output[0]);
+  int slowres = Do(false, Input[0]->Data.get(), Size);
+  ASSERT_EQ(Size / 2, slowres);
+}
+
+#undef CLASS_NAME
+#define CLASS_NAME ZeroCrossingsRawTest
+#undef INPUT_TYPE
+#define INPUT_TYPE int16_t
 #include "tests/transforms/benchmark.inc"
 
 #include "tests/google/src/gtest_main.cc"

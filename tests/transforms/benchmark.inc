@@ -37,6 +37,10 @@
 #define BENCH_NAME Benchmark
 #endif
 
+#ifndef INPUT_TYPE
+#define INPUT_TYPE float
+#endif
+
 #ifdef CLASS_NAME
 TEST_F(CLASS_NAME, BENCH_NAME) {
 #else
@@ -45,12 +49,12 @@ TEST(TEST_NAME, BENCH_NAME) {
   const int iter_count = ITER_COUNT;
 
   const int length = 512;
-  float input[length] __attribute__ ((aligned (64)));
+  INPUT_TYPE input[length] __attribute__ ((aligned (64)));
 #ifndef NO_OUTPUT
-  float output[length * 2] __attribute__ ((aligned (64)));
+  INPUT_TYPE output[length * 2] __attribute__ ((aligned (64)));
 #endif
   for (int i = 0; i < length; i++) {
-    input[i] = sinf(i);
+    input[i] = sinf(i) * 10;
   }
 
   auto checkPointStart = std::chrono::high_resolution_clock::now();

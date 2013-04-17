@@ -18,8 +18,9 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-const int RawToWindow::kDefaultLength = 25;
-const int RawToWindow::kDefaultStep = 10;
+const int RawToWindow::kDefaultLength = DEFAULT_WINDOW_DURATION;
+const int RawToWindow::kDefaultSamples = DEFAULT_WINDOW_SAMPLES;
+const int RawToWindow::kDefaultStep = DEFAULT_WINDOW_STEP;
 const std::string RawToWindow::kDefaultType = "hamming";
 const WindowType RawToWindow::kDefaultTypeEnum = WINDOW_TYPE_HAMMING;
 const std::string Window::kDefaultType = "hamming";
@@ -40,6 +41,15 @@ RawToWindow::RawToWindow()
     }
     outputFormat_->SetAllocatedSize(pv * outputFormat_->SamplingRate() / 1000);
     outputFormat_->SetDuration(pv);
+    return true;
+  });
+  RegisterSetter("samples", [&](const std::string& value) {
+    int pv = Parse<int>("samples", value);
+    if (pv < MIN_WINDOW_SAMPLES || pv > MAX_WINDOW_SAMPLES) {
+      return false;
+    }
+    outputFormat_->SetAllocatedSize(pv);
+    outputFormat_->SetDuration(pv * 1000 / outputFormat_->SamplingRate());
     return true;
   });
   RegisterSetter("step", [&](const std::string& value) {

@@ -78,8 +78,12 @@ class RawToWindow
                             "\"length\" ms of type \"type\".")
 
   TRANSFORM_PARAMETERS(
-      TP("length", "Window size in milliseconds",
+      TP("length", "Window size in milliseconds (usage with \"samples\" "
+                   "is undefined)",
          std::to_string(kDefaultLength))
+      TP("samples", "Window size in samples (usage with \"length\" "
+                    "is undefined).",
+         std::to_string(kDefaultSamples))
       TP("step", "Distance between sequential windows in milliseconds",
          std::to_string(kDefaultStep))
       TP("type", "Type of the window. E.g. \"rectangular\" "
@@ -100,6 +104,7 @@ class RawToWindow
 
  private:
   static const int kDefaultLength;
+  static const int kDefaultSamples;
   static const int kDefaultStep;
   static const std::string kDefaultType;
   static const WindowType kDefaultTypeEnum;

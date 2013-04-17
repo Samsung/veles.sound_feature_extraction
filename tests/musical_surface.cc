@@ -1,5 +1,5 @@
-/*! @file sbc.cc
- *  @brief Subband based Cepstral Parameters.
+/*! @file musical_surface.cc
+ *  @brief Musical surface features.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -20,21 +20,28 @@ using SoundFeatureExtraction::TransformTree;
 using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::BuffersBase;
 
-TEST(SBC, Calculation) {
+TEST(MFCC, Calculation) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
   tt.SetValidateAfterEachTransform(true);
-  // We have to apply FilterBank twice since Energy results in
-  // squared magnitude
-  tt.AddChain("SBC", { { "Window", "length=32, type=rectangular" },
-      { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
-      /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" } });
+  tt.AddChain("Energy", { { "Window", "samples=512" }, { "Energy", "" } });
+  tt.AddChain("Centroid", { { "Window", "samples=512" }, { "RDFT", "" },
+      { "ComplexMagnitude", "" }, { "Centroid", "" } });
+  tt.AddChain("Rolloff", { { "Window", "samples=512" }, { "RDFT", "" },
+      { "ComplexMagnitude", "" }, { "Rolloff", "" } });
+  tt.AddChain("Flux", { { "Window", "samples=512" }, { "RDFT", "" },
+      { "ComplexMagnitude", "" }, { "Flux", "" } });
+  tt.AddChain("ZeroCrossings", { { "ZeroCrossings", "" } });
   Raw16 buffers(48000, 0);
   memcpy(buffers.Data.get(), data, sizeof(data));
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
-  ASSERT_EQ(1, res.size());
-  res["SBC"]->Validate();
-  tt.Dump("/tmp/sbc.dot");
+  ASSERT_EQ(5, res.size());
+  res["Energy"]->Validate();
+  res["Centroid"]->Validate();
+  res["Rolloff"]->Validate();
+  res["Flux"]->Validate();
+  res["ZeroCrossings"]->Validate();
+  tt.Dump("/tmp/msurf.dot");
   auto report = tt.ExecutionTimeReport();
   for (auto r : report) {
     printf("%s:\t%f\n", r.first.c_str(), r.second);

@@ -21,29 +21,27 @@ using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::BuffersBase;
 
 TEST(MFCC, Calculation) {
-  ASSERT_NO_THROW({
-    TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
-    tt.SetValidateAfterEachTransform(true);
-    tt.AddChain("Energy", { { "Window", "length=32" }, { "Energy", "" } });
-    tt.AddChain("SFM", { { "Window", "length=32" }, { "RDFT", "" },
-        { "ComplexMagnitude", "" }, { "Mean", "types=arithmetic geometric" },
-        { "SFM", "" } });
-    tt.AddChain("DominantFrequency", { { "Window", "length=32" }, { "RDFT", "" },
-        { "ComplexMagnitude", "" }, { "ArgMinMax", "extremum=max" } });
-    Raw16 buffers(48000, 0);
-    memcpy(buffers.Data.get(), data, sizeof(data));
-    tt.PrepareForExecution();
-    auto res = tt.Execute(buffers);
-    ASSERT_EQ(3, res.size());
-    res["SFM"]->Validate();
-    res["Energy"]->Validate();
-    res["DominantFrequency"]->Validate();
-    tt.Dump("/tmp/vad.dot");
-    auto report = tt.ExecutionTimeReport();
-    for (auto r : report) {
-      printf("%s:\t%f\n", r.first.c_str(), r.second);
-    }
-  });
+  TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
+  tt.SetValidateAfterEachTransform(true);
+  tt.AddChain("Energy", { { "Window", "length=32" }, { "Energy", "" } });
+  tt.AddChain("SFM", { { "Window", "length=32" }, { "RDFT", "" },
+      { "ComplexMagnitude", "" }, { "Mean", "types=arithmetic geometric" },
+      { "SFM", "" } });
+  tt.AddChain("DominantFrequency", { { "Window", "length=32" }, { "RDFT", "" },
+      { "ComplexMagnitude", "" }, { "ArgMinMax", "extremum=max" } });
+  Raw16 buffers(48000, 0);
+  memcpy(buffers.Data.get(), data, sizeof(data));
+  tt.PrepareForExecution();
+  auto res = tt.Execute(buffers);
+  ASSERT_EQ(3, res.size());
+  res["SFM"]->Validate();
+  res["Energy"]->Validate();
+  res["DominantFrequency"]->Validate();
+  tt.Dump("/tmp/vad.dot");
+  auto report = tt.ExecutionTimeReport();
+  for (auto r : report) {
+    printf("%s:\t%f\n", r.first.c_str(), r.second);
+  }
 }
 
 #include "tests/google/src/gtest_main.cc"
