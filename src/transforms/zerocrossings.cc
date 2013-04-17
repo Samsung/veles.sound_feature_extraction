@@ -30,9 +30,8 @@ void ZeroCrossings::InitializeBuffers(
 void ZeroCrossings::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<int32_t> *out) const noexcept {
-  int length = inputFormat_->Size();
   for (size_t i = 0; i < in.Size(); i++) {
-    *(*out)[i] = Do(true, in[i]->Data.get(), length);
+    *(*out)[i] = Do(true, in[i]->Data.get(), inputFormat_->Size());
   }
 }
 
