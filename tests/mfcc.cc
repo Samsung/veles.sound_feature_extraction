@@ -20,12 +20,12 @@ using SoundFeatureExtraction::TransformTree;
 using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::BuffersBase;
 
-TEST(MFCC, Calculation) {
+TEST(Features, MFCC) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
   tt.SetValidateAfterEachTransform(true);
   // We have to apply FilterBank twice since Energy results in
   // squared magnitude
-  tt.AddChain("MFCC", { { "Window", "length=32" }, { "RDFT", "" },
+  tt.AddChain("MFCC", { { "Window", "length=512" }, { "RDFT", "" },
       { "SpectralEnergy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
       { "Log", "" }, { "Square", "" }, { "Selector", "length=256" },
       { "DCT", "" } });
@@ -42,13 +42,13 @@ TEST(MFCC, Calculation) {
   }
 }
 
-TEST(MFCC, CalculationTrivial) {
+TEST(Features, MFCCTrivial) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
   tt.SetValidateAfterEachTransform(true);
   //tt.SetDumpBuffersAfterEachTransform(true);
   // We have to apply FilterBank twice since Energy results in
   // squared magnitude
-  tt.AddChain("MFCC", { { "Window", "length=32" }, { "RDFT", "" },
+  tt.AddChain("MFCC", { { "Window", "length=512" }, { "RDFT", "" },
       { "SpectralEnergy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
       { "Log", "" }, { "Square", "" }, { "Selector", "length=256" },
       { "DCT", "" } });

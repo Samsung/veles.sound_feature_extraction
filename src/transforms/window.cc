@@ -18,8 +18,7 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-const int RawToWindow::kDefaultLength = DEFAULT_WINDOW_DURATION;
-const int RawToWindow::kDefaultSamples = DEFAULT_WINDOW_SAMPLES;
+const int RawToWindow::kDefaultLength = DEFAULT_WINDOW_SAMPLES;
 const int RawToWindow::kDefaultStep = DEFAULT_WINDOW_STEP;
 const std::string RawToWindow::kDefaultType = "hamming";
 const WindowType RawToWindow::kDefaultTypeEnum = WINDOW_TYPE_HAMMING;
@@ -30,21 +29,12 @@ const bool Window::kDefaultPreDft = false;
 RawToWindow::RawToWindow()
   : step_(kDefaultStep),
     type_(kDefaultTypeEnum),
-    outSizeEach_(0),
-    inDataStep_(0),
-    window_(nullptr, free) {
-  outputFormat_->SetDuration(kDefaultLength);
+    window_(nullptr, free),
+    windowsCount_(0) {
+  outputFormat_->SetDuration(kDefaultLength * 1000
+                             / outputFormat_->SamplingRate());
   RegisterSetter("length", [&](const std::string& value) {
     int pv = Parse<int>("length", value);
-    if (pv < MIN_WINDOW_DURATION || pv > MAX_WINDOW_DURATION) {
-      return false;
-    }
-    outputFormat_->SetAllocatedSize(pv * outputFormat_->SamplingRate() / 1000);
-    outputFormat_->SetDuration(pv);
-    return true;
-  });
-  RegisterSetter("samples", [&](const std::string& value) {
-    int pv = Parse<int>("samples", value);
     if (pv < MIN_WINDOW_SAMPLES || pv > MAX_WINDOW_SAMPLES) {
       return false;
     }
@@ -54,7 +44,7 @@ RawToWindow::RawToWindow()
   });
   RegisterSetter("step", [&](const std::string& value) {
     int pv = Parse<int>("step", value);
-    if (pv < MIN_WINDOW_STEP || pv > MAX_WINDOW_STEP) {
+    if (pv < 1) {
       return false;
     }
     step_ = pv;
@@ -77,21 +67,24 @@ void RawToWindow::OnInputFormatChanged() {
 }
 
 void RawToWindow::Initialize() const noexcept {
-  inDataStep_ = outputFormat_->Size();
-  outSizeEach_ = inputFormat_->Size() / inDataStep_;
-  if (inputFormat_->Size() % inDataStep_ != 0) {
-    fprintf(stderr, "Input buffer size %zu is not divisible by step %i. "
-            "It's excess will not be processed.\n",
-            inputFormat_->Size(), inDataStep_);
+  int realSize = inputFormat_->Size() - outputFormat_->Size();
+  windowsCount_ = realSize / step_;
+  int excess = realSize % step_;
+  if (excess != 0) {
+    fprintf(stderr, "(input buffer size %zu - window length %zu) = %i is not "
+            "divisible by step %i. It's excess (%i samples) will not be "
+            "processed.\n",
+            inputFormat_->Size(), outputFormat_->Size(),
+            realSize, step_, excess);
   }
 
-  window_ = Window::InitializeWindow(inDataStep_, type_);
+  window_ = Window::InitializeWindow(outputFormat_->Size(), type_);
 }
 
 void RawToWindow::InitializeBuffers(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Window16>* buffers) const noexcept {
-  buffers->Initialize(in.Size() * outSizeEach_,
+  buffers->Initialize(in.Size() * windowsCount_,
                       outputFormat_->AllocatedSize());
 }
 
@@ -100,30 +93,30 @@ void RawToWindow::Do(const BuffersBase<Formats::Raw16>& in,
 const noexcept {
   BuffersBase<Formats::Window16>& outref = *out;
 #ifdef __AVX__
-  int16_t intbuf[inDataStep_] __attribute__ ((aligned (32)));  // NOLINT(*)
+  int16_t intbuf[outputFormat_->Size()] __attribute__ ((aligned (32)));  // NOLINT(*)
 #endif
-  float fbuf[inDataStep_] __attribute__ ((aligned (64)));  // NOLINT(*)
+  float fbuf[outputFormat_->Size()] __attribute__ ((aligned (64)));  // NOLINT(*)
   float* window = window_.get();
 
   for (size_t i = 0; i < in.Size(); i++) {
-    for (int step = 0; step < outSizeEach_; step++) {
-      auto input = in[i]->Data.get() + step * inDataStep_;
-      auto output = outref[step + i * outSizeEach_]->Data.get();
+    for (int j = 0; j < windowsCount_; j++) {
+      auto input = in[i]->Data.get() + j * step_;
+      auto output = outref[i * windowsCount_ + j]->Data.get();
       if (type_ != WINDOW_TYPE_RECTANGULAR) {
 #ifdef __AVX__
         if (align_complement_i16(input) != 0) {
-          memcpy(intbuf, input, inDataStep_ * sizeof(int16_t));
-          int16_to_float(intbuf, inDataStep_, fbuf);
+          memcpy(intbuf, input, outputFormat_->Size() * sizeof(int16_t));
+          int16_to_float(intbuf, outputFormat_->Size(), fbuf);
         } else {
-          int16_to_float(input, inDataStep_, fbuf);
+          int16_to_float(input, outputFormat_->Size(), fbuf);
         }
 #else
-        int16_to_float(input, inDataStep_, fbuf);
+        int16_to_float(input, outputFormat_->Size(), fbuf);
 #endif
-        Window::ApplyWindow(window, inDataStep_, fbuf, fbuf);
-        float_to_int16(fbuf, inDataStep_, output);
+        Window::ApplyWindow(window, outputFormat_->Size(), fbuf, fbuf);
+        float_to_int16(fbuf, outputFormat_->Size(), output);
       } else {  // type_ != WINDOW_TYPE_RECTANGULAR
-        memcpy(output, input, inDataStep_ * sizeof(int16_t));
+        memcpy(output, input, outputFormat_->Size() * sizeof(int16_t));
       }
     }
   }
@@ -147,7 +140,7 @@ Window::Window()
   });
 }
 
-Window::WindowContentsPtr Window::InitializeWindow(int length,
+Window::WindowContentsPtr Window::InitializeWindow(size_t length,
                                                    WindowType type,
                                                    int allocSize) noexcept {
   if (allocSize == -1) {
@@ -157,7 +150,7 @@ Window::WindowContentsPtr Window::InitializeWindow(int length,
   auto window = WindowContentsPtr(mallocf(allocSize), free);
 
   auto windowContents = window.get();
-  for (int i = 0; i < length; i++) {
+  for (int i = 0; i < static_cast<int>(length); i++) {
     windowContents[i] = WindowElement(type, length, i);
   }
 

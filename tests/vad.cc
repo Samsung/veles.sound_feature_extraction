@@ -20,14 +20,14 @@ using SoundFeatureExtraction::TransformTree;
 using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::BuffersBase;
 
-TEST(MFCC, Calculation) {
+TEST(Features, VAD) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
   tt.SetValidateAfterEachTransform(true);
-  tt.AddChain("Energy", { { "Window", "length=32" }, { "Energy", "" } });
-  tt.AddChain("SFM", { { "Window", "length=32" }, { "RDFT", "" },
+  tt.AddChain("Energy", { { "Window", "length=512" }, { "Energy", "" } });
+  tt.AddChain("SFM", { { "Window", "length=512" }, { "RDFT", "" },
       { "ComplexMagnitude", "" }, { "Mean", "types=arithmetic geometric" },
       { "SFM", "" } });
-  tt.AddChain("DominantFrequency", { { "Window", "length=32" }, { "RDFT", "" },
+  tt.AddChain("DominantFrequency", { { "Window", "length=512" }, { "RDFT", "" },
       { "ComplexMagnitude", "" }, { "ArgMinMax", "extremum=max" } });
   Raw16 buffers(48000, 0);
   memcpy(buffers.Data.get(), data, sizeof(data));

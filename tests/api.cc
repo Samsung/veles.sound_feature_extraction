@@ -55,7 +55,7 @@ TEST(API, query_transform_details) {
 }
 
 TEST(API, extract_speech_features) {
-  const char *feature = "MFCC [Window(length=32), RDFT, SpectralEnergy,"
+  const char *feature = "MFCC [Window(length=512), RDFT, SpectralEnergy,"
       "FilterBank, FilterBank, Log, Square, UnpackRDFT, DCT, "
       "Selector(length=24)]";
   auto config = setup_features_extraction(&feature, 1, 48000, 16000);
@@ -82,7 +82,7 @@ TEST(API, extract_speech_features) {
 }
 
 FeaturesConfiguration* test_calculate_features() {
-  const char *feature = "MFCC [Window(length=32), RDFT, SpectralEnergy, "
+  const char *feature = "MFCC [Window(length=512), RDFT, SpectralEnergy, "
       "FilterBank, FilterBank, Log, Square, UnpackRDFT, DCT, "
       "Selector(length=24)]";
   auto config = setup_features_extraction(&feature, 1, 48000, 16000);

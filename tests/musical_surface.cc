@@ -20,15 +20,15 @@ using SoundFeatureExtraction::TransformTree;
 using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::BuffersBase;
 
-TEST(MFCC, Calculation) {
+TEST(Features, MusicalSurface) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
   tt.SetValidateAfterEachTransform(true);
-  tt.AddChain("Energy", { { "Window", "samples=512" }, { "Energy", "" } });
-  tt.AddChain("Centroid", { { "Window", "samples=512" }, { "RDFT", "" },
+  tt.AddChain("Energy", { { "Window", "length=512" }, { "Energy", "" } });
+  tt.AddChain("Centroid", { { "Window", "length=512" }, { "RDFT", "" },
       { "ComplexMagnitude", "" }, { "Centroid", "" } });
-  tt.AddChain("Rolloff", { { "Window", "samples=512" }, { "RDFT", "" },
+  tt.AddChain("Rolloff", { { "Window", "length=512" }, { "RDFT", "" },
       { "ComplexMagnitude", "" }, { "Rolloff", "" } });
-  tt.AddChain("Flux", { { "Window", "samples=512" }, { "RDFT", "" },
+  tt.AddChain("Flux", { { "Window", "length=512" }, { "RDFT", "" },
       { "ComplexMagnitude", "" }, { "Flux", "" } });
   tt.AddChain("ZeroCrossings", { { "ZeroCrossings", "" } });
   Raw16 buffers(48000, 0);

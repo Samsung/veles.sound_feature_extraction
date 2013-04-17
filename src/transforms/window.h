@@ -59,7 +59,7 @@ class Window
   bool preDft_;
   mutable WindowContentsPtr window_;
 
-  static WindowContentsPtr InitializeWindow(int length,
+  static WindowContentsPtr InitializeWindow(size_t length,
                                             WindowType type,
                                             int allocSize = -1) noexcept;
 
@@ -78,13 +78,9 @@ class RawToWindow
                             "\"length\" ms of type \"type\".")
 
   TRANSFORM_PARAMETERS(
-      TP("length", "Window size in milliseconds (usage with \"samples\" "
-                   "is undefined)",
+      TP("length", "Window size in samples.",
          std::to_string(kDefaultLength))
-      TP("samples", "Window size in samples (usage with \"length\" "
-                    "is undefined).",
-         std::to_string(kDefaultSamples))
-      TP("step", "Distance between sequential windows in milliseconds",
+      TP("step", "Distance between sequential windows in samples.",
          std::to_string(kDefaultStep))
       TP("type", "Type of the window. E.g. \"rectangular\" "
                  "or \"hamming\".",
@@ -104,16 +100,14 @@ class RawToWindow
 
  private:
   static const int kDefaultLength;
-  static const int kDefaultSamples;
   static const int kDefaultStep;
   static const std::string kDefaultType;
   static const WindowType kDefaultTypeEnum;
 
   int step_;
   WindowType type_;
-  mutable int outSizeEach_;
-  mutable int inDataStep_;
   mutable Window::WindowContentsPtr window_;
+  mutable int windowsCount_;
 };
 
 }  // namespace Transforms

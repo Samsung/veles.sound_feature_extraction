@@ -20,12 +20,12 @@ using SoundFeatureExtraction::TransformTree;
 using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::BuffersBase;
 
-TEST(SBC, Calculation) {
+TEST(Features, SBC) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
   tt.SetValidateAfterEachTransform(true);
   // We have to apply FilterBank twice since Energy results in
   // squared magnitude
-  tt.AddChain("SBC", { { "Window", "length=32, type=rectangular" },
+  tt.AddChain("SBC", { { "Window", "length=512, type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" } });
   Raw16 buffers(48000, 0);
