@@ -17,6 +17,7 @@
 
 #ifdef __cplusplus
 #define __STDC_LIMIT_MACROS
+#include "src/primitives/avx_extra.h"
 #endif
 
 #ifdef __AVX__
@@ -83,11 +84,19 @@ INLINE NOTNULL(1, 2, 3) void complex_multiply_na(
 }
 
 INLINE NOTNULL(1, 4) void real_multiply_scalar_na(const float *array,
-                                                    size_t length,
-                                                    float value, float *res) {
+                                                  size_t length,
+                                                  float value, float *res) {
   for (size_t i = 0; i < length; i++) {
     res[i] = array[i] * value;
   }
+}
+
+INLINE NOTNULL(1) float sum_na(const float *input, size_t length) {
+  float res = 0.f;
+  for (int j = 0; j < (int)length; j++) {
+    res += input[j];
+  }
+  return res;
 }
 
 #ifdef __AVX__
@@ -493,6 +502,29 @@ INLINE NOTNULL(1, 4) void real_multiply_scalar(const float *array,
   }
 }
 
+INLINE NOTNULL(1) float sum(const float *input, size_t length) {
+  assert(align_complement_f32(input) == 0);
+  int ilength = (int)length;
+  __m256 accum = _mm256_setzero_ps();
+  for (int j = 0; j < ilength - 15; j += 16) {
+    __m256 vec1 = _mm256_load_ps(input + j);
+    __m256 vec2 = _mm256_load_ps(input + j + 8);
+    accum = _mm256_add_ps(accum, vec1);
+    accum = _mm256_add_ps(accum, vec2);
+  }
+  accum = _mm256_hadd_ps(accum, accum);
+  accum = _mm256_hadd_ps(accum, accum);
+#ifdef __cplusplus
+  float res = ElementAt(accum, 0) + ElementAt(accum, 4);
+#else
+  float res = accum[0] + accum[4];
+#endif
+  for (int j = ((ilength >> 4) << 4); j < ilength; j++) {
+    res += input[j];
+  }
+  return res;
+}
+
 #elif defined(__ARM_NEON__)
 
 #include <arm_neon.h>  // NOLINT(build/include_order)
@@ -648,6 +680,24 @@ INLINE NOTNULL(1, 4) void real_multiply_scalar(const float *array,
   }
 }
 
+INLINE NOTNULL(1) float sum(const float *input, size_t length) {
+  int ilength = (int)length;
+  float32x4_t accum = vdupq_n_f32(0.f);
+  for (int j = 0; j < ilength - 7; j += 8) {
+    float32x4_t vec1 = vld1q_f32(input + j);
+    float32x4_t vec2 = vld1q_f32(input + j + 4);
+    accum = vaddq_f32(accum, vec1);
+    accum = vaddq_f32(accum, vec2);
+  }
+  float32x2_t accum2 = vpadd_f32(vget_high_f32(accum),
+                                 vget_low_f32(accum));
+  res = vget_lane_f32(accum2, 0) + vget_lane_f32(accum2, 1);
+  for (int j = ((ilength >> 3) << 3); j < ilength; j++) {
+    res += input[j];
+  }
+  return res;
+}
+
 #else
 
 #define int16_to_float int16_to_float_na
@@ -659,6 +709,7 @@ INLINE NOTNULL(1, 4) void real_multiply_scalar(const float *array,
 #define real_multiply real_multiply_na
 #define complex_multiply complex_multiply_na
 #define real_multiply_scalar real_multiply_scalar_na
+#define sum sum_na
 
 #endif
 

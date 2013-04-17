@@ -11,7 +11,6 @@
  */
 
 #include "src/transforms/mean.h"
-#include <math.h>
 #ifdef __AVX__
 #include "src/primitives/avx_mathfun.h"
 #elif defined(__ARM_NEON__)
@@ -19,8 +18,7 @@
 #endif
 #include <boost/regex.hpp>
 #include <limits>
-#include "src/primitives/energy.h"
-#include "src/primitives/avx_extra.h"
+#include "src/primitives/arithmetic-inl.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -85,37 +83,13 @@ float Mean::Do(bool simd, const float* input, size_t length,
     case MEAN_TYPE_ARITHMETIC: {
       float res;
       if (simd) {
-#ifdef __AVX__
-        __m256 accum = _mm256_setzero_ps();
-        for (int j = 0; j < ilength - 7; j += 8) {
-          __m256 vec = _mm256_load_ps(input + j);
-          accum = _mm256_add_ps(accum, vec);
-        }
-        accum = _mm256_hadd_ps(accum, accum);
-        accum = _mm256_hadd_ps(accum, accum);
-        res = ElementAt(accum, 0) + ElementAt(accum, 4);
-        for (int j = ((ilength >> 3) << 3); j < ilength; j++) {
-          res += input[j];
-        }
-      } else {
-#elif defined(__ARM_NEON__)
-        float32x4_t accum = vdupq_n_f32(0.f);
-        for (int j = 0; j < ilength - 3; j += 4) {
-          float32x4_t vec = vld1q_f32(input + j);
-          accum = vaddq_f32(accum, vec);
-        }
-        res = accum[0] + accum[1] + accum[2] + accum[3];
-        for (int j = ((ilength >> 2) << 2); j < ilength; j += 2) {
-          res += input[j];
-        }
+#if defined(__AVX__) || defined(__ARM_NEON__)
+        res = sum(input, length);
       } else {
 #else
       } {
- #endif
-        res = 0.f;
-        for (int j = 0; j < ilength; j++) {
-          res += input[j];
-        }
+#endif
+        res = sum_na(input, length);
       }
       res /= length;
       return res;
