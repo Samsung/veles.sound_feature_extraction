@@ -87,6 +87,9 @@ class ParameterizableBase : public virtual IParameterizable {
 
   size_t Parse(const std::string& name, const std::string& value,
                identity<size_t>);
+
+  float Parse(const std::string& name, const std::string& value,
+              identity<float>);
 };
 
 }  // namespace SoundFeatureExtraction

@@ -106,4 +106,17 @@ size_t ParameterizableBase::Parse(const std::string& name,
   return pv;
 }
 
+float ParameterizableBase::Parse(const std::string& name,
+                                 const std::string& value,
+                                 identity<float>) {
+  float pv;
+  try {
+    pv = std::stof(value);
+  }
+  catch(...) {
+    throw InvalidParameterValueException(name, value, HostName());
+  }
+  return pv;
+}
+
 }  // namespace SoundFeatureExtraction
