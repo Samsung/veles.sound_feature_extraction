@@ -7,8 +7,8 @@ Created on Mar 25, 2013
 
 import logging
 import unittest
-from SoundFeatureExtraction.library import Library
-from SoundFeatureExtraction.explorer import Explorer
+from sound_feature_extraction.library import Library
+from sound_feature_extraction.explorer import Explorer
 
 
 class Test(unittest.TestCase):

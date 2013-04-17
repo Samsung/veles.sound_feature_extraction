@@ -7,8 +7,8 @@ Created on Mar 21, 2013
 
 import logging
 from ctypes import POINTER, c_char_p, c_int, byref
-from SoundFeatureExtraction.library import Library
-from SoundFeatureExtraction.transform import Transform, TransformParameter
+from sound_feature_extraction.library import Library
+from sound_feature_extraction.transform import Transform, TransformParameter
 
 
 class Explorer(object):
