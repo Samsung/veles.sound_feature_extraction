@@ -120,7 +120,7 @@ class TransformTree {
 
   std::shared_ptr<Formats::RawFormat16> RootFormat() const noexcept;
 
-  void AddChain(
+  void AddFeature(
       const std::string& name,
       const std::vector<std::pair<std::string, std::string>>& transforms);
 
@@ -146,24 +146,31 @@ class TransformTree {
     std::shared_ptr<Node> FindIdenticalChildTransform(const Transform& base)
         const noexcept;
 
-    void ActionOnEachTransform(
-        const std::function<void(const Transform&)> action);
-    void ActionOnEachNode(
-        const std::function<void(const Node&)> action);
+    void ActionOnEachTransformInSubtree(
+        const std::function<void(const Transform&)> action) const;
+    void ActionOnSubtree(
+        const std::function<void(const Node&)> action) const;
+    void ActionOnEachImmediateChild(
+        const std::function<void(Node&)> action);
+    void ActionOnEachImmediateChild(
+        const std::function<void(const Node&)> action) const;
+    void ActionOnEachParent(
+        const std::function<void(const Node&)> action) const;
 
     void AllocateBuffers(size_t visitedChildrenCount) noexcept;
 
-    void Execute(
-        std::unordered_map<std::string, std::shared_ptr<Buffers>>* results);
+    void Execute();
+
+    size_t ChildrenCount() const noexcept;
 
     Node* Parent;
     const std::shared_ptr<Transform> BoundTransform;
     std::shared_ptr<Buffers> BoundBuffers;
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<Node>>> Children;
-    std::string ChainName;
     TransformTree* Host;
     std::chrono::high_resolution_clock::duration ElapsedTime;
+    std::vector<std::string> RelatedFeatures;
   };
 
   struct TransformCacheItem {
@@ -173,6 +180,7 @@ class TransformTree {
 
   void AddTransform(const std::string& name,
                     const std::string& parameters,
+                    const std::string& relatedFeature,
                     std::shared_ptr<Node>* currentNode);
   std::shared_ptr<Transform> FindIdenticalTransform(
       const Transform& base) noexcept;
@@ -181,7 +189,7 @@ class TransformTree {
   std::shared_ptr<Node> root_;
   std::shared_ptr<Formats::RawFormat16> rootFormat_;
   bool treeIsPrepared_;
-  std::set<std::string> chains_;
+  std::unordered_map<std::string, std::shared_ptr<Node>> features_;
   std::unordered_map<std::string, TransformCacheItem> transformsCache_;
   bool validateAfterEachTransform_;
   bool dumpBuffersAfterEachTransform_;

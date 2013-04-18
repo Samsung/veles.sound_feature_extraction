@@ -25,7 +25,8 @@ namespace Transforms {
 class Hps
     : public TransformBase<Formats::WindowFormatF, Formats::SingleFormatF> {
  public:
-  TRANSFORM_INTRO("HPS", "Extracting fundamental frequency with Harmonic Product Spectrum algorithm")
+  TRANSFORM_INTRO("HPS", "Extracting fundamental frequency with Harmonic "
+                         "Product Spectrum algorithm.")
 
   TRANSFORM_PARAMETERS()
 

@@ -23,11 +23,11 @@ using SoundFeatureExtraction::BuffersBase;
 TEST(Features, VAD) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
   tt.SetValidateAfterEachTransform(true);
-  tt.AddChain("Energy", { { "Window", "length=512" }, { "Energy", "" } });
-  tt.AddChain("SFM", { { "Window", "length=512" }, { "RDFT", "" },
+  tt.AddFeature("Energy", { { "Window", "length=512" }, { "Energy", "" } });
+  tt.AddFeature("SFM", { { "Window", "length=512" }, { "RDFT", "" },
       { "ComplexMagnitude", "" }, { "Mean", "types=arithmetic geometric" },
       { "SFM", "" } });
-  tt.AddChain("DominantFrequency", { { "Window", "length=512" }, { "RDFT", "" },
+  tt.AddFeature("DominantFrequency", { { "Window", "length=512" }, { "RDFT", "" },
       { "ComplexMagnitude", "" }, { "ArgMinMax", "extremum=max" } });
   Raw16 buffers(48000, 0);
   memcpy(buffers.Data.get(), data, sizeof(data));

@@ -25,7 +25,7 @@ TEST(Features, MFCC) {
   tt.SetValidateAfterEachTransform(true);
   // We have to apply FilterBank twice since Energy results in
   // squared magnitude
-  tt.AddChain("MFCC", { { "Window", "length=512" }, { "RDFT", "" },
+  tt.AddFeature("MFCC", { { "Window", "length=512" }, { "RDFT", "" },
       { "SpectralEnergy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
       { "Log", "" }, { "Square", "" }, { "Selector", "length=256" },
       { "DCT", "" } });
@@ -48,7 +48,7 @@ TEST(Features, MFCCTrivial) {
   //tt.SetDumpBuffersAfterEachTransform(true);
   // We have to apply FilterBank twice since Energy results in
   // squared magnitude
-  tt.AddChain("MFCC", { { "Window", "length=512" }, { "RDFT", "" },
+  tt.AddFeature("MFCC", { { "Window", "length=512" }, { "RDFT", "" },
       { "SpectralEnergy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
       { "Log", "" }, { "Square", "" }, { "Selector", "length=256" },
       { "DCT", "" } });

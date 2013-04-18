@@ -25,7 +25,7 @@ TEST(Features, WPP) {
   tt.SetValidateAfterEachTransform(true);
   // We have to apply FilterBank twice since Energy results in
   // squared magnitude
-  tt.AddChain("WPP", { { "Window", "length=512, type=rectangular" },
+  tt.AddFeature("WPP", { { "Window", "length=512, type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "DWPT", "order=4, tree=1 2 3 3" } });
   Raw16 buffers(48000, 0);

@@ -218,7 +218,7 @@ FeaturesConfiguration *setup_features_extraction(
   config->Tree = std::make_unique<TransformTree>(format);
   for (auto featpair : featmap) {
     try {
-      config->Tree->AddChain(featpair.first, featpair.second);
+      config->Tree->AddFeature(featpair.first, featpair.second);
     }
     catch(const ChainNameAlreadyExistsException& cnaee) {
       fprintf(stderr, "Failed to construct the transform tree. %s\n",

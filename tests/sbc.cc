@@ -25,7 +25,7 @@ TEST(Features, SBC) {
   tt.SetValidateAfterEachTransform(true);
   // We have to apply FilterBank twice since Energy results in
   // squared magnitude
-  tt.AddChain("SBC", { { "Window", "length=512, type=rectangular" },
+  tt.AddFeature("SBC", { { "Window", "length=512, type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" } });
   Raw16 buffers(48000, 0);

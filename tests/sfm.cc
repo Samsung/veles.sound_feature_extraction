@@ -23,7 +23,7 @@ using SoundFeatureExtraction::BuffersBase;
 TEST(Features, SFM) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
   tt.SetValidateAfterEachTransform(true);
-  tt.AddChain("SFM", { { "Window", "length=512" }, { "RDFT", "" },
+  tt.AddFeature("SFM", { { "Window", "length=512" }, { "RDFT", "" },
       { "ComplexMagnitude", "" }, { "Mean", "types=arithmetic geometric" },
       { "SFM", "" } });
   Raw16 buffers(48000, 0);

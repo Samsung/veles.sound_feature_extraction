@@ -138,21 +138,21 @@ class TransformTreeTest : public TransformTree, public testing::Test {
   }
 };
 
-TEST_F(TransformTreeTest, AddChain) {
+TEST_F(TransformTreeTest, AddFeature) {
   ASSERT_NO_THROW({
-      AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
+      AddFeature("One", { {"ParentTest", "" }, { "ChildTest", "" } });
   });
 
   ASSERT_THROW({
-    AddChain("One", { {"ParentTest", "" }, { "ChildTest", "" } });
+    AddFeature("One", { {"ParentTest", "" }, { "ChildTest", "" } });
   }, ChainNameAlreadyExistsException);
 
   ASSERT_THROW({
-    AddChain("Two", { {"ParentTest", "" }, { "ChildTest", "" } });
+    AddFeature("Two", { {"ParentTest", "" }, { "ChildTest", "" } });
   }, ChainAlreadyExistsException);
 
   ASSERT_NO_THROW({
-    AddChain("Two", { {"ParentTest", "" }, { "ChildTest",
+    AddFeature("Two", { {"ParentTest", "" }, { "ChildTest",
                                            "AnalysisLength=256" } });
     PrepareForExecution();
   });
@@ -160,9 +160,9 @@ TEST_F(TransformTreeTest, AddChain) {
 
 TEST_F(TransformTreeTest, Dump) {
   ASSERT_NO_THROW({
-    AddChain("One", { {"ParentTest", "AmplifyFactor=1" },
+    AddFeature("One", { {"ParentTest", "AmplifyFactor=1" },
                       { "ChildTest", "" } });
-    AddChain("Two", { {"ParentTest", "AmplifyFactor=2" },
+    AddFeature("Two", { {"ParentTest", "AmplifyFactor=2" },
                       { "ChildTest", "AnalysisLength=256" } });
     Dump("/tmp/ttdump.dot");
   });
