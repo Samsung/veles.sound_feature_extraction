@@ -214,10 +214,10 @@ dnl Use OpenMP
 CPPFLAGS="$CPPFLAGS -fopenmp"
 
 dnl Use the best march
-AS_IF([test ${target%%-*} == i686 -o ${target%%-*} == x86_64], [
+AS_IF([test ${host%%-*} == i686 -o ${host%%-*} == x86_64], [
 	CPPFLAGS="$CPPFLAGS -march=native"
 ])
-AS_IF([test ${target%%-*} == arm], [
+AS_IF([test ${host%%-*} == arm], [
 	CPPFLAGS="$CPPFLAGS -march=armv7-a -mfpu=neon"
 ])
 
