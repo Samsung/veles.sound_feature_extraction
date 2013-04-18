@@ -10,11 +10,16 @@ AC_CANONICAL_SYSTEM
 
 AC_CONFIG_HEADERS([src/config.h])
 
+AC_ARG_VAR(SYSROOT, use this instead of compiler's default sysroot)
+AS_IF([test "x$SYSROOT" != "x" ],	
+	CPPFLAGS="$CPPFLAGS --sysroot=$SYSROOT"
+)
+
 AC_GNU_SOURCE
-AC_C_BIGENDIAN
 AC_PROG_CXX
 AC_PROG_CC
 AC_HEADER_STDC
+AC_C_BIGENDIAN([AC_MSG_ERROR([Big endian build is not supported.])])
 
 dnl Initialize automake
 AM_INIT_AUTOMAKE([1.11 dist-xz foreign color-tests])
@@ -71,7 +76,7 @@ AC_ARG_WITH([built-in-boost],
 	BOOST_DIR="boost"
 	LDFLAGS="$LDFLAGS -L\$(abs_top_builddir)/src/boost/stage/lib"
 	dnl Set path to bjam
-	AC_ARG_VAR(BJAM, Path to bjam Boost builder)
+	AC_ARG_VAR(BJAM, path to bjam Boost builder)
 	
 	AC_PATH_PROG(BJAM, [bjam], "")
 	
@@ -121,7 +126,7 @@ AS_IF([test "x$enable_doxygen" != "xno"], [
 		)
 		
 		dnl Doxygen will require dot tool from Graphviz
-		AC_ARG_VAR(DOT, Path to Graphviz dot)		
+		AC_ARG_VAR(DOT, path to Graphviz dot)		
 		AC_PATH_PROG(DOT, [dot], "")
 		AS_IF([test -z "$DOT"],
 			AC_MSG_ERROR([Doxygen requires Graphviz to be installed])
