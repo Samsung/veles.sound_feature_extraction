@@ -13,6 +13,7 @@ AC_CONFIG_HEADERS([src/config.h])
 AC_ARG_VAR(SYSROOT, use this instead of compiler's default sysroot)
 AS_IF([test "x$SYSROOT" != "x" ],	
 	CPPFLAGS="$CPPFLAGS --sysroot=$SYSROOT"
+	LDFLAGS="$LDFLAGS --sysroot=$SYSROOT"
 )
 
 AC_GNU_SOURCE
@@ -145,7 +146,7 @@ AM_CONDITIONAL(DEBUG, test "x$enable_debug" == "xyes")
 
 dnl Enable/disable LTO
 AC_ARG_ENABLE([lto], AS_HELP_STRING([--enable-lto], [Build with link-time optimizations (-flto)]),
-			  [CPPFLAGS="$CPPFLAGS -flto"])
+			  [CPPFLAGS="$CPPFLAGS -flto" LDFLAGS="$LDFLAGS -flto"])
 
 dnl Check whether to build tests
 AC_ARG_ENABLE([tests],
