@@ -33,10 +33,10 @@ dnl This allows us specify individual liking flags for each target
 AM_PROG_CC_C_O
 
 dnl Check for GCC version
-AC_MSG_CHECKING([whether gcc version is >= 4.5.0])
+AC_MSG_CHECKING([whether gcc version is >= 4.6.0])
 AC_EGREP_CPP(passed, [
 #ifdef __GNUC__
-#if !(__GNUC__ < 4 || __GNUC_MINOR__ < 5 || __GNUC_PATCHLEVEL__ < 0)
+#if !(__GNUC__ < 4 || __GNUC_MINOR__ < 6 || __GNUC_PATCHLEVEL__ < 0)
 passed
 #endif
 #endif
@@ -190,6 +190,7 @@ AC_CONFIG_FILES(Makefile lib$PACKAGE_NAME.pc
 				inc/Makefile
                 src/Makefile
                 src/boost/Makefile
+                src/boost/user-config.jam
                 src/formats/Makefile
                 src/transforms/Makefile
                 src/primitives/Makefile
