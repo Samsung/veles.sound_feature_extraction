@@ -41,6 +41,8 @@ class Window
   virtual void Initialize() const noexcept;
 
  protected:
+  typedef std::unique_ptr<float, void(*)(void*)> WindowContentsPtr;
+
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
@@ -48,23 +50,22 @@ class Window
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
                   BuffersBase<Formats::WindowF> *out) const noexcept;
 
- private:
-  typedef std::unique_ptr<float, void(*)(void*)> WindowContentsPtr;
+  mutable WindowContentsPtr window_;
 
+  static void ApplyWindow(bool simd, const float* window, int length,
+                          const float* input, float* output) noexcept;
+
+ private:
   static const std::string kDefaultType;
   static const WindowType kDefaultTypeEnum;
   static const bool kDefaultPreDft;
 
   WindowType type_;
   bool preDft_;
-  mutable WindowContentsPtr window_;
 
   static WindowContentsPtr InitializeWindow(size_t length,
                                             WindowType type,
                                             int allocSize = -1) noexcept;
-
-  static void ApplyWindow(const float* window, int length,
-                          const float* input, float* output) noexcept;
 };
 
 /// @brief Splits the raw stream into numerous small chunks aka windows.
@@ -98,6 +99,8 @@ class RawToWindow
   virtual void Do(const BuffersBase<Formats::Raw16>& in,
                   BuffersBase<Formats::Window16> *out) const noexcept;
 
+  mutable Window::WindowContentsPtr window_;
+
  private:
   static const int kDefaultLength;
   static const int kDefaultStep;
@@ -106,7 +109,6 @@ class RawToWindow
 
   int step_;
   WindowType type_;
-  mutable Window::WindowContentsPtr window_;
   mutable int windowsCount_;
 };
 

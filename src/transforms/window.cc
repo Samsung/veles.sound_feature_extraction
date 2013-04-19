@@ -27,9 +27,9 @@ const WindowType Window::kDefaultTypeEnum = WINDOW_TYPE_HAMMING;
 const bool Window::kDefaultPreDft = false;
 
 RawToWindow::RawToWindow()
-  : step_(kDefaultStep),
+  : window_(nullptr, free),
+    step_(kDefaultStep),
     type_(kDefaultTypeEnum),
-    window_(nullptr, free),
     windowsCount_(0) {
   outputFormat_->SetDuration(kDefaultLength * 1000
                              / outputFormat_->SamplingRate());
@@ -113,7 +113,7 @@ const noexcept {
 #else
         int16_to_float(input, outputFormat_->Size(), fbuf);
 #endif
-        Window::ApplyWindow(window, outputFormat_->Size(), fbuf, fbuf);
+        Window::ApplyWindow(true, window, outputFormat_->Size(), fbuf, fbuf);
         float_to_int16(fbuf, outputFormat_->Size(), output);
       } else {  // type_ != WINDOW_TYPE_RECTANGULAR
         memcpy(output, input, outputFormat_->Size() * sizeof(int16_t));
@@ -123,9 +123,9 @@ const noexcept {
 }
 
 Window::Window()
-  : type_(kDefaultTypeEnum),
-    preDft_(kDefaultPreDft),
-    window_(nullptr, free) {
+  : window_(nullptr, free),
+    type_(kDefaultTypeEnum),
+    preDft_(kDefaultPreDft) {
   RegisterSetter("type", [&](const std::string& value) {
     auto wti = kWindowTypeMap.find(value);
     if (wti == kWindowTypeMap.end()) {
@@ -157,21 +157,25 @@ Window::WindowContentsPtr Window::InitializeWindow(size_t length,
   return std::move(window);
 }
 
-void Window::ApplyWindow(const float* window, int length,
+void Window::ApplyWindow(bool simd, const float* window, int length,
                          const float* input, float* output) noexcept {
+  if (simd) {
 #ifdef SIMD
-  for (int i = 0; i < length - FLOAT_STEP + 1; i += FLOAT_STEP) {
-    real_multiply(input + i, window + i, output + i);
-  }
-  for (int i = ((length >> FLOAT_STEP_LOG2) << FLOAT_STEP_LOG2);
-      i < length; i++) {
-    output[i] = input[i] * window[i];
-  }
+    for (int i = 0; i < length - FLOAT_STEP + 1; i += FLOAT_STEP) {
+      real_multiply(input + i, window + i, output + i);
+    }
+    for (int i = ((length >> FLOAT_STEP_LOG2) << FLOAT_STEP_LOG2);
+        i < length; i++) {
+      output[i] = input[i] * window[i];
+    }
+  } else {
 #else
-  for (int i = 0; i < length; i++) {
-    output[i] = input[i] * window[i];
-  }
+  } {
 #endif
+    for (int i = 0; i < length; i++) {
+      output[i] = input[i] * window[i];
+    }
+  }
 }
 
 void Window::Initialize() const noexcept {
@@ -207,7 +211,7 @@ const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i]->Data.get();
     auto output = (*out)[i]->Data.get();
-    ApplyWindow(window, length, input, output);
+    ApplyWindow(true, window, length, input, output);
   }
 }
 
