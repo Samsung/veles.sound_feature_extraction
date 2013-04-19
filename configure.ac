@@ -33,10 +33,15 @@ dnl This allows us specify individual liking flags for each target
 AM_PROG_CC_C_O
 
 dnl Check for GCC version
-AC_MSG_CHECKING([whether gcc version is >= 4.6.0])
+AC_MSG_CHECKING([whether gcc version is >= 4.6.0 / clang version is >= 3.1])
 AC_EGREP_CPP(passed, [
 #ifdef __GNUC__
 #if !(__GNUC__ < 4 || __GNUC_MINOR__ < 6 || __GNUC_PATCHLEVEL__ < 0)
+passed
+#endif
+#endif
+#ifdef __clang__
+#if !(__clang_major__ < 3 || __clang_minor__ < 1)
 passed
 #endif
 #endif
@@ -49,9 +54,9 @@ passed
 		      [warn about unused result function attribute])
 	AC_DEFINE([NOTNULL(...)], [__attribute__ ((__nonnull__ (__VA_ARGS__)))],
 			  [Mark pointer parameters which must not be NULL])
-], [
+], [	
 	AC_MSG_RESULT([no])
-	AC_MSG_ERROR([Building this project requires GCC compatible >= 4.5.0])
+	AC_MSG_ERROR([Building this project requires GCC >= 4.6.0 or clang >= 3.1])
 ])
 
 dnl Initialize Libtool
