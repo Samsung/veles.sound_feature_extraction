@@ -147,15 +147,15 @@ TEST_F(TransformTreeTest, AddFeature) {
     AddFeature("One", { {"ParentTest", "" }, { "ChildTest", "" } });
   }, ChainNameAlreadyExistsException);
 
-  ASSERT_THROW({
-    AddFeature("Two", { {"ParentTest", "" }, { "ChildTest", "" } });
-  }, ChainAlreadyExistsException);
-
   ASSERT_NO_THROW({
-    AddFeature("Two", { {"ParentTest", "" }, { "ChildTest",
-                                           "AnalysisLength=256" } });
-    PrepareForExecution();
+    AddFeature("Two", { {"ParentTest", "" }, { "ChildTest", "" } });
   });
+
+  ASSERT_THROW({
+    AddFeature("Two", { {"ParentTest", "" },
+        { "ChildTest", "AnalysisLength=256" } });
+  }, ChainNameAlreadyExistsException);
+  PrepareForExecution();
 }
 
 TEST_F(TransformTreeTest, Dump) {
