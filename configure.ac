@@ -71,6 +71,23 @@ AC_ARG_ENABLE([parallel_build],
 )
 AM_CONDITIONAL([PARALLEL_BUILD], [test "x$enable_parallel_build" == "xyes"])
 
+dnl Use fancy make output by default
+AC_ARG_ENABLE([colors],
+	AS_HELP_STRING([--disable-colors], [Disable enhanced colored make output])
+)
+AS_IF([test "x$enable_colors" != "xno"], [
+	am__v_CXX_0="@echo -e \"  \\033@<:@01;32m\$(CXX)\\033@<:@00m   \" \$@;"
+	AC_SUBST([am__v_CXX_0])
+	am__v_CC_0="@echo -e \"  \\033@<:@01;32m\$(CC)\\033@<:@00m   \" \$@;"
+	AC_SUBST([am__v_CC_0])
+	am__v_CXXLD_0="@echo -e \"  \\033@<:@01;36m\$(CXXLD)\\033@<:@00m   \" \$@;"
+	AC_SUBST([am__v_CXXLD_0])
+	am__v_CCLD_0="@echo -e \"  \\033@<:@01;36m\$(CCLD)\\033@<:@00m   \" \$@;"
+	AC_SUBST([am__v_CCLD_0])
+	am__v_GEN_0="@echo -e \"  \\033@<:@01;33mGEN\\033@<:@00m   \" \$@;"
+	AC_SUBST([am__v_GEN_0])
+])
+
 dnl Check whether to use the built-in Boost
 AC_ARG_WITH([built-in-boost],
 	AS_HELP_STRING([--with-built-in-boost], [Use statically linked embedded Boost parts]), [
@@ -145,8 +162,13 @@ AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [Build in debug mode]),
 AM_CONDITIONAL(DEBUG, test "x$enable_debug" == "xyes")
 
 dnl Enable/disable LTO
-AC_ARG_ENABLE([lto], AS_HELP_STRING([--enable-lto], [Build with link-time optimizations (-flto)]),
-			  [CPPFLAGS="$CPPFLAGS -flto" LDFLAGS="$LDFLAGS -flto"])
+AC_ARG_ENABLE([lto],
+	AS_HELP_STRING([--enable-lto], [Build with link-time optimizations (-flto)])
+)
+
+AS_IF([test "x$enable_lto" == "xyes"], [
+	CPPFLAGS="$CPPFLAGS -flto" LDFLAGS="$LDFLAGS -flto"
+])
 
 dnl Check whether to build tests
 AC_ARG_ENABLE([tests],

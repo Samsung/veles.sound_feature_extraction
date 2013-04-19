@@ -1,1 +1,1 @@
-using gcc : host : @host@-g++ ;
+using gcc : host : @CXX@ ;
