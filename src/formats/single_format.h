@@ -58,7 +58,7 @@ namespace std {
       const SoundFeatureExtraction::Formats::FixedArray<L, F>& __val) {
     std::string res("[");
     for (int i = 0; i < L; i++) {
-      res += std::to_string(__val[i]) + ", ";
+      res += std::to_string(__val[i]) + ",\t";
     }
     res = res.substr(0, res.size() - 2);
     res += "]";
@@ -70,7 +70,7 @@ namespace std {
                         const std::tuple<Args...>& __val,
                         std::string* result) {
     if (realIndex == index) {
-      *result += std::to_string(std::get<index>(__val)) + ", ";
+      *result += std::to_string(std::get<index>(__val)) + ",\t";
       to_string<index + 1 < sizeof...(Args)? index + 1 : 0>(index + 1,
                                                             __val, result);
     }
@@ -141,7 +141,10 @@ class SingleFormat : public BufferFormatBase<T> {
   virtual std::string Dump(const BuffersBase<T>& buffers) const noexcept {
     std::string ret;
     for (size_t i = 0; i < buffers.Size(); i++) {
-      ret += std::to_string(i) + ":\t" + std::to_string(*buffers[i]) + "\n";
+      auto indexStr = std::to_string(i);
+      indexStr += ":";
+      indexStr += std::string(7 - indexStr.size(), ' ');
+      ret += indexStr + std::to_string(*buffers[i]) + "\n";
     }
     return ret;
   }
