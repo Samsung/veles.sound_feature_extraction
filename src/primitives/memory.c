@@ -71,7 +71,7 @@ float *mallocf(size_t length) {
   return malloc_aligned(length * sizeof(float));
 }
 
-INLINE void memsetf(float *ptr, size_t length, float value) {
+void memsetf(float *ptr, size_t length, float value) {
 #ifdef __AVX__
   __m256 fillvec = _mm256_set_ps( value, value, value, value,
                                   value, value, value, value );

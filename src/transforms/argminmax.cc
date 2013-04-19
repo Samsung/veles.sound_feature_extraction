@@ -99,7 +99,7 @@ ArgMinMaxResult ArgMinMax::Do(bool simd, const float* input, size_t length,
       int32x4_t indexes = { 3, 2, 1, 0 };
       int32x4_t curindexes = indexes;
       float32x4_t values = vld1q_f32(input);
-      const int32x4_t indexesStep = vdupq_n_i32(4);
+      const int32x4_t indexesStep = vdupq_n_s32(4);
       for (int j = 4; j < ilength - 3; j += 4) {
         float32x4_t vec = vld1q_f32(input + j);
         uint32x4_t cmpres;
@@ -108,20 +108,29 @@ ArgMinMaxResult ArgMinMax::Do(bool simd, const float* input, size_t length,
         } else {
           cmpres = vcltq_f32(vec, values);
         }
-        curindexes = vaddq_f32(curindexes, indexesStep);
+        curindexes = vaddq_s32(curindexes, indexesStep);
         values = vbslq_f32(cmpres, vec, values);
-        indexes = vbslq_f32(cmpres, curindexes, indexes);
+        indexes = vbslq_s32(cmpres, curindexes, indexes);
       }
-      index = indexes[0];
-      extr = values[0];
-      for (int i = 1; i < 8; i++) {
-        float val = values[i];
-        if ((val < extr && min) || (val > extr && !min)) {
-          index = indexes[i];
-          extr = val;
-        }
+      index = vgetq_lane_s32(indexes, 0);
+      extr = vgetq_lane_f32(values, 0);
+      float val = vgetq_lane_f32(values, 1);
+      if ((val < extr && min) || (val > extr && !min)) {
+        index = vgetq_lane_s32(indexes, 1);
+        extr = val;
       }
-      for (int j = ((ilength >> 2) << 2); j < ilength; j += 2) {
+      val = vgetq_lane_f32(values, 2);
+      if ((val < extr && min) || (val > extr && !min)) {
+        index = vgetq_lane_s32(indexes, 2);
+        extr = val;
+      }
+      val = vgetq_lane_f32(values, 3);
+      if ((val < extr && min) || (val > extr && !min)) {
+        index = vgetq_lane_s32(indexes, 3);
+        extr = val;
+      }
+
+      for (int j = ((ilength >> 2) << 2); j < ilength; j++) {
         float val = input[j];
         if ((val < extr && min) || (val > extr && !min)) {
           index = j;

@@ -37,7 +37,7 @@ float calculate_energy(int simd, const float *signal, size_t length) {
     }
     energy += accum[0] + accum[4];
 
-    for (int j = startIndex + (((length - startIndex) >> 3) << 3);
+    for (int j = startIndex + (((ilength - startIndex) >> 3) << 3);
         j < ilength; j++) {
       float val = signal[j];
       energy += val * val;
@@ -45,14 +45,14 @@ float calculate_energy(int simd, const float *signal, size_t length) {
   } else {
 #elif defined(__ARM_NEON__)
     float32x4_t accum = { 0.f };
-    for (int j = 0; j < length - 3; j += 4) {
+    for (int j = 0; j < ilength - 3; j += 4) {
       float32x4_t vec = vld1q_f32(signal + j);
       accum = vmlaq_f32(accum, vec, vec);
     }
     float32x2_t sums = vpadd_f32(vget_high_f32(accum),
                                  vget_low_f32(accum));
     energy += vget_lane_f32(sums, 0) + vget_lane_f32(sums, 1);
-    for (int j = ((length >> 2) << 2); j < ilength; j++) {
+    for (int j = ((ilength >> 2) << 2); j < ilength; j++) {
       float val = signal[j];
       energy += val * val;
     }

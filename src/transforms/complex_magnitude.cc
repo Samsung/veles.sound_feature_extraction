@@ -76,7 +76,7 @@ void ComplexMagnitude::Do(bool simd, const float* input, int length,
                                     vget_low_f32(sqrvec2));
       float32x4_t sums = vcombine_f32(sums1, sums2);
       sums = sqrt_ps(sums);
-      vst1q_f32(sums, output + j / 2);
+      vst1q_f32(output + j / 2, sums);
     }
     for (int j = ((length >> 3) << 3); j < length; j += 2) {
       float re = input[j];

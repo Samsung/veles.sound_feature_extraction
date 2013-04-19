@@ -138,8 +138,8 @@ float Mean::Do(bool simd, const float* input, size_t length,
           float32x4_t vec = vld1q_f32(input + j);
           float32x4_t mulvec = vmulq_f32(tmp, vec);
           uint32x4_t cmpvec = vceqq_f32(mulvec, infvec);
-          uint64x2_t cmpvec2 = vpaddlq_u32(cmprec);
-          if (cmpvec2[0] != 0 || cmpvec2[1] != 0) {
+          uint64x2_t cmpvec2 = vpaddlq_u32(cmpvec);
+          if (vgetq_lane_u64(cmpvec2, 0) != 0 || vgetq_lane_u64(cmpvec2, 1) != 0) {
             tmp = pow_ps(tmp, powvec);
             res = vmulq_f32(res, tmp);
             tmp = vec;
@@ -154,7 +154,8 @@ float Mean::Do(bool simd, const float* input, size_t length,
           sctmp *= input[j];
         }
         float scres = powf(sctmp, power);
-        scres *= res[0] * res[1] * res[2] * res[3];
+        scres *= vgetq_lane_f32(res, 0) * vgetq_lane_f32(res, 1) *
+            vgetq_lane_f32(res, 2) * vgetq_lane_f32(res, 3);
         return scres;
       } else {
 #else

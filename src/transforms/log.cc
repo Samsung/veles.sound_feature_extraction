@@ -79,7 +79,7 @@ void Log::Do(bool simd, const float* input, int length,
         for (int j = 0; j < length - 3; j += 4) {
           float32x4_t vec = vld1q_f32(input + j);
           vec = log_ps(vec);
-          vst1_f32(vec, output + j);
+          vst1q_f32(output + j, vec);
         }
         for (int j = ((length >> 2) << 2); j < length; j++) {
           output[j] = logf(input[j]);

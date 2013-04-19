@@ -58,8 +58,8 @@ void Rectify::Do(bool simd, const float* input, int length,
       float32x4_t vec2 = vld1q_f32(input + i + 4);
       float32x4_t res1 = vabsq_f32(vec1);
       float32x4_t res2 = vabsq_f32(vec2);
-      v1stq_f32(res1, output + i);
-      v1stq_f32(res2, output + i + 4);
+      vst1q_f32(output + i, res1);
+      vst1q_f32(output + i + 4, res2);
     }
     for (int i = ((length >> 3) << 3); i < length; i += 2) {
       output[i / 2] = input[i];

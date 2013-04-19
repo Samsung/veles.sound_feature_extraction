@@ -42,7 +42,7 @@ passed
 #endif
 ], [
 	AC_MSG_RESULT([yes])
-	AC_DEFINE([INLINE], [__attribute__((always_inline)) inline], [Set modifiers to always inline the code])
+	AC_DEFINE([INLINE], [static __attribute__((always_inline)) inline], [Set modifiers to always inline the code])
 	AC_DEFINE([UNUSED], [__attribute__((unused))], [Mark parameters as unused to avoid warnings])
 	AC_DEFINE([MALLOC], [__attribute__ ((__malloc__))], [malloc() function attribute])
 	AC_DEFINE([WARN_UNUSED_RESULT], [__attribute__ ((__warn_unused_result__))],
@@ -107,7 +107,7 @@ AC_SUBST([BOOST_DIR])
 dnl Check whether to use the built-in FFTF
 AC_ARG_WITH([built-in-fftf],
 	AS_HELP_STRING([--with-built-in-fftf], [Use statically linked embedded FFTF]), [
-	FFTF_LIBTOOL=../fftf/src/libfftf.la
+	FFTF_LIBTOOL="\$(top_builddir)/fftf/src/libfftf.la"
 	FFTF_DIR=fftf
 	AC_CONFIG_SUBDIRS([fftf])
 	CPPFLAGS="$CPPFLAGS -I\$(top_srcdir)/fftf/inc"
@@ -228,7 +228,7 @@ dnl Compile with -rdynamic
 LDFLAGS="$LDFLAGS -rdynamic"
 
 dnl Use the latest C++ standard
-CXXFLAGS="$CXXFLAGS -std=c++0x"
+CXXFLAGS="$CXXFLAGS -std=c++0x -fno-deduce-init-list"
 
 dnl Warn of unused precompiled headers
 CXXFLAGS="$CXXFLAGS -Winvalid-pch"

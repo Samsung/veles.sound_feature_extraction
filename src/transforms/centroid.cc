@@ -88,9 +88,9 @@ float Centroid::Do(bool simd, const float* input, size_t length)
     float32x2_t upperSums2 = vpadd_f32(vget_high_f32(upperSums),
                                        vget_low_f32(upperSums));
     float lowerSum =
-            vgetq_lane_f32(lowerSums2, 0) + vgetq_lane_f32(lowerSums2, 1),
+            vget_lane_f32(lowerSums2, 0) + vget_lane_f32(lowerSums2, 1),
         upperSum =
-            vgetq_lane_f32(upperSums2, 0) + vgetq_lane_f32(upperSums2, 1);
+            vget_lane_f32(upperSums2, 0) + vget_lane_f32(upperSums2, 1);
     for (int i = ((ilength >> 3) << 3); i < ilength; i++) {
       float val = input[i];
       lowerSum += val;

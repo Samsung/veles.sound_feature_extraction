@@ -28,12 +28,12 @@
      _a > _b ? _a : _b; \
    })
 
-static INLINE void check_length(size_t length) {
+INLINE void check_length(size_t length) {
   assert(length > 0);
   assert(length % 2 == 0);
 }
 
-static INLINE size_t aligned_length(size_t length, size_t alignment) {
+INLINE size_t aligned_length(size_t length, size_t alignment) {
   size_t ex = length % alignment;
   if (ex == 0) {
     return length;
@@ -41,7 +41,7 @@ static INLINE size_t aligned_length(size_t length, size_t alignment) {
   return length + alignment - ex;
 }
 
-static INLINE NOTNULL(2, 4) void wavelet_prepare_array_memcpy(
+INLINE NOTNULL(2, 4) void wavelet_prepare_array_memcpy(
     int order, const float *src, size_t length, float *res) {
   check_length(length);
 
@@ -144,7 +144,7 @@ void wavelet_recycle_source(int order
   *destlolo = src + lq * 3;
 }
 
-static INLINE NOTNULL(3, 4) void initialize_highpass_lowpass(
+INLINE NOTNULL(3, 4) void initialize_highpass_lowpass(
     WaveletType type, int order, float *highpass, float *lowpass) {
   size_t uorder = (size_t)order;
   for (int i = 0; i < order; i++) {
@@ -389,8 +389,9 @@ static void wavelet_apply6(WaveletType type,
 
     float32x2_t vechipair = vadd_f32(vget_high_f32(vechiadd1),
                                      vget_low_f32(vechiadd1));
-    float32x2_t veclopair = vadd_f32(vget_high_f32(vechiadd2),
-                                     vget_low_f32(vechiadd2));
+    float32x2_t veclopair = vadd_f32(vget_high_f32(vecloadd1),
+                                     vget_low_f32(vecloadd1));
+
     vadd_f32(vechipair, vechiadd2);
     vadd_f32(veclopair, vecloadd2);
 
@@ -475,8 +476,8 @@ static void wavelet_apply8(WaveletType type,
 
     float32x4_t vechiadd = vmulq_f32(srcvec1, hivec1);
     float32x4_t vecloadd = vmulq_f32(srcvec1, lovec1);
-    vechiadd = vfmaq_f32(vechiadd, srcvec2, hivec2);
-    vecloadd = vfmaq_f32(vecloadd, srcvec2, lovec2);
+    vechiadd = vmlaq_f32(vechiadd, srcvec2, hivec2);
+    vecloadd = vmlaq_f32(vecloadd, srcvec2, lovec2);
 
     float32x2_t vechipair = vadd_f32(vget_high_f32(vechiadd),
                                      vget_low_f32(vechiadd));
@@ -586,10 +587,10 @@ static void wavelet_apply12(WaveletType type,
 
     float32x4_t vechiadd = vmulq_f32(srcvec1, hivec1);
     float32x4_t vecloadd = vmulq_f32(srcvec1, lovec1);
-    vechiadd = vfmaq_f32(vechiadd, srcvec2, hivec2);
-    vecloadd = vfmaq_f32(vecloadd, srcvec2, lovec2);
-    vechiadd = vfmaq_f32(vechiadd, srcvec3, hivec3);
-    vecloadd = vfmaq_f32(vecloadd, srcvec3, lovec3);
+    vechiadd = vmlaq_f32(vechiadd, srcvec2, hivec2);
+    vecloadd = vmlaq_f32(vecloadd, srcvec2, lovec2);
+    vechiadd = vmlaq_f32(vechiadd, srcvec3, hivec3);
+    vecloadd = vmlaq_f32(vecloadd, srcvec3, lovec3);
 
     float32x2_t vechipair = vadd_f32(vget_high_f32(vechiadd),
                                      vget_low_f32(vechiadd));
@@ -692,12 +693,12 @@ static void wavelet_apply16(WaveletType type,
 
     float32x4_t vechiadd = vmulq_f32(srcvec1, hivec1);
     float32x4_t vecloadd = vmulq_f32(srcvec1, lovec1);
-    vechiadd = vfmaq_f32(vechiadd, srcvec2, hivec2);
-    vecloadd = vfmaq_f32(vecloadd, srcvec2, lovec2);
-    vechiadd = vfmaq_f32(vechiadd, srcvec3, hivec3);
-    vecloadd = vfmaq_f32(vecloadd, srcvec3, lovec3);
-    vechiadd = vfmaq_f32(vechiadd, srcvec4, hivec4);
-    vecloadd = vfmaq_f32(vecloadd, srcvec4, lovec4);
+    vechiadd = vmlaq_f32(vechiadd, srcvec2, hivec2);
+    vecloadd = vmlaq_f32(vecloadd, srcvec2, lovec2);
+    vechiadd = vmlaq_f32(vechiadd, srcvec3, hivec3);
+    vecloadd = vmlaq_f32(vecloadd, srcvec3, lovec3);
+    vechiadd = vmlaq_f32(vechiadd, srcvec4, hivec4);
+    vecloadd = vmlaq_f32(vecloadd, srcvec4, lovec4);
 
     float32x2_t vechipair = vadd_f32(vget_high_f32(vechiadd),
                                      vget_low_f32(vechiadd));

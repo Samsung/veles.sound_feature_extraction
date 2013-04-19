@@ -73,17 +73,16 @@ int ZeroCrossingsWindow::Do(bool simd, const float* input, size_t length)
 #elif defined(__ARM_NEON__)
     uint32x4_t crossings = vdupq_n_u32(0);
     const float32x4_t zeros = vdupq_n_f32(0.f);
-    consint16x8x4_t ones = vdupq_n_f32(1.f);
     for (int i = 0; i < ilength - 4; i += 4) {
       float32x4_t vecpre = vld1q_f32(input + i);
       uint32x4_t zerocheck =  vceqq_f32(vecpre, zeros);
       float32x4_t vec = vld1q_f32(input + i + 1);
       float32x4_t tmp = vmulq_f32(vecpre, vec);
       uint32x4_t cmpres = vcltq_f32(tmp, zeros);
-      cmpres = vorrq_u32(tmp, zerocheck);
+      cmpres = vorrq_u32(cmpres, zerocheck);
       crossings = vaddq_u32(crossings, cmpres);
     }
-    uint64x2_t crossings64 = vpaddlq_u32(crossings, crossings);
+    uint64x2_t crossings64 = vpaddlq_u32(crossings);
     int res = vgetq_lane_u64(crossings64, 0) + vgetq_lane_u64(crossings64, 1);
     int startIndex = ((ilength - 1) >> 2) << 2;
     float valpre = input[startIndex];
@@ -177,17 +176,16 @@ int ZeroCrossingsRaw::Do(bool simd, const int16_t* input, size_t length)
 #elif defined(__ARM_NEON__)
     uint32x4_t crossings = vdupq_n_u32(0);
     const int16x8_t zeros = vdupq_n_s16(0);
-    const int16x8_t ones = vdupq_n_s16(1);
     for (int i = 0; i < ilength - 8; i += 8) {
       int16x8_t vecpre = vld1q_s16(input + i);
       uint16x8_t zerocheck =  vceqq_s16(vecpre, zeros);
       int16x8_t vec = vld1q_s16(input + i + 1);
       int16x8_t tmp = veorq_s16(vecpre, vec);
       uint16x8_t cmpres = vcleq_s16(tmp, zeros);
-      cmpres = veorq_u16(tmp, zerocheck);
+      cmpres = veorq_u16(cmpres, zerocheck);
       crossings = vpadalq_u16(crossings, cmpres);
     }
-    uint64x2_t crossings64 = vpaddlq_u32(crossings, crossings);
+    uint64x2_t crossings64 = vpaddlq_u32(crossings);
     int res = vgetq_lane_u64(crossings64, 0) + vgetq_lane_u64(crossings64, 1);
     int startIndex = ((ilength - 1) >> 3) << 3;
     int16_t valpre = input[startIndex];

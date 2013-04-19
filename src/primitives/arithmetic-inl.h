@@ -550,75 +550,81 @@ INLINE NOTNULL(1, 2, 3) void int16_multiply(
 }
 
 INLINE NOTNULL(1, 3) void int16_to_float(const int16_t *data,
-                                           size_t length, float *res) {
-  for (size_t i = 0; i < length - 3; i += 4) {
+                                         size_t length, float *res) {
+  int ilength = (int)length;
+  for (int i = 0; i < ilength - 3; i += 4) {
     int16x4_t intVec = vld1_s16(data + i);
     int32x4_t extIntVec = vmovl_s16(intVec);
     float32x4_t floatVec = vcvtq_f32_s32(extIntVec);
     vst1q_f32(res + i, floatVec);
   }
-  for (int i = ((length >> 2) << 2); i < length; i++) {
+  for (int i = ((ilength >> 2) << 2); i < (int)length; i++) {
     res[i] = (float)data[i];
   }
 }
 
 INLINE NOTNULL(1, 3) void float_to_int16(const float *data,
-                                           size_t length, int16_t *res) {
-  for (size_t i = 0; i < length - 3; i += 4) {
+                                         size_t length, int16_t *res) {
+  int ilength = (int)length;
+  for (int i = 0; i < ilength - 3; i += 4) {
     float32x4_t floatVec = vld1q_f32(data + i);
     int32x4_t extIntVec = vcvtq_s32_f32(floatVec);
     int16x4_t intVec = vqmovn_s32(extIntVec);
     vst1_s16(res + i, intVec);
   }
-  for (int i = ((length >> 2) << 2); i < length; i++) {
+  for (int i = ((ilength >> 2) << 2); i < ilength; i++) {
     res[i] = (int16_t)data[i];
   }
 }
 
 INLINE NOTNULL(1, 3) void int32_to_float(const int32_t *data,
-                                           size_t length, float *res) {
-  for (size_t i = 0; i < length - 3; i += 4) {
+                                         size_t length, float *res) {
+  int ilength = (int)length;
+  for (int i = 0; i < ilength - 3; i += 4) {
     int32x4_t intVec = vld1q_s32(data + i);
     float32x4_t floatVec = vcvtq_f32_s32(intVec);
     vst1q_f32(res + i, floatVec);
   }
-  for (int i = ((length >> 2) << 2); i < length; i++) {
+  for (int i = ((ilength >> 2) << 2); i < ilength; i++) {
     res[i] = (float)data[i];
   }
 }
 
 INLINE NOTNULL(1, 3) void float_to_int32(const float *data,
-                                           size_t length, int32_t *res) {
-  for (size_t i = 0; i < length - 3; i += 4) {
+                                         size_t length, int32_t *res) {
+  int ilength = (int)length;
+  for (int i = 0; i < ilength - 3; i += 4) {
     float32x4_t floatVec = vld1q_f32(data + i);
     int32x4_t intVec = vcvtq_s32_f32(floatVec);
     vst1q_s32(res + i, intVec);
   }
-  for (int i = ((length >> 2) << 2); i < length; i++) {
+  for (int i = ((ilength >> 2) << 2); i < ilength; i++) {
     res[i] = (int32_t)data[i];
   }
 }
 
 INLINE NOTNULL(1, 3) void int16_to_int32(const int16_t *data,
-                                           size_t length, int32_t *res) {
-  for (size_t i = 0; i < length - 3; i += 4) {
+                                         size_t length, int32_t *res) {
+  int ilength = (int)length;
+  for (int i = 0; i < ilength - 3; i += 4) {
     int16x4_t intVec = vld1_s16(data + i);
     int32x4_t extIntVec = vmovl_s16(intVec);
     vst1q_s32(res + i, extIntVec);
   }
-  for (int i = ((length >> 2) << 2); i < length; i++) {
+  for (int i = ((ilength >> 2) << 2); i < ilength; i++) {
     res[i] = (float)data[i];
   }
 }
 
 INLINE NOTNULL(1, 3) void int32_to_int16(const int32_t *data,
                                            size_t length, int16_t *res) {
-  for (size_t i = 0; i < length - 3; i += 4) {
+  int ilength = (int)length;
+  for (int i = 0; i < ilength - 3; i += 4) {
     int32x4_t extIntVec = vld1q_s32(data + i);
     int16x4_t intVec = vqmovn_s32(extIntVec);
     vst1_s16(res + i, intVec);
   }
-  for (int i = ((length >> 2) << 2); i < length; i++) {
+  for (int i = ((ilength >> 2) << 2); i < ilength; i++) {
     res[i] = (int16_t)data[i];
   }
 }
@@ -670,12 +676,13 @@ INLINE NOTNULL(1, 2, 3) void complex_multiply(
 INLINE NOTNULL(1, 4) void real_multiply_scalar(const float *array,
                                                  size_t length,
                                                  float value, float *res) {
-  for (int i = 0; i < length - 3; i += 4) {
+  int ilength = (int)length;
+  for (int i = 0; i < ilength - 3; i += 4) {
     float32x4_t vec = vld1q_f32(array + i);
     vec = vmulq_n_f32(vec, value);
     vst1q_f32(res + i, vec);
   }
-  for (int i = ((length >> 2) << 2); i < length; i++) {
+  for (int i = ((ilength >> 2) << 2); i < ilength; i++) {
     res[i] = array[i] * value;
   }
 }
@@ -691,7 +698,7 @@ INLINE NOTNULL(1) float sum(const float *input, size_t length) {
   }
   float32x2_t accum2 = vpadd_f32(vget_high_f32(accum),
                                  vget_low_f32(accum));
-  res = vget_lane_f32(accum2, 0) + vget_lane_f32(accum2, 1);
+  float res = vget_lane_f32(accum2, 0) + vget_lane_f32(accum2, 1);
   for (int j = ((ilength >> 3) << 3); j < ilength; j++) {
     res += input[j];
   }
