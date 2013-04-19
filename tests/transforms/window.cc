@@ -29,7 +29,7 @@ class UnpackRDFTTest : public Window, public testing::Test {
     Size = 514;
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; i++) {
-      Input[0]->Data.get()[i] = i;
+      Input[0]->Data.get()[i] = i * (1 - 2 * (i % 2));
     }
     auto format = std::make_shared<WindowFormatF>(Size * 2000 / 16000, 16000);
     format->SetSize(Size);
@@ -42,6 +42,10 @@ TEST_F(UnpackRDFTTest, Do) {
   SetParameter("predft", "false");
   Initialize();
   Do(Input, &Output);
+  float output_na[Size] __attribute__ ((aligned (32)));
+  ApplyWindow(false, window_.get(), Size, Input[0]->Data.get(), output_na);
+  ASSERT_EQ(0, memcmp(Output[0]->Data.get(), output_na,
+                      sizeof(float) * Size));
 }
 
 TEST_F(UnpackRDFTTest, DoPreDft) {
