@@ -29,7 +29,9 @@ void SFM::Do(const BuffersBase<FixedArray<MEAN_TYPE_COUNT>>& in,
   for (size_t i = 0; i < in.Size(); i++) {
     float gMean = (*in[i])[MEAN_TYPE_GEOMETRIC];
     float aMean = (*in[i])[MEAN_TYPE_ARITHMETIC];
-    assert(gMean > 0);
+    if (gMean == 0) {
+      fprintf(stderr, "Warning: buffer #%zu has geometric mean equal to 0.", i);
+    }
     assert(aMean > 0);
     *(*out)[i] = logf(gMean / aMean);
   }
