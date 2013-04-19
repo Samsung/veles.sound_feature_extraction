@@ -1,4 +1,14 @@
 eclipse.preferences.version=1
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.1761822989/PATH/delimiter=\:
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.1761822989/PATH/operation=replace
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.1761822989/PATH/value=${PATH}\:/opt/dtv-toolchain/bin
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.1761822989/append=true
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.1761822989/appendContributed=true
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.191550122/PATH/delimiter=\:
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.191550122/PATH/operation=append
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.191550122/PATH/value=${PATH}\:/opt/dtv-toolchain/bin
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.191550122/append=true
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.191550122/appendContributed=true
 org.eclipse.cdt.core.formatter.alignment_for_arguments_in_method_invocation=18
 org.eclipse.cdt.core.formatter.alignment_for_assignment=16
 org.eclipse.cdt.core.formatter.alignment_for_base_clause_in_type_declaration=16
