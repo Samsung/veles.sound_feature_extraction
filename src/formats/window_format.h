@@ -208,8 +208,13 @@ class WindowFormat
     for (size_t i = 0; i < buffers.Size(); i++) {
       ret += "----" + std::to_string(i) + "----\n";
       for (size_t j = 0; j < size_; j++) {
-        ret += std::to_string(buffers[i]->Data.get()[j]);
-        ret += "\t";
+        auto strval = std::to_string(buffers[i]->Data.get()[j]);
+        size_t sizeLimit = 16;
+        if (strval[0] != '-') {
+          ret += ' ';
+          sizeLimit--;
+        }
+        ret += strval + std::string(sizeLimit - strval.size(), ' ');
         if (((j + 1) % 10) == 0) {
           ret += "\n";
         }
