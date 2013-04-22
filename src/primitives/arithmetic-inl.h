@@ -36,6 +36,8 @@ INLINE NOTNULL(1, 3) void int16_to_float_na(const int16_t *data,
 INLINE NOTNULL(1, 3) void float_to_int16_na(const float *data,
                                             size_t length, int16_t *res) {
   for (size_t i = 0; i < length; i++) {
+    // Simple truncation here (fast).
+    // If changed to roundf(), replace *cvttps* -> *cvtps*.
     res[i] = (int16_t)data[i];
   }
 }
@@ -174,8 +176,8 @@ INLINE NOTNULL(1, 3) void float_to_int16(const float *data,
   for (size_t i = startIndex; i < length - 15; i += 16) {
     __m256 fVecHi = _mm256_load_ps(data + i);
     __m256 fVecLo = _mm256_load_ps(data + i + 8);
-    __m256i intVecHi = _mm256_cvtps_epi32(fVecHi);
-    __m256i intVecLo = _mm256_cvtps_epi32(fVecLo);
+    __m256i intVecHi = _mm256_cvttps_epi32(fVecHi);
+    __m256i intVecLo = _mm256_cvttps_epi32(fVecLo);
     __m256i int16Vec = _mm256_packs_epi32(intVecHi, intVecLo);
     _mm256_store_si256((__m256i *)(res + i), int16Vec);
   }
@@ -216,7 +218,7 @@ INLINE NOTNULL(1, 3) void float_to_int32(const float *data,
 
   for (size_t i = startIndex; i < length - 7; i += 8) {
     __m256 fVec = _mm256_load_ps(data + i);
-    __m256i intVec = _mm256_cvtps_epi32(fVec);
+    __m256i intVec = _mm256_cvttps_epi32(fVec);
     _mm256_store_si256((__m256i *)(res + i), intVec);
   }
 
@@ -311,8 +313,11 @@ INLINE NOTNULL(1, 3) void int16_to_float(const int16_t *data,
 
   for (size_t i = startIndex; i < length - 7; i += 8) {
     __m128i intVec = _mm_load_si128((const __m128i*)(data + i));
-    __m128i intlo = _mm_unpacklo_epi16(intVec, _mm_set1_epi16(0));
-    __m128i inthi = _mm_unpackhi_epi16(intVec, _mm_set1_epi16(0));
+    // Be careful with the sign bit as it should remain on the leftmost place
+    __m128i intlo = _mm_unpacklo_epi16(_mm_set1_epi16(0), intVec);
+    __m128i inthi = _mm_unpackhi_epi16(_mm_set1_epi16(0), intVec);
+   intlo = _mm_sra_epi32(intlo, _mm_set1_epi32(16));
+   inthi = _mm_sra_epi32(inthi, _mm_set1_epi32(16));
     __m128 flo = _mm_cvtepi32_ps(intlo);
     __m128 fhi = _mm_cvtepi32_ps(inthi);
     _mm_store_ps(res + i, flo);
@@ -336,8 +341,8 @@ INLINE NOTNULL(1, 3) void float_to_int16(const float *data,
   for (size_t i = startIndex; i < length - 7; i += 8) {
     __m128 fVecHi = _mm_load_ps(data + i);
     __m128 fVecLo = _mm_load_ps(data + i + 4);
-    __m128i intVecHi = _mm_cvtps_epi32(fVecHi);
-    __m128i intVecLo = _mm_cvtps_epi32(fVecLo);
+    __m128i intVecHi = _mm_cvttps_epi32(fVecHi);
+    __m128i intVecLo = _mm_cvttps_epi32(fVecLo);
     __m128i int16Vec = _mm_packs_epi32(intVecHi, intVecLo);
     _mm_store_si128((__m128i *)(res + i), int16Vec);
   }
@@ -378,7 +383,7 @@ INLINE NOTNULL(1, 3) void float_to_int32(const float *data,
 
   for (size_t i = startIndex; i < length - 3; i += 4) {
     __m128 fVec = _mm_load_ps(data + i);
-    __m128i intVec = _mm_cvtps_epi32(fVec);
+    __m128i intVec = _mm_cvttps_epi32(fVec);
     _mm_store_si128((__m128i *)(res + i), intVec);
   }
 
@@ -398,8 +403,11 @@ INLINE NOTNULL(1, 3) void int16_to_int32(const int16_t *data,
 
   for (size_t i = startIndex; i < length - 7; i += 8) {
     __m128i intVec = _mm_load_si128((const __m128i*)(data + i));
-    __m128i intlo = _mm_unpacklo_epi16(intVec, _mm_set1_epi16(0));
-    __m128i inthi = _mm_unpackhi_epi16(intVec, _mm_set1_epi16(0));
+    // Be careful with the sign bit as it should remain on the leftmost place
+    __m128i intlo = _mm_unpacklo_epi16(_mm_set1_epi16(0), intVec);
+    __m128i inthi = _mm_unpackhi_epi16(_mm_set1_epi16(0), intVec);
+   intlo = _mm_sra_epi32(intlo, _mm_set1_epi32(16));
+   inthi = _mm_sra_epi32(inthi, _mm_set1_epi32(16));
     _mm_store_si128((__m128i *)(res + i), intlo);
     _mm_store_si128((__m128i *)(res + i + 4), inthi);
   }
