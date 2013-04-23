@@ -1,5 +1,5 @@
 /*! @file convolute.h
- *  @brief New file description.
+ *  @brief Calculates the linear convolution of two signals.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -69,6 +69,17 @@ void convolute_simd(int simd,
                     const float *x, size_t xLength,
                     const float *h, size_t hLength,
                     float *result) NOTNULL(2, 4, 6);
+
+/// @brief Calculates the linear convolution of two signals, the second
+/// signal being the periodic series of 1 and 0.
+/// @param x The first signal (long one).
+/// @param xLength The length of "x" array in float-s.
+/// @param k The length of the second signal's period.
+/// @note result and x may be the same arrays.
+/// @details Convolution for periodical filter which looks like:
+/// {1 {(k - 1) zeroes} 1 {(k - 1) zeroes} ..}.
+void convolute_ones(const float *__restrict x, size_t xLength,
+                    int k, float *result);
 
 #ifdef __cplusplus
 }

@@ -76,6 +76,7 @@ TEST(convolute, convolute_overlap_save) {
     x[i] = sinf(i) * 100;
   }
   float h[hlen];
+  int step = 8;
   for (int i = 0; i < hlen; i++) {
     h[i] = i / (hlen- 1.0f);
   }
@@ -96,6 +97,41 @@ TEST(convolute, convolute_overlap_save) {
     }
   }
   ASSERT_EQ(-1, firstDifferenceIndex);
+}
+
+TEST(convolute, convolute_ones) {
+  const int xlen = 1024;
+  const int hlen = 1024;
+
+  float x[xlen];
+    for (int i = 0; i < xlen; i++) {
+      x[i] = sinf(i) * 100;
+    }
+    float h[hlen];
+    int step = 8;
+    for (int i = 0; i < hlen; i++) {
+      if (i % step == 0)
+        h[i] = 1;
+      else
+        h[i] = 0;
+    }
+
+    float verif[xlen];
+    convolute_reference(x, xlen, h, hlen, verif);
+    DebugPrintConvolution("REFERENCE", verif);
+
+    float res[xlen];
+    convolute_ones(x, xlen, step, res);
+    DebugPrintConvolution("CONVOLUTE-ONES", res);
+
+    int firstDifferenceIndex = -1;
+    for (int i = 0; i < xlen; i++) {
+      float delta = res[i] - verif[i];
+      if (delta * delta > 1E-6 && firstDifferenceIndex == -1) {
+        firstDifferenceIndex = i;
+      }
+    }
+    ASSERT_EQ(-1, firstDifferenceIndex);
 }
 
 TEST(convolute, convolute_simd) {

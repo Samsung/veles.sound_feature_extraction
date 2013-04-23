@@ -1,5 +1,5 @@
 /*! @file convolute.c
- *  @brief New file description.
+ *  @brief Calculates the linear convolution of two signals.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -81,7 +81,14 @@ void convolute_simd(int simd,
         sum += h[m] * x[n - m];
       }
     }
-    result[n] = sum;
+   result[n] = sum;
+ }
+}
+
+void convolute_ones(const float *__restrict x, size_t xLength,
+                           int k, float *result) {
+  for (int i = 0; i < xLength; ++i) {
+    result[i] = x[i] + (i >= k ? result[i - k] : 0);
   }
 }
 
@@ -246,4 +253,10 @@ void convolute(const float *__restrict x, size_t xLength,
   // FIXME(v.markovtsev): conduct a complete benchmark and smartly choose the
   // FIXME(v.markovtsev): right approach.
   return convolute_simd(1, x, xLength, h, hLength, result);
+/*
+  if (hLength == xLength)
+    convolute_fftf(x, xLength, h, hLength, result);
+  else
+    convolute_overlap_save(x, xLength, h, hLength, result);
+*/
 }
