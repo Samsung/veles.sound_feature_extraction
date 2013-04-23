@@ -92,7 +92,7 @@ void convolute_ones(const float *__restrict x, size_t xLength,
   }
 }
 
-ConvoluteOverlapSaveHandle convolute_overlap_save_prepare(
+ConvoluteOverlapSaveHandle convolute_overlap_save_initialize(
     size_t xLength, size_t hLength) {
   assert(hLength < xLength / 2);
   assert(xLength > 0);
@@ -216,7 +216,7 @@ void convolute_overlap_save(ConvoluteOverlapSaveHandle handle,
   }
 }
 
-ConvoluteFFTHandle convolute_fft_prepare(size_t xLength, size_t hLength) {
+ConvoluteFFTHandle convolute_fft_initialize(size_t xLength, size_t hLength) {
   assert(hLength > 0);
   assert(xLength > 0);
 
@@ -308,7 +308,7 @@ void convolute_fft(ConvoluteFFTHandle handle,
   real_multiply_scalar(X, xLength, 1.0f / M, result);
 }
 
-ConvoluteHandle convolute_prepare(size_t xLength, size_t hLength) {
+ConvoluteHandle convolute_initialize(size_t xLength, size_t hLength) {
   ConvoluteHandle handle;
   handle.x_length = xLength;
   handle.h_length = hLength;
@@ -316,14 +316,14 @@ ConvoluteHandle convolute_prepare(size_t xLength, size_t hLength) {
   if (xLength > hLength * 2) {
     if (xLength > 200) {
       handle.algorithm = kConvolutionAlgorithmOverlapSave;
-      handle.handle.os = convolute_overlap_save_prepare(xLength, hLength);
+      handle.handle.os = convolute_overlap_save_initialize(xLength, hLength);
     } else {
       handle.algorithm = kConvolutionAlgorithmBruteForce;
     }
   } else {
     if (xLength > 300) {
       handle.algorithm = kConvolutionAlgorithmFFT;
-      handle.handle.fft = convolute_fft_prepare(xLength, hLength);
+      handle.handle.fft = convolute_fft_initialize(xLength, hLength);
     } else {
       handle.algorithm = kConvolutionAlgorithmBruteForce;
     }
@@ -332,14 +332,14 @@ ConvoluteHandle convolute_prepare(size_t xLength, size_t hLength) {
   if (xLength > hLength * 2) {
     if (xLength > 200) {
       handle.algorithm = kConvolutionAlgorithmOverlapSave;
-      handle.handle.os = convolute_overlap_save_prepare(xLength, hLength);
+      handle.handle.os = convolute_overlap_save_initialize(xLength, hLength);
     } else {
       handle.algorithm = kConvolutionAlgorithmBruteForce;
     }
   } else {
     if (xLength > 350) {
       handle.algorithm = kConvolutionAlgorithmFFT;
-      handle.handle.fft = convolute_fft_prepare(xLength, hLength);
+      handle.handle.fft = convolute_fft_initialize(xLength, hLength);
     } else {
       handle.algorithm = kConvolutionAlgorithmBruteForce;
     }

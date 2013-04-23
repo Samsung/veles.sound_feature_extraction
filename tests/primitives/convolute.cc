@@ -54,7 +54,7 @@ TEST(convolute, convolute_fft) {
   DebugPrintConvolution("REFERENCE", verif);
 
   float res[xlen];
-  auto handle = convolute_fft_prepare(xlen, hlen);
+  auto handle = convolute_fft_initialize(xlen, hlen);
   convolute_fft(handle, x, h, res);
   convolute_fft_finalize(handle);
   DebugPrintConvolution("FFT\t", res);
@@ -87,7 +87,7 @@ TEST(convolute, convolute_overlap_save) {
   DebugPrintConvolution("REFERENCE", verif);
 
   float res[xlen];
-  auto handle = convolute_overlap_save_prepare(xlen, hlen);
+  auto handle = convolute_overlap_save_initialize(xlen, hlen);
   convolute_overlap_save(handle, x, h, res);
   convolute_overlap_save_finalize(handle);
   DebugPrintConvolution("OVERLAP-SAVE", res);
@@ -210,7 +210,7 @@ ConvoluteFFTHandle fftHandle;
 #undef TEST_NAME
 #define TEST_NAME convolute_simd_vs_convolute_fft_512_512
 #define ITER_COUNT 25000
-#define CUSTOM_CODE_PRE { fftHandle = convolute_fft_prepare(512, 512); }
+#define CUSTOM_CODE_PRE { fftHandle = convolute_fft_initialize(512, 512); }
 #define CUSTOM_CODE_POST { convolute_fft_finalize(fftHandle); }
 #include "tests/transforms/benchmark.inc"
 
@@ -227,7 +227,7 @@ ConvoluteFFTHandle fftHandle;
 #define TEST_NAME convolute_simd_vs_convolute_fft_256_256
 #define ITER_COUNT 60000
 #undef CUSTOM_CODE_PRE
-#define CUSTOM_CODE_PRE { fftHandle = convolute_fft_prepare(256, 256); }
+#define CUSTOM_CODE_PRE { fftHandle = convolute_fft_initialize(256, 256); }
 #include "tests/transforms/benchmark.inc"
 
 #undef LENGTH
@@ -243,7 +243,7 @@ ConvoluteFFTHandle fftHandle;
 #define TEST_NAME convolute_simd_vs_convolute_fft_128_128
 #define ITER_COUNT 80000
 #undef CUSTOM_CODE_PRE
-#define CUSTOM_CODE_PRE { fftHandle = convolute_fft_prepare(128, 128); }
+#define CUSTOM_CODE_PRE { fftHandle = convolute_fft_initialize(128, 128); }
 #include "tests/transforms/benchmark.inc"
 
 #ifdef __AVX__
@@ -260,7 +260,7 @@ ConvoluteFFTHandle fftHandle;
 #define TEST_NAME convolute_simd_vs_convolute_fft_350_350
 #define ITER_COUNT 40000
 #undef CUSTOM_CODE_PRE
-#define CUSTOM_CODE_PRE { fftHandle = convolute_fft_prepare(350, 350); }
+#define CUSTOM_CODE_PRE { fftHandle = convolute_fft_initialize(350, 350); }
 #include "tests/transforms/benchmark.inc"
 #endif
 
@@ -281,8 +281,8 @@ ConvoluteOverlapSaveHandle osHandle;
 #define TEST_NAME convolute_fft_vs_convolute_overlap_save_1000_50
 #define ITER_COUNT 30000
 #undef CUSTOM_CODE_PRE
-#define CUSTOM_CODE_PRE { osHandle = convolute_overlap_save_prepare(1000, 50); \
-                          fftHandle = convolute_fft_prepare(1000, 50); }
+#define CUSTOM_CODE_PRE { osHandle = convolute_overlap_save_initialize(1000, 50); \
+                          fftHandle = convolute_fft_initialize(1000, 50); }
 #undef CUSTOM_CODE_POST
 #define CUSTOM_CODE_POST { convolute_overlap_save_finalize(osHandle); \
                            convolute_fft_finalize(fftHandle); }
@@ -301,8 +301,8 @@ ConvoluteOverlapSaveHandle osHandle;
 #define TEST_NAME convolute_fft_vs_convolute_overlap_save_2000_950
 #define ITER_COUNT 10000
 #undef CUSTOM_CODE_PRE
-#define CUSTOM_CODE_PRE { osHandle = convolute_overlap_save_prepare(2000, 950); \
-                          fftHandle = convolute_fft_prepare(2000, 950); }
+#define CUSTOM_CODE_PRE { osHandle = convolute_overlap_save_initialize(2000, 950); \
+                          fftHandle = convolute_fft_initialize(2000, 950); }
 #undef CUSTOM_CODE_POST
 #define CUSTOM_CODE_POST { convolute_overlap_save_finalize(osHandle); \
                            convolute_fft_finalize(fftHandle); }
@@ -321,7 +321,7 @@ ConvoluteOverlapSaveHandle osHandle;
 #define TEST_NAME convolute_simd_vs_convolute_overlap_save_1000_50
 #define ITER_COUNT 20000
 #undef CUSTOM_CODE_PRE
-#define CUSTOM_CODE_PRE { osHandle = convolute_overlap_save_prepare(1000, 50); }
+#define CUSTOM_CODE_PRE { osHandle = convolute_overlap_save_initialize(1000, 50); }
 #undef CUSTOM_CODE_POST
 #define CUSTOM_CODE_POST { convolute_overlap_save_finalize(osHandle); }
 #include "tests/transforms/benchmark.inc"
@@ -339,7 +339,7 @@ ConvoluteOverlapSaveHandle osHandle;
 #define TEST_NAME convolute_simd_vs_convolute_overlap_save_200_50
 #define ITER_COUNT 80000
 #undef CUSTOM_CODE_PRE
-#define CUSTOM_CODE_PRE { osHandle = convolute_overlap_save_prepare(200, 50); }
+#define CUSTOM_CODE_PRE { osHandle = convolute_overlap_save_initialize(200, 50); }
 #undef CUSTOM_CODE_POST
 #define CUSTOM_CODE_POST { convolute_overlap_save_finalize(osHandle); }
 #include "tests/transforms/benchmark.inc"

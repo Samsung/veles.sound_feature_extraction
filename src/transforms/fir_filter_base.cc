@@ -48,7 +48,7 @@ void FirFilterBase::Initialize() const noexcept {
   }
   CalculateFilter(&filter_[0]);
   dataBuffer_.resize(inputFormat_->Size());
-  convoluteHandle_ = convolute_prepare(inputFormat_->Size(), filter_.size());
+  convoluteHandle_ = convolute_initialize(inputFormat_->Size(), filter_.size());
 }
 
 void FirFilterBase::InitializeBuffers(
