@@ -45,11 +45,19 @@
 #define LENGTH 512
 #endif
 
+#ifndef OPT_STRING
+#define OPT_STRING "SIMD"
+#endif
+
 #ifdef CLASS_NAME
 TEST_F(CLASS_NAME, BENCH_NAME) {
 #else
 TEST(TEST_NAME, BENCH_NAME) {
 #endif
+#ifdef CUSTOM_CODE_PRE
+  CUSTOM_CODE_PRE
+#endif
+
   const int iter_count = ITER_COUNT;
 
   const int length = LENGTH;
@@ -99,13 +107,16 @@ TEST(TEST_NAME, BENCH_NAME) {
   auto delta2 = checkPointFinish - checkPointStart;
   float ratio = (delta1.count() + .0f) / delta2.count();
   float speedup = (delta2.count() - delta1.count() + .0f) / delta2.count();
-  printf("SIMD version took %i%% of original time. Speedup is %i%% "
+  printf(OPT_STRING " version took %i%% of original time. Speedup is %i%% "
          "(%.1f times).\n",
          static_cast<int>(ratio * 100), static_cast<int>(speedup * 100),
          1.f / (1.f - speedup));
   free(input);
 #ifndef NO_OUTPUT
   free(output);
+#endif
+#ifdef CUSTOM_CODE_POST
+  CUSTOM_CODE_POST
 #endif
 }
 

@@ -20,41 +20,70 @@
 extern "C" {
 #endif
 
-/// @brief Calculates the linear convolution of two signals using
-/// the best method.
-/// @param x The first signal (long one).
+typedef struct {
+  void *fft_plan;
+  void *fft_inverse_plan;
+  int *M;
+  int x_length;
+  int h_length;
+  float **inputs;
+} ConvoluteFFTHandle;
+
+/// @brief Prepares for the calculation of linear convolution of two signals
+/// using the FFT method.
 /// @param xLength The length of "x" array in float-s.
-/// @param h The second signal (short one).
 /// @param hLength The length of "h" array in float-s.
-/// @param result The resulting signal of length xLength.
-/// @note result and x may be the same arrays.
-void convolute(const float *__restrict x, size_t xLength,
-               const float *__restrict h, size_t hLength,
-               float *result) NOTNULL(1, 3, 5);
+/// @return The handle for convolute_fft().
+ConvoluteFFTHandle convolute_fft_prepare(size_t xLength, size_t hLength);
 
 /// @brief Calculates the linear convolution of two signals using
 /// the FFT method.
+/// @param handle The structure obtained from convolute_fft_prepare().
 /// @param x The first signal (long one).
-/// @param xLength The length of "x" array in float-s.
 /// @param h The second signal (short one).
-/// @param hLength The length of "h" array in float-s.
 /// @param result The resulting signal of length xLength.
 /// @note result and x may be the same arrays.
-void convolute_fft(const float *__restrict x, size_t xLength,
-                   const float *__restrict h, size_t hLength,
-                   float *result) NOTNULL(1, 3, 5);
+void convolute_fft(ConvoluteFFTHandle handle,
+                   const float *x, const float *h,
+                   float *result) NOTNULL(2, 3, 4);
+
+/// @brief Frees any resources allocated by convolute_fft_prepare().
+/// @param handle The structure obtained from convolute_fft_prepare().
+void convolute_fft_finalize(ConvoluteFFTHandle handle);
+
+typedef struct {
+  void *fft_plan;
+  void *fft_inverse_plan;
+  float *fft_boiler_plate;
+  float *H;
+  size_t x_length;
+  size_t h_length;
+  int *L;
+} ConvoluteOverlapSaveHandle;
+
+/// @brief Prepares for the calculation of linear convolution of two signals
+/// using the overlap-save method.
+/// @param xLength The length of "x" array in float-s.
+/// @param hLength The length of "h" array in float-s.
+/// @return The handle for convolute_overlap_save().
+ConvoluteOverlapSaveHandle convolute_overlap_save_prepare(
+    size_t xLength, size_t hLength);
 
 /// @brief Calculates the linear convolution of two signals using
 /// the overlap-save method.
+/// @param handle The structure obtained from convolute_overlap_save_prepare().
 /// @param x The first signal (long one).
-/// @param xLength The length of "x" array in float-s.
 /// @param h The second signal (short one).
-/// @param hLength The length of "h" array in float-s.
 /// @param result The resulting signal of length xLength.
 /// @note result and x may be the same arrays.
-void convolute_overlap_save(const float *__restrict x, size_t xLength,
-                            const float *__restrict h, size_t hLength,
-                            float *result) NOTNULL(1, 3, 5);
+void convolute_overlap_save(ConvoluteOverlapSaveHandle handle,
+                            const float *__restrict x,
+                            const float *__restrict h,
+                            float *result) NOTNULL(2, 3, 4);
+
+/// @brief Frees any resources allocated by convolute_overlap_save_prepare().
+/// @param handle The structure obtained from convolute_overlap_save_prepare().
+void convolute_overlap_save_finalize(ConvoluteOverlapSaveHandle handle);
 
 /// @brief Calculates the linear convolution of two signals using
 /// the "brute force" method.
@@ -80,6 +109,44 @@ void convolute_simd(int simd,
 /// {1 {(k - 1) zeroes} 1 {(k - 1) zeroes} ..}.
 void convolute_ones(const float *__restrict x, size_t xLength,
                     int k, float *result);
+
+typedef enum {
+  kConvolutionAlgorithmBruteForce,
+  kConvolutionAlgorithmFFT,
+  kConvolutionAlgorithmOverlapSave
+} ConvolutionAlgorithm;
+
+typedef struct {
+  ConvolutionAlgorithm algorithm;
+  int x_length;
+  int h_length;
+  union {
+    ConvoluteFFTHandle fft;
+    ConvoluteOverlapSaveHandle os;
+  } handle;
+} ConvoluteHandle;
+
+/// @brief Prepares for the calculation of linear convolution of two signals
+/// using the best method.
+/// @param xLength The length of "x" array in float-s.
+/// @param hLength The length of "h" array in float-s.
+/// @return The handle for convolute().
+ConvoluteHandle convolute_prepare(size_t xLength, size_t hLength);
+
+/// @brief Calculates the linear convolution of two signals using
+/// the best method.
+/// @param handle The structure obtained from convolute_prepare().
+/// @param x The first signal (long one).
+/// @param h The second signal (short one).
+/// @param result The resulting signal of length xLength.
+/// @note result and x may be the same arrays.
+void convolute(ConvoluteHandle handle,
+               const float *x, const float *h,
+               float *result) NOTNULL(2, 3, 4);
+
+/// @brief Frees any resources allocated by convolute_overlap_prepare().
+/// @param handle The structure obtained from convolute_overlap_prepare().
+void convolute_finalize(ConvoluteHandle handle);
 
 #ifdef __cplusplus
 }

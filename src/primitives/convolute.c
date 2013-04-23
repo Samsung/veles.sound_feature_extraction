@@ -86,107 +86,141 @@ void convolute_simd(int simd,
 }
 
 void convolute_ones(const float *__restrict x, size_t xLength,
-                           int k, float *result) {
-  for (int i = 0; i < xLength; ++i) {
+                    int k, float *result) {
+  for (int i = 0; i < (int)xLength; ++i) {
     result[i] = x[i] + (i >= k ? result[i - k] : 0);
   }
 }
 
-void convolute_overlap_save(const float *__restrict x, size_t xLength,
-                            const float *__restrict h, size_t hLength,
-                            float *result) {
+ConvoluteOverlapSaveHandle convolute_overlap_save_prepare(
+    size_t xLength, size_t hLength) {
   assert(hLength < xLength / 2);
   assert(xLength > 0);
   assert(hLength > 0);
-  size_t M = hLength;  //  usual designation
 
-  // Using overlap-save algorithm here
+  ConvoluteOverlapSaveHandle handle;
+  size_t M = hLength;  //  usual designation
+  handle.x_length = xLength;
+  handle.h_length = hLength;
 
   // Do zero padding of h to the next power of 2 + extra 2 float-s
-  size_t L;
-  float *H = zeropaddingex(h, hLength, &L, 2);
-  assert(H);
+  size_t L = M;
+  int log = 2;
+  while (L >>= 1) {
+    log++;
+  }
+  L = (1 << log);
+  handle.H = mallocf(L + 2);
+  assert(handle.H);
+  memsetf(handle.H + M, L - M, 0.f);
+  handle.L = malloc(sizeof(L));
+  *handle.L = L;
+
+  handle.fft_boiler_plate = mallocf(L + 2);
+  assert(handle.fft_boiler_plate);
+
+  handle.fft_plan = fftf_init(FFTF_TYPE_REAL, FFTF_DIRECTION_FORWARD,
+                              FFTF_DIMENSION_1D, handle.L,
+                              FFTF_NO_OPTIONS, handle.fft_boiler_plate,
+                              handle.fft_boiler_plate);
+
+  assert(handle.fft_plan);
+
+  handle.fft_inverse_plan = fftf_init(
+      FFTF_TYPE_REAL, FFTF_DIRECTION_BACKWARD,
+      FFTF_DIMENSION_1D, handle.L,
+      FFTF_NO_OPTIONS, handle.fft_boiler_plate,
+      handle.fft_boiler_plate);
+  assert(handle.fft_inverse_plan);
+
+  return handle;
+}
+
+void convolute_overlap_save_finalize(ConvoluteOverlapSaveHandle handle) {
+  free(handle.fft_boiler_plate);
+  fftf_destroy(handle.fft_plan);
+  fftf_destroy(handle.fft_inverse_plan);
+  free(handle.L);
+  free(handle.H);
+}
+
+void convolute_overlap_save(ConvoluteOverlapSaveHandle handle,
+                            const float *__restrict x,
+                            const float *__restrict h,
+                            float *result) {
+  assert(x != NULL);
+  assert(h != NULL);
+  assert(result != NULL);
+
+  size_t M = handle.h_length;  //  usual designation
+  int L = *handle.L;
+  // Do zero padding of h to the next power of 2 + extra 2 float-s
+  memcpy(handle.H, h, handle.h_length * sizeof(float));
 
   // H = FFT(paddedH, L)
   size_t fftComplexSize = (L + 2) * sizeof(float);
-  float *fftBoilerPlate = mallocf(L + 2);
-  assert(fftBoilerPlate);
-  memcpy(fftBoilerPlate, H, L * sizeof(float));
-  int fftLength = L;
-  FFTFInstance *fftPlan = fftf_init(FFTF_TYPE_REAL, FFTF_DIRECTION_FORWARD,
-                                    FFTF_DIMENSION_1D, &fftLength,
-                                    FFTF_NO_OPTIONS, fftBoilerPlate,
-                                    fftBoilerPlate);
-  assert(fftPlan);
-  fftf_calc(fftPlan);
-  memcpy(H, fftBoilerPlate, fftComplexSize);
+  memcpy(handle.fft_boiler_plate, handle.H, L * sizeof(float));
 
-  // Prepare the inverse FFT plan
-  FFTFInstance *fftInversePlan = fftf_init(
-      FFTF_TYPE_REAL, FFTF_DIRECTION_BACKWARD,
-      FFTF_DIMENSION_1D, &fftLength,
-      FFTF_NO_OPTIONS, fftBoilerPlate,
-      fftBoilerPlate);
-  assert(fftInversePlan);
+  fftf_calc(handle.fft_plan);
+  memcpy(handle.H, handle.fft_boiler_plate, fftComplexSize);
 
   int step = L - (M - 1);
   // Note: no "#pragma omp parallel for" here since
-  // fftBoilerPlate is shared AND FFTF should utilize all available resources.
-  for (size_t i = 0; i < xLength; i += step) {
+  // handle.fft_boiler_plate is shared AND FFTF should utilize all available resources.
+  for (size_t i = 0; i < handle.x_length; i += step) {
     // X = [zeros(1, M - 1), x, zeros(1, L-1)];
     // we must run FFT on X[i, i + L].
     // No X is really needed, some index arithmetic is used.
     if (i > 0) {
-      if (i + step <= xLength) {
-        memcpy(fftBoilerPlate, x + i - (M - 1), L * sizeof(float));
+      if (i + step <= handle.x_length) {
+        memcpy(handle.fft_boiler_plate, x + i - (M - 1), L * sizeof(float));
       } else {
-        int cl = xLength - i + M - 1;
-        memcpy(fftBoilerPlate, x + i - (M - 1),
+        int cl = handle.x_length - i + M - 1;
+        memcpy(handle.fft_boiler_plate, x + i - (M - 1),
                cl * sizeof(float));
-        memsetf(fftBoilerPlate + cl, L - cl, 0.f);
+        memsetf(handle.fft_boiler_plate + cl, L - cl, 0.f);
       }
     } else {
-      memsetf(fftBoilerPlate, M - 1, 0.f);
-      memcpy(fftBoilerPlate + M - 1, x, step * sizeof(float));
+      memsetf(handle.fft_boiler_plate, M - 1, 0.f);
+      memcpy(handle.fft_boiler_plate + M - 1, x, step * sizeof(float));
     }
-    fftf_calc(fftPlan);
+    fftf_calc(handle.fft_plan);
 
     // fftBoilerPlate = fftBoilerPlate * H (complex arithmetic)
     int cciStart = 0;
 #ifdef SIMD
     cciStart = L;
-    for (int cci = 0; cci < (int)L; cci += FLOAT_STEP) {
-      complex_multiply(fftBoilerPlate + cci, H + cci, fftBoilerPlate + cci);
+    for (int cci = 0; cci < L; cci += FLOAT_STEP) {
+      complex_multiply(handle.fft_boiler_plate + cci, handle.H + cci,
+                       handle.fft_boiler_plate + cci);
     }
 #endif
-    for (int cci = cciStart; cci < (int)L + 2; cci += 2) {
-      complex_multiply_na(fftBoilerPlate + cci, H + cci, fftBoilerPlate + cci);
+    for (int cci = cciStart; cci < L + 2; cci += 2) {
+      complex_multiply_na(handle.fft_boiler_plate + cci, handle.H + cci,
+                          handle.fft_boiler_plate + cci);
     }
 
     // Return back from the Fourier representation
-    fftf_calc(fftInversePlan);
+    fftf_calc(handle.fft_inverse_plan);
     // Normalize
-    real_multiply_scalar(fftBoilerPlate + M - 1, step, 1.0f / L, fftBoilerPlate + M - 1);
+    real_multiply_scalar(handle.fft_boiler_plate + M - 1, step, 1.0f / L,
+                         handle.fft_boiler_plate + M - 1);
 
-    if (i + step <= xLength) {
-      memcpy(result + i, fftBoilerPlate + M - 1, step * sizeof(float));
+    if (i + step <= handle.x_length) {
+      memcpy(result + i, handle.fft_boiler_plate + M - 1,
+             step * sizeof(float));
     } else {
-      memcpy(result + i, fftBoilerPlate + M - 1, (xLength - i) * sizeof(float));
+      memcpy(result + i, handle.fft_boiler_plate + M - 1,
+             (handle.x_length - i) * sizeof(float));
     }
   }
-
-  // Release any resources allocated
-  free(H);
-  free(fftBoilerPlate);
-  fftf_free(fftPlan);
-  fftf_free(fftInversePlan);
 }
 
-void convolute_fft(const float *__restrict x, size_t xLength,
-                   const float *__restrict h, size_t hLength,
-                   float *result) {
+ConvoluteFFTHandle convolute_fft_prepare(size_t xLength, size_t hLength) {
   assert(hLength > 0);
   assert(xLength > 0);
+
+  ConvoluteFFTHandle handle;
 
   int M = xLength + hLength - 1;
   if ((M & (M - 1)) != 0) {
@@ -196,33 +230,66 @@ void convolute_fft(const float *__restrict x, size_t xLength,
     }
     M = (1 << log);
   }
+  handle.M = malloc(sizeof(M));
+  *handle.M = M;
+  handle.x_length = xLength;
+  handle.h_length = hLength;
 
   // Now M is the nearest greater than or equal power of 2.
   // Do zero padding of x and h
   // Allocate 2 extra samples for the M/2 complex number.
   float *X = mallocf(M + 2);
-  memcpy(X, x, xLength * sizeof(x[0]));
   memsetf(X + xLength, M + 2 - xLength, 0.f);
   float *H = mallocf(M + 2);
-  memcpy(H, h, hLength * sizeof(h[0]));
   memsetf(H + hLength, M + 2 - hLength, 0.f);
 
-  // Prepare the forward FFT plan
-  float *inputs[2] = { X, H };
-  FFTFInstance *fftPlan = fftf_init_batch(
-      FFTF_TYPE_REAL, FFTF_DIRECTION_FORWARD,
-      FFTF_DIMENSION_1D, &M,
-      FFTF_NO_OPTIONS, 2, (const float *const *) inputs,
-      inputs);
-  assert(fftPlan);
-  // Prepare the inverse FFT plan
-  FFTFInstance *fftInversePlan = fftf_init(
-      FFTF_TYPE_REAL, FFTF_DIRECTION_BACKWARD,
-      FFTF_DIMENSION_1D, &M,
-      FFTF_NO_OPTIONS, X, X);
-  assert(fftInversePlan);
+  handle.inputs = malloc(2 * sizeof(float *));
+  handle.inputs[0] = X;
+  handle.inputs[1] = H;
 
-  fftf_calc(fftPlan);
+  // Prepare the forward FFT plan
+  handle.fft_plan = fftf_init_batch(
+      FFTF_TYPE_REAL, FFTF_DIRECTION_FORWARD,
+      FFTF_DIMENSION_1D, handle.M,
+      FFTF_NO_OPTIONS, 2, (const float *const *)handle.inputs,
+      handle.inputs);
+  assert(handle.fft_plan);
+
+  // Prepare the inverse FFT plan
+  handle.fft_inverse_plan = fftf_init(
+    FFTF_TYPE_REAL, FFTF_DIRECTION_BACKWARD,
+    FFTF_DIMENSION_1D, handle.M,
+    FFTF_NO_OPTIONS, X, X);
+  assert(handle.fft_inverse_plan);
+  return handle;
+}
+
+void convolute_fft_finalize(ConvoluteFFTHandle handle) {
+  free(handle.inputs[0]);
+  free(handle.inputs[1]);
+  free(handle.inputs);
+  free(handle.M);
+  fftf_destroy(handle.fft_plan);
+  fftf_destroy(handle.fft_inverse_plan);
+}
+
+void convolute_fft(ConvoluteFFTHandle handle,
+                   const float *x, const float *h,
+                   float *result) {
+  assert(x != NULL);
+  assert(h != NULL);
+  assert(result != NULL);
+
+  float *X = handle.inputs[0];
+  float *H = handle.inputs[1];
+  int xLength = handle.x_length;
+  int hLength = handle.h_length;
+  int M = *handle.M;
+  memcpy(X, x, xLength * sizeof(x[0]));
+  memcpy(H, h, hLength * sizeof(h[0]));
+
+  // fft(X), fft(H)
+  fftf_calc(handle.fft_plan);
 
   int istart = 0;
 #ifdef SIMD
@@ -236,27 +303,76 @@ void convolute_fft(const float *__restrict x, size_t xLength,
   }
 
   // Return back from the Fourier representation
-  fftf_calc(fftInversePlan);
+  fftf_calc(handle.fft_inverse_plan);
   // Normalize
   real_multiply_scalar(X, xLength, 1.0f / M, result);
-
-  // Release any resources allocated
-  free(H);
-  free(X);
-  fftf_free(fftPlan);
-  fftf_free(fftInversePlan);
 }
 
-void convolute(const float *__restrict x, size_t xLength,
-               const float *__restrict h, size_t hLength,
+ConvoluteHandle convolute_prepare(size_t xLength, size_t hLength) {
+  ConvoluteHandle handle;
+  handle.x_length = xLength;
+  handle.h_length = hLength;
+#ifdef __ARM_NEON__
+  if (xLength > hLength * 2) {
+    if (xLength > 200) {
+      handle.algorithm = kConvolutionAlgorithmOverlapSave;
+      handle.handle.os = convolute_overlap_save_prepare(xLength, hLength);
+    } else {
+      handle.algorithm = kConvolutionAlgorithmBruteForce;
+    }
+  } else {
+    if (xLength > 300) {
+      handle.algorithm = kConvolutionAlgorithmFFT;
+      handle.handle.fft = convolute_fft_prepare(xLength, hLength);
+    } else {
+      handle.algorithm = kConvolutionAlgorithmBruteForce;
+    }
+  }
+#else
+  if (xLength > hLength * 2) {
+    if (xLength > 200) {
+      handle.algorithm = kConvolutionAlgorithmOverlapSave;
+      handle.handle.os = convolute_overlap_save_prepare(xLength, hLength);
+    } else {
+      handle.algorithm = kConvolutionAlgorithmBruteForce;
+    }
+  } else {
+    if (xLength > 350) {
+      handle.algorithm = kConvolutionAlgorithmFFT;
+      handle.handle.fft = convolute_fft_prepare(xLength, hLength);
+    } else {
+      handle.algorithm = kConvolutionAlgorithmBruteForce;
+    }
+  }
+#endif
+  return handle;
+}
+
+void convolute_finalize(ConvoluteHandle handle) {
+  switch (handle.algorithm) {
+    case kConvolutionAlgorithmFFT:
+      convolute_fft_finalize(handle.handle.fft);
+      break;
+    case kConvolutionAlgorithmOverlapSave:
+      convolute_overlap_save_finalize(handle.handle.os);
+      break;
+    case kConvolutionAlgorithmBruteForce:
+      break;
+  }
+}
+
+void convolute(ConvoluteHandle handle,
+               const float *x, const float *h,
                float *result) {
-  // FIXME(v.markovtsev): conduct a complete benchmark and smartly choose the
-  // FIXME(v.markovtsev): right approach.
-  return convolute_simd(1, x, xLength, h, hLength, result);
-/*
-  if (hLength == xLength)
-    convolute_fftf(x, xLength, h, hLength, result);
-  else
-    convolute_overlap_save(x, xLength, h, hLength, result);
-*/
+  switch (handle.algorithm) {
+    case kConvolutionAlgorithmFFT:
+      convolute_fft(handle.handle.fft, x, h, result);
+      break;
+    case kConvolutionAlgorithmOverlapSave:
+      convolute_overlap_save(handle.handle.os, x, h, result);
+      break;
+    case kConvolutionAlgorithmBruteForce:
+      convolute_simd(1, x, handle.x_length, h, handle.h_length, result);
+      break;
+  }
 }

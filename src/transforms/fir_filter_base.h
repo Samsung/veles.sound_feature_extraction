@@ -17,6 +17,7 @@
 #include "src/uniform_format_transform.h"
 #include "src/formats/format_limits.h"
 #include "src/formats/raw_format.h"
+#include "src/primitives/convolute.h"
 #include "src/primitives/window.h"
 
 namespace SoundFeatureExtraction {
@@ -26,6 +27,7 @@ class FirFilterBase
     : public UniformFormatTransform<Formats::RawFormat16> {
  public:
   FirFilterBase() noexcept;
+  ~FirFilterBase();
 
   virtual void Initialize() const noexcept;
 
@@ -45,6 +47,7 @@ class FirFilterBase
   WindowType windowType_;
   mutable std::vector<float> filter_;
   mutable std::vector<float> dataBuffer_;
+  mutable ConvoluteHandle convoluteHandle_;
 };
 
 #define FIR_FILTER_PARAMETERS(init) TRANSFORM_PARAMETERS( \

@@ -11,7 +11,6 @@
  */
 
 #include "src/transforms/fir_filter_base.h"
-#include "src/primitives/convolute.h"
 #include "src/primitives/arithmetic-inl.h"
 
 namespace SoundFeatureExtraction {
@@ -38,6 +37,10 @@ FirFilterBase::FirFilterBase() noexcept
   });
 }
 
+FirFilterBase::~FirFilterBase() {
+  convolute_finalize(convoluteHandle_);
+}
+
 void FirFilterBase::Initialize() const noexcept {
   filter_.resize(length_);
   for (int i = 0; i < length_; i++) {
@@ -45,6 +48,7 @@ void FirFilterBase::Initialize() const noexcept {
   }
   CalculateFilter(&filter_[0]);
   dataBuffer_.resize(inputFormat_->Size());
+  convoluteHandle_ = convolute_prepare(inputFormat_->Size(), filter_.size());
 }
 
 void FirFilterBase::InitializeBuffers(
@@ -59,9 +63,8 @@ void FirFilterBase::Do(const BuffersBase<Formats::Raw16>& in,
 const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
     int16_to_float(in[i]->Data.get(), inputFormat_->Size(), &dataBuffer_[0]);
-    convolute(&dataBuffer_[0], inputFormat_->Size(),
-              &filter_[0], filter_.size(),
-              &dataBuffer_[0]);
+    convolute(convoluteHandle_, &dataBuffer_[0],
+              &filter_[0], &dataBuffer_[0]);
     float_to_int16(&dataBuffer_[0], inputFormat_->Size(),
                    (*out)[i]->Data.get());
   }

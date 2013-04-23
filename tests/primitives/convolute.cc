@@ -54,7 +54,9 @@ TEST(convolute, convolute_fft) {
   DebugPrintConvolution("REFERENCE", verif);
 
   float res[xlen];
-  convolute_fft(x, xlen, h, hlen, res);
+  auto handle = convolute_fft_prepare(xlen, hlen);
+  convolute_fft(handle, x, h, res);
+  convolute_fft_finalize(handle);
   DebugPrintConvolution("FFT\t", res);
 
   int firstDifferenceIndex = -1;
@@ -76,7 +78,6 @@ TEST(convolute, convolute_overlap_save) {
     x[i] = sinf(i) * 100;
   }
   float h[hlen];
-  int step = 8;
   for (int i = 0; i < hlen; i++) {
     h[i] = i / (hlen- 1.0f);
   }
@@ -86,7 +87,9 @@ TEST(convolute, convolute_overlap_save) {
   DebugPrintConvolution("REFERENCE", verif);
 
   float res[xlen];
-  convolute_overlap_save(x, xlen, h, hlen, res);
+  auto handle = convolute_overlap_save_prepare(xlen, hlen);
+  convolute_overlap_save(handle, x, h, res);
+  convolute_overlap_save_finalize(handle);
   DebugPrintConvolution("OVERLAP-SAVE", res);
 
   int firstDifferenceIndex = -1;
@@ -173,15 +176,14 @@ TEST(convolute, convolute_simd) {
   ASSERT_EQ(-1, firstDifferenceIndex);
 }
 
-float BenchmarkH1[50] = { 1.f };
-float BenchmarkH2[500] = { 1.f };
+float BenchmarkH[512] = { 1.f };
 float BenchmarkResult[10000];
 
 #define TEST_NAME convolute_simd_50
 #define ITER_COUNT 50000
 #define BENCH_FUNC convolute_simd
 #define NO_OUTPUT
-#define EXTRA_PARAM BenchmarkH1, sizeof(BenchmarkH1) / sizeof(BenchmarkH1[0]), \
+#define EXTRA_PARAM BenchmarkH, sizeof(BenchmarkH) / sizeof(BenchmarkH[0]), \
   BenchmarkResult
 #include "tests/transforms/benchmark.inc"
 
@@ -190,38 +192,156 @@ float BenchmarkResult[10000];
 #undef TEST_NAME
 #define TEST_NAME convolute_simd_500
 #define ITER_COUNT 10000
-#define EXTRA_PARAM BenchmarkH2, sizeof(BenchmarkH2) / sizeof(BenchmarkH2[0]), \
+#define EXTRA_PARAM BenchmarkH, sizeof(BenchmarkH) / sizeof(BenchmarkH[0]), \
   BenchmarkResult
 #include "tests/transforms/benchmark.inc"
-/*
+
+ConvoluteFFTHandle fftHandle;
+
+#undef OPT_STRING
+#define OPT_STRING "FFT"
 #undef LENGTH
-#define LENGTH 500
+#define LENGTH 512
 #define CUSTOM_FUNC_BASELINE(x, xLength) convolute_simd(\
-    true, x, xLength, BenchmarkH1, sizeof(BenchmarkH1) / sizeof(BenchmarkH1[0]), \
-    BenchmarkResult)
+    true, x, xLength, BenchmarkH, 512, BenchmarkResult)
 #define CUSTOM_FUNC_PEAK(x, xLength) convolute_fft(\
-    x, xLength, BenchmarkH1, sizeof(BenchmarkH1) / sizeof(BenchmarkH1[0]), \
-    BenchmarkResult)
+    fftHandle, x, BenchmarkH, BenchmarkResult)
 #undef ITER_COUNT
 #undef TEST_NAME
-#define TEST_NAME convolute_simd_vs_convolute_fft_500_50
-#define ITER_COUNT 15000
+#define TEST_NAME convolute_simd_vs_convolute_fft_512_512
+#define ITER_COUNT 25000
+#define CUSTOM_CODE_PRE { fftHandle = convolute_fft_prepare(512, 512); }
+#define CUSTOM_CODE_POST { convolute_fft_finalize(fftHandle); }
 #include "tests/transforms/benchmark.inc"
 
-#undef ITER_COUNT
-#define ITER_COUNT 1000
 #undef LENGTH
-#define LENGTH 10000
-#undef TEST_NAME
-#define TEST_NAME convolute_simd_vs_convolute_fft_5000_50
+#define LENGTH 256
 #undef CUSTOM_FUNC_BASELINE
-#define CUSTOM_FUNC_BASELINE(x, xLength) convolute_overlap_save(\
-    x, xLength, BenchmarkH1, 50, \
-    BenchmarkResult)
+#define CUSTOM_FUNC_BASELINE(x, xLength) convolute_simd(\
+    true, x, xLength, BenchmarkH, 256, BenchmarkResult)
 #undef CUSTOM_FUNC_PEAK
 #define CUSTOM_FUNC_PEAK(x, xLength) convolute_fft(\
-    x, xLength, BenchmarkH1, 50, \
-    BenchmarkResult)
-#include "tests/transforms/benchmark.inc"*/
+    fftHandle, x, BenchmarkH, BenchmarkResult)
+#undef ITER_COUNT
+#undef TEST_NAME
+#define TEST_NAME convolute_simd_vs_convolute_fft_256_256
+#define ITER_COUNT 60000
+#undef CUSTOM_CODE_PRE
+#define CUSTOM_CODE_PRE { fftHandle = convolute_fft_prepare(256, 256); }
+#include "tests/transforms/benchmark.inc"
+
+#undef LENGTH
+#define LENGTH 128
+#undef CUSTOM_FUNC_BASELINE
+#define CUSTOM_FUNC_BASELINE(x, xLength) convolute_simd(\
+    true, x, xLength, BenchmarkH, 128, BenchmarkResult)
+#undef CUSTOM_FUNC_PEAK
+#define CUSTOM_FUNC_PEAK(x, xLength) convolute_fft(\
+    fftHandle, x, BenchmarkH, BenchmarkResult)
+#undef ITER_COUNT
+#undef TEST_NAME
+#define TEST_NAME convolute_simd_vs_convolute_fft_128_128
+#define ITER_COUNT 80000
+#undef CUSTOM_CODE_PRE
+#define CUSTOM_CODE_PRE { fftHandle = convolute_fft_prepare(128, 128); }
+#include "tests/transforms/benchmark.inc"
+
+#ifdef __AVX__
+#undef LENGTH
+#define LENGTH 350
+#undef CUSTOM_FUNC_BASELINE
+#define CUSTOM_FUNC_BASELINE(x, xLength) convolute_simd(\
+    true, x, xLength, BenchmarkH, 350, BenchmarkResult)
+#undef CUSTOM_FUNC_PEAK
+#define CUSTOM_FUNC_PEAK(x, xLength) convolute_fft(\
+    fftHandle, x, BenchmarkH, BenchmarkResult)
+#undef ITER_COUNT
+#undef TEST_NAME
+#define TEST_NAME convolute_simd_vs_convolute_fft_350_350
+#define ITER_COUNT 40000
+#undef CUSTOM_CODE_PRE
+#define CUSTOM_CODE_PRE { fftHandle = convolute_fft_prepare(350, 350); }
+#include "tests/transforms/benchmark.inc"
+#endif
+
+ConvoluteOverlapSaveHandle osHandle;
+
+#undef OPT_STRING
+#define OPT_STRING "Overlap-Save"
+#undef LENGTH
+#define LENGTH 1000
+#undef CUSTOM_FUNC_BASELINE
+#define CUSTOM_FUNC_BASELINE(x, xLength) convolute_fft(\
+    fftHandle, x, BenchmarkH, BenchmarkResult)
+#undef CUSTOM_FUNC_PEAK
+#define CUSTOM_FUNC_PEAK(x, xLength) convolute_overlap_save(\
+    osHandle, x, BenchmarkH, BenchmarkResult)
+#undef ITER_COUNT
+#undef TEST_NAME
+#define TEST_NAME convolute_fft_vs_convolute_overlap_save_1000_50
+#define ITER_COUNT 30000
+#undef CUSTOM_CODE_PRE
+#define CUSTOM_CODE_PRE { osHandle = convolute_overlap_save_prepare(1000, 50); \
+                          fftHandle = convolute_fft_prepare(1000, 50); }
+#undef CUSTOM_CODE_POST
+#define CUSTOM_CODE_POST { convolute_overlap_save_finalize(osHandle); \
+                           convolute_fft_finalize(fftHandle); }
+#include "tests/transforms/benchmark.inc"
+
+#undef LENGTH
+#define LENGTH 2000
+#undef CUSTOM_FUNC_BASELINE
+#define CUSTOM_FUNC_BASELINE(x, xLength) convolute_fft(\
+    fftHandle, x, BenchmarkH, BenchmarkResult)
+#undef CUSTOM_FUNC_PEAK
+#define CUSTOM_FUNC_PEAK(x, xLength) convolute_overlap_save(\
+    osHandle, x, BenchmarkH, BenchmarkResult)
+#undef ITER_COUNT
+#undef TEST_NAME
+#define TEST_NAME convolute_fft_vs_convolute_overlap_save_2000_950
+#define ITER_COUNT 10000
+#undef CUSTOM_CODE_PRE
+#define CUSTOM_CODE_PRE { osHandle = convolute_overlap_save_prepare(2000, 950); \
+                          fftHandle = convolute_fft_prepare(2000, 950); }
+#undef CUSTOM_CODE_POST
+#define CUSTOM_CODE_POST { convolute_overlap_save_finalize(osHandle); \
+                           convolute_fft_finalize(fftHandle); }
+#include "tests/transforms/benchmark.inc"
+
+#undef LENGTH
+#define LENGTH 1000
+#undef CUSTOM_FUNC_BASELINE
+#define CUSTOM_FUNC_BASELINE(x, xLength) convolute_simd(\
+    true, x, xLength, BenchmarkH, 50, BenchmarkResult)
+#undef CUSTOM_FUNC_PEAK
+#define CUSTOM_FUNC_PEAK(x, xLength) convolute_overlap_save(\
+    osHandle, x, BenchmarkH, BenchmarkResult)
+#undef ITER_COUNT
+#undef TEST_NAME
+#define TEST_NAME convolute_simd_vs_convolute_overlap_save_1000_50
+#define ITER_COUNT 20000
+#undef CUSTOM_CODE_PRE
+#define CUSTOM_CODE_PRE { osHandle = convolute_overlap_save_prepare(1000, 50); }
+#undef CUSTOM_CODE_POST
+#define CUSTOM_CODE_POST { convolute_overlap_save_finalize(osHandle); }
+#include "tests/transforms/benchmark.inc"
+
+#undef LENGTH
+#define LENGTH 200
+#undef CUSTOM_FUNC_BASELINE
+#define CUSTOM_FUNC_BASELINE(x, xLength) convolute_simd(\
+    true, x, xLength, BenchmarkH, 50, BenchmarkResult)
+#undef CUSTOM_FUNC_PEAK
+#define CUSTOM_FUNC_PEAK(x, xLength) convolute_overlap_save(\
+    osHandle, x, BenchmarkH, BenchmarkResult)
+#undef ITER_COUNT
+#undef TEST_NAME
+#define TEST_NAME convolute_simd_vs_convolute_overlap_save_200_50
+#define ITER_COUNT 80000
+#undef CUSTOM_CODE_PRE
+#define CUSTOM_CODE_PRE { osHandle = convolute_overlap_save_prepare(200, 50); }
+#undef CUSTOM_CODE_POST
+#define CUSTOM_CODE_POST { convolute_overlap_save_finalize(osHandle); }
+#include "tests/transforms/benchmark.inc"
 
 #include "tests/google/src/gtest_main.cc"
