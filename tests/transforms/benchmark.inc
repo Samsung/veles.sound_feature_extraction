@@ -41,6 +41,10 @@
 #define INPUT_TYPE float
 #endif
 
+#ifndef LENGTH
+#define LENGTH 512
+#endif
+
 #ifdef CLASS_NAME
 TEST_F(CLASS_NAME, BENCH_NAME) {
 #else
@@ -48,10 +52,12 @@ TEST(TEST_NAME, BENCH_NAME) {
 #endif
   const int iter_count = ITER_COUNT;
 
-  const int length = 512;
-  INPUT_TYPE input[length] __attribute__ ((aligned (64)));
+  const int length = LENGTH;
+  INPUT_TYPE *input = (INPUT_TYPE*)malloc_aligned(
+      sizeof(INPUT_TYPE) * length);
 #ifndef NO_OUTPUT
-  INPUT_TYPE output[length * 2] __attribute__ ((aligned (64)));
+  INPUT_TYPE *output = (INPUT_TYPE*)malloc_aligned(
+      sizeof(INPUT_TYPE) * length * 2);
 #endif
   for (int i = 0; i < length; i++) {
     input[i] = sinf(i) * 10;
@@ -59,6 +65,7 @@ TEST(TEST_NAME, BENCH_NAME) {
 
   auto checkPointStart = std::chrono::high_resolution_clock::now();
   for (int i = 0; i < iter_count; i++) {
+#ifndef CUSTOM_FUNC_PEAK
     BENCH_FUNC(true, input, length
 #ifndef NO_OUTPUT
                , output
@@ -67,11 +74,15 @@ TEST(TEST_NAME, BENCH_NAME) {
                , EXTRA_PARAM
 #endif
                );
+#else
+    CUSTOM_FUNC_PEAK(input, length);
+#endif
   }
   auto checkPointFinish = std::chrono::high_resolution_clock::now();
   auto delta1 = checkPointFinish - checkPointStart;
   checkPointStart = std::chrono::high_resolution_clock::now();
   for (int i = 0; i < iter_count; i++) {
+#ifndef CUSTOM_FUNC_BASELINE
     BENCH_FUNC(false, input, length
 #ifndef NO_OUTPUT
                , output
@@ -80,6 +91,9 @@ TEST(TEST_NAME, BENCH_NAME) {
                , EXTRA_PARAM
 #endif
                );
+#else
+    CUSTOM_FUNC_BASELINE(input, length);
+#endif
   }
   checkPointFinish = std::chrono::high_resolution_clock::now();
   auto delta2 = checkPointFinish - checkPointStart;
@@ -89,6 +103,10 @@ TEST(TEST_NAME, BENCH_NAME) {
          "(%.1f times).\n",
          static_cast<int>(ratio * 100), static_cast<int>(speedup * 100),
          1.f / (1.f - speedup));
+  free(input);
+#ifndef NO_OUTPUT
+  free(output);
+#endif
 }
 
 #endif

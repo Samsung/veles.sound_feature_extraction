@@ -17,28 +17,77 @@
 #include <fftf/api.h>
 #include "src/primitives/arithmetic-inl.h"
 
-/*
-/// @brief Brute-force calculation method used for debugging FFT one.
-static void convolute_circular(const float *__restrict x,
-                               const float *__restrict h,
-                               size_t N,
-                               float *__restrict result) {
-  for (int n = 0; n < (int)N; n++) {
+void convolute_simd(int simd,
+                    const float *x, size_t xLength,
+                    const float *h, size_t hLength,
+                    float *result) {
+  for (int n = 0; n < (int)xLength; n++) {
     float sum = 0.f;
-    for (int m = 0; m <= n; m++) {
-      sum += x[m] * h[n - m];
+    int end = n + 1;
+    if (end > (int)hLength) {
+      end = hLength;
     }
-    for (int m = n + 1; m < (int)N; m++) {
-      sum += x[m] * h[N - m + n];
+    if (simd) {
+#ifdef __AVX__
+      if (end < 8) {
+        for (int m = 0; m < end; m++) {
+          sum += h[m] * x[n - m];
+        }
+      } else {
+         int simdEnd =  end & ~7;
+        __m256 accum = _mm256_setzero_ps();
+        for (int m = 0; m < simdEnd; m += 8) {
+          __m256 xvec = _mm256_loadu_ps(x + n - m - 7);
+          __m256 hvec = _mm256_loadu_ps(h + m);
+          xvec = _mm256_permute2f128_ps(xvec, xvec, 1);
+          xvec = _mm256_permute_ps(xvec, 27);
+          __m256 mulres = _mm256_mul_ps(xvec, hvec);
+          accum = _mm256_add_ps(accum, mulres);
+        }
+        accum = _mm256_hadd_ps(accum, accum);
+        accum = _mm256_hadd_ps(accum, accum);
+        sum = accum[0] + accum[4];
+        for (int m = simdEnd; m < end; m++) {
+          sum += h[m] * x[n - m];
+        }
+      }
+    } else {
+#elif defined(__ARM_NEON__)
+      if (end < 4) {
+        for (int m = 0; m < end; m++) {
+          sum += h[m] * x[n - m];
+        }
+      } else {
+         int simdEnd =  end & ~3;
+        float32x4_t accum = vdupq_n_f32(0.f);
+        for (int m = 0; m < simdEnd; m += 4) {
+          float32x4_t xvec = vld1q_f32(x + n - m - 3);
+          xvec = vrev64q_f32(xvec);
+          float32x4_t hvec = vld1q_f32(h + m);
+          accum = vmlaq_f32(xvec, hvec, accum);
+        }
+        float32x2_t accum2 = vpadd_f32(vget_high_f32(accum),
+                                       vget_low_f32(accum));
+        sum = vget_lane_f32(accum2, 0) + vget_lane_f32(accum2, 1);
+        for (int m = simdEnd; m < end; m++) {
+          sum += h[m] * x[n - m];
+        }
+      }
+    } else {
+#else
+    } {
+#endif
+      for (int m = 0; m < end; m++) {
+        sum += h[m] * x[n - m];
+      }
     }
     result[n] = sum;
   }
 }
-*/
 
-void convolute(const float *__restrict x, size_t xLength,
-               const float *__restrict h, size_t hLength,
-               float *result) {
+void convolute_overlap_save(const float *__restrict x, size_t xLength,
+                            const float *__restrict h, size_t hLength,
+                            float *result) {
   assert(hLength < xLength / 2);
   assert(xLength > 0);
   assert(hLength > 0);
@@ -124,4 +173,77 @@ void convolute(const float *__restrict x, size_t xLength,
   free(fftBoilerPlate);
   fftf_free(fftPlan);
   fftf_free(fftInversePlan);
+}
+
+void convolute_fft(const float *__restrict x, size_t xLength,
+                   const float *__restrict h, size_t hLength,
+                   float *result) {
+  assert(hLength > 0);
+  assert(xLength > 0);
+
+  int M = xLength + hLength - 1;
+  if ((M & (M - 1)) != 0) {
+    int log = 1;
+    while (M >>= 1) {
+      log++;
+    }
+    M = (1 << log);
+  }
+
+  // Now M is the nearest greater than or equal power of 2.
+  // Do zero padding of x and h
+  // Allocate 2 extra samples for the M/2 complex number.
+  float *X = mallocf(M + 2);
+  memcpy(X, x, xLength * sizeof(x[0]));
+  memsetf(X + xLength, M + 2 - xLength, 0.f);
+  float *H = mallocf(M + 2);
+  memcpy(H, h, hLength * sizeof(h[0]));
+  memsetf(H + hLength, M + 2 - hLength, 0.f);
+
+  // Prepare the forward FFT plan
+  float *inputs[2] = { X, H };
+  FFTFInstance *fftPlan = fftf_init_batch(
+      FFTF_TYPE_REAL, FFTF_DIRECTION_FORWARD,
+      FFTF_DIMENSION_1D, &M,
+      FFTF_NO_OPTIONS, 2, (const float *const *) inputs,
+      inputs);
+  assert(fftPlan);
+  // Prepare the inverse FFT plan
+  FFTFInstance *fftInversePlan = fftf_init(
+      FFTF_TYPE_REAL, FFTF_DIRECTION_BACKWARD,
+      FFTF_DIMENSION_1D, &M,
+      FFTF_NO_OPTIONS, X, X);
+  assert(fftInversePlan);
+
+  fftf_calc(fftPlan);
+
+  int istart = 0;
+#ifdef SIMD
+  istart = M;
+  for (int i = 0; i < M; i += FLOAT_STEP) {
+    complex_multiply(X + i, H + i, X + i);
+  }
+#endif
+  for (int i = istart; i < M + 2; i += 2) {
+    complex_multiply_na(X + i, H + i, X + i);
+  }
+
+  // Return back from the Fourier representation
+  fftf_calc(fftInversePlan);
+  // Normalize
+  real_multiply_scalar(X, xLength, 1.0f / M, result);
+
+  // Release any resources allocated
+  free(H);
+  free(X);
+  fftf_free(fftPlan);
+  fftf_free(fftInversePlan);
+}
+
+void convolute(const float *__restrict x, size_t xLength,
+               const float *__restrict h, size_t hLength,
+               float *result) {
+  // FIXME(v.markovtsev): conduct a complete benchmark and smartly choose the
+  // FIXME(v.markovtsev): right approach.
+  return convolute_simd(1, x, xLength, h, hLength, result);
 }

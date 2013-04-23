@@ -21,7 +21,7 @@ extern "C" {
 #endif
 
 /// @brief Calculates the linear convolution of two signals using
-/// the overlap-save method.
+/// the best method.
 /// @param x The first signal (long one).
 /// @param xLength The length of "x" array in float-s.
 /// @param h The second signal (short one).
@@ -31,6 +31,44 @@ extern "C" {
 void convolute(const float *__restrict x, size_t xLength,
                const float *__restrict h, size_t hLength,
                float *result) NOTNULL(1, 3, 5);
+
+/// @brief Calculates the linear convolution of two signals using
+/// the FFT method.
+/// @param x The first signal (long one).
+/// @param xLength The length of "x" array in float-s.
+/// @param h The second signal (short one).
+/// @param hLength The length of "h" array in float-s.
+/// @param result The resulting signal of length xLength.
+/// @note result and x may be the same arrays.
+void convolute_fft(const float *__restrict x, size_t xLength,
+                   const float *__restrict h, size_t hLength,
+                   float *result) NOTNULL(1, 3, 5);
+
+/// @brief Calculates the linear convolution of two signals using
+/// the overlap-save method.
+/// @param x The first signal (long one).
+/// @param xLength The length of "x" array in float-s.
+/// @param h The second signal (short one).
+/// @param hLength The length of "h" array in float-s.
+/// @param result The resulting signal of length xLength.
+/// @note result and x may be the same arrays.
+void convolute_overlap_save(const float *__restrict x, size_t xLength,
+                            const float *__restrict h, size_t hLength,
+                            float *result) NOTNULL(1, 3, 5);
+
+/// @brief Calculates the linear convolution of two signals using
+/// the "brute force" method.
+/// @param simd Value indicating whether to use SIMD acceleration or not.
+/// @param x The first signal (long one).
+/// @param xLength The length of "x" array in float-s.
+/// @param h The second signal (short one).
+/// @param hLength The length of "h" array in float-s.
+/// @param result The resulting signal of length xLength.
+/// @note result and x may be the same arrays.
+void convolute_simd(int simd,
+                    const float *x, size_t xLength,
+                    const float *h, size_t hLength,
+                    float *result) NOTNULL(2, 4, 6);
 
 #ifdef __cplusplus
 }

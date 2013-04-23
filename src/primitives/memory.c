@@ -111,12 +111,11 @@ float *zeropadding(const float *ptr, size_t length, size_t *newLength) {
 float *zeropaddingex(const float *ptr, size_t length, size_t *newLength,
                      size_t additionalLength) {
   size_t nl = length;
-  int log = 0;
+  int log = 2;
   while (nl >>= 1) {
     log++;
   }
   nl = (1 << log);
-  nl <<= 2;
   *newLength = nl;
   float *ret = mallocf(nl + additionalLength);
   memcpy(ret, ptr, length * sizeof(float));
