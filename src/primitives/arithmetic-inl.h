@@ -491,22 +491,36 @@ INLINE NOTNULL(1, 4) void real_multiply_scalar(const float *array,
                                                size_t length,
                                                float value, float *res) {
   int startIndex = align_complement_f32(array);
-  assert(startIndex == align_complement_f32(res));
-  for (int i = 0; i < startIndex; i++) {
-    res[i] = array[i] * value;
-  }
+  if (startIndex == align_complement_f32(res)) {
+    for (int i = 0; i < startIndex; i++) {
+      res[i] = array[i] * value;
+    }
 
-  const __m256 mulVec = _mm256_set_ps(value, value, value, value,
-                                      value, value, value, value);
-  for (size_t i = (int)startIndex; i < length - 7; i += 8) {
-    __m256 vec = _mm256_load_ps(array + i);
-    vec = _mm256_mul_ps(vec, mulVec);
-    _mm256_store_ps(res + i, vec);
-  }
+    const __m256 mulVec = _mm256_set_ps(value, value, value, value,
+                                        value, value, value, value);
+    for (size_t i = (int)startIndex; i < length - 7; i += 8) {
+      __m256 vec = _mm256_load_ps(array + i);
+      vec = _mm256_mul_ps(vec, mulVec);
+      _mm256_store_ps(res + i, vec);
+    }
 
-  for (size_t i = startIndex + (((length - startIndex) >> 3) << 3);
-      i < length; i++) {
-    res[i] = array[i] * value;
+    for (size_t i = startIndex + (((length - startIndex) >> 3) << 3);
+         i < length; i++) {
+      res[i] = array[i] * value;
+    }
+  } else {
+    const __m256 mulVec = _mm256_set_ps(value, value, value, value,
+                                        value, value, value, value);
+    for (size_t i = 0; i < length - 7; i += 8) {
+      __m256 vec = _mm256_loadu_ps(array + i);
+      vec = _mm256_mul_ps(vec, mulVec);
+      _mm256_storeu_ps(res + i, vec);
+    }
+
+    for (size_t i = (((length - startIndex) >> 3) << 3);
+         i < length; i++) {
+      res[i] = array[i] * value;
+    }
   }
 }
 
@@ -682,8 +696,8 @@ INLINE NOTNULL(1, 2, 3) void complex_multiply(
 /// @param res The array to write the results to.
 /// @note res must have at least the same length as array.
 INLINE NOTNULL(1, 4) void real_multiply_scalar(const float *array,
-                                                 size_t length,
-                                                 float value, float *res) {
+                                               size_t length,
+                                               float value, float *res) {
   int ilength = (int)length;
   for (int i = 0; i < ilength - 3; i += 4) {
     float32x4_t vec = vld1q_f32(array + i);
