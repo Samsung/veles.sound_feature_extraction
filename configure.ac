@@ -32,7 +32,7 @@ AM_MAINTAINER_MODE([enable])
 dnl This allows us specify individual liking flags for each target
 AM_PROG_CC_C_O
 
-dnl Check for GCC version
+dnl Check for GCC/Clang version
 AC_MSG_CHECKING([whether gcc version is >= 4.6.0 / clang version is >= 3.1])
 AC_EGREP_CPP(passed, [
 #ifdef __GNUC__
@@ -82,16 +82,22 @@ AC_ARG_ENABLE([colors],
 )
 AS_IF([test "x$enable_colors" != "xno"], [
 	am__v_CXX_0="@echo -e \"  \\033@<:@01;32m\$(CXX)\\033@<:@00m   \" \$@;"
-	AC_SUBST([am__v_CXX_0])
 	am__v_CC_0="@echo -e \"  \\033@<:@01;32m\$(CC)\\033@<:@00m   \" \$@;"
-	AC_SUBST([am__v_CC_0])
 	am__v_CXXLD_0="@echo -e \"  \\033@<:@01;36m\$(CXXLD)\\033@<:@00m   \" \$@;"
-	AC_SUBST([am__v_CXXLD_0])
 	am__v_CCLD_0="@echo -e \"  \\033@<:@01;36m\$(CCLD)\\033@<:@00m   \" \$@;"
-	AC_SUBST([am__v_CCLD_0])
 	am__v_GEN_0="@echo -e \"  \\033@<:@01;33mGEN\\033@<:@00m   \" \$@;"
-	AC_SUBST([am__v_GEN_0])
+], [
+    am__v_CXX_0="@echo \"  CXX   \" \$@;"
+	am__v_CC_0="@echo \"  CC    \" \$@;"
+	am__v_CXXLD_0="@echo \"  CXXLD   \" \$@;"
+	am__v_CCLD_0="@echo \"  CCLD  \" \$@;"
+	am__v_GEN_0="@echo \"  GEN   \" \$@;"
 ])
+AC_SUBST([am__v_CXX_0])
+AC_SUBST([am__v_CC_0])
+AC_SUBST([am__v_CCLD_0])
+AC_SUBST([am__v_CXXLD_0])
+AC_SUBST([am__v_GEN_0])
 
 dnl Check whether to use the built-in Boost
 AC_ARG_WITH([built-in-boost],
