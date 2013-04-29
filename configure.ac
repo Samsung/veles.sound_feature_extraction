@@ -89,7 +89,7 @@ AS_IF([test "x$enable_colors" != "xno"], [
 ], [
     am__v_CXX_0="@echo \"  CXX   \" \$@;"
 	am__v_CC_0="@echo \"  CC    \" \$@;"
-	am__v_CXXLD_0="@echo \"  CXXLD   \" \$@;"
+	am__v_CXXLD_0="@echo \"  CXXLD \" \$@;"
 	am__v_CCLD_0="@echo \"  CCLD  \" \$@;"
 	am__v_GEN_0="@echo \"  GEN   \" \$@;"
 ])
