@@ -30,7 +30,7 @@ void convolute_reference(const float *__restrict x, size_t xLength,
 
 void DebugPrintConvolution(const char* name, const float* vec) {
   printf("%s\t", name);
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 40; i++) {
     printf("%f  ", vec[i]);
   }
   printf("\n");
@@ -112,10 +112,13 @@ TEST(convolute, convolute_ones) {
     }
     float h[hlen];
     int step = 8;
+    int pulses = 3;
+    int ct = 0;
     for (int i = 0; i < hlen; i++) {
-      if (i % step == 0)
+      if (i % step == 0 && ct < pulses) {
         h[i] = 1;
-      else
+        ct++;
+      } else
         h[i] = 0;
     }
 
@@ -124,7 +127,7 @@ TEST(convolute, convolute_ones) {
     DebugPrintConvolution("REFERENCE", verif);
 
     float res[xlen];
-    convolute_ones(x, xlen, step, res);
+    convolute_ones(x, xlen, step, pulses, res);
     DebugPrintConvolution("CONVOLUTE-ONES", res);
 
     int firstDifferenceIndex = -1;

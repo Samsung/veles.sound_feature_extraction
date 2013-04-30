@@ -86,9 +86,9 @@ void convolute_simd(int simd,
 }
 
 void convolute_ones(const float *__restrict x, size_t xLength,
-                    int k, float *result) {
+                    int k, int count, float *result) {
   for (int i = 0; i < (int)xLength; ++i) {
-    result[i] = x[i] + (i >= k ? result[i - k] : 0);
+    result[i] = x[i] + (i >= k ? result[i - k] : 0) - (i >= k*count ? x[i - k * count] : 0);
   }
 }
 
