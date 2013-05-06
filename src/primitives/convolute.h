@@ -108,7 +108,7 @@ void convolute_simd(int simd,
 /// @details Convolution for periodical filter which looks like:
 /// {1 {(k - 1) zeroes} 1 {(k - 1) zeroes} ..}.
 void convolute_ones(const float *__restrict x, size_t xLength,
-                    int k, float *result);
+                    int k, int count, float *result);
 
 typedef enum {
   kConvolutionAlgorithmBruteForce,
