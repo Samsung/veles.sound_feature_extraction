@@ -53,10 +53,11 @@ tests:
 		continue; \
 	fi; \
 	if [ -z "$(TIMEOUT)" ]; then \
-		timeout $(DEFAULT_TIMEOUT) ./$$et --gtest_output="xml:$$et.xml" &>>$(REALLOG); \
+	    timeout_value=$(DEFAULT_TIMEOUT); \
 	else \
-		timeout $(TIMEOUT) ./$$et --gtest_output="xml:$$et.xml" &>>$(REALLOG); \
+		timeout_value=$(TIMEOUT); \
 	fi; \
+	timeout $$timeout_value /usr/bin/time -f "\"$$et\" peak memory usage: %M Kb" ./$$et --gtest_output="xml:$$et.xml" &>>$(REALLOG); \
 	if [ "$$?" -eq "0" ]; then \
 		echo -e "\033[01;32m[DONE]\033[00m $$et"; \
 	else \
