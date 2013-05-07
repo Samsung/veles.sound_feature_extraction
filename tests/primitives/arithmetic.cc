@@ -172,11 +172,6 @@ TEST(Arithmetic, real_multiply_scalar) {
   float verif[18];
   real_multiply_scalar_na(&ar[1], 18, 2.0f, verif);
   ASSERT_EQ(0, memcmp(&res[1], verif, 18 * sizeof(res[0])));
-#ifdef __AVX__
-  EXPECT_DEATH({
-    real_multiply_scalar(&ar[1], 18, 2.0f, res);
-  }, ".*Assertion.*");
-#endif
 }
 
 TEST(Arithmetic, int16_to_int32) {
