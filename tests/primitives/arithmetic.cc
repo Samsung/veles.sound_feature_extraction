@@ -172,6 +172,7 @@ TEST(Arithmetic, real_multiply_scalar) {
   float verif[18];
   real_multiply_scalar_na(&ar[1], 18, 2.0f, verif);
   ASSERT_EQ(0, memcmp(&res[1], verif, 18 * sizeof(res[0])));
+  real_multiply_scalar(&ar[1], 18, 2.0f, res);
 }
 
 TEST(Arithmetic, int16_to_int32) {
