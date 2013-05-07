@@ -177,7 +177,7 @@ AS_IF([test "x$enable_test_coverage" == "xyes" -a "x$enable_debug" == "xyes" -a 
 ])
 
 # Link with Makefile.am in source directories
-AC_CONFIG_FILES(Makefile lib$PACKAGE_NAME.pc
+AC_CONFIG_FILES(Makefile $PACKAGE_NAME.pc
                 inc/Makefile
                 src/Makefile
                 )

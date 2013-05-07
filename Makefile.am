@@ -3,7 +3,7 @@ DIST_SUBDIRS=inc src tests docs
 DISTCHECK_CONFIGURE_FLAGS = --disable-doxygen
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = lib@PACKAGE_NAME@.pc
+pkgconfig_DATA = @PACKAGE_NAME@.pc
 
 .PHONY : tests
 
