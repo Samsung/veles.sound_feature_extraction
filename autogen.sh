@@ -51,6 +51,8 @@ W=0
 rm -f config.cache-env.tmp
 echo "OLD_PARM=\"$@\"" >> config.cache-env.tmp
 echo "OLD_CFLAGS=\"$CFLAGS\"" >> config.cache-env.tmp
+echo "OLD_CXXFLAGS=\"$CXXFLAGS\"" >> config.cache-env.tmp
+echo "OLD_CPPFLAGS=\"$CPPFLAGS\"" >> config.cache-env.tmp
 echo "OLD_PATH=\"$PATH\"" >> config.cache-env.tmp
 echo "OLD_PKG_CONFIG_PATH=\"$PKG_CONFIG_PATH\"" >> config.cache-env.tmp
 echo "OLD_LDFLAGS=\"$LDFLAGS\"" >> config.cache-env.tmp
@@ -71,3 +73,12 @@ fi
 # autogen.sh in submodules
 # note the order: first root autogen.sh, then children
 git submodule foreach ./autogen.sh
+
+if [ -n "$1" ]; then
+	path=$(pwd)
+	mkdir -p "$1"
+	cd "$1"
+	shift
+	$path/configure $@
+	cd $path
+fi
