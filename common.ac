@@ -80,9 +80,9 @@ AC_ARG_ENABLE([colors],
 AS_IF([test "x$enable_colors" != "xno"], [
     am__v_CXX_0="@echo -e \"  \\033@<:@01;32m\$(CXX)\\033@<:@00m   \" \$@;"
     am__v_CC_0="@echo -e \"  \\033@<:@01;32m\$(CC)\\033@<:@00m   \" \$@;"
-    am__v_CXXLD_0="@echo -e \"  \\033@<:@01;36m\$(CXXLD)\\033@<:@00m   \" \$@;"
-    am__v_CCLD_0="@echo -e \"  \\033@<:@01;36m\$(CCLD)\\033@<:@00m   \" \$@;"
-    am__v_GEN_0="@echo -e \"  \\033@<:@01;33mGEN\\033@<:@00m   \" \$@;"
+    am__v_CXXLD_0="@echo -e \"  \\033@<:@01;31m\$(CXXLD)\\033@<:@00m   \" \$@;"
+    am__v_CCLD_0="@echo -e \"  \\033@<:@01;31m\$(CCLD)\\033@<:@00m   \" \$@;"
+    am__v_GEN_0="@echo -e \"  \\033@<:@01;36mGEN\\033@<:@00m   \" \$@;"
 ], [
     am__v_CXX_0="@echo \"  CXX   \" \$@;"
     am__v_CC_0="@echo \"  CC    \" \$@;"
