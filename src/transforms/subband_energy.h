@@ -14,7 +14,7 @@
 #define SRC_TRANSFORMS_SUBBAND_ENERGY_H_
 
 #include "src/formats/window_format.h"
-#include "src/uniform_format_transform.h"
+#include "src/transform_base.h"
 #include "src/primitives/wavelet_filter_bank.h"
 
 namespace SoundFeatureExtraction {

@@ -14,7 +14,7 @@
 #define SRC_TRANSFORMS_REAL_TO_COMPLEX_H_
 
 #include "src/formats/window_format.h"
-#include "src/uniform_format_transform.h"
+#include "src/transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {

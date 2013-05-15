@@ -25,6 +25,11 @@ class CentroidTest : public Centroid, public testing::Test {
   BuffersBase<float> Output;
   int Size;
 
+  CentroidTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 450;
     Input.Initialize(1, Size);

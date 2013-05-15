@@ -25,6 +25,11 @@ class FluxTest : public Flux, public testing::Test {
   BuffersBase<float> Output;
   static const int Size;
 
+  FluxTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Input.Initialize(2, Size);
     for (int i = 0; i < Size; i++) {

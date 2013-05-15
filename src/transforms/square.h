@@ -15,19 +15,17 @@
 
 #include "src/formats/raw_format.h"
 #include "src/formats/window_format.h"
-#include "src/uniform_format_transform.h"
+#include "src/transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class SquareRaw
-    : public TransformBase<Formats::RawFormat16, Formats::RawFormat32> {
+    : public TransformBase<Formats::RawFormat16, Formats::RawFormat32, true> {
  public:
   TRANSFORM_INTRO("Square", "Squares the signal (raw format).")
 
   TRANSFORM_PARAMETERS()
-
-  virtual bool HasInverse() const noexcept;
 
  protected:
   virtual void OnInputFormatChanged();
@@ -36,22 +34,27 @@ class SquareRaw
       const BuffersBase<Formats::Raw16>& in,
       BuffersBase<Formats::Raw32>* buffers) const noexcept;
 
+  virtual void InitializeBuffers(
+      const BuffersBase<Formats::Raw32>& in,
+      BuffersBase<Formats::Raw16>* buffers) const noexcept;
+
   virtual void Do(const BuffersBase<Formats::Raw16>& in,
                   BuffersBase<Formats::Raw32>* out) const noexcept;
+
+  virtual void Do(const BuffersBase<Formats::Raw32>& in,
+                  BuffersBase<Formats::Raw16>* out) const noexcept;
 
   static void Do(bool simd, const int16_t* input, int length,
                  int32_t* output) noexcept;
 };
 
 class SquareWindow
-    : public UniformFormatTransform<Formats::WindowFormatF> {
+    : public UniformFormatTransform<Formats::WindowFormatF, true> {
  public:
   TRANSFORM_INTRO("Square", "Squares the signal (window floating point "
                             "format).")
 
   TRANSFORM_PARAMETERS()
-
-  virtual bool HasInverse() const noexcept;
 
  protected:
   virtual void InitializeBuffers(

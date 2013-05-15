@@ -24,6 +24,11 @@ class SubbandEnergyTest : public SubbandEnergy, public testing::Test {
   BuffersBase<WindowF> Output;
   int Size;
 
+  SubbandEnergyTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     SetParameter("tree", "3 3 2 2 3 3");
     Size = 512;

@@ -18,7 +18,8 @@ namespace Transforms {
 
 FirFilterBase::FirFilterBase() noexcept
 : length_(DEFAULT_FILTER_LENGTH),
-  windowType_(WINDOW_TYPE_HAMMING) {
+  windowType_(WINDOW_TYPE_HAMMING),
+  convoluteHandle_(convolute_initialize(0, 0)) {
   RegisterSetter("length", [&](const std::string& value) {
     int pv = Parse<int>("length", value);
     if (pv < MIN_FILTER_LENGTH || pv > MAX_FILTER_LENGTH) {
@@ -48,6 +49,7 @@ void FirFilterBase::Initialize() const noexcept {
   }
   CalculateFilter(&filter_[0]);
   dataBuffer_.resize(inputFormat_->Size());
+  convolute_finalize(convoluteHandle_);
   convoluteHandle_ = convolute_initialize(inputFormat_->Size(), filter_.size());
 }
 

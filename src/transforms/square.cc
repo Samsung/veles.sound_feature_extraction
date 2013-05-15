@@ -16,10 +16,6 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-bool SquareRaw::HasInverse() const noexcept {
-  return true;
-}
-
 void SquareRaw::OnInputFormatChanged() {
   outputFormat_->SetSize(inputFormat_->Size());
   outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
@@ -32,13 +28,25 @@ void SquareRaw::InitializeBuffers(
                       in[0]->AlignmentOffset());
 }
 
+void SquareRaw::InitializeBuffers(
+    const BuffersBase<Formats::Raw32>& in,
+    BuffersBase<Formats::Raw16>* buffers) const noexcept {
+  buffers->Initialize(in.Size(), inputFormat_->Size(),
+                      in[0]->AlignmentOffset());
+}
+
 void SquareRaw::Do(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw32>* out) const noexcept {
-  assert(!IsInverse() && "Not implemented yet");
   for (size_t i = 0; i < in.Size(); i++) {
     Do(true, in[i]->Data.get(), outputFormat_->Size(), (*out)[i]->Data.get());
   }
+}
+
+void SquareRaw::Do(
+    const BuffersBase<Formats::Raw32>& in UNUSED,
+    BuffersBase<Formats::Raw16>* out UNUSED) const noexcept {
+  assert(false && "Not implemented yet");
 }
 
 void SquareRaw::Do(bool simd, const int16_t* input, int length,
@@ -71,10 +79,6 @@ void SquareRaw::Do(bool simd, const int16_t* input, int length,
       output[j] = input[j] * input[j];
     }
   }
-}
-
-bool SquareWindow::HasInverse() const noexcept {
-  return true;
 }
 
 void SquareWindow::InitializeBuffers(

@@ -15,7 +15,7 @@
 
 #include <vector>
 #include "src/formats/window_format.h"
-#include "src/uniform_format_transform.h"
+#include "src/transform_base.h"
 #include "src/primitives/wavelet_types.h"
 #include "src/primitives/wavelet_filter_bank.h"
 
@@ -48,7 +48,7 @@ namespace Transforms {
 ///             ------ 3
 ///
 class DWPT
-    : public UniformFormatTransform<Formats::WindowFormatF> {
+    : public UniformFormatTransform<Formats::WindowFormatF, true> {
  public:
   DWPT();
 
@@ -66,8 +66,6 @@ class DWPT
   )
 
   virtual void Initialize() const noexcept;
-
-  virtual bool HasInverse() const noexcept;
 
  protected:
   virtual void OnFormatChanged();

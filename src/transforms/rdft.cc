@@ -18,10 +18,6 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-bool RDFT::HasInverse() const noexcept {
-  return true;
-}
-
 void RDFT::OnFormatChanged() {
   if (!IsInverse()) {
     outputFormat_->SetSize(inputFormat_->Size() + 2);

@@ -47,10 +47,6 @@ DWPT::DWPT()
   });
 }
 
-bool DWPT::HasInverse() const noexcept {
-  return true;
-}
-
 void DWPT::OnFormatChanged() {
   WaveletFilterBank::ValidateLength(treeFingerprint_,
                                     inputFormat_->Size());

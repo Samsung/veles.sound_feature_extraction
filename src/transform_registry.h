@@ -32,7 +32,7 @@ class TransformFactory {
   /// @brief Returns a unique instance of TransformFactory class.
   static const TransformFactory& Instance();
 
-  /// @brief Returns the hash map whic hstores the registered transforms.
+  /// @brief Returns the hash map which stores the registered transforms.
   const FactoryMap& Map() const;
 
   /// @brief Prints the names of registered transforms to stdout.

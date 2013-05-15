@@ -13,6 +13,7 @@
 #ifndef SRC_BUFFERS_BASE_H_
 #define SRC_BUFFERS_BASE_H_
 
+#include <assert.h>
 #include "src/config.h"
 #include "src/buffer_format.h"
 #include "src/buffers.h"
@@ -100,21 +101,20 @@ class BufferFormatBase : public BufferFormat {
 template <typename T>
 class BuffersBase : public Buffers {
  public:
-  BuffersBase() noexcept
-      : Buffers(0, nullptr) {
-  }
-
   explicit BuffersBase(
       const std::shared_ptr<BufferFormatBase<T>>& format) noexcept
-      : Buffers(0, format) {
+      : Buffers(0, format),
+        initialized_(false) {
   }
 
   template <typename... TArgs>
   void Initialize(size_t size, TArgs... args) noexcept {
+    assert(!initialized_ && "Already initialized");
     Buffers::SetSize(size);
     for (size_t i = 0; i < size; i++) {
       Set(i, new T(args...));
     }
+    initialized_ = true;
   }
 
   virtual ~BuffersBase() noexcept {
@@ -135,6 +135,8 @@ class BuffersBase : public Buffers {
 private:
   BuffersBase(const BuffersBase<T>& other) = delete;
   BuffersBase& operator=(const BuffersBase<T>& other) = delete;
+
+  bool initialized_;
 };
 
 }  // namespace SoundFeatureExtraction

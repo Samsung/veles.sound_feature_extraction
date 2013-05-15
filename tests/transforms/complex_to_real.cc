@@ -26,6 +26,11 @@ class ComplexToRealTest
   BuffersBase<WindowF> Output;
   int Size;
 
+  ComplexToRealTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 486;
     Input.Initialize(1, 2 * Size);

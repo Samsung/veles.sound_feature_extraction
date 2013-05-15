@@ -13,17 +13,28 @@
 
 #include <gtest/gtest.h>
 #include "src/transforms/window.h"
+#include "src/transform_tree.h"
+#include "src/transform_registry.h"
+#include "src/formats/raw_format.h"
+#include "tests/speech_sample.inc"
 
+using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::Formats::WindowF;
 using SoundFeatureExtraction::Formats::WindowFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::Window;
+using SoundFeatureExtraction::TransformTree;
 
-class UnpackRDFTTest : public Window, public testing::Test {
+class WindowTest : public Window, public testing::Test {
  public:
   BuffersBase<WindowF> Input;
   BuffersBase<WindowF> Output;
   int Size;
+
+  WindowTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
 
   virtual void SetUp() {
     Size = 514;
@@ -38,7 +49,7 @@ class UnpackRDFTTest : public Window, public testing::Test {
   }
 };
 
-TEST_F(UnpackRDFTTest, Do) {
+TEST_F(WindowTest, Do) {
   SetParameter("predft", "false");
   Initialize();
   Do(Input, &Output);
@@ -48,10 +59,29 @@ TEST_F(UnpackRDFTTest, Do) {
                       sizeof(float) * Size));
 }
 
-TEST_F(UnpackRDFTTest, DoPreDft) {
+TEST_F(WindowTest, DoPreDft) {
   SetParameter("predft", "true");
   Initialize();
   Do(Input, &Output);
+}
+
+TEST(RawWindow, Inverse) {
+  Raw16 buffers(48000, 0);
+  TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
+  tt.SetValidateAfterEachTransform(true);
+  // We have to apply FilterBank twice since Energy results in
+  // squared magnitude
+  tt.AddFeature("WindowInverseTest", { { "Window", "length=512" },
+      { "IWindow", "length=512" } });
+  memcpy(buffers.Data.get(), data, sizeof(data));
+  tt.PrepareForExecution();
+  auto res = tt.Execute(buffers);
+  ASSERT_EQ(1, res.size());
+  res["WindowInverseTest"]->Validate();
+  auto report = tt.ExecutionTimeReport();
+  for (auto r : report) {
+    printf("%s:\t%f\n", r.first.c_str(), r.second);
+  }
 }
 
 #include "tests/google/src/gtest_main.cc"

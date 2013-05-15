@@ -24,6 +24,11 @@ class SelectorTest : public Selector, public testing::Test {
   BuffersBase<WindowF> Output;
   int Size;
 
+  SelectorTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     SetParameter("from", "left");
     SetParameter("length", "6");

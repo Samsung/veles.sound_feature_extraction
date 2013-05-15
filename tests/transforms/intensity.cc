@@ -25,6 +25,11 @@ class IntensityTest : public Intensity, public testing::Test {
   BuffersBase<float> Output;
   int Size;
 
+  IntensityTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 378;
     Input.Initialize(1, Size);

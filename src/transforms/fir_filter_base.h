@@ -14,7 +14,7 @@
 #define SRC_TRANSFORMS_FIR_FILTER_BASE_H_
 
 #include <vector>
-#include "src/uniform_format_transform.h"
+#include "src/transform_base.h"
 #include "src/formats/format_limits.h"
 #include "src/formats/raw_format.h"
 #include "src/primitives/convolute.h"

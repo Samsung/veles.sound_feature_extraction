@@ -27,6 +27,11 @@ class SquareRawTest : public SquareRaw, public testing::Test {
   BuffersBase<Raw16> Input;
   BuffersBase<Raw32> Output;
 
+  SquareRawTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Input.Initialize(1, 32000, 0);
     for (int i = 0; i < 32000; i++) {
@@ -43,6 +48,11 @@ class SquareWindowTest : public SquareWindow, public testing::Test {
   BuffersBase<WindowF> Input;
   BuffersBase<WindowF> Output;
   int Size;
+
+  SquareWindowTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
 
   virtual void SetUp() {
     Size = 378;

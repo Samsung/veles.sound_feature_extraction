@@ -51,11 +51,6 @@ class Transform : public virtual IParameterizable {
   virtual bool HasInverse() const noexcept {
     return false;
   }
-
-  virtual void DoInverse(const Buffers& in UNUSED,
-                         Buffers* out UNUSED) const {
-    std::unexpected();
-  }
   /// @}
 
   /// @defgroup NonVirt Non-virtual methods

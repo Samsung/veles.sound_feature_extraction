@@ -25,6 +25,11 @@ class UnpackRDFTTest : public UnpackRDFT, public testing::Test {
   BuffersBase<WindowF> Output;
   int Size;
 
+  UnpackRDFTTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   void Initialize(int size) {
     Size = size;
     Input.Initialize(1, Size);

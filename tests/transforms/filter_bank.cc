@@ -26,6 +26,11 @@ class FilterBankTest : public FilterBank, public testing::Test {
   BuffersBase<WindowF> Output;
   int Size;
 
+  FilterBankTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 378;
     Input.Initialize(1, Size);

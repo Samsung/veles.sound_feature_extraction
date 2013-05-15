@@ -18,10 +18,6 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-bool DCT::HasInverse() const noexcept {
-  return true;
-}
-
 void DCT::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {

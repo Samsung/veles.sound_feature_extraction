@@ -14,13 +14,13 @@
 #define SRC_TRANSFORMS_LOG_H_
 
 #include "src/formats/window_format.h"
-#include "src/uniform_format_transform.h"
+#include "src/transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Log
-    : public UniformFormatTransform<Formats::WindowFormatF> {
+    : public UniformFormatTransform<Formats::WindowFormatF, true> {
  public:
   Log();
 
@@ -31,8 +31,6 @@ class Log
       TP("base", "Logarithm base (2, 10 or e).",
          LogBaseToString(kDefaultLogBase))
   )
-
-  virtual bool HasInverse() const noexcept;
 
  protected:
   enum LogBase {

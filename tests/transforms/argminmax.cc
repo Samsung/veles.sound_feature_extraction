@@ -27,6 +27,11 @@ class ArgMinMaxTest
   BuffersBase<ArgMinMaxResult> Output;
   int Size;
 
+  ArgMinMaxTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 486;
     Input.Initialize(1, Size);

@@ -27,6 +27,11 @@ class SpectralEnergyTest
   BuffersBase<WindowF> Output;
   int Size;
 
+  SpectralEnergyTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 378;
     Input.Initialize(1, Size);

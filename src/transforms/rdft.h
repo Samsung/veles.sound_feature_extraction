@@ -14,20 +14,18 @@
 #define SRC_TRANSFORMS_RDFT_H_
 
 #include "src/formats/window_format.h"
-#include "src/uniform_format_transform.h"
+#include "src/transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class RDFT
-    : public UniformFormatTransform<Formats::WindowFormatF> {
+    : public UniformFormatTransform<Formats::WindowFormatF, true> {
  public:
   TRANSFORM_INTRO("RDFT", "Performs Discrete Fourier Transform "
                          "on the input signal (using real FFT).")
 
   TRANSFORM_PARAMETERS()
-
-  virtual bool HasInverse() const noexcept;
 
  protected:
   virtual void OnFormatChanged();

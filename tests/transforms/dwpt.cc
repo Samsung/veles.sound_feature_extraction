@@ -24,6 +24,11 @@ class DWPTTest : public DWPT, public testing::Test {
   BuffersBase<WindowF> Output;
   int Size;
 
+  DWPTTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 512;
     Input.Initialize(1, Size);

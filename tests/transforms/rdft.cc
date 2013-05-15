@@ -24,6 +24,11 @@ class RDFTTest : public RDFT, public testing::Test {
   BuffersBase<WindowF> Output;
   int Size;
 
+  RDFTTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 512;
     Input.Initialize(1, Size + 2);

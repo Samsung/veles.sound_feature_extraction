@@ -25,6 +25,11 @@ class FrequencyBandsTest : public FrequencyBands, public testing::Test {
   BuffersBase<WindowF> Output;
   int Size;
 
+  FrequencyBandsTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 512;
     SetParameter("number", "4");

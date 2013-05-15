@@ -69,10 +69,6 @@ FilterBank::FilterBank()
   });
 }
 
-bool FilterBank::HasInverse() const noexcept {
-  return true;
-}
-
 float FilterBank::LinearToScale(ScaleType type, float freq) {
   switch (type) {
     case SCALE_TYPE_LINEAR:

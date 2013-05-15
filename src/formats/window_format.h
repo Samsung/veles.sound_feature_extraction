@@ -91,21 +91,24 @@ class WindowFormat
       : duration_(DEFAULT_WINDOW_DURATION),
         samplingRate_(DEFAULT_SAMPLING_RATE),
         size_(SamplesCount()),
-        allocatedSize_(size_) {
+        allocatedSize_(size_),
+        parentRawSize_(0) {
   }
 
   WindowFormat(const WindowFormat& other) noexcept
       : duration_(other.duration_),
         samplingRate_(other.samplingRate_),
         size_(other.size_),
-        allocatedSize_(other.allocatedSize_) {
+        allocatedSize_(other.allocatedSize_),
+        parentRawSize_(other.parentRawSize_) {
   }
 
-  WindowFormat(size_t duration, int samplingRate)
+  WindowFormat(size_t duration, int samplingRate, size_t parentRawSize = 0)
       : duration_(duration),
         samplingRate_(samplingRate),
         size_(SamplesCount()),
-        allocatedSize_(size_) {
+        allocatedSize_(size_),
+        parentRawSize_(parentRawSize) {
     ValidateDuration(duration_);
     ValidateSamplingRate(samplingRate_);
   }
@@ -172,6 +175,16 @@ class WindowFormat
     allocatedSize_ = value;
   }
 
+  /// @brief Returns the parent Raw (that is, before cutting into windows)
+  /// data size.
+  size_t ParentRawSize() const noexcept {
+    return parentRawSize_;
+  }
+
+  void SetParentRawSize(size_t value) noexcept {
+     parentRawSize_ = value;
+  }
+
  protected:
   virtual bool MustReallocate(const BufferFormatBase<Window<T>>& other)
       const noexcept {
@@ -229,6 +242,7 @@ class WindowFormat
   int samplingRate_;
   size_t size_;
   size_t allocatedSize_;
+  size_t parentRawSize_;
 
   static void ValidateDuration(size_t value) {
     if (value < MIN_WINDOW_DURATION || value > MAX_WINDOW_DURATION) {

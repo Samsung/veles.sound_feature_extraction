@@ -29,6 +29,7 @@ class WindowFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
     outputFormat->SetDuration(inputFormat->Duration());
     outputFormat->SetSamplingRate(inputFormat->SamplingRate());
     outputFormat->SetSize(inputFormat->Size());
+    outputFormat->SetParentRawSize(inputFormat->ParentRawSize());
   }
 
   virtual void InitializeBuffers(

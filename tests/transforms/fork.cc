@@ -24,6 +24,11 @@ class ForkTest : public Fork, public testing::Test {
   BuffersBase<WindowF> Output;
   int Size;
 
+  ForkTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 512;
     Input.Initialize(1, Size);

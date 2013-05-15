@@ -26,6 +26,11 @@ class DiffrectTest
   BuffersBase<WindowF> Output;
   int Size;
 
+  DiffrectTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 486;
     Input.Initialize(1, 2 * Size);

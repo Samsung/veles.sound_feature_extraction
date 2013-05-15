@@ -24,6 +24,11 @@ class DCTTest : public DCT, public testing::Test {
   BuffersBase<WindowF> Output;
   int Size;
 
+  DCTTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 512;
     Input.Initialize(1, Size);

@@ -26,6 +26,11 @@ class BeatTest : public Beat, public testing::Test {
   BuffersBase<float> Output;
   int Size;
 
+  BeatTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = data[0];
     Input.Initialize(1, Size);

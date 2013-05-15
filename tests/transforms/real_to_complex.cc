@@ -24,6 +24,11 @@ class RealToComplexTest : public RealToComplex, public testing::Test {
   BuffersBase<WindowF> Output;
   int Size;
 
+  RealToComplexTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 486;
     Input.Initialize(1, Size * 2);

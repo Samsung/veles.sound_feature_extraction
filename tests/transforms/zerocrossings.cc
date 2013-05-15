@@ -28,6 +28,11 @@ class ZeroCrossingsWindowTest : public ZeroCrossingsWindow, public testing::Test
   BuffersBase<int32_t> Output;
   int Size;
 
+  ZeroCrossingsWindowTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 450;
     Input.Initialize(1, Size);
@@ -60,6 +65,11 @@ class ZeroCrossingsRawTest : public ZeroCrossingsRaw, public testing::Test {
   BuffersBase<Raw16> Input;
   BuffersBase<int32_t> Output;
   int Size;
+
+  ZeroCrossingsRawTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
 
   virtual void SetUp() {
     Size = 1024;

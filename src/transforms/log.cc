@@ -40,10 +40,6 @@ Log::Log() : base_(kDefaultLogBase) {
   });
 }
 
-bool Log::HasInverse() const noexcept {
-  return true;
-}
-
 void Log::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {

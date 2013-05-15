@@ -28,6 +28,11 @@ class MeanTest
   BuffersBase<FixedArray<SoundFeatureExtraction::Transforms::MEAN_TYPE_COUNT>> Output;
   int Size;
 
+  MeanTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 486;
     Input.Initialize(1, Size);

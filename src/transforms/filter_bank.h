@@ -14,13 +14,13 @@
 #define SRC_TRANSFORMS_FILTER_BANK_H_
 
 #include "src/formats/window_format.h"
-#include "src/uniform_format_transform.h"
+#include "src/transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class FilterBank
-    : public UniformFormatTransform<Formats::WindowFormatF> {
+    : public UniformFormatTransform<Formats::WindowFormatF, true> {
  public:
   FilterBank();
 
@@ -39,8 +39,6 @@ class FilterBank
       TP("frequency_max", "Maximal frequency of the filter bank.",
          std::to_string(kDefaultMaxFrequency))
   )
-
-  virtual bool HasInverse() const noexcept;
 
   virtual void Initialize() const noexcept;
 

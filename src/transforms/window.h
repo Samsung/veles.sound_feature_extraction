@@ -15,7 +15,7 @@
 
 #include "src/formats/raw_format.h"
 #include "src/formats/window_format.h"
-#include "src/uniform_format_transform.h"
+#include "src/transform_base.h"
 #include "src/primitives/window.h"
 
 namespace SoundFeatureExtraction {
@@ -70,7 +70,7 @@ class Window
 
 /// @brief Splits the raw stream into numerous small chunks aka windows.
 class RawToWindow
-    : public TransformBase<Formats::RawFormat16, Formats::WindowFormat16> {
+    : public TransformBase<Formats::RawFormat16, Formats::WindowFormat16, true> {
  public:
   RawToWindow();
 
@@ -92,12 +92,19 @@ class RawToWindow
 
  protected:
   virtual void OnInputFormatChanged();
+  virtual void OnOutputFormatChanged();
 
   virtual void InitializeBuffers(const BuffersBase<Formats::Raw16>& in,
         BuffersBase<Formats::Window16>* buffers) const noexcept;
 
+  virtual void InitializeBuffers(const BuffersBase<Formats::Window16>& in,
+        BuffersBase<Formats::Raw16>* buffers) const noexcept;
+
   virtual void Do(const BuffersBase<Formats::Raw16>& in,
                   BuffersBase<Formats::Window16> *out) const noexcept;
+
+  virtual void Do(const BuffersBase<Formats::Window16>& in,
+                  BuffersBase<Formats::Raw16> *out) const noexcept;
 
   mutable Window::WindowContentsPtr window_;
 

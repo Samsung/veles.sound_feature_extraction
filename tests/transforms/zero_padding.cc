@@ -24,6 +24,11 @@ class ZeroPaddingTest : public ZeroPadding, public testing::Test {
   BuffersBase<WindowF> Output;
   int Size;
 
+  ZeroPaddingTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 501;
     Input.Initialize(1, Size * 2);

@@ -25,6 +25,11 @@ class RolloffTest : public Rolloff, public testing::Test {
   BuffersBase<float> Output;
   int Size;
 
+  RolloffTest()
+      : Input(inputFormat_),
+        Output(outputFormat_) {
+  }
+
   virtual void SetUp() {
     Size = 450;
     Input.Initialize(1, Size);

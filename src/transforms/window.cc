@@ -64,11 +64,17 @@ void RawToWindow::OnInputFormatChanged() {
   outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
   // Allocate 2 extra samples to use zero-copy FFT
   outputFormat_->SetAllocatedSize(outputFormat_->Size() + 2);
+  outputFormat_->SetParentRawSize(inputFormat_->Size());
+}
+
+void RawToWindow::OnOutputFormatChanged() {
+  inputFormat_->SetSamplingRate(outputFormat_->SamplingRate());
+  inputFormat_->SetSize(outputFormat_->ParentRawSize());
 }
 
 void RawToWindow::Initialize() const noexcept {
   int realSize = inputFormat_->Size() - outputFormat_->Size();
-  windowsCount_ = realSize / step_;
+  windowsCount_ = realSize / step_ + 1;
   int excess = realSize % step_;
   if (excess != 0) {
     fprintf(stderr, "(input buffer size %zu - window length %zu) = %i is not "
@@ -86,6 +92,12 @@ void RawToWindow::InitializeBuffers(
     BuffersBase<Formats::Window16>* buffers) const noexcept {
   buffers->Initialize(in.Size() * windowsCount_,
                       outputFormat_->AllocatedSize());
+}
+
+void RawToWindow::InitializeBuffers(
+    const BuffersBase<Formats::Window16>& in,
+    BuffersBase<Formats::Raw16>* buffers) const noexcept {
+  buffers->Initialize(in.Size() / windowsCount_, inputFormat_->Size(), 0);
 }
 
 void RawToWindow::Do(const BuffersBase<Formats::Raw16>& in,
@@ -118,6 +130,35 @@ const noexcept {
       } else {  // type_ != WINDOW_TYPE_RECTANGULAR
         memcpy(output, input, outputFormat_->Size() * sizeof(int16_t));
       }
+    }
+  }
+}
+
+void RawToWindow::Do(const BuffersBase<Formats::Window16>& in,
+                     BuffersBase<Formats::Raw16> *out) const noexcept {
+  int windowLength = outputFormat_->Size();
+  int offset = (windowLength - step_) / 2;
+  int rawIndex = 0;
+  size_t skippedEndingSize = inputFormat_->Size() -
+      step_ * (windowsCount_ - 1) - outputFormat_->Size();
+  for (size_t i = 0; i < in.Size(); i++) {
+    int windowIndex = i % windowsCount_;
+    if (windowIndex == 0) {
+      memcpy((*out)[rawIndex]->Data.get(), in[i]->Data.get(),
+             (windowLength - offset) * sizeof(int16_t));
+    } else if (windowIndex < windowsCount_ - 1) {
+      memcpy((*out)[rawIndex]->Data.get() +
+                 windowLength - offset + step_ * (windowIndex - 1),
+             in[i]->Data.get() + offset, step_ * sizeof(int16_t));
+    } else {
+      memcpy((*out)[rawIndex]->Data.get() +
+                 windowLength - offset + step_ * (windowIndex - 1),
+             in[i]->Data.get() + offset,
+             (windowLength - offset) * sizeof(int16_t));
+      memset((*out)[rawIndex]->Data.get() +
+                 inputFormat_->Size() - skippedEndingSize,
+             0, skippedEndingSize * sizeof(int16_t));
+      rawIndex++;
     }
   }
 }

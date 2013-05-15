@@ -39,7 +39,11 @@ bool Transform::operator==(const Transform& other) const noexcept {
 }
 
 bool Transform::IsInverse() const noexcept {
-  return GetParameters().find("inverse")->second == "true";
+  auto ip = GetParameters().find("inverse");
+  if (ip == GetParameters().end()) {
+    return false;
+  }
+  return ip->second == "true";
 }
 
 std::string Transform::SafeName() const noexcept {

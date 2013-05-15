@@ -337,8 +337,10 @@ TransformTree::Execute(const Formats::Raw16& in) {
   }
 
   // Initialize input
-  std::static_pointer_cast<BuffersBase<Formats::Raw16>>(root_->BoundBuffers)
-      ->Initialize(1, in);
+  auto buffers = std::make_shared<BuffersBase<Formats::Raw16>>(
+      rootFormat_);
+  buffers->Initialize(1, in);
+  root_->BoundBuffers = buffers;
   if (ValidateAfterEachTransform()) {
     try {
       root_->BoundBuffers->Validate();
