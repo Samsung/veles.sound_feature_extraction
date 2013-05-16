@@ -11,6 +11,15 @@ AS_IF([test "x$enable_benchmarks" == "xyes"], [
     CPPFLAGS="$CPPFLAGS -DBENCHMARK"
 ])
 
+# Check whether to use nice Eina logging
+AC_ARG_ENABLE([eina-logging],
+    AS_HELP_STRING([--enable-eina-logging], [Use Eina as the logging backend])
+)
+AS_IF([test "x$enable_eina_logging" == "xyes"], [    
+    PKG_CHECK_MODULES([EINA], [eina >= 1.0])
+    CPPFLAGS="$CPPFLAGS -DEINA $EINA_CFLAGS"
+])
+
 # Check whether to use the built-in Boost
 AC_ARG_WITH([built-in-boost],
     AS_HELP_STRING([--with-built-in-boost], [use statically linked embedded Boost parts]), [

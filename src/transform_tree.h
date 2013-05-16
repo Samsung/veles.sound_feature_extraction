@@ -16,6 +16,7 @@
 #include <chrono>
 #include "src/formats/raw_format.h"
 #include "src/exceptions.h"
+#include "src/logger.h"
 #include "src/transform.h"
 
 namespace SoundFeatureExtraction {
@@ -111,7 +112,7 @@ class InvalidInputBuffersException : public ExceptionBase {
   }
 };
 
-class TransformTree {
+class TransformTree : public Logger {
  public:
   explicit TransformTree(Formats::RawFormat16&& rootFormat) noexcept;
   explicit TransformTree(

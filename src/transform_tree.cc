@@ -217,7 +217,8 @@ size_t TransformTree::Node::ChildrenCount() const noexcept {
 }
 
 TransformTree::TransformTree(Formats::RawFormat16&& rootFormat) noexcept
-    : root_(std::make_shared<Node>(
+    : Logger("TransformTree", EINA_COLOR_ORANGE),
+      root_(std::make_shared<Node>(
         nullptr, std::make_shared<RootTransform>(
             std::make_shared<Formats::RawFormat16>(rootFormat)), this)),
       rootFormat_(std::make_shared<Formats::RawFormat16>(rootFormat)),
@@ -228,7 +229,8 @@ TransformTree::TransformTree(Formats::RawFormat16&& rootFormat) noexcept
 
 TransformTree::TransformTree(
     const std::shared_ptr<Formats::RawFormat16>& rootFormat) noexcept
-    : root_(std::make_shared<Node>(
+    : Logger("TransformTree", EINA_COLOR_ORANGE),
+      root_(std::make_shared<Node>(
         nullptr, std::make_shared<RootTransform>(rootFormat), this)),
       rootFormat_(rootFormat),
       treeIsPrepared_(false),

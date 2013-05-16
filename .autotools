@@ -35,7 +35,7 @@
 <flagvalue id="cflags-gprof" value="false"/>
 <flagvalue id="cflags-gcov" value="false"/>
 </flag>
-<option id="user" value="--enable-parallel-build --enable-debug --with-built-in-fftf --with-built-in-boost --disable-doxygen"/>
+<option id="user" value="--enable-eina-logging --enable-parallel-build --enable-debug --with-built-in-fftf --with-built-in-boost --disable-doxygen"/>
 <option id="autogen" value="autogen.sh"/>
 <option id="autogenOpts" value=""/>
 </configuration>
@@ -74,7 +74,7 @@
 <flagvalue id="cflags-gprof" value="false"/>
 <flagvalue id="cflags-gcov" value="false"/>
 </flag>
-<option id="user" value="--enable-debug --disable-doxygen --enable-parallel-build --with-built-in-boost --with-built-in-fftf"/>
+<option id="user" value="--enable-eina-logging  --enable-debug --disable-doxygen --enable-parallel-build --with-built-in-boost --with-built-in-fftf"/>
 <option id="autogen" value="autogen.sh"/>
 <option id="autogenOpts" value=""/>
 </configuration>
@@ -113,7 +113,7 @@
 <flagvalue id="cflags-gprof" value="false"/>
 <flagvalue id="cflags-gcov" value="false"/>
 </flag>
-<option id="user" value="--enable-parallel-build --with-built-in-fftf --with-built-in-boost --disable-doxygen --enable-lto"/>
+<option id="user" value="--enable-eina-logging --enable-parallel-build --with-built-in-fftf --with-built-in-boost --disable-doxygen --enable-lto"/>
 <option id="autogen" value="autogen.sh"/>
 <option id="autogenOpts" value=""/>
 </configuration>
