@@ -70,7 +70,8 @@ class Window
 
 /// @brief Splits the raw stream into numerous small chunks aka windows.
 class RawToWindow
-    : public TransformBase<Formats::RawFormat16, Formats::WindowFormat16, true> {
+    : public TransformBase<Formats::RawFormat16, Formats::WindowFormat16, true>,
+      public TransformLogger<RawToWindow> {
  public:
   RawToWindow();
 

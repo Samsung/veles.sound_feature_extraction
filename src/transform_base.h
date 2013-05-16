@@ -16,6 +16,7 @@
 #include <assert.h>
 #include <string>
 #include "src/buffers_base.h"
+#include "src/logger.h"
 #include "src/parameters_base.h"
 #include "src/transform_registry.h"
 
@@ -272,6 +273,14 @@ SupportedParameters() const noexcept { \
   }; \
   return sp; \
 }
+
+template<class T>
+class TransformLogger : public Logger {
+ public:
+  TransformLogger() : Logger(Logger::Demangle(typeid(T).name()),
+                                              EINA_COLOR_LIGHTBLUE) {
+  }
+};
 
 }  // namespace SoundFeatureExtraction
 #endif  // SRC_TRANSFORM_BASE_H_

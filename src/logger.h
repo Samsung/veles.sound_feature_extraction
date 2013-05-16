@@ -71,9 +71,9 @@ class Logger {
   Logger(const std::string &domain, const std::string &color,
          bool suppressLoggingInitialized = true);
 
-  explicit Logger(const Logger& other);
+  Logger(const Logger& other);
 
-  explicit Logger(Logger&& other);
+  Logger(Logger&& other);
 
   Logger& operator=(const Logger& other);
 

@@ -66,8 +66,8 @@ void FrequencyBands::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* out) const noexcept {
   if (in.Size() % bandsNumber_ != 0) {
-    fprintf(stderr, "Warning: the number of windows is not a multiple "
-                    "of bands number. The remainder is left untouched.");
+    WRN("Warning: the number of windows is not a multiple "
+        "of bands number. The remainder is left untouched.");
   }
 
   std::vector<int> bands;
@@ -84,12 +84,12 @@ void FrequencyBands::Do(
     while (bandsIterator != empty) {
       int freq = std::stoi(*bandsIterator++);
       if (freq > inputFormat_->SamplingRate() / 2) {
-        fprintf(stderr, "Warning: the bands after %i (defined by sampling "
-                        "rate %i) will be discarded (first greater band was "
-                        "%i).\n",
-                        inputFormat_->SamplingRate() / 2,
-                        inputFormat_->SamplingRate(),
-                        freq);
+        WRN("Warning: the bands after %i (defined by sampling "
+            "rate %i) will be discarded (first greater band was "
+            "%i).\n",
+            inputFormat_->SamplingRate() / 2,
+            inputFormat_->SamplingRate(),
+            freq);
         bands.push_back(inputFormat_->Size());
         break;
       }

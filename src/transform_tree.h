@@ -140,7 +140,8 @@ class TransformTree : public Logger {
   void SetDumpBuffersAfterEachTransform(bool value) noexcept;
 
  private:
-  struct Node {
+  class Node : public Logger {
+   public:
     Node(Node* parent, const std::shared_ptr<Transform>& boundTransform,
          TransformTree* host = nullptr) noexcept;
 

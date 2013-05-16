@@ -87,10 +87,12 @@ class RootTransform : public Transform {
 TransformTree::Node::Node(Node* parent,
                           const std::shared_ptr<Transform>& boundTransform,
                           TransformTree* host) noexcept
-: Parent(parent)
-, BoundTransform(boundTransform)
-, BoundBuffers(nullptr)
-, Host(host == nullptr? parent == nullptr? nullptr : parent->Host : host) {
+    : Logger(std::string("Node (") + boundTransform->Name() + ")",
+             EINA_COLOR_GREEN),
+      Parent(parent),
+      BoundTransform(boundTransform),
+      BoundBuffers(nullptr),
+      Host(host == nullptr? parent == nullptr? nullptr : parent->Host : host) {
 }
 
 void TransformTree::Node::ActionOnEachTransformInSubtree(
@@ -197,10 +199,10 @@ void TransformTree::Node::Execute() {
     }
 
     if (Host->DumpBuffersAfterEachTransform()) {
-      printf("Buffers after %s\n", BoundTransform->Name().c_str());
-      printf("==============%s\n",
-             std::string(BoundTransform->Name().size(), '=').c_str());
-      printf("%s\n", BoundBuffers->Dump().c_str());
+      INF("Buffers after %s\n", BoundTransform->Name().c_str());
+      INF("==============%s\n",
+          std::string(BoundTransform->Name().size(), '=').c_str());
+      INF("%s\n", BoundBuffers->Dump().c_str());
     }
   }
   ActionOnEachImmediateChild([&](Node& node) {

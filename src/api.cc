@@ -199,7 +199,7 @@ FeaturesConfiguration *setup_features_extraction(
   std::vector<std::string> lines;
   for (int i = 0; i < featuresCount; i++) {
     if (features[i] == nullptr) {
-      fprintf(stderr, "features[%i] is null\n", i);
+      fprintf(stderr, "Error: features[%i] is null\n", i);
       return nullptr;
     }
     lines.push_back(features[i]);

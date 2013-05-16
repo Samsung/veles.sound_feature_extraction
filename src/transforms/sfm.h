@@ -21,7 +21,8 @@ namespace Transforms {
 class SFM
     : public TransformBase<
           Formats::SingleFormat<Formats::FixedArray<MEAN_TYPE_COUNT>>,
-          Formats::SingleFormat<float>> {
+          Formats::SingleFormat<float>>,
+      public TransformLogger<SFM> {
  public:
   TRANSFORM_INTRO("SFM", "Spectral Flatness Measure calculation.")
 

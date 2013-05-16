@@ -20,7 +20,8 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class FrequencyBands
-    : public UniformFormatTransform<Formats::WindowFormatF> {
+    : public UniformFormatTransform<Formats::WindowFormatF>,
+      public TransformLogger<FrequencyBands> {
  public:
   FrequencyBands();
 

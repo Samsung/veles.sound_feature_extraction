@@ -77,11 +77,11 @@ void RawToWindow::Initialize() const noexcept {
   windowsCount_ = realSize / step_ + 1;
   int excess = realSize % step_;
   if (excess != 0) {
-    fprintf(stderr, "(input buffer size %zu - window length %zu) = %i is not "
-            "divisible by step %i. It's excess (%i samples) will not be "
-            "processed.\n",
-            inputFormat_->Size(), outputFormat_->Size(),
-            realSize, step_, excess);
+    WRN("(input buffer size %zu - window length %zu) = %i is not "
+        "divisible by step %i. It's excess (%i samples) will not be "
+        "processed.\n",
+        inputFormat_->Size(), outputFormat_->Size(),
+        realSize, step_, excess);
   }
 
   window_ = Window::InitializeWindow(outputFormat_->Size(), type_);

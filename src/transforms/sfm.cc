@@ -30,15 +30,15 @@ void SFM::Do(const BuffersBase<FixedArray<MEAN_TYPE_COUNT>>& in,
     float gMean = (*in[i])[MEAN_TYPE_GEOMETRIC];
     float aMean = (*in[i])[MEAN_TYPE_ARITHMETIC];
     if (gMean == 0) {
-      fprintf(stderr, "Warning: buffer #%zu has geometric mean equal to 0.\n", i);
+      WRN("Warning: buffer #%zu has geometric mean equal to 0.\n", i);
     }
     if (aMean == 0) {
-      fprintf(stderr, "Error: buffer #%zu has arithmetic mean equal to 0.\n", i);
+      CRT("Error: buffer #%zu has arithmetic mean equal to 0.\n", i);
       assert(aMean != 0);
     }
     if (gMean / aMean < 0) {
-      fprintf(stderr, "Error: buffer #%zu has geometric and arithmetic means "
-                      "of different sign.\n", i);
+      CRT("Error: buffer #%zu has geometric and arithmetic means "
+          "of different sign.\n", i);
       assert(gMean / aMean >= 0);
     }
     *(*out)[i] = logf(gMean / aMean);

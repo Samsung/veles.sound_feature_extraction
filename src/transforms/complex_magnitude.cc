@@ -23,8 +23,8 @@ namespace Transforms {
 
 void ComplexMagnitude::OnFormatChanged() {
   if (inputFormat_->Size() % 2 == 1) {
-    fprintf(stderr, "Input buffer size is odd (%zu), truncated.\n",
-            inputFormat_->Size());
+    WRN("Input buffer size is odd (%zu), truncated.\n",
+        inputFormat_->Size());
   }
   outputFormat_->SetSize(inputFormat_->Size() / 2);
 }

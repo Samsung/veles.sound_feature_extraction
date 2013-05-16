@@ -20,7 +20,8 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class SpectralEnergy
-    : public UniformFormatTransform<Formats::WindowFormatF> {
+    : public UniformFormatTransform<Formats::WindowFormatF>,
+      public TransformLogger<SpectralEnergy> {
  public:
   TRANSFORM_INTRO("SpectralEnergy",
                   "Calculates the squared magnitude of each complex number, "

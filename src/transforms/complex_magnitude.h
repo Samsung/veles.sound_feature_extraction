@@ -20,7 +20,8 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class ComplexMagnitude
-    : public UniformFormatTransform<Formats::WindowFormatF> {
+    : public UniformFormatTransform<Formats::WindowFormatF>,
+      public TransformLogger<ComplexMagnitude> {
  public:
   TRANSFORM_INTRO("ComplexMagnitude",
                   "Calculates the magnitude of each complex number, that is, "
