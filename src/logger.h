@@ -64,6 +64,19 @@ namespace SoundFeatureExtraction {
 #define ERRC(x, ...) FALLBACK_LOG(__VA_ARGS__)
 #define CRTC(x, ...) FALLBACK_LOG(__VA_ARGS__)
 
+#define EINA_COLOR_LIGHTRED  ""
+#define EINA_COLOR_RED       ""
+#define EINA_COLOR_LIGHTBLUE ""
+#define EINA_COLOR_BLUE      ""
+#define EINA_COLOR_GREEN     ""
+#define EINA_COLOR_YELLOW    ""
+#define EINA_COLOR_ORANGE    ""
+#define EINA_COLOR_WHITE     ""
+#define EINA_COLOR_LIGHTCYAN ""
+#define EINA_COLOR_CYAN      ""
+#define EINA_COLOR_RESET     ""
+#define EINA_COLOR_HIGH      ""
+
 #endif
 
 class Logger {
