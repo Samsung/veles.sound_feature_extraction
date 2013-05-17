@@ -29,18 +29,13 @@ class TransformBaseCommon : public virtual Transform,
   TransformBaseCommon() noexcept
       : inputFormat_(std::make_shared<FIN>()),
         outputFormat_(std::make_shared<FOUT>()) {
-    RegisterSetter("inverse", [&](const std::string& value) {
-      if (value != "true" && value != "false") {
-        return false;
-      }
-      return true;
-    });
   }
+
 
   virtual ~TransformBaseCommon() {}
 
   virtual const std::shared_ptr<BufferFormat> InputFormat() const noexcept {
-    if (!IsInverse()) {
+    if (!IsInverse() || *inputFormat_ == *outputFormat_) {
       return std::static_pointer_cast<BufferFormat>(inputFormat_);
     } else {
       return std::static_pointer_cast<BufferFormat>(outputFormat_);
@@ -48,7 +43,7 @@ class TransformBaseCommon : public virtual Transform,
   }
 
   virtual void SetInputFormat(const std::shared_ptr<BufferFormat>& format) {
-    if (!IsInverse()) {
+    if (!IsInverse() || *inputFormat_ == *outputFormat_) {
       inputFormat_ = std::static_pointer_cast<FIN>(format);
       OnInputFormatChanged();
     } else {
@@ -58,7 +53,7 @@ class TransformBaseCommon : public virtual Transform,
   }
 
   virtual const std::shared_ptr<BufferFormat> OutputFormat() const noexcept {
-    if (!IsInverse()) {
+    if (!IsInverse() || *inputFormat_ == *outputFormat_) {
       return std::static_pointer_cast<BufferFormat>(outputFormat_);
     } else {
       return std::static_pointer_cast<BufferFormat>(inputFormat_);
@@ -72,7 +67,7 @@ class TransformBaseCommon : public virtual Transform,
       const Buffers& in) const noexcept {
     assert(&in != nullptr);
     assert(in.Format() != nullptr);
-    if (!IsInverse()) {
+    if (!IsInverse() || *inputFormat_ == *outputFormat_) {
       assert(*in.Format() == *inputFormat_);
       auto buffers = std::make_shared<OutBuffers>(
           std::static_pointer_cast<BufferFormatBase<typename FOUT::BufferType>>(
@@ -93,7 +88,7 @@ class TransformBaseCommon : public virtual Transform,
   virtual void Do(const Buffers& in, Buffers* out) const noexcept {
     assert(&in != nullptr);
     assert(out != nullptr);
-    if (!IsInverse()) {
+    if (!IsInverse() || *inputFormat_ == *outputFormat_) {
       assert(*in.Format() == *inputFormat_);
       assert(*out->Format() == *outputFormat_);
       Do(reinterpret_cast<const InBuffers&>(in),
@@ -129,12 +124,21 @@ class TransformBaseCommon : public virtual Transform,
     return std::string("transform ") + Name();
   }
 
-  private:
-   virtual void InitializeBuffersInverse(const OutBuffers& in, InBuffers* out)
-       const noexcept = 0;
+  void RegisterInverseParameter() noexcept {
+    RegisterSetter("inverse", [&](const std::string& value) {
+      if (value != "true" && value != "false") {
+        return false;
+      }
+      return true;
+    });
+  }
 
-   virtual void DoInverse(const OutBuffers& in, InBuffers* out)
-       const noexcept = 0;
+ private:
+  virtual void InitializeBuffersInverse(const OutBuffers& in, InBuffers* out)
+      const noexcept = 0;
+
+  virtual void DoInverse(const OutBuffers& in, InBuffers* out)
+      const noexcept = 0;
 };
 
 template <typename FIN, typename FOUT, bool SupportsInversion = false>
@@ -166,6 +170,10 @@ class TransformBase<FIN, FOUT, false> : public TransformBaseCommon<FIN, FOUT> {
 template <typename FIN, typename FOUT>
 class TransformBase<FIN, FOUT, true> : public TransformBaseCommon<FIN, FOUT> {
  public:
+  TransformBase() {
+    this->RegisterInverseParameter();
+  }
+
   virtual bool HasInverse() const noexcept {
     return true;
   }
@@ -200,6 +208,10 @@ class TransformBase<FIN, FOUT, true> : public TransformBaseCommon<FIN, FOUT> {
 template <typename F>
 class TransformBase<F, F, true> : public TransformBaseCommon<F, F> {
  public:
+  TransformBase() {
+    this->RegisterInverseParameter();
+  }
+
   virtual bool HasInverse() const noexcept {
     return true;
   }

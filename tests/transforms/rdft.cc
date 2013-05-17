@@ -11,12 +11,18 @@
  */
 
 #include <gtest/gtest.h>
+#include "src/transform_tree.h"
+#include "src/formats/raw_format.h"
 #include "src/transforms/rdft.h"
+#include "tests/speech_sample.inc"
 
 using SoundFeatureExtraction::Formats::WindowF;
 using SoundFeatureExtraction::Formats::WindowFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::RDFT;
+using SoundFeatureExtraction::TransformTree;
+using SoundFeatureExtraction::Formats::Raw16;
+using SoundFeatureExtraction::BuffersBase;
 
 class RDFTTest : public RDFT, public testing::Test {
  public:
@@ -50,6 +56,23 @@ TEST_F(RDFTTest, Backward) {
   SetParameter("inverse", "true");
   outputFormat_->SetSize(Size);
   Do(Input, &Output);
+}
+
+TEST(RDFT, Multiple) {
+  TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
+  tt.SetValidateAfterEachTransform(true);
+  // We have to apply FilterBank twice since Energy results in
+  // squared magnitude
+  tt.AddFeature("3RDFT", { { "Window", "length=512, type=rectangular" },
+      { "RDFT", "" }, { "IRDFT", "" }, { "RDFT", "" }, { "IRDFT", "" },
+      { "RDFT", "" }, { "IRDFT", "" }
+  });
+  Raw16 buffers(48000, 0);
+  memcpy(buffers.Data.get(), data, sizeof(data));
+  tt.PrepareForExecution();
+  auto res = tt.Execute(buffers);
+  ASSERT_EQ(1, res.size());
+  res["3RDFT"]->Validate();
 }
 
 #include "tests/google/src/gtest_main.cc"
