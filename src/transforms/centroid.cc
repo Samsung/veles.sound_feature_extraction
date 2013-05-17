@@ -16,7 +16,7 @@
 #elif defined(__ARM_NEON__)
 #include <arm_neon.h>
 #endif
-#include "src/primitives/avx_extra.h"
+#include <simd/avx_extra.h>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {

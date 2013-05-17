@@ -72,7 +72,6 @@ class RegisterTransform {
     map[t.Name()].insert(std::make_pair(
         t.InputFormat()->Id(), []() {
       auto ptr = std::make_shared<T>();
-      ptr->SetParameters({ {"inverse", "false"} });
       return ptr;
     }));
     // Insert the inverse constructor functor, if needed
@@ -80,7 +79,7 @@ class RegisterTransform {
       map[std::string("I") + t.Name()].insert(std::make_pair(
           t.OutputFormat()->Id(), []() {
         auto ptr = std::make_shared<T>();
-        ptr->SetParameters({ {"inverse", "true"} });
+        ptr->SetParameter("inverse", "true");
         return ptr;
       }));
     }

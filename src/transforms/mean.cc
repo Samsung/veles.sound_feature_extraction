@@ -12,13 +12,13 @@
 
 #include "src/transforms/mean.h"
 #ifdef __AVX__
-#include "src/primitives/avx_mathfun.h"
+#include <simd/avx_mathfun.h>
 #elif defined(__ARM_NEON__)
 #include "src/primitives/neon_mathfun.h"
 #endif
 #include <boost/regex.hpp>
 #include <limits>
-#include "src/primitives/arithmetic-inl.h"
+#include <simd/arithmetic-inl.h>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {

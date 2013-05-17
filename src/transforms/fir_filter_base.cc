@@ -11,7 +11,7 @@
  */
 
 #include "src/transforms/fir_filter_base.h"
-#include "src/primitives/arithmetic-inl.h"
+#include <simd/arithmetic-inl.h>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {

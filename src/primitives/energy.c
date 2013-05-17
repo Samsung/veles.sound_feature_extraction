@@ -16,7 +16,7 @@
 #elif defined(__ARM_NEON__)
 #include <arm_neon.h>
 #endif
-#include "src/primitives/memory.h"
+#include <simd/memory.h>
 
 float calculate_energy(int simd, const float *signal, size_t length) {
   float energy = 0.f;

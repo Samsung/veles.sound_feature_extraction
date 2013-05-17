@@ -14,9 +14,9 @@
 #define SRC_TRANSFORMS_DWPT_H_
 
 #include <vector>
+#include <simd/wavelet_types.h>
 #include "src/formats/window_format.h"
 #include "src/transform_base.h"
-#include "src/primitives/wavelet_types.h"
 #include "src/primitives/wavelet_filter_bank.h"
 
 namespace SoundFeatureExtraction {

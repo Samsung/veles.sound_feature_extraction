@@ -16,7 +16,7 @@
 #elif defined(__ARM_NEON__)
 #include <arm_neon.h>
 #endif
-#include "src/primitives/arithmetic-inl.h"
+#include <simd/arithmetic-inl.h>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {

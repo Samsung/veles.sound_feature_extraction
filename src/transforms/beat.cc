@@ -11,7 +11,7 @@
  */
 
 #include "src/transforms/beat.h"
-#include "src/primitives/convolute.h"
+#include <simd/convolute.h>
 #include "src/primitives/energy.h"
 #include <math.h>
 #include <string>

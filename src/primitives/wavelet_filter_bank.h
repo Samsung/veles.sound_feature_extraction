@@ -18,7 +18,7 @@
 #include <string>
 #include <unordered_map>  // NOLINT(build/include_order)
 #include "src/exceptions.h"
-#include "src/primitives/wavelet_types.h"
+#include <simd/wavelet_types.h>
 
 namespace SoundFeatureExtraction {
 namespace Primitives {

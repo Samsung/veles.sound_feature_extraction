@@ -14,7 +14,7 @@
 #include <math.h>
 #ifdef __AVX__
 #include <immintrin.h>
-#include "src/primitives/avx_extra.h"
+#include <simd/avx_extra.h>
 #elif defined(__ARM_NEON__)
 #include <arm_neon.h>  // NOLINT(build/include_order)
 #endif

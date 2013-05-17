@@ -13,7 +13,7 @@
 
 #include <gtest/gtest.h>
 #include "src/primitives/energy.h"
-#include "src/primitives/arithmetic-inl.h"
+#include <simd/arithmetic-inl.h>
 
 #ifdef SIMD
 #define EPSILON 0.005f

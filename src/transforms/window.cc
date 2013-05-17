@@ -13,7 +13,7 @@
 #include "src/transforms/window.h"
 #include <fftf/api.h>
 #include "src/formats/format_limits.h"
-#include "src/primitives/arithmetic-inl.h"
+#include <simd/arithmetic-inl.h>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {

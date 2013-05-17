@@ -58,8 +58,6 @@ class ParentTestTransform
                           "1"))
 
  protected:
-  virtual void SetParameter(const std::string&, const std::string&) {
-  }
 
   virtual void InitializeBuffers(const BuffersBase<Raw16>&,
                                         BuffersBase<ParentChunk>*)
@@ -113,9 +111,6 @@ class ChildTestTransform
          "128"))
 
  protected:
-  virtual void SetParameter(const std::string&, const std::string&) {
-  }
-
   virtual void InitializeBuffers(const BuffersBase<ParentChunk>&,
                                          BuffersBase<ChildChunk>*)
   const noexcept {
@@ -139,17 +134,13 @@ class TransformTreeTest : public TransformTree, public testing::Test {
 };
 
 TEST_F(TransformTreeTest, AddFeature) {
-  ASSERT_NO_THROW({
-      AddFeature("One", { {"ParentTest", "" }, { "ChildTest", "" } });
-  });
+  AddFeature("One", { {"ParentTest", "" }, { "ChildTest", "" } });
 
   ASSERT_THROW({
     AddFeature("One", { {"ParentTest", "" }, { "ChildTest", "" } });
   }, ChainNameAlreadyExistsException);
 
-  ASSERT_NO_THROW({
-    AddFeature("Two", { {"ParentTest", "" }, { "ChildTest", "" } });
-  });
+  AddFeature("Two", { {"ParentTest", "" }, { "ChildTest", "" } });
 
   ASSERT_THROW({
     AddFeature("Two", { {"ParentTest", "" },
@@ -159,13 +150,11 @@ TEST_F(TransformTreeTest, AddFeature) {
 }
 
 TEST_F(TransformTreeTest, Dump) {
-  ASSERT_NO_THROW({
-    AddFeature("One", { {"ParentTest", "AmplifyFactor=1" },
-                      { "ChildTest", "" } });
-    AddFeature("Two", { {"ParentTest", "AmplifyFactor=2" },
-                      { "ChildTest", "AnalysisLength=256" } });
-    Dump("/tmp/ttdump.dot");
-  });
+  AddFeature("One", { {"ParentTest", "AmplifyFactor=1" },
+                    { "ChildTest", "" } });
+  AddFeature("Two", { {"ParentTest", "AmplifyFactor=2" },
+                    { "ChildTest", "AnalysisLength=256" } });
+  Dump("/tmp/ttdump.dot");
 }
 
 #include "tests/google/src/gtest_main.cc"

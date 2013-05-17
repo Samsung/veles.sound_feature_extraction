@@ -11,7 +11,7 @@
  */
 
 #include "src/transforms/zero_padding.h"
-#include "src/primitives/arithmetic-inl.h"
+#include <simd/arithmetic-inl.h>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {

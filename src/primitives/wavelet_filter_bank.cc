@@ -18,7 +18,7 @@
 #include <memory>
 #include <string>
 #include <boost/regex.hpp>  // NOLINT(build/include_order)
-#include "src/primitives/wavelet.h"
+#include <simd/wavelet.h>
 
 namespace SoundFeatureExtraction {
 namespace Primitives {

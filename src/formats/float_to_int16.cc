@@ -11,7 +11,7 @@
  */
 
 #include "src/formats/float_to_int16.h"
-#include "src/primitives/arithmetic-inl.h"
+#include <simd/arithmetic-inl.h>
 
 namespace SoundFeatureExtraction {
 namespace Formats {

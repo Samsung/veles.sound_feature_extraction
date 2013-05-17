@@ -13,7 +13,7 @@
 #include "src/transforms/rdft.h"
 #include <fftf/api.h>
 #include <vector>
-#include "src/primitives/arithmetic-inl.h"
+#include <simd/arithmetic-inl.h>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {

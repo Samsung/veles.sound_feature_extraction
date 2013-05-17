@@ -13,7 +13,7 @@
 #include "src/transforms/frequency_bands.h"
 #include <boost/regex.hpp>
 #include "src/transforms/fork.h"
-#include "src/primitives/memory.h"
+#include <simd/memory.h>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {

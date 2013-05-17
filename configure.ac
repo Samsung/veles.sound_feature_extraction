@@ -50,6 +50,23 @@ AC_ARG_WITH([built-in-fftf],
 AC_SUBST([FFTF_LIBTOOL])
 AC_SUBST([FFTF_DIR])
 
+# Check whether to use the built-in libSimd
+AC_ARG_WITH([built-in-simd],
+    AS_HELP_STRING([--with-built-in-simd], [use statically linked embedded libSimd]), [
+    SIMD_LIBTOOL="\$(top_builddir)/simd/src/libSimd.la"
+    SIMD_DIR=simd
+    AC_CONFIG_SUBDIRS([simd])
+    AS_IF([test "x$with_built_in_fftf" == xyes], [
+    	AC_CONFIG_LINKS(["$top_builddir""simd/src/fftf":"$top_srcdir""fftf/inc/fftf"])
+    ])
+    CPPFLAGS="$CPPFLAGS -I\$(top_srcdir)/simd/inc"    
+], [
+    # Check for installed SIMD
+    PKG_CHECK_MODULES([SIMD], [Simd >= 1.0])
+])
+AC_SUBST([SIMD_LIBTOOL])
+AC_SUBST([SIMD_DIR])
+
 # Additional tests
 AM_COND_IF([TESTS], [
     AC_CONFIG_FILES(tests/primitives/Makefile

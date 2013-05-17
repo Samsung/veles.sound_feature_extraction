@@ -18,7 +18,7 @@
 #include "src/buffers_base.h"
 #include "src/exceptions.h"
 #include "src/formats/format_limits.h"
-#include "src/primitives/memory.h"
+#include <simd/memory.h>
 
 namespace SoundFeatureExtraction {
 namespace Formats {

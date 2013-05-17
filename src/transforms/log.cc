@@ -13,7 +13,7 @@
 #include "src/transforms/log.h"
 #include <math.h>
 #ifdef __AVX__
-#include "src/primitives/avx_mathfun.h"
+#include <simd/avx_mathfun.h>
 #elif defined(__ARM_NEON__)
 #include "src/primitives/neon_mathfun.h"
 #endif

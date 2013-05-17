@@ -2,3 +2,6 @@
 	path = fftf
 	branch = master
 	url = ssh://alserver.rnd.samsung.ru:29418/FFTF.git
+[submodule "simd"]
+	path = simd
+	url = ssh://alserver.rnd.samsung.ru:29418/Simd.git

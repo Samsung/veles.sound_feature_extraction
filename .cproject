@@ -42,6 +42,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/fftf/inc&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SoundFeatureExtraction/simd/inc}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.342605218" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -62,6 +63,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/fftf/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/tests/google&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/simd/inc&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
 								</option>
@@ -111,6 +113,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/fftf/inc&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SoundFeatureExtraction/simd/inc}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.279522435" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -127,6 +130,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/tests/google&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SoundFeatureExtraction/simd/inc}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1659153449" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -180,6 +184,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/fftf/inc&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SoundFeatureExtraction/simd/inc}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.695046844" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -203,6 +208,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/tests/google&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SoundFeatureExtraction/simd/inc}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1961138923" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -250,6 +256,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/fftf/inc&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SoundFeatureExtraction/simd/inc}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1384540263" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -266,6 +273,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/tests/google&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SoundFeatureExtraction/simd/inc}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1420714051" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -295,6 +303,79 @@
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.toolChain.873866480;org.eclipse.linuxtools.cdt.autotools.core.toolChain.873866480.415867251;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.843664370;cdt.managedbuild.tool.gnu.cpp.compiler.input.1538616520">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.527044482;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.527044482.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.850358420;cdt.managedbuild.tool.gnu.cpp.compiler.input.1961138923">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.1761822989;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.1761822989.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.854302074;cdt.managedbuild.tool.gnu.c.compiler.input.279522435">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="true"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD &quot;${plugin_state_location}/specs.c&quot;" command="/opt/dtv-toolchain/bin/arm-v7a15v3r1-linux-gnueabi-gcc" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.191550122;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.191550122.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.555488877;cdt.managedbuild.tool.gnu.cpp.compiler.input.1420714051">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="true"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD &quot;${plugin_state_location}/specs.cpp&quot;" command="/opt/dtv-toolchain/bin/arm-v7a15v3r1-linux-gnueabi-g++" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.527044482;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.527044482.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.1664978163;cdt.managedbuild.tool.gnu.c.compiler.input.695046844">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.1733815819;cdt.managedbuild.tool.gnu.c.compiler.input.342605218">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.1761822989;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.1761822989.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.1089817970;cdt.managedbuild.tool.gnu.cpp.compiler.input.1659153449">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="true"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD &quot;${plugin_state_location}/specs.cpp&quot;" command="/opt/dtv-toolchain/bin/arm-v7a15v3r1-linux-gnueabi-g++" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.810652077;cdt.managedbuild.tool.gnu.cpp.compiler.input.900762215">
+			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.191550122;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.191550122.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.844465112;cdt.managedbuild.tool.gnu.c.compiler.input.1384540263">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="true"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD &quot;${plugin_state_location}/specs.c&quot;" command="/opt/dtv-toolchain/bin/arm-v7a15v3r1-linux-gnueabi-gcc" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.toolChain.873866480;org.eclipse.linuxtools.cdt.autotools.core.toolChain.873866480.415867251;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.181744012;cdt.managedbuild.tool.gnu.c.compiler.input.616783180">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 		<buildTargets>
 			<target name="all" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
@@ -706,78 +787,5 @@
 				<runAllBuilders>false</runAllBuilders>
 			</target>
 		</buildTargets>
-	</storageModule>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.toolChain.873866480;org.eclipse.linuxtools.cdt.autotools.core.toolChain.873866480.415867251;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.843664370;cdt.managedbuild.tool.gnu.cpp.compiler.input.1538616520">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.527044482;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.527044482.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.850358420;cdt.managedbuild.tool.gnu.cpp.compiler.input.1961138923">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.1761822989;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.1761822989.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.854302074;cdt.managedbuild.tool.gnu.c.compiler.input.279522435">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
-			<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC">
-				<buildOutputProvider>
-					<openAction enabled="true" filePath=""/>
-					<parser enabled="true"/>
-				</buildOutputProvider>
-				<scannerInfoProvider id="specsFile">
-					<runAction arguments="-E -P -v -dD &quot;${plugin_state_location}/specs.c&quot;" command="/opt/dtv-toolchain/bin/arm-v7a15v3r1-linux-gnueabi-gcc" useDefault="true"/>
-					<parser enabled="true"/>
-				</scannerInfoProvider>
-			</profile>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.191550122;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.191550122.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.555488877;cdt.managedbuild.tool.gnu.cpp.compiler.input.1420714051">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
-			<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP">
-				<buildOutputProvider>
-					<openAction enabled="true" filePath=""/>
-					<parser enabled="true"/>
-				</buildOutputProvider>
-				<scannerInfoProvider id="specsFile">
-					<runAction arguments="-E -P -v -dD &quot;${plugin_state_location}/specs.cpp&quot;" command="/opt/dtv-toolchain/bin/arm-v7a15v3r1-linux-gnueabi-g++" useDefault="true"/>
-					<parser enabled="true"/>
-				</scannerInfoProvider>
-			</profile>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.527044482;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.527044482.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.1664978163;cdt.managedbuild.tool.gnu.c.compiler.input.695046844">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.1733815819;cdt.managedbuild.tool.gnu.c.compiler.input.342605218">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.1761822989;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.1761822989.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.1089817970;cdt.managedbuild.tool.gnu.cpp.compiler.input.1659153449">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
-			<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP">
-				<buildOutputProvider>
-					<openAction enabled="true" filePath=""/>
-					<parser enabled="true"/>
-				</buildOutputProvider>
-				<scannerInfoProvider id="specsFile">
-					<runAction arguments="-E -P -v -dD &quot;${plugin_state_location}/specs.cpp&quot;" command="/opt/dtv-toolchain/bin/arm-v7a15v3r1-linux-gnueabi-g++" useDefault="true"/>
-					<parser enabled="true"/>
-				</scannerInfoProvider>
-			</profile>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.810652077;cdt.managedbuild.tool.gnu.cpp.compiler.input.900762215">
-			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.191550122;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.49116234.191550122.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.844465112;cdt.managedbuild.tool.gnu.c.compiler.input.1384540263">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
-			<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC">
-				<buildOutputProvider>
-					<openAction enabled="true" filePath=""/>
-					<parser enabled="true"/>
-				</buildOutputProvider>
-				<scannerInfoProvider id="specsFile">
-					<runAction arguments="-E -P -v -dD &quot;${plugin_state_location}/specs.c&quot;" command="/opt/dtv-toolchain/bin/arm-v7a15v3r1-linux-gnueabi-gcc" useDefault="true"/>
-					<parser enabled="true"/>
-				</scannerInfoProvider>
-			</profile>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.toolChain.873866480;org.eclipse.linuxtools.cdt.autotools.core.toolChain.873866480.415867251;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.181744012;cdt.managedbuild.tool.gnu.c.compiler.input.616783180">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
-		</scannerConfigBuildInfo>
 	</storageModule>
 </cproject>

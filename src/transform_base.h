@@ -22,9 +22,13 @@
 
 namespace SoundFeatureExtraction {
 
+template <typename FIN, typename FOUT, bool SupportsInversion = false>
+class TransformBase;
+
 template <typename FIN, typename FOUT>
 class TransformBaseCommon : public virtual Transform,
                             public virtual ParameterizableBase {
+  friend class TransformBase<FIN, FOUT, true>;
  public:
   TransformBaseCommon() noexcept
       : inputFormat_(std::make_shared<FIN>()),
@@ -124,6 +128,13 @@ class TransformBaseCommon : public virtual Transform,
     return std::string("transform ") + Name();
   }
 
+ private:
+  virtual void InitializeBuffersInverse(const OutBuffers& in, InBuffers* out)
+      const noexcept = 0;
+
+  virtual void DoInverse(const OutBuffers& in, InBuffers* out)
+      const noexcept = 0;
+
   void RegisterInverseParameter() noexcept {
     RegisterSetter("inverse", [&](const std::string& value) {
       if (value != "true" && value != "false") {
@@ -132,17 +143,7 @@ class TransformBaseCommon : public virtual Transform,
       return true;
     });
   }
-
- private:
-  virtual void InitializeBuffersInverse(const OutBuffers& in, InBuffers* out)
-      const noexcept = 0;
-
-  virtual void DoInverse(const OutBuffers& in, InBuffers* out)
-      const noexcept = 0;
 };
-
-template <typename FIN, typename FOUT, bool SupportsInversion = false>
-class TransformBase;
 
 template <typename FIN, typename FOUT>
 class TransformBase<FIN, FOUT, false> : public TransformBaseCommon<FIN, FOUT> {
@@ -277,10 +278,13 @@ virtual const std::string& Description() const noexcept { \
 #define TRANSFORM_PARAMETERS(init) \
     virtual const std::unordered_map<std::string, ParameterTraits>& \
 SupportedParameters() const noexcept { \
-  static const std::unordered_map<std::string, ParameterTraits> sp = { \
+  static const std::unordered_map<std::string, ParameterTraits> sp = HasInverse()? \
+      std::unordered_map<std::string, ParameterTraits> { \
       TP("inverse", \
          "Value indicating whether this transform is inverse.", \
          "false") \
+      init \
+  } : std::unordered_map<std::string, ParameterTraits> { \
       init \
   }; \
   return sp; \

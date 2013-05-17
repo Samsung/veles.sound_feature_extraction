@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ ! -e "fftf/autogen.sh" ]; then
+if [ ! -e "fftf/autogen.sh" -o ! -e "simd/autogen.sh" ]; then
 	user=$(git remote -v | grep -oE '//[^@]+' -m1 | cut -c3-)
     sed -i "/$user/b; s/ssh:\/\//ssh:\/\/$user@/g" .gitmodules
     git submodule update --init	
