@@ -74,7 +74,7 @@
 <flagvalue id="cflags-gprof" value="false"/>
 <flagvalue id="cflags-gcov" value="false"/>
 </flag>
-<option id="user" value="--enable-eina-logging  --enable-debug --disable-doxygen --enable-parallel-build --with-built-in-boost --with-built-in-fftf --with-built-in-simd "/>
+<option id="user" value="--enable-debug --disable-doxygen --enable-parallel-build --with-built-in-boost --with-built-in-fftf --with-built-in-simd "/>
 <option id="autogen" value="autogen.sh"/>
 <option id="autogenOpts" value=""/>
 </configuration>

@@ -15,7 +15,7 @@
 #ifdef __AVX__
 #include <simd/avx_mathfun.h>
 #elif defined(__ARM_NEON__)
-#include "src/primitives/neon_mathfun.h"
+#include <simd/neon_mathfun.h>
 #endif
 
 namespace SoundFeatureExtraction {
