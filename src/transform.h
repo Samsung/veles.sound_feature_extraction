@@ -46,20 +46,11 @@ class Transform : public virtual IParameterizable {
   virtual void Do(const Buffers& in, Buffers* out) const noexcept = 0;
   /// @}
 
-  /// @defgroup DefVirt Virtual methods which have defaults
-  /// @{
-  virtual bool HasInverse() const noexcept {
-    return false;
-  }
-  /// @}
-
   /// @defgroup NonVirt Non-virtual methods
   /// @{
   std::shared_ptr<Transform> Clone() const noexcept;
 
   bool operator==(const Transform& other) const noexcept;
-
-  bool IsInverse() const noexcept;
 
   std::string SafeName() const noexcept;
 

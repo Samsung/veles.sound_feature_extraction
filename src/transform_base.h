@@ -35,7 +35,6 @@ class TransformBaseCommon : public virtual Transform,
         outputFormat_(std::make_shared<FOUT>()) {
   }
 
-
   virtual ~TransformBaseCommon() {}
 
   virtual const std::shared_ptr<BufferFormat> InputFormat() const noexcept {
@@ -105,6 +104,16 @@ class TransformBaseCommon : public virtual Transform,
     }
   }
 
+  bool IsInverse() const noexcept {
+    auto ip = GetParameters().find(INVERSE_PARAMETER);
+    if (ip == GetParameters().end()) {
+      return false;
+    }
+    return ip->second == "true";
+  }
+
+  virtual bool HasInverse() const noexcept = 0;
+
  protected:
   std::shared_ptr<FIN> inputFormat_;
   std::shared_ptr<FOUT> outputFormat_;
@@ -136,7 +145,7 @@ class TransformBaseCommon : public virtual Transform,
       const noexcept = 0;
 
   void RegisterInverseParameter() noexcept {
-    RegisterSetter("inverse", [&](const std::string& value) {
+    RegisterSetter(INVERSE_PARAMETER, [&](const std::string& value) {
       if (value != "true" && value != "false") {
         return false;
       }
@@ -280,7 +289,7 @@ virtual const std::string& Description() const noexcept { \
 SupportedParameters() const noexcept { \
   static const std::unordered_map<std::string, ParameterTraits> sp = HasInverse()? \
       std::unordered_map<std::string, ParameterTraits> { \
-      TP("inverse", \
+      TP(INVERSE_PARAMETER, \
          "Value indicating whether this transform is inverse.", \
          "false") \
       init \

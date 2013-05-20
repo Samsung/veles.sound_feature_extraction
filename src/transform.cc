@@ -38,14 +38,6 @@ bool Transform::operator==(const Transform& other) const noexcept {
   return true;
 }
 
-bool Transform::IsInverse() const noexcept {
-  auto ip = GetParameters().find("inverse");
-  if (ip == GetParameters().end()) {
-    return false;
-  }
-  return ip->second == "true";
-}
-
 std::string Transform::SafeName() const noexcept {
   return replace_all_copy(replace_all_copy(replace_all_copy(replace_all_copy(
       replace_all_copy(

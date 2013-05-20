@@ -476,10 +476,10 @@ void TransformTree::Dump(const std::string& dotFileName) const {
           << "%)</b>";
     }
     if (t->GetParameters().size() > 1 ||
-        (t->GetParameters().size() > 0 && t->HasInverse())) {
+        (t->GetParameters().size() > 0 && HasInverse(*t))) {
       fw << "<br /> <br />";
       for (auto p : t->GetParameters()) {
-        if (p.first == "inverse" && !t->HasInverse()) {
+        if (p.first == INVERSE_PARAMETER && !HasInverse(*t)) {
           continue;
         }
         auto isDefault = false;

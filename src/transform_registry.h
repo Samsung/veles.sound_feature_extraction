@@ -51,6 +51,14 @@ class TransformFactory {
   FactoryMap map_;
 };
 
+/// @brief Global name of the inverse parameter.
+#define INVERSE_PARAMETER "inverse"
+
+/// @brief Checks for the support of doing an inverse transform.
+/// @details This function tests the transform's parameters for
+/// the existence of INVERSE_PARAMETER.
+bool HasInverse(const Transform& transform) noexcept;
+
 /// @brief Helper class used to register transforms. Usually, you do not
 /// want to use it explicitly but rather through REGISTER_TRANSFORM macro.
 template<class T>
@@ -75,11 +83,11 @@ class RegisterTransform {
       return ptr;
     }));
     // Insert the inverse constructor functor, if needed
-    if (t.HasInverse()) {
+    if (HasInverse(t)) {
       map[std::string("I") + t.Name()].insert(std::make_pair(
           t.OutputFormat()->Id(), []() {
         auto ptr = std::make_shared<T>();
-        ptr->SetParameter("inverse", "true");
+        ptr->SetParameter(INVERSE_PARAMETER, "true");
         return ptr;
       }));
     }
