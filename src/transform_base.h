@@ -286,18 +286,18 @@ virtual const std::string& Description() const noexcept { \
 /// @param init The list of TP parameters.
 #define TRANSFORM_PARAMETERS(init) \
     virtual const std::unordered_map<std::string, ParameterTraits>& \
-SupportedParameters() const noexcept { \
-  static const std::unordered_map<std::string, ParameterTraits> sp = HasInverse()? \
-      std::unordered_map<std::string, ParameterTraits> { \
-      TP(INVERSE_PARAMETER, \
-         "Value indicating whether this transform is inverse.", \
-         "false") \
-      init \
-  } : std::unordered_map<std::string, ParameterTraits> { \
-      init \
-  }; \
-  return sp; \
-}
+        SupportedParameters() const noexcept { \
+      static const std::unordered_map<std::string, ParameterTraits> sp = \
+          HasInverse()? std::unordered_map<std::string, ParameterTraits> { \
+            TP(INVERSE_PARAMETER, \
+               "Value indicating whether this transform is inverse.", \
+               "false") \
+            init \
+          } : std::unordered_map<std::string, ParameterTraits> { \
+              init \
+          }; \
+      return sp; \
+    }
 
 template<class T>
 class TransformLogger : public Logger {

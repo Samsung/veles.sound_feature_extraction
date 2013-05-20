@@ -107,7 +107,7 @@ class TransformResultedInInvalidBuffersException : public ExceptionBase {
 
 class InvalidInputBuffersException : public ExceptionBase {
  public:
-  InvalidInputBuffersException(const std::string& message)
+  explicit InvalidInputBuffersException(const std::string& message)
   : ExceptionBase("Invalid input data. " + message) {
   }
 };

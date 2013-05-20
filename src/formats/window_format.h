@@ -159,7 +159,7 @@ class WindowFormat
     size_ = value;
   }
 
-  size_t PayloadSizeInBytes() const noexcept {
+  virtual size_t PayloadSizeInBytes() const noexcept {
     return size_ * sizeof(T);
   }
 
