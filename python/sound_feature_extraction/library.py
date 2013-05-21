@@ -23,11 +23,12 @@ class Library(object):
     '''
 
     def __init__(self, path=None):
-        if not self._handle:
-            if not path:
+        if not self._handle or (path != self._path and path and path != ""):
+            if not path or path == "":
                 logging.warning("Library path was not specified, "
                                  "will use the default")
                 path = "libSoundFeatureExtraction.so"
+            self._path = path
             try:
                 logging.debug("Trying to load " + path + "...")
                 self._handle = cdll.LoadLibrary(path)
@@ -86,7 +87,7 @@ class Library(object):
     def __new__(cls, path=None):
         if not cls._instance:
             logging.debug("Initializing a new instance of Library class "
-                          "(path is " + path + ")")
+                          "(path is " + str(path) + ")")
             cls._instance = super(Library, cls).__new__(cls)
         return cls._instance
 
@@ -102,3 +103,4 @@ class Library(object):
 
     _instance = None
     _handle = None
+    _path = None
