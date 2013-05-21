@@ -302,8 +302,8 @@ virtual const std::string& Description() const noexcept { \
 template<class T>
 class TransformLogger : public Logger {
  public:
-  TransformLogger() : Logger(Logger::Demangle(typeid(T).name()),
-                                              EINA_COLOR_LIGHTBLUE) {
+  TransformLogger() : Logger(std::demangle(typeid(T).name()),
+                             EINA_COLOR_LIGHTBLUE) {
   }
 };
 

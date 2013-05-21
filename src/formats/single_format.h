@@ -102,7 +102,7 @@ class SingleFormat : public BufferFormatBase<T> {
   }
 
   virtual const std::string& Id() const noexcept {
-    static const std::string id(typeid(T).name());
+    static const std::string id(std::demangle(typeid(T).name()));
     return id;
   }
 

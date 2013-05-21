@@ -104,8 +104,6 @@ class Logger {
 
   void set_color(const std::string &value);
 
-  static std::string Demangle(const std::string &symbol);
-
  protected:
   static const int kUnintializedLogDomain_ = -1;
   static const std::string kCommonDomain;

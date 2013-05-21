@@ -160,17 +160,4 @@ void Logger::set_color(const std::string &value) {
 #endif
 }
 
-std::string Logger::Demangle(const std::string &symbol) {
-  size_t size;
-  int status;
-  char *demangled;
-  if ((demangled = abi::__cxa_demangle(symbol.c_str(), NULL, &size, &status))) {
-    std::string result(demangled);
-    free(demangled);
-    return result;
-  }
-
-  return symbol;
-}
-
 }  // namespace SoundFeatureExtraction
