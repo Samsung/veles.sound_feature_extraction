@@ -85,7 +85,9 @@ class Library(object):
 
     def __new__(cls, path=None):
         if not cls._instance:
-            cls._instance = super(Library, cls).__new__(cls, path)
+            logging.debug("Initializing a new instance of Library class "
+                          "(path is " + path + ")")
+            cls._instance = super(Library, cls).__new__(cls)
         return cls._instance
 
     def __str__(self):

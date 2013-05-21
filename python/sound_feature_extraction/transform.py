@@ -37,10 +37,16 @@ class Transform(object):
                  self.description + "\n\n"
         result += "Input format: " + self.input_format + "\n"
         result += "Output format: " + self.output_format + "\n"
-        result += "Parameters:\n"
-        for param in self.parameters:
-            result += param + "\n"
+        if self.parameters:
+            result += "Parameters:\n"
+            for param in self.parameters:
+                result += param + "\n"
         return result
+
+    def __eq__(self, other):
+        return self.name == other.name and \
+            self.input_format == other.input_format and \
+            self.output_format == other.output_format
 
     def join(self):
         '''

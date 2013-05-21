@@ -6,10 +6,12 @@ Created on Mar 25, 2013
 
 
 import logging
-from ctypes import c_char_p, c_int16, c_float, POINTER, c_void_p, c_int, \
-                   byref, cast
+from ctypes import c_char_p, c_int16, c_byte, c_void_p, c_int, \
+                   POINTER, byref, cast
 import numpy
 from sound_feature_extraction.library import Library
+from sound_feature_extraction.formatters import Formatters
+from sound_feature_extraction.explorer import Explorer
 
 
 class Extractor(object):
@@ -21,12 +23,12 @@ class Extractor(object):
         self.features = features
         self.buffer_size = buffer_size
         self.sampling_rate = sampling_rate
-        flen = len(features)
+        flen = len(self.features)
         fstrs = (c_char_p * flen)()
         for i in range(0, flen):
-            fstrs[i] = c_char_p(features[i].join().encode())
+            fstrs[i] = c_char_p(self.features[i].join().encode())
         self._config = Library().setup_features_extraction(
-            fstrs, len(features), buffer_size, sampling_rate)
+            fstrs, len(self.features), buffer_size, sampling_rate)
         if self._config:
             logging.debug("Successfully set up " + str(flen) + \
                           " features (config " + str(self._config) + ")")
@@ -37,7 +39,9 @@ class Extractor(object):
         Library().destroy_features_configuration(self._config)
         logging.debug("Destroyed config " + str(self._config))
 
-    def calculate(self, buffer):
+    RAW_KEY_NAME = "RAW"
+
+    def calculate_raw(self, buffer):
         '''
         Calculates the speech features.
         '''
@@ -56,15 +60,19 @@ class Extractor(object):
             return None
         ret = {}
         for i in range(0, len(self.features)):
-            length = rlengths[i] // 4
+            length = rlengths[i]
             logging.debug(self.features[i].name + " yielded " + \
-                          str(length) + " results")
-            res_type = c_float * length
+                          str(length) + " bytes")
+            res_type = c_byte * length
             array_pointer = cast(results[i], POINTER(res_type))
-            ret[fnames[i].decode()] = numpy.frombuffer(
-                array_pointer.contents, dtype=numpy.float32,
-                count=length)
-        ret["RAW"] = results
+            format_name = self.features[i].transforms[-1].output_format
+            if format_name == "":
+                format_name = Explorer().transforms[self.features[i]. \
+                    transforms[-1].name].output_format
+            ret[fnames[i].decode()] = Formatters.parse(numpy.frombuffer(
+                array_pointer.contents, dtype=numpy.byte, count=length),
+                                                       format_name)
+        ret[Extractor.RAW_KEY_NAME] = results
         null_results = POINTER(c_void_p)()
         Library().free_results(len(self.features), fnames, null_results,
                                rlengths)
@@ -78,6 +86,27 @@ class Extractor(object):
             null_fnames = POINTER(c_char_p)()
             null_rlengths = POINTER(c_int)()
             Library().free_results(len(self.features), null_fnames,
-                                   results["RAW"],
+                                   results[Extractor.RAW_KEY_NAME],
                                    null_rlengths)
             logging.debug("Freed extraction results " + str(results["RAW"]))
+
+    def calculate(self, buffer):
+        '''
+        Default is to copy the data from calculate_raw().
+        '''
+        results = self.calculate_raw(buffer)
+        for name in results:
+            if name != Extractor.RAW_KEY_NAME:
+                results[name] = numpy.copy(results[name])
+        self.free_results(results)
+        del(results[Extractor.RAW_KEY_NAME])
+        return results
+
+
+class FeatureInterface(object):
+    def __init__(self, description):
+        self.name = description[:description.find("[")].strip()
+        self.raw = description
+
+    def join(self):
+        return self.raw

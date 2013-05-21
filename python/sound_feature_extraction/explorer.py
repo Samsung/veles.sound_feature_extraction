@@ -49,11 +49,12 @@ class Explorer(object):
                     parameters[p_name] = TransformParameter(
                         p_names[j].decode(), p_descs[j].decode(),
                         p_defs[j].decode())
-                self.transforms[transform_name] = Transform(transform_name,
-                                                           description.value,
-                                                           parameters, None,
-                                                           input_format.value,
-                                                           output_format.value)
+                self.transforms[transform_name] = Transform(
+                    transform_name,
+                    description.value.decode(),
+                    parameters, None,
+                    input_format.value.decode(),
+                    output_format.value.decode())
                 Library().destroy_transform_details(description, input_format,
                                                     output_format, p_names,
                                                     p_descs, p_defs, p_count)

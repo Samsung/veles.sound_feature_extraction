@@ -8,10 +8,10 @@ Created on Mar 25, 2013
 import logging
 import numpy
 import unittest
-from SoundFeatureExtraction.extractor import Extractor
-from SoundFeatureExtraction.features import Features
-from SoundFeatureExtraction.library import Library
-from SoundFeatureExtraction.transform import Transform
+from sound_feature_extraction.extractor import Extractor
+from sound_feature_extraction.feature import Feature
+from sound_feature_extraction.library import Library
+from sound_feature_extraction.transform import Transform
 
 
 class Test(unittest.TestCase):
@@ -25,26 +25,26 @@ class Test(unittest.TestCase):
         pass
 
     def testExtractor(self):
-        extr = Extractor([Features("MFCC",
-                                   [Transform("Window",
-                                              parameters={"length": "32"}),
-                                    Transform("RDFT"),
-                                    Transform("SpectralEnergy"),
-                                    Transform("FilterBank"),
-                                    Transform("FilterBank"),
-                                    Transform("Log"),
-                                    Transform("Selector",
-                                              parameters={"length": "256"}),
-                                    Transform("DCT"),
-                                    Transform("Selector",
-                                              parameters={"length": "24"})]
-                                   )],
+        extr = Extractor([Feature("MFCC",
+                                  [Transform("Window",
+                                             parameters={"length": "512"}),
+                                   Transform("RDFT"),
+                                   Transform("SpectralEnergy"),
+                                   Transform("FilterBank"),
+                                   Transform("FilterBank"),
+                                   Transform("Log"),
+                                   Transform("Selector",
+                                             parameters={"length": "256"}),
+                                   Transform("DCT"),
+                                   Transform("Selector",
+                                             parameters={"length": "24"})]
+                                  )],
                          48000, 16000)
-        buffer = numpy.ones((48000,), dtype=numpy.int16)
+        buffer = numpy.ones(48000, dtype=numpy.int16)
+        buffer *= 1000
         results = extr.calculate(buffer)
         print("Calculated results:")
         print(results["MFCC"])
-        extr.free_results(results)
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testExtractor']

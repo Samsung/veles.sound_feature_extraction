@@ -22,7 +22,10 @@ class Test(unittest.TestCase):
     def testExplorer(self):
         Library("/home/markhor/Development/SoundFeatureExtraction/build/src/"
                 ".libs/libSoundFeatureExtraction.so")
-        Explorer()
+        explorer = Explorer()
+        for name in explorer.transforms:
+            print(str(explorer.transforms[name]))
+            print("")
 
 
 if __name__ == "__main__":

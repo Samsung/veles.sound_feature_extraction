@@ -8,7 +8,7 @@ Created on Mar 25, 2013
 import logging
 
 
-class Features(object):
+class Feature(object):
     '''
     Stores the plan how to calculate specific speech features
     '''
