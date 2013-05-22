@@ -19,7 +19,7 @@ namespace Features {
 
 void AddToTransformsList(const std::string& str, size_t featureIndex,
                          RawTransformsList* transforms) {
-  static const boost::regex nameRegex("(^\\w+\\d*)");
+  static const boost::regex nameRegex("(^\\w+)");
   static const boost::regex parametersRegex("\\(([^\\)]*)\\)");
   static const boost::sregex_token_iterator empty;
 
@@ -50,11 +50,11 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures) {
   RawFeaturesMap ret;
 
   static const boost::regex featureRegex(
-      "(^\\w+\\d*)\\s*\\[([^\\]]+)\\]\\s*");
+      "(^\\w+)\\s*\\[([^\\]]+)\\]\\s*");
   static const boost::regex transformsRegex(
-      "(\\w+\\d*\\s*(\\([^\\)]*\\))?)\\s*,\\s*");
+      "(?<=,)\\s*(\\w+\\s*(\\([^\\)]*\\))?)(?=\\s*,\\s*)");
   static const boost::regex transformsEndRegex(
-      "(\\w+\\d*\\s*(\\([^\\)]*\\))?)\\s*$");
+      "(\\w+\\s*(\\([^\\)]*\\))?)\\s*$");
   static const boost::sregex_token_iterator empty;
 
   for (size_t index = 0; index < rawFeatures.size(); index++) {
@@ -76,7 +76,7 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures) {
     if (featureTransformsIterator == empty) {
       throw ParseFeaturesException(index);
     }
-    std::string transformsStr = *featureTransformsIterator++;
+    std::string transformsStr = std::string(",") + *featureTransformsIterator++;
     if (featureTransformsIterator != empty) {
       throw ParseFeaturesException(index);
     }

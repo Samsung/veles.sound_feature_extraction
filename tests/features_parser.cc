@@ -23,13 +23,14 @@ TEST(Features, Parse) {
           "Log10, DCT(engine=Kiss)]",
       "PLP[Window(length=25, step=10), IntensityLoudness(direction=i2l), "
           "IDFT, AutoRegressiveAnalysis(), LPCtoCC]",
-      "SBC [Window(length = 32), RDFT]"
+      "SBC [Window(length = 32), RDFT]",
+      "WPP[Window(length=512, type=rectangular), DWPT, "
+          "SubbandEnergy, Log, DWPT(order=4, tree=1 2 3 3)]"
   };
   auto result = Parse(lines);
-  ASSERT_EQ(result.size(), 3);
-  result.erase("SBC");
-  auto it = result.begin();
-  EXPECT_STREQ("PLP", it->first.c_str());
+  ASSERT_EQ(result.size(), 4);
+  auto it = result.find("PLP");
+  EXPECT_NE(result.end(), it);
   EXPECT_EQ(5, it->second.size());
   auto tit = it->second.begin();
   EXPECT_STREQ("Window", tit->first.c_str());
@@ -42,8 +43,8 @@ TEST(Features, Parse) {
   EXPECT_STREQ("", tit++->second.c_str());
   EXPECT_STREQ("LPCtoCC", tit->first.c_str());
   EXPECT_STREQ("", tit++->second.c_str());
-  it++;
-  EXPECT_STREQ("MFCC", it->first.c_str());
+  it = result.find("MFCC");
+  EXPECT_NE(result.end(), it);
   EXPECT_EQ(5, it->second.size());
   tit = it->second.begin();
   EXPECT_STREQ("Window", tit->first.c_str());
@@ -56,6 +57,20 @@ TEST(Features, Parse) {
   EXPECT_STREQ("", tit++->second.c_str());
   EXPECT_STREQ("DCT", tit->first.c_str());
   EXPECT_STREQ("engine=Kiss", tit++->second.c_str());
+  it = result.find("WPP");
+  EXPECT_NE(result.end(), it);
+  EXPECT_EQ(5, it->second.size());
+  tit = it->second.begin();
+  EXPECT_STREQ("Window", tit->first.c_str());
+  EXPECT_STREQ("length=512, type=rectangular", tit++->second.c_str());
+  EXPECT_STREQ("DWPT", tit->first.c_str());
+  EXPECT_STREQ("", tit++->second.c_str());
+  EXPECT_STREQ("SubbandEnergy", tit->first.c_str());
+  EXPECT_STREQ("", tit++->second.c_str());
+  EXPECT_STREQ("Log", tit->first.c_str());
+  EXPECT_STREQ("", tit++->second.c_str());
+  EXPECT_STREQ("DWPT", tit->first.c_str());
+  EXPECT_STREQ("order=4, tree=1 2 3 3", tit++->second.c_str());
 }
 
 #include "tests/google/src/gtest_main.cc"
