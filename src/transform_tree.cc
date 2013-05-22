@@ -247,6 +247,7 @@ void TransformTree::AddTransform(const std::string& name,
                                  const std::string& parameters,
                                  const std::string& relatedFeature,
                                  std::shared_ptr<Node>* currentNode) {
+  DBG("Adding \"%s\" (parameters \"%s\")", name.c_str(), parameters.c_str());
   // Search for the constructor of the transform "tname"
   auto tfit = TransformFactory::Instance().Map().find(name);
   if (tfit == TransformFactory::Instance().Map().end()) {
@@ -269,6 +270,9 @@ void TransformTree::AddTransform(const std::string& name,
 
   // Add the format converter, if needed
   if (*t->InputFormat() != *(*currentNode)->BoundTransform->OutputFormat()) {
+    DBG("Formats mismatch (%s -> %s), probing for a suitable converter",
+        (*currentNode)->BoundTransform->OutputFormat()->Id().c_str(),
+        t->InputFormat()->Id().c_str());
     auto convName = FormatConverter::Name(
         *(*currentNode)->BoundTransform->OutputFormat(), *t->InputFormat());
     AddTransform(convName, "", relatedFeature, currentNode);
@@ -281,6 +285,7 @@ void TransformTree::AddTransform(const std::string& name,
   } else {
     auto reusedTransform = FindIdenticalTransform(*t);
     if (reusedTransform != nullptr) {
+      DBG("Reusing the already existing transform");
       t = reusedTransform;
     } else {
       // Set the input format
@@ -303,6 +308,7 @@ std::shared_ptr<Formats::RawFormat16> TransformTree::RootFormat()
 void TransformTree::AddFeature(
     const std::string& name,
     const std::vector<std::pair<std::string, std::string>>& transforms) {
+  DBG("Adding \"%s\"", name.c_str());
   if (treeIsPrepared_) {
     throw TreeIsPreparedException();
   }
@@ -321,6 +327,7 @@ void TransformTree::AddFeature(
 }
 
 void TransformTree::PrepareForExecution() {
+  DBG("Entered");
   if (treeIsPrepared_) {
     throw TreeAlreadyPreparedException();
   }
@@ -333,6 +340,7 @@ void TransformTree::PrepareForExecution() {
 
 std::unordered_map<std::string, std::shared_ptr<Buffers>>
 TransformTree::Execute(const Formats::Raw16& in) {
+  DBG("Entered");
   if (!treeIsPrepared_) {
     throw TreeIsNotPreparedException();
   }
@@ -359,6 +367,9 @@ TransformTree::Execute(const Formats::Raw16& in) {
   root_->Execute();
   auto checkPointFinish = std::chrono::high_resolution_clock::now();
   auto allDuration = checkPointFinish - checkPointStart;
+  INF("Execution took %f s",
+      (allDuration.count() + 0.f) /
+          std::chrono::high_resolution_clock::period().den);
   auto otherDuration = allDuration;
   for (auto cit : transformsCache_) {
     otherDuration -= cit.second.ElapsedTime;
