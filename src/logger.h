@@ -44,7 +44,8 @@ namespace SoundFeatureExtraction {
 
 #include <stdio.h>
 
-#define FALLBACK_LOG(...) fprintf(stderr, __VA_ARGS__)
+#define FALLBACK_LOG(...) { fprintf(stderr, __VA_ARGS__); \
+                            fprintf(stderr, "\n"); }
 
 #define DBG(...) FALLBACK_LOG(__VA_ARGS__)
 #define INF(...) FALLBACK_LOG(__VA_ARGS__)
