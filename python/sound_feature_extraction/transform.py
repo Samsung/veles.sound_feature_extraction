@@ -17,6 +17,10 @@ class TransformParameter(object):
         self.description = str(description)
         self.default_value = str(default_value)
 
+    def __str__(self):
+        return "Name: " + self.name + "\nDescription: " + \
+            self.description + "\nDefault: " + self.default_value
+
 
 class Transform(object):
     '''
@@ -37,10 +41,16 @@ class Transform(object):
                  self.description + "\n\n"
         result += "Input format: " + self.input_format + "\n"
         result += "Output format: " + self.output_format + "\n"
+        if self.supported_parameters:
+            result += "Supported parameters:\n"
+            for pname in self.supported_parameters:
+                result += "\t" + str(self.supported_parameters[pname]) \
+                    .replace("\n", "\n\t") + "\n"
         if self.parameters:
             result += "Parameters:\n"
-            for param in self.parameters:
-                result += param + "\n"
+            for pname in self.parameters:
+                result += "\t" + str(self.parameters[pname]) \
+                    .replace("\n", "\n\t") + "\n"
         return result
 
     def __eq__(self, other):

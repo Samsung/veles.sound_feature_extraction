@@ -14,6 +14,19 @@ from sound_feature_extraction.formatters import Formatters
 from sound_feature_extraction.explorer import Explorer
 
 
+class SetupFeaturesFailedException(Exception):
+    """Raised when setup_features_extraction() return null.
+    """
+    pass
+
+
+class ExtractionFailedException(Exception):
+    """Raised when extract_speech_features() return status code different
+    from 0.
+    """
+    pass
+
+
 class Extractor(object):
     '''
     Speech feature extractor.
@@ -34,6 +47,7 @@ class Extractor(object):
                           " features (config " + str(self._config) + ")")
         else:
             logging.error("Failed to set up features")
+            raise SetupFeaturesFailedException()
 
     def __del__(self):
         Library().destroy_features_configuration(self._config)
@@ -57,7 +71,7 @@ class Extractor(object):
         logging.debug("extract_speech_features() returned status " + \
                       str(status) + " (results = " + str(results) + ")")
         if status != 0:
-            return None
+            raise ExtractionFailedException()
         ret = {}
         for i in range(0, len(self.features)):
             length = rlengths[i]
@@ -101,12 +115,3 @@ class Extractor(object):
         self.free_results(results)
         del(results[Extractor.RAW_KEY_NAME])
         return results
-
-
-class FeatureInterface(object):
-    def __init__(self, description):
-        self.name = description[:description.find("[")].strip()
-        self.raw = description
-
-    def join(self):
-        return self.raw
