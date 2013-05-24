@@ -1,5 +1,5 @@
-/*! @file parameters.h
- *  @brief Transform parameters related stuff.
+/*! @file parameterizable.h
+ *  @brief Parameterizable abstract class.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_PARAMETERS_H_
-#define SRC_PARAMETERS_H_
+#ifndef SRC_PARAMETERIZABLE_H_
+#define SRC_PARAMETERIZABLE_H_
 
 #include <memory>
 #include <unordered_map>  // NOLINT(build/include_order)
@@ -35,9 +35,9 @@ struct ParameterTraits {
   std::string DefaultValue;
 };
 
-class IParameterizable {
+class Parameterizable {
  public:
-  virtual ~IParameterizable() {}
+  virtual ~Parameterizable() {}
 
   virtual const std::unordered_map<std::string, ParameterTraits>&
   SupportedParameters() const noexcept = 0;
@@ -54,4 +54,4 @@ class IParameterizable {
 
 }  // namespace SoundFeatureExtraction
 
-#endif  // SRC_PARAMETERS_H_
+#endif  // SRC_PARAMETERIZABLE_H_

@@ -1,5 +1,5 @@
 /*! @file parameters_base.cc
- *  @brief Base class which helps to implement IParameterizable.
+ *  @brief Base class which helps to implement Parameterizable.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

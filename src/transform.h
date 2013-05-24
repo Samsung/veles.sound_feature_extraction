@@ -16,12 +16,12 @@
 #include "src/config.h"
 #include "src/buffer_format.h"
 #include "src/buffers.h"
-#include "src/parameters.h"
+#include "src/parameterizable.h"
 
 namespace SoundFeatureExtraction {
 
 /// @brief Transform abstract class.
-class Transform : public virtual IParameterizable {
+class Transform : public virtual Parameterizable {
  public:
   virtual ~Transform() {}
 

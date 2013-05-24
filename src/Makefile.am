@@ -7,7 +7,7 @@ lib_LTLIBRARIES = libSoundFeatureExtraction.la
 
 # Source files
 libSoundFeatureExtraction_la_SOURCES = api.cc buffers.cc buffer_format.cc features_parser.cc \
-parameters.cc transform.cc transform_registry.cc transform_tree.cc \
+parameterizable.cc transform.cc transform_registry.cc transform_tree.cc \
 format_converter.cc demangle.cc parameters_base.cc logger.cc
 
 # Used libraries

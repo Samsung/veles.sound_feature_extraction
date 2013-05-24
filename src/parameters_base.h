@@ -13,7 +13,7 @@
 #ifndef SRC_PARAMETERS_BASE_H_
 #define SRC_PARAMETERS_BASE_H_
 
-#include "src/parameters.h"
+#include "src/parameterizable.h"
 
 namespace SoundFeatureExtraction {
 
@@ -42,7 +42,7 @@ class ParameterSetterNotRegisteredException : public ExceptionBase {
                   "\" parameter in " + hostName + ".") {}
 };
 
-class ParameterizableBase : public virtual IParameterizable {
+class ParameterizableBase : public virtual Parameterizable {
  public:
   virtual const std::unordered_map<std::string, std::string>&
   GetParameters() const noexcept;

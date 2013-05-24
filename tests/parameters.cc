@@ -11,18 +11,18 @@
  */
 
 #include <gtest/gtest.h>
-#include "src/parameters.h"
+#include "src/parameterizable.h"
 
-using SoundFeatureExtraction::IParameterizable;
+using SoundFeatureExtraction::Parameterizable;
 using SoundFeatureExtraction::ParseParametersException;
 
 TEST(Parameters, EmptyParse) {
-  auto pp = IParameterizable::Parse("");
+  auto pp = Parameterizable::Parse("");
   ASSERT_EQ(0, pp.size());
 }
 
 TEST(Parameters, Parse) {
-  auto pp = IParameterizable::Parse(
+  auto pp = Parameterizable::Parse(
       "one=56, two = some extra , \t three with spaces= xxx ");
   ASSERT_EQ(3, pp.size());
   int size = 0;
@@ -43,7 +43,7 @@ TEST(Parameters, Parse) {
 
 TEST(Parameters, InvalidParse) {
   ASSERT_THROW({
-    auto pp = IParameterizable::Parse("256");
+    auto pp = Parameterizable::Parse("256");
   }, ParseParametersException);
 }
 

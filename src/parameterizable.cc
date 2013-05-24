@@ -1,5 +1,5 @@
-/*! @file parameters.cc
- *  @brief Transform parameters related stuff.
+/*! @file parameterizable.cc
+ *  @brief Parameterizable abstract class partial implementation.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -10,13 +10,13 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/parameters.h"
+#include "src/parameterizable.h"
 #include <boost/algorithm/string/trim.hpp>
 #include <sstream>
 
 namespace SoundFeatureExtraction {
 
-std::unordered_map<std::string, std::string> IParameterizable::Parse(
+std::unordered_map<std::string, std::string> Parameterizable::Parse(
     const std::string& line) {
   std::unordered_map<std::string, std::string> parameters;
   std::istringstream ss(line);
