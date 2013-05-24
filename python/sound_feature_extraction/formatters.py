@@ -5,6 +5,7 @@ Created on May 21, 2013
 """
 
 
+import ctypes
 import logging
 import numpy
 
@@ -15,12 +16,15 @@ class Formatters(object):
     """
 
     @staticmethod
+    def reinterpret_cast(array, type_name):
+        return array.view(ctypes.__dict__["c_" + type_name])
+
+    @staticmethod
     def parse(array, format_name):
         if format_name.find("<") == -1:
             if format_name == "float":
                 format_name += "32"
-            conv_array = array.astype(numpy.__dict__[format_name],
-                                      copy=False)
+            conv_array = Formatters.reinterpret_cast(array, format_name)
             if conv_array.size > 1:
                 return conv_array
             else:
@@ -32,7 +36,7 @@ class Formatters(object):
             length = int(format_name[length_pos + 1:comma_pos])
             atype = format_name[comma_pos + 2:
                                 format_name.length - 1]
-            res = array.astype(numpy.__dict__[atype], copy=False)
+            res = Formatters.reinterpret_cast(array, atype)
             if res.size != length:
                 logging.error("Format size mismatch: real " + res.size +
                               " vs stated " + length + " (format " +
@@ -40,7 +44,7 @@ class Formatters(object):
             return res
         if format_name.startswith("Window<"):
             atype = format_name[7:len(format_name) - 1]
-            return array.astype(numpy.__dict__[atype], copy=False)
+            return Formatters.reinterpret_cast(array, atype)
         if format_name.startswith("std::tuple"):
             logging.error("Not implemented yet")
         return numpy.copy(array)
