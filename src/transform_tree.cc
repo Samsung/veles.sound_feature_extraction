@@ -199,10 +199,10 @@ void TransformTree::Node::Execute() {
     }
 
     if (Host->DumpBuffersAfterEachTransform()) {
-      INF("Buffers after %s\n", BoundTransform->Name().c_str());
-      INF("==============%s\n",
+      INF("Buffers after %s", BoundTransform->Name().c_str());
+      INF("==============%s",
           std::string(BoundTransform->Name().size(), '=').c_str());
-      INF("%s\n", BoundBuffers->Dump().c_str());
+      INF("%s", BoundBuffers->Dump().c_str());
     }
   }
   ActionOnEachImmediateChild([&](Node& node) {

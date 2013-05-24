@@ -79,7 +79,7 @@ void RawToWindow::Initialize() const noexcept {
   if (excess != 0) {
     WRN("(input buffer size %zu - window length %zu) = %i is not "
         "divisible by step %i. It's excess (%i samples) will not be "
-        "processed.\n",
+        "processed.",
         inputFormat_->Size(), outputFormat_->Size(),
         realSize, step_, excess);
   }
