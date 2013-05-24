@@ -32,7 +32,8 @@ void ZeroCrossingsWindow::Do(
     BuffersBase<int32_t> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
     auto result = Do(true, in[i]->Data.get(), inputFormat_->Size());
-    assert(result >= 0 && result <= static_cast<int>(inputFormat_->Size() / 2));
+    assert(result >= 0 &&
+           result <= static_cast<int>(inputFormat_->Size() / 2) + 1);
     *(*out)[i] = result;
   }
 }
@@ -130,7 +131,8 @@ void ZeroCrossingsRaw::Do(
     BuffersBase<int32_t> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
     auto result = Do(true, in[i]->Data.get(), inputFormat_->Size());
-    assert(result >= 0 && result <= static_cast<int>(inputFormat_->Size() / 2));
+    assert(result >= 0 &&
+           result <= static_cast<int>(inputFormat_->Size() / 2) + 1);
     *(*out)[i] = result;
   }
 }
