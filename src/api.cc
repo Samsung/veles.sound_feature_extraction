@@ -101,6 +101,46 @@ void destroy_transforms_list(char **names, int listSize) {
   delete[] names;
 }
 
+void query_format_converters_list(char ***inputFormats, char*** outputFormats,
+                                  int *listSize) {
+  CHECK_NULL(inputFormats);
+  CHECK_NULL(outputFormats);
+  CHECK_NULL(listSize);
+
+  int i = 0;
+  for (auto tc : TransformFactory::Instance().Map()) {
+    if (tc.first.find("->") != std::string::npos) {
+      i++;
+    }
+  }
+
+  *listSize = i;
+  *inputFormats = new char*[*listSize];
+  *outputFormats = new char*[*listSize];
+  i = 0;
+  for (auto tc : TransformFactory::Instance().Map()) {
+    if (tc.first.find("->") != std::string::npos) {
+      auto transform = tc.second.begin()->second();
+      copy_string(transform->InputFormat()->Id(), *inputFormats + i);
+      copy_string(transform->OutputFormat()->Id(), *outputFormats + i);
+      i++;
+    }
+  }
+}
+
+void destroy_format_converters_list(char **inputFormats, char** outputFormats,
+                                    int listSize) {
+  CHECK_NULL(inputFormats);
+  CHECK_NULL(outputFormats);
+
+  for (int i = 0; i < listSize; i++) {
+    delete[] inputFormats[i];
+    delete[] outputFormats[i];
+  }
+  delete[] inputFormats;
+  delete[] outputFormats;
+}
+
 void query_transform_details(const char *name, char **description,
                              char **inputFormat, char **outputFormat,
                              char ***parameterNames,

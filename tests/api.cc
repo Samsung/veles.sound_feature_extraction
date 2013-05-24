@@ -54,6 +54,20 @@ TEST(API, query_transform_details) {
                             pnames, pdescs, pdefs, count);
 }
 
+TEST(API, query_format_converters_list) {
+  char** inputformats = nullptr;
+  char** outputFormats = nullptr;
+  int count = 0;
+  query_format_converters_list(&inputformats, &outputFormats, &count);
+  ASSERT_NE(nullptr, inputformats);
+  ASSERT_NE(nullptr, outputFormats);
+  ASSERT_GT(count, 0);
+  for (int i = 0; i < count; i++) {
+    ASSERT_NE(nullptr, inputformats[i]);
+    ASSERT_NE(nullptr, outputFormats[i]);
+  }
+}
+
 TEST(API, extract_speech_features) {
   const char *feature = "MFCC [Window(length=512), RDFT, SpectralEnergy,"
       "FilterBank, FilterBank, Log, Square, UnpackRDFT, DCT, "

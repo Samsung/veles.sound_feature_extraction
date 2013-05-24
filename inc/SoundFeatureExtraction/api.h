@@ -70,6 +70,12 @@ void destroy_transform_details(char *description,
                                char **parameterDefaultValues,
                                int parametersCount) NOTNULL(1, 2, 3, 4);
 
+void query_format_converters_list(char ***inputFormats, char*** outputFormats,
+                                  int *listSize) NOTNULL(1, 2, 3);
+
+void destroy_format_converters_list(char **inputFormats, char** outputFormats,
+                                    int listSize) NOTNULL(1);
+
 FeaturesConfiguration *setup_features_extraction(
     const char *const *features, int featuresCount,
     size_t bufferSize, int samplingRate) NOTNULL(1) WARN_UNUSED_RESULT MALLOC;
