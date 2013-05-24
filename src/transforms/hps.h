@@ -23,7 +23,8 @@ namespace Transforms {
 
 /// @brief Harmonic Product Spectrum calculation.
 class Hps
-    : public TransformBase<Formats::WindowFormatF, Formats::SingleFormatF> {
+    : public TransformBase<Formats::WindowFormatF, Formats::SingleFormatF>,
+      public TransformLogger<Hps> {
  public:
   TRANSFORM_INTRO("HPS", "Extracting fundamental frequency with Harmonic "
                          "Product Spectrum algorithm.")

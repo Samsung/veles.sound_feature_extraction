@@ -44,7 +44,22 @@ void Hps::Do(
           fundamental_frequency = current_index;
         }
       }
-      *(*out)[i] = (fundamental_frequency * sampling_rate) /(2 * (length - 1));
+      auto result = (fundamental_frequency * sampling_rate) /
+          (2 * (length - 1));
+#ifdef DEBUG
+      if (result <= 0 || result >= sampling_rate / 2) {
+        ERR("Result is out of the allowed range (%f). "
+            "Dump of the input data of length %i:",
+            result, length);
+        std::string dump;
+        for (int j = 0; j < length; j++) {
+          dump += std::to_string(signal[j]) + "  ";
+        }
+        ERR("%s", dump.c_str());
+      }
+#endif
+      assert(result > 0 && result < sampling_rate / 2);
+      *(*out)[i] = result;
     }
 }
 
