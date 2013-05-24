@@ -30,7 +30,7 @@ class Transform(object):
                  supported_parameters=None, parameters=None,
                  input_format="", output_format=""):
         self.name = name
-        self.description = description
+        self.description_str = description
         self.supported_parameters = supported_parameters
         self.parameters = parameters
         self.input_format = input_format
@@ -38,7 +38,7 @@ class Transform(object):
 
     def __str__(self):
         result = self.name + "\n" + "=" * len(self.name) + "\n\n" + \
-                 self.description + "\n\n"
+                 self.description_str + "\n\n"
         result += "Input format: " + self.input_format + "\n"
         result += "Output format: " + self.output_format + "\n"
         if self.supported_parameters:
@@ -58,7 +58,7 @@ class Transform(object):
             self.input_format == other.input_format and \
             self.output_format == other.output_format
 
-    def join(self):
+    def description(self):
         '''
         Constructs a string which describes this transform and it's parameters.
         '''

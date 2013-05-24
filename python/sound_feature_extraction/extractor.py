@@ -34,12 +34,13 @@ class Extractor(object):
 
     def __init__(self, features, buffer_size, sampling_rate):
         self.features = features
+        self.features_dict = {f.name: f for f in self.features}
         self.buffer_size = buffer_size
         self.sampling_rate = sampling_rate
         flen = len(self.features)
         fstrs = (c_char_p * flen)()
         for i in range(0, flen):
-            fstrs[i] = c_char_p(self.features[i].join().encode())
+            fstrs[i] = c_char_p(self.features[i].description().encode())
         self._config = Library().setup_features_extraction(
             fstrs, len(self.features), buffer_size, sampling_rate)
         if self._config:
@@ -75,13 +76,14 @@ class Extractor(object):
         ret = {}
         for i in range(0, len(self.features)):
             length = rlengths[i]
-            logging.debug(self.features[i].name + " yielded " + \
+            feature = self.features_dict[fnames[i].decode()]
+            logging.debug(feature.name + " yielded " + \
                           str(length) + " bytes")
             res_type = c_byte * length
             array_pointer = cast(results[i], POINTER(res_type))
-            format_name = self.features[i].transforms[-1].output_format
+            format_name = feature.transforms[-1].output_format
             if format_name == "":
-                format_name = Explorer().transforms[self.features[i]. \
+                format_name = Explorer().transforms[feature. \
                     transforms[-1].name].output_format
             ret[fnames[i].decode()] = Formatters.parse(numpy.frombuffer(
                 array_pointer.contents, dtype=numpy.byte, count=length),

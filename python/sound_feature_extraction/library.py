@@ -31,8 +31,8 @@ class Library(object):
     def __init__(self, path=None):
         if not self._handle or (path != self._path and path and path != ""):
             if not path or path == "":
-                logging.warning("Library path was not specified, "
-                                 "will use the default")
+                logging.info("Library path was not specified, "
+                             "will use the default")
                 path = "libSoundFeatureExtraction.so"
             self._path = path
             try:
@@ -63,6 +63,13 @@ class Library(object):
                     [c_char_p, c_char_p, c_char_p, POINTER(c_char_p),
                      POINTER(c_char_p), POINTER(c_char_p), c_int]
                 self._handle.destroy_transform_details.restype = None
+                self._handle.query_format_converters_list.argtypes = \
+                    [POINTER(POINTER(c_char_p)), POINTER(POINTER(c_char_p)),
+                     POINTER(c_int)]
+                self._handle.query_format_converters_list.restype = None
+                self._handle.destroy_format_converters_list.argtypes = \
+                    [POINTER(c_char_p), POINTER(c_char_p), c_int]
+                self._handle.destroy_format_converters_list.restype = None
                 self._handle.setup_features_extraction.argtypes = \
                     [POINTER(c_char_p), c_int, c_size_t, c_int]
                 self._handle.setup_features_extraction.restype = \

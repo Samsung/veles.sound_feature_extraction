@@ -5,6 +5,7 @@ Created on Mar 21, 2013
 '''
 
 
+import collections
 import logging
 from ctypes import POINTER, c_char_p, c_int, byref
 from sound_feature_extraction.library import Library
@@ -60,6 +61,22 @@ class Explorer(object):
                                                     p_descs, p_defs, p_count)
             Library().destroy_transforms_list(names, list_size)
             logging.debug("Done with getting transforms")
+            input_formats = POINTER(c_char_p)()
+            output_formats = POINTER(c_char_p)()
+            logging.debug("query_format_converters_list()")
+            Library().query_format_converters_list(byref(input_formats),
+                                                   byref(output_formats),
+                                                   byref(list_size))
+            logging.debug("Got the list of " + str(list_size.value) + \
+                          " format converters")
+            self.format_converters = collections.defaultdict(list)
+            for i in range(0, list_size.value):
+                self.format_converters[input_formats[i].decode()].append(
+                    output_formats[i].decode())
+            Library().destroy_format_converters_list(input_formats,
+                                                     output_formats,
+                                                     list_size)
+            logging.debug("Done with getting format converters")
 
     def __new__(cls):
         if not cls._instance:

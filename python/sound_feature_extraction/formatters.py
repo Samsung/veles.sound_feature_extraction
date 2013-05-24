@@ -17,7 +17,15 @@ class Formatters(object):
     @staticmethod
     def parse(array, format_name):
         if format_name.find("<") == -1:
-            return array.astype(numpy.__dict__[format_name], copy=False)[0]
+            if format_name == "float":
+                format_name += "32"
+            conv_array = array.astype(numpy.__dict__[format_name],
+                                      copy=False)
+            if conv_array.size > 1:
+                return conv_array
+            else:
+                return conv_array[0]
+
         if format_name.find("FixedArray<") > -1:
             length_pos = format_name.find(")") + 1
             comma_pos = format_name.find(",")
