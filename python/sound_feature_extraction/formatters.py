@@ -22,8 +22,6 @@ class Formatters(object):
     @staticmethod
     def parse(array, format_name):
         if format_name.find("<") == -1:
-            if format_name == "float":
-                format_name += "32"
             conv_array = Formatters.reinterpret_cast(array, format_name)
             if conv_array.size > 1:
                 return conv_array
