@@ -16,7 +16,7 @@
 #include <set>
 #include "src/formats/window_format.h"
 #include "src/formats/single_format.h"
-#include "src/transform_base.h"
+#include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -24,14 +24,14 @@ namespace Transforms {
 typedef std::tuple<int, float> ArgMinMaxResult;
 
 class ArgMinMax
-    : public TransformBase<Formats::WindowFormatF,
-                           Formats::SingleFormat<ArgMinMaxResult>> {
+    : public OmpTransformBase<Formats::WindowFormatF,
+                              Formats::SingleFormat<ArgMinMaxResult>> {
  public:
   ArgMinMax();
 
   TRANSFORM_INTRO("ArgMinMax", "Calculate argmin or argmax of the window.")
 
-  TRANSFORM_PARAMETERS(
+  OMP_TRANSFORM_PARAMETERS(
       TP("extremum", "Extremum type to find: min or max.",
          kDefaultExtremum? "min" : "max")
   )
@@ -42,8 +42,8 @@ class ArgMinMax
       BuffersBase<ArgMinMaxResult>* buffers)
   const noexcept;
 
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<ArgMinMaxResult> *out)
+  virtual void Do(const Formats::WindowF& in,
+                  ArgMinMaxResult *out)
   const noexcept;
 
   static ArgMinMaxResult Do(bool simd, const float* input, size_t length,

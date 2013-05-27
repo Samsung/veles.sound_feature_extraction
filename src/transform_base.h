@@ -28,7 +28,7 @@ class TransformBase;
 template <typename FIN, typename FOUT>
 class TransformBaseCommon : public virtual Transform,
                             public virtual ParameterizableBase,
-                            public InverseParameterAware {
+                            public virtual InverseParameterAware {
   friend class TransformBase<FIN, FOUT, true>;
  public:
   TransformBaseCommon() noexcept

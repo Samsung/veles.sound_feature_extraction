@@ -20,7 +20,7 @@ using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::Diffrect;
 
 class DiffrectTest
-    :public Diffrect, public testing::Test {
+    : public Diffrect, public testing::Test {
  public:
   BuffersBase<WindowF> Input;
   BuffersBase<WindowF> Output;
@@ -49,7 +49,7 @@ class DiffrectTest
 };
 
 TEST_F(DiffrectTest, Do) {
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   for (int i = 0; i < Size - 1; i++) {
     int result = (i % 3);
     if (i % 2 == 0) {

@@ -53,11 +53,11 @@ class ArgMinMaxTest
 
 TEST_F(ArgMinMaxTest, Do) {
   SetParameter("extremum", "max");
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   ASSERT_EQ(Size / 2, std::get<0>(Output[0]));
   ASSERT_EQ(Size / 2 + 1, std::get<1>(Output[0]));
   SetParameter("extremum", "min");
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   ASSERT_EQ(Size / 2 - 1, std::get<0>(Output[0]));
   ASSERT_EQ(- Size / 2 + 2, std::get<1>(Output[0]));
 }

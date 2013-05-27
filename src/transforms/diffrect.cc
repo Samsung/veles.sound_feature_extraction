@@ -31,16 +31,13 @@ void Diffrect::InitializeBuffers(
   buffers->Initialize(in.Size(), outputFormat_->Size());
 }
 
-void Diffrect::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* out) const noexcept {
-  for (size_t i = 0; i < in.Size(); i++) {
-    Do(true, in[i].Data.get(), inputFormat_->Size(), (*out)[i].Data.get());
-  }
+void Diffrect::Do(const Formats::WindowF& in, Formats::WindowF* out)
+const noexcept {
+  Do(true, in.Data.get(), inputFormat_->Size(), out->Data.get());
 }
 
 void Diffrect::Do(bool simd, const float* input, int length,
-                       float* output) noexcept {
+                  float* output) noexcept {
   if (simd) {
 #ifdef __AVX__
     int first = 0;
