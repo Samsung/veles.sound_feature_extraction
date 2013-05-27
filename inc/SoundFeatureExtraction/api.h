@@ -100,6 +100,10 @@ void destroy_features_configuration(FeaturesConfiguration *fc) NOTNULL(1);
 void free_results(int featuresCount, char **featureNames,
                   void **results, int *resultLengths) NOTNULL(2, 3, 4);
 
+int get_omp_transforms_max_threads_num();
+
+void set_omp_transforms_max_threads_num(int value);
+
 #if __GNUC__ >= 4
 #pragma GCC visibility pop
 #endif

@@ -12,6 +12,7 @@
 
 #include <SoundFeatureExtraction/api.h>
 #include <assert.h>
+#include <omp.h>
 #include <stddef.h>
 #include "src/features_parser.h"
 #include "src/make_unique.h"
@@ -300,7 +301,7 @@ FeatureExtractionResult extract_speech_features(
     retmap = fc->Tree->Execute(Raw16(buffer));
   }
   catch (const std::exception& ex) {
-    fprintf(stderr, "Caught an exception with message \"%s\".", ex.what());
+    fprintf(stderr, "Caught an exception with message \"%s\".\n", ex.what());
     return FEATURE_EXTRACTION_RESULT_ERROR;
   }
   *featureNames = new char*[retmap.size()];
@@ -377,7 +378,7 @@ void free_results(int featuresCount, char **featureNames,
                   void **results, int *resultLengths) {
   if(featuresCount <= 0) {
     fprintf(stderr, "Warning: free_results() was called with featuresCount"
-                    " <= 0, skipped");
+                    " <= 0, skipped\n");
     return;
   }
 
@@ -398,6 +399,37 @@ void free_results(int featuresCount, char **featureNames,
   if (results != nullptr) {
     delete[] results;
   }
+}
+
+void get_set_omp_transforms_max_threads_num(int *value, bool get) {
+  static int threads_num = omp_get_max_threads();
+  if (get) {
+    *value = threads_num;
+  } else {
+    int max = omp_get_max_threads();
+    if (*value > max) {
+      fprintf(stderr, "Warning: can not set the maximal number of threads to "
+                      "%i (the limit is %i), so set to %i\n",
+              *value, max, max);
+      threads_num = max;
+    } else if (*value < 1) {
+      fprintf(stderr, "Warning: can not set the maximal number of threads to "
+                      "%i. The value remains the same (%i)\n",
+              *value, threads_num);
+    } else {
+      threads_num = *value;
+    }
+  }
+}
+
+int get_omp_transforms_max_threads_num() {
+  int res;
+  get_set_omp_transforms_max_threads_num(&res, true);
+  return res;
+}
+
+void set_omp_transforms_max_threads_num(int value) {
+  get_set_omp_transforms_max_threads_num(&value, false);
 }
 
 }
