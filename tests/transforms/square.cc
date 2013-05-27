@@ -78,7 +78,7 @@ TEST_F(SquareRawTest, Do) {
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(SquareWindowTest, Do) {
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   for (int i = 0; i < Size; i++) {
     ASSERT_EQF(i * i, Output[0].Data.get()[i]);
   }

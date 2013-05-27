@@ -51,7 +51,7 @@ class MeanTest
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(MeanTest, Do) {
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
 
   float amean =0.f;
   float gmean = 1.f, tmp = 1.f;

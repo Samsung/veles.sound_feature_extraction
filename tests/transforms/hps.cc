@@ -45,7 +45,7 @@ class HpsTest : public Hps, public testing::Test {
 };
 
 TEST_F(HpsTest, Do) {
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   float delta = Output[0] - 110.671507f;
   ASSERT_LT(delta * delta, 1.0f);
 }

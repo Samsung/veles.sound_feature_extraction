@@ -60,16 +60,14 @@ void FirFilterBase::InitializeBuffers(
                       in[0].AlignmentOffset());
 }
 
-void FirFilterBase::Do(const BuffersBase<Formats::Raw16>& in,
-                               BuffersBase<Formats::Raw16> *out)
+void FirFilterBase::Do(const Formats::Raw16& in,
+                       Formats::Raw16 *out)
 const noexcept {
-  for (size_t i = 0; i < in.Size(); i++) {
-    int16_to_float(in[i].Data.get(), inputFormat_->Size(), &dataBuffer_[0]);
-    convolute(convoluteHandle_, &dataBuffer_[0],
-              &filter_[0], &dataBuffer_[0]);
-    float_to_int16(&dataBuffer_[0], inputFormat_->Size(),
-                   (*out)[i].Data.get());
-  }
+  int16_to_float(in.Data.get(), inputFormat_->Size(), &dataBuffer_[0]);
+  convolute(convoluteHandle_, &dataBuffer_[0],
+            &filter_[0], &dataBuffer_[0]);
+  float_to_int16(&dataBuffer_[0], inputFormat_->Size(),
+                 out->Data.get());
 }
 
 }  // namespace Formats

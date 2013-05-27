@@ -47,7 +47,7 @@ class IntensityTest : public Intensity, public testing::Test {
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(IntensityTest, Do) {
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   double res = .0;
   for (int i = 0; i < Size; i++) {
     float tmp = Input[0].Data.get()[i];

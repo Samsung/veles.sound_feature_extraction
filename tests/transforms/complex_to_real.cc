@@ -45,7 +45,7 @@ class ComplexToRealTest
 };
 
 TEST_F(ComplexToRealTest, Do) {
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   for (int i = 0; i < Size / 2; i++) {
     int result = 2 * i;
     ASSERT_EQ(result, Output[0].Data.get()[i]);

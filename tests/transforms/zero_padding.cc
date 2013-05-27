@@ -44,7 +44,7 @@ class ZeroPaddingTest : public ZeroPadding, public testing::Test {
 
 TEST_F(ZeroPaddingTest, Do) {
   ASSERT_EQ(512, outputFormat_->Size());
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   for (int i = Size; i < 512; i++) {
     ASSERT_EQ(0.f, Output[0].Data.get()[i]);
   }

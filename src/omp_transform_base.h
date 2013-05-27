@@ -35,8 +35,7 @@ class OmpTransformBaseCommon : public virtual ParameterizableBase {
       if (tn < 1) {
         return false;
       }
-      int api_max = get_omp_transforms_max_threads_num();
-      max_number_of_threads_ = tn < api_max? tn : api_max;
+      max_number_of_threads_ = tn;
       return true;
     });
   }
@@ -46,7 +45,8 @@ class OmpTransformBaseCommon : public virtual ParameterizableBase {
   }
 
   int MaxThreadsNumber() const noexcept {
-    return max_number_of_threads_;
+    int api_max = get_omp_transforms_max_threads_num();
+    return max_number_of_threads_ < api_max? max_number_of_threads_ : api_max;
   }
 
  protected:
@@ -56,8 +56,8 @@ class OmpTransformBaseCommon : public virtual ParameterizableBase {
   typedef BuffersBase<OutElement> OutBuffers;
 
   virtual void Do(const InBuffers& in, OutBuffers* out) const noexcept {
-    #pragma omp parallel for num_threads(max_number_of_threads_)
-    for (size_t i = 1; i < in.Size(); i++) {
+    #pragma omp parallel for num_threads(MaxThreadsNumber())
+    for (size_t i = 0; i < in.Size(); i++) {
       Do(in[i], &(*out)[i]);
     }
   }
@@ -66,8 +66,8 @@ class OmpTransformBaseCommon : public virtual ParameterizableBase {
 
  private:
   virtual void DoInverse(const OutBuffers& in, InBuffers* out) const noexcept {
-    #pragma omp parallel for num_threads(max_number_of_threads_)
-    for (size_t i = 1; i < in.Size(); i++) {
+    #pragma omp parallel for num_threads(MaxThreadsNumber())
+    for (size_t i = 0; i < in.Size(); i++) {
       DoInverse(in[i], &(*out)[i]);
     }
   }
@@ -134,8 +134,9 @@ class OmpTransformBase<FIN, FOUT, true>
 
 template <typename F>
 class OmpTransformBase<F, F, true>
-    : public virtual TransformBase<F, F, true>,
+    : public virtual UniformFormatTransform<F, true>,
       public virtual OmpTransformBaseCommon<F, F> {
+  using OmpTransformBaseCommon<F, F>::Do;
  protected:
   virtual void Do(const typename TransformBase<F, F, true>::InBuffers& in,
                   typename TransformBase<F, F, true>::OutBuffers* out)
@@ -151,13 +152,33 @@ class OmpTransformBase<F, F, true>
   }
 };
 
+template <typename F>
+class OmpTransformBase<F, F, false>
+    : public virtual UniformFormatTransform<F, false>,
+      public virtual OmpTransformBaseCommon<F, F> {
+ protected:
+  virtual void Do(const typename TransformBase<F, F, false>::InBuffers& in,
+                  typename TransformBase<F, F, false>::OutBuffers* out)
+  const noexcept {
+    OmpTransformBaseCommon<F, F>::Do(in, out);
+  }
+
+ private:
+  virtual void DoInverse(
+      const typename OmpTransformBaseCommon<F, F>::OutElement& in UNUSED,
+      typename OmpTransformBaseCommon<F, F>::InElement* out UNUSED)
+      const noexcept {
+    std::unexpected();
+  }
+};
+
 template <typename F, bool SupportsInversion = false>
 using OmpUniformFormatTransform = OmpTransformBase<F, F, SupportsInversion>;
 
 #define OMP_TRANSFORM_PARAMETERS(init) TRANSFORM_PARAMETERS(FORWARD_MACROS( \
   TP(MaxThreadsNumberParameterName(), \
      "The maximal number of OpenMP threads.", \
-     "get_omp_transforms_max_threads_num()") \
+     std::to_string(get_omp_transforms_max_threads_num())) \
   init) \
 )
 

@@ -40,12 +40,13 @@ class UnpackRDFTTest : public UnpackRDFT, public testing::Test {
     format->SetSize(Size);
     SetInputFormat(format);
     InitializeBuffers(Input, &Output);
+    UnpackRDFT::Initialize();
   }
 };
 
 TEST_F(UnpackRDFTTest, DoReal) {
   Initialize(257);
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   for (int i = Size; i < (Size - 1) * 2; i++) {
     ASSERT_EQ(2 * (Size - 1) - i, Output[0].Data.get()[i]);
   }
@@ -53,7 +54,7 @@ TEST_F(UnpackRDFTTest, DoReal) {
 
 TEST_F(UnpackRDFTTest, DoComplex) {
   Initialize(258);
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   for (int i = Size; i < (Size - 2) * 2; i += 2) {
     ASSERT_EQ(2 * (Size - 2) - i, Output[0].Data.get()[i]);
     ASSERT_EQ(2 * (Size - 2) - i + 1, Output[0].Data.get()[i + 1]);

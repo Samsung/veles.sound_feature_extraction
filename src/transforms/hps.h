@@ -16,29 +16,28 @@
 #include <string>
 #include "src/formats/window_format.h"
 #include "src/formats/single_format.h"
-#include "src/transform_base.h"
+#include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 /// @brief Harmonic Product Spectrum calculation.
 class Hps
-    : public TransformBase<Formats::WindowFormatF, Formats::SingleFormatF>,
+    : public OmpTransformBase<Formats::WindowFormatF, Formats::SingleFormatF>,
       public TransformLogger<Hps> {
  public:
   TRANSFORM_INTRO("HPS", "Extracting fundamental frequency with Harmonic "
                          "Product Spectrum algorithm.")
 
-  TRANSFORM_PARAMETERS()
+  OMP_TRANSFORM_PARAMETERS()
 
  protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<float>* buffers) const noexcept;
 
-  virtual void Do(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<float>* out) const noexcept;
+  virtual void Do(const Formats::WindowF& in,
+                  float* out) const noexcept;
  private:
   static const int kCoefficientsNumber;
 };

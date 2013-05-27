@@ -41,7 +41,7 @@ TEST(Features, All) {
   tt.AddFeature("WPP", { { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "DWPT", "order=4, tree=1 2 3 3" },
-      { "Selector", "length=16" }
+      { "Selector", "length=16, threads_num=1" }
   });
   tt.AddFeature("SFM", { { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "ComplexMagnitude", "" },
@@ -54,13 +54,13 @@ TEST(Features, All) {
   tt.AddFeature("SBC", { { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" },
-      { "Selector", "length=16" }
+      { "Selector", "length=16, threads_num=1" }
   });
   tt.AddFeature("MFCC", { { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "SpectralEnergy", "" }, { "FilterBank", "" },
       { "FilterBank", "" }, { "Log", "" }, { "Square", "" },
-      { "Selector", "length=256" }, { "DCT", "" },
-      { "Selector", "length=16" }
+      { "Selector", "length=256, threads_num=1" }, { "DCT", "" },
+      { "Selector", "length=16, threads_num=1" }
   });
   tt.AddFeature("F0_HPS", { { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "ComplexMagnitude", "" }, { "HPS", "" }
@@ -70,16 +70,25 @@ TEST(Features, All) {
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   ASSERT_EQ(11, res.size());
+  printf("Validating Energy\n");
   res["Energy"]->Validate();
+  printf("Validating Centroid\n");
   res["Centroid"]->Validate();
+  printf("Validating Rolloff\n");
   res["Rolloff"]->Validate();
+  printf("Validating Flux\n");
   res["Flux"]->Validate();
+  printf("Validating ZeroCrossings\n");
   res["ZeroCrossings"]->Validate();
+  printf("Validating WPP\n");
   res["WPP"]->Validate();
+  printf("Validating SBC\n");
   res["SBC"]->Validate();
-  res["Energy"]->Validate();
+  printf("Validating DominantFrequency\n");
   res["DominantFrequency"]->Validate();
+  printf("Validating MFCC\n");
   res["MFCC"]->Validate();
+  printf("Validating F0_HPS\n");
   res["F0_HPS"]->Validate();
   tt.Dump("/tmp/all.dot");
   auto report = tt.ExecutionTimeReport();

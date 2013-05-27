@@ -14,18 +14,18 @@
 #define SRC_TRANSFORMS_ZERO_PADDING_H_
 
 #include "src/formats/window_format.h"
-#include "src/transform_base.h"
+#include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class ZeroPadding
-    : public UniformFormatTransform<Formats::WindowFormatF> {
+    : public OmpUniformFormatTransform<Formats::WindowFormatF> {
  public:
   TRANSFORM_INTRO("ZeroPadding", "Pads signal with zeros to make it's length "
                                  "a power of 2.")
 
-  TRANSFORM_PARAMETERS()
+  OMP_TRANSFORM_PARAMETERS()
 
  protected:
   virtual void OnFormatChanged();
@@ -34,8 +34,8 @@ class ZeroPadding
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::WindowF>* out) const noexcept;
+  virtual void Do(const Formats::WindowF& in,
+                  Formats::WindowF* out) const noexcept;
 };
 
 }  // namespace Transforms

@@ -16,7 +16,7 @@
 #include <set>
 #include "src/formats/window_format.h"
 #include "src/formats/single_format.h"
-#include "src/transform_base.h"
+#include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -28,15 +28,15 @@ enum MeanTypes {
 };
 
 class Mean
-    : public TransformBase<Formats::WindowFormatF,
-                           Formats::SingleFormat<
-                               Formats::FixedArray<MEAN_TYPE_COUNT>>> {
+    : public OmpTransformBase<Formats::WindowFormatF,
+                              Formats::SingleFormat<
+                                  Formats::FixedArray<MEAN_TYPE_COUNT>>> {
  public:
   Mean();
 
   TRANSFORM_INTRO("Mean", "Window means calculation.")
 
-  TRANSFORM_PARAMETERS(
+  OMP_TRANSFORM_PARAMETERS(
       TP("types", "Mean types to calculate (names separated with spaces).",
          kDefaultMeanTypesStr)
   )
@@ -49,8 +49,8 @@ class Mean
       BuffersBase<Formats::FixedArray<MEAN_TYPE_COUNT>>* buffers)
   const noexcept;
 
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::FixedArray<MEAN_TYPE_COUNT>> *out)
+  virtual void Do(const Formats::WindowF& in,
+                  Formats::FixedArray<MEAN_TYPE_COUNT>* out)
   const noexcept;
 
   static float Do(bool simd, const float* input, size_t length,

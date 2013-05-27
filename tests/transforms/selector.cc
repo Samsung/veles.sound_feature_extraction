@@ -45,12 +45,12 @@ class SelectorTest : public Selector, public testing::Test {
 
 TEST_F(SelectorTest, Do) {
   ASSERT_EQ(6, outputFormat_->Size());
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   ASSERT_EQ(0, memcmp(Input[0].Data.get(),
                       Output[0].Data.get(),
                       6 * sizeof(float)));  // NOLINT(*)
   SetParameter("from", "right");
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   ASSERT_EQ(0, memcmp(Input[0].Data.get() + 512 - 6,
                       Output[0].Data.get(),
                       6 * sizeof(float)));  // NOLINT(*)

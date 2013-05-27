@@ -53,7 +53,7 @@ float SumOfSquares(int max) {
 
 TEST_F(SubbandEnergyTest, Do) {
   ASSERT_EQ(6, outputFormat_->Size());
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   float* output = Output[0].Data.get();
   int quarter = Size / 8;
   ASSERT_EQF(SumOfSquares(quarter) / quarter, output[0]);

@@ -31,12 +31,9 @@ void ComplexToReal::InitializeBuffers(
   buffers->Initialize(in.Size(), outputFormat_->Size());
 }
 
-void ComplexToReal::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* out) const noexcept {
-  for (size_t i = 0; i < in.Size(); i++) {
-    Do(true, in[i].Data.get(), inputFormat_->Size(), (*out)[i].Data.get());
-  }
+void ComplexToReal::Do(const Formats::WindowF& in,
+    Formats::WindowF* out) const noexcept {
+  Do(true, in.Data.get(), inputFormat_->Size(), out->Data.get());
 }
 
 void ComplexToReal::Do(bool simd, const float* input, int length,

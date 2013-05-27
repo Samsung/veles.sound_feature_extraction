@@ -16,7 +16,7 @@
 #include <vector>
 #include <simd/wavelet_types.h>
 #include "src/formats/window_format.h"
-#include "src/transform_base.h"
+#include "src/omp_transform_base.h"
 #include "src/primitives/wavelet_filter_bank.h"
 
 namespace SoundFeatureExtraction {
@@ -48,13 +48,13 @@ namespace Transforms {
 ///             ------ 3
 ///
 class DWPT
-    : public UniformFormatTransform<Formats::WindowFormatF, true> {
+    : public OmpUniformFormatTransform<Formats::WindowFormatF, true> {
  public:
   DWPT();
 
   TRANSFORM_INTRO("DWPT", "Discrete Wavelet Packet Transform")
 
-  TRANSFORM_PARAMETERS(
+  OMP_TRANSFORM_PARAMETERS(
     TP("tree", "The wavelet packet binary tree fingerprint.",
        Primitives::WaveletFilterBank::DescriptionToString(
            kDefaultTreeFingerprint))
@@ -74,8 +74,8 @@ class DWPT
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::WindowF>* out) const noexcept;
+  virtual void Do(const Formats::WindowF& in,
+                  Formats::WindowF* out) const noexcept;
 
  private:
   static const std::vector<int> kDefaultTreeFingerprint;

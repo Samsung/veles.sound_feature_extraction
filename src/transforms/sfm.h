@@ -19,14 +19,14 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class SFM
-    : public TransformBase<
+    : public OmpTransformBase<
           Formats::SingleFormat<Formats::FixedArray<MEAN_TYPE_COUNT>>,
           Formats::SingleFormat<float>>,
       public TransformLogger<SFM> {
  public:
   TRANSFORM_INTRO("SFM", "Spectral Flatness Measure calculation.")
 
-  TRANSFORM_PARAMETERS()
+  OMP_TRANSFORM_PARAMETERS()
 
  protected:
   virtual void InitializeBuffers(
@@ -34,8 +34,8 @@ class SFM
       BuffersBase<float>* buffers)
   const noexcept;
 
-  virtual void Do(const BuffersBase<Formats::FixedArray<MEAN_TYPE_COUNT>>& in,
-                  BuffersBase<float> *out) const noexcept;
+  virtual void Do(const Formats::FixedArray<MEAN_TYPE_COUNT>& in,
+                  float* out) const noexcept;
 };
 
 }  // namespace Transforms

@@ -44,7 +44,7 @@ class DWPTTest : public DWPT, public testing::Test {
 
 TEST_F(DWPTTest, Forward) {
   ASSERT_EQ(inputFormat_->Size(), outputFormat_->Size());
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
 }
 
 /*

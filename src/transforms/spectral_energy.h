@@ -14,20 +14,20 @@
 #define SRC_TRANSFORMS_SPECTRAL_ENERGY_H_
 
 #include "src/formats/window_format.h"
-#include "src/transform_base.h"
+#include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class SpectralEnergy
-    : public UniformFormatTransform<Formats::WindowFormatF>,
+    : public OmpUniformFormatTransform<Formats::WindowFormatF>,
       public TransformLogger<SpectralEnergy> {
  public:
   TRANSFORM_INTRO("SpectralEnergy",
                   "Calculates the squared magnitude of each complex number, "
                   "that is, the sum of squared real and imaginary parts.")
 
-  TRANSFORM_PARAMETERS()
+  OMP_TRANSFORM_PARAMETERS()
 
  protected:
   virtual void OnFormatChanged();
@@ -37,8 +37,8 @@ class SpectralEnergy
       BuffersBase<Formats::WindowF>* buffers)
   const noexcept;
 
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::WindowF>* out) const noexcept;
+  virtual void Do(const Formats::WindowF& in,
+                  Formats::WindowF* out) const noexcept;
 
   static void Do(bool simd, const float* input, int length,
                  float* output) noexcept;

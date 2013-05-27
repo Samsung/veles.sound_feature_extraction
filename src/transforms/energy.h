@@ -15,25 +15,25 @@
 
 #include "src/formats/window_format.h"
 #include "src/formats/single_format.h"
-#include "src/transform_base.h"
+#include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Energy
-    : public TransformBase<Formats::WindowFormatF, Formats::SingleFormatF> {
+    : public OmpTransformBase<Formats::WindowFormatF, Formats::SingleFormatF> {
  public:
   TRANSFORM_INTRO("Energy", "Sound energy calculation.")
 
-  TRANSFORM_PARAMETERS()
+  OMP_TRANSFORM_PARAMETERS()
 
  protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<float>* buffers) const noexcept;
 
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<float> *out) const noexcept;
+  virtual void Do(const Formats::WindowF& in,
+                  float* out) const noexcept;
 };
 
 }  // namespace Transforms

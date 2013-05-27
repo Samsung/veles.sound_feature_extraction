@@ -14,20 +14,20 @@
 #define SRC_TRANSFORMS_LOG_H_
 
 #include "src/formats/window_format.h"
-#include "src/transform_base.h"
+#include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Log
-    : public UniformFormatTransform<Formats::WindowFormatF, true> {
+    : public OmpUniformFormatTransform<Formats::WindowFormatF, true> {
  public:
   Log();
 
   TRANSFORM_INTRO("Log",
                   "Takes the logarithm on each real value of the signal.")
 
-  TRANSFORM_PARAMETERS(
+  OMP_TRANSFORM_PARAMETERS(
       TP("base", "Logarithm base (2, 10 or e).",
          LogBaseToString(kDefaultLogBase))
   )
@@ -47,8 +47,8 @@ class Log
       BuffersBase<Formats::WindowF>* buffers)
   const noexcept;
 
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::WindowF>* out) const noexcept;
+  virtual void Do(const Formats::WindowF& in,
+                  Formats::WindowF* out) const noexcept;
 
   void Do(bool simd, const float* input, int length,
           float* output) const noexcept;

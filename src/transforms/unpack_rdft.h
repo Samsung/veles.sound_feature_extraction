@@ -14,17 +14,19 @@
 #define SRC_TRANSFORMS_UNPACK_RDFT_H_
 
 #include "src/formats/window_format.h"
-#include "src/transform_base.h"
+#include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class UnpackRDFT
-    : public UniformFormatTransform<Formats::WindowFormatF> {
+    : public OmpUniformFormatTransform<Formats::WindowFormatF> {
  public:
   TRANSFORM_INTRO("UnpackRDFT", "Unpacks the result after applying RDFT.")
 
-  TRANSFORM_PARAMETERS()
+  OMP_TRANSFORM_PARAMETERS()
+
+  void Initialize() const noexcept;
 
  protected:
   virtual void OnFormatChanged();
@@ -33,8 +35,13 @@ class UnpackRDFT
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::WindowF>* out) const noexcept;
+  virtual void Do(const Formats::WindowF& in,
+                  Formats::WindowF* out) const noexcept;
+
+ private:
+  mutable bool realMode_;
+  mutable size_t length_;
+  mutable size_t offset_;
 };
 
 }  // namespace Transforms

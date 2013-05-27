@@ -46,13 +46,10 @@ void Log::InitializeBuffers(
   buffers->Initialize(in.Size(), inputFormat_->Size());
 }
 
-void Log::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* out) const noexcept {
+void Log::Do(const Formats::WindowF& in,
+             Formats::WindowF* out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");
-  for (size_t i = 0; i < in.Size(); i++) {
-    Do(true, in[i].Data.get(), inputFormat_->Size(), (*out)[i].Data.get());
-  }
+  Do(true, in.Data.get(), inputFormat_->Size(), out->Data.get());
 }
 
 void Log::Do(bool simd, const float* input, int length,

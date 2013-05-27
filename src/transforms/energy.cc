@@ -23,13 +23,10 @@ void Energy::InitializeBuffers(
   buffers->Initialize(in.Size());
 }
 
-void Energy::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<float> *out) const noexcept {
+void Energy::Do(const Formats::WindowF& in,
+                float* out) const noexcept {
   int length = inputFormat_->Size();
-  for (size_t i = 0; i < in.Size(); i++) {
-    (*out)[i] = calculate_energy(true, in[i].Data.get(), length);
-  }
+  *out = calculate_energy(true, in.Data.get(), length);
 }
 
 REGISTER_TRANSFORM(Energy);

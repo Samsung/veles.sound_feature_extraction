@@ -48,7 +48,7 @@ class CentroidTest : public Centroid, public testing::Test {
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(CentroidTest, Do) {
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   double res = Do(false, Input[0].Data.get(), Size);
   res *= inputFormat_->SamplingRate() / (2.f * inputFormat_->SamplesCount());
   ASSERT_EQF(res, Output[0]);

@@ -14,13 +14,13 @@
 #define SRC_TRANSFORMS_FILTER_BANK_H_
 
 #include "src/formats/window_format.h"
-#include "src/transform_base.h"
+#include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class FilterBank
-    : public UniformFormatTransform<Formats::WindowFormatF, true> {
+    : public OmpUniformFormatTransform<Formats::WindowFormatF, true> {
  public:
   FilterBank();
 
@@ -28,7 +28,7 @@ class FilterBank
                   "Converts the signal to the selected psychoacoustic scale "
                   "(default is mel).")
 
-  TRANSFORM_PARAMETERS(
+  OMP_TRANSFORM_PARAMETERS(
       TP("type", "The type of the scale. Supported values are \"linear\","
                  "\"mel\" and \"bark\".",
          "mel")
@@ -59,8 +59,8 @@ class FilterBank
       BuffersBase<Formats::WindowF>* buffers)
   const noexcept;
 
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::WindowF>* out) const noexcept;
+  virtual void Do(const Formats::WindowF& in,
+                  Formats::WindowF* out) const noexcept;
 
 
   static float LinearToScale(ScaleType type, float freq);

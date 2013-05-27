@@ -29,23 +29,23 @@ void UnpackRDFT::InitializeBuffers(
   buffers->Initialize(in.Size(), outputFormat_->Size());
 }
 
-void UnpackRDFT::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* out) const noexcept {
-  bool realMode = inputFormat_->Size() % 2 == 1;
-  size_t offset = inputFormat_->Size();
-  size_t length = outputFormat_->Size() - offset;
-  for (size_t i = 0; i < in.Size(); i++) {
-    auto input = in[i].Data.get();
-    auto output = (*out)[i].Data.get();
-    if (input != output) {
-      memcpy(output, input, offset * sizeof(input[0]));
-    }
-    if (realMode) {
-      rmemcpyf(output + offset, input + 1, length);
-    } else {
-      crmemcpyf(output + offset, input + 2, length);
-    }
+void UnpackRDFT::Initialize() const noexcept {
+  realMode_ = inputFormat_->Size() % 2 == 1;
+  offset_ = inputFormat_->Size();
+  length_ = outputFormat_->Size() - offset_;
+}
+
+void UnpackRDFT::Do(const Formats::WindowF& in,
+                    Formats::WindowF* out) const noexcept {
+  auto input = in.Data.get();
+  auto output = out->Data.get();
+  if (input != output) {
+    memcpy(output, input, offset_ * sizeof(input[0]));
+  }
+  if (realMode_) {
+    rmemcpyf(output + offset_, input + 1, length_);
+  } else {
+    crmemcpyf(output + offset_, input + 2, length_);
   }
 }
 

@@ -15,7 +15,7 @@
 
 #include <simd/convolute.h>
 #include <vector>
-#include "src/transform_base.h"
+#include "src/omp_transform_base.h"
 #include "src/formats/format_limits.h"
 #include "src/formats/raw_format.h"
 #include "src/primitives/window.h"
@@ -24,7 +24,7 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class FirFilterBase
-    : public UniformFormatTransform<Formats::RawFormat16> {
+    : public OmpUniformFormatTransform<Formats::RawFormat16> {
  public:
   FirFilterBase() noexcept;
   ~FirFilterBase();
@@ -40,8 +40,8 @@ class FirFilterBase
       const BuffersBase<Formats::Raw16>& in,
       BuffersBase<Formats::Raw16>* buffers) const noexcept;
 
-  virtual void Do(const BuffersBase<Formats::Raw16>& in,
-                          BuffersBase<Formats::Raw16> *out) const noexcept;
+  virtual void Do(const Formats::Raw16& in,
+                  Formats::Raw16 *out) const noexcept;
 
  private:
   WindowType windowType_;
@@ -50,7 +50,7 @@ class FirFilterBase
   mutable ConvoluteHandle convoluteHandle_;
 };
 
-#define FIR_FILTER_PARAMETERS(init) TRANSFORM_PARAMETERS( \
+#define FIR_FILTER_PARAMETERS(init) OMP_TRANSFORM_PARAMETERS( \
   FORWARD_MACROS( \
       TP("length", "Window length in samples", \
          std::to_string(DEFAULT_FILTER_LENGTH)) \

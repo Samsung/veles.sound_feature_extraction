@@ -63,19 +63,11 @@ void DWPT::Initialize() const noexcept {
       waveletType_, waveletOrder_, treeFingerprint_);
 }
 
-void DWPT::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* out) const noexcept {
+void DWPT::Do(const Formats::WindowF& in,
+              Formats::WindowF* out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");
   assert(filterBank_ != nullptr && "Initialize() was not called");
-  size_t length = inputFormat_->Size();
-
-  #pragma omp parallel for
-  for (size_t i = 0; i < in.Size(); i++) {
-    auto input = in[i].Data.get();
-    auto output = (*out)[i].Data.get();
-    filterBank_->Apply(input, length, output);
-  }
+  filterBank_->Apply(in.Data.get(), inputFormat_->Size(), out->Data.get());
 }
 
 REGISTER_TRANSFORM(DWPT);

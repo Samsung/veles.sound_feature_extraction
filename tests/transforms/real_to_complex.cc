@@ -43,7 +43,7 @@ class RealToComplexTest : public RealToComplex, public testing::Test {
 };
 
 TEST_F(RealToComplexTest, Do) {
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   for (int i = 0; i < Size; i++) {
     ASSERT_EQ(i, Output[0].Data.get()[i * 2]);
   }

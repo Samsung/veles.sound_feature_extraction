@@ -53,19 +53,16 @@ void Selector::InitializeBuffers(
   buffers->Initialize(in.Size(), outputFormat_->Size());
 }
 
-void Selector::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* out) const noexcept {
+void Selector::Do(const Formats::WindowF& in,
+                  Formats::WindowF* out) const noexcept {
   int length = outputFormat_->Size();
   int offset = (from_ == ANCHOR_LEFT? 0 : inputFormat_->Size() - length);
-  for (size_t i = 0; i < in.Size(); i++) {
-    auto input = in[i].Data.get();
-    auto output = (*out)[i].Data.get();
-    if (input != output) {
-      memcpy(output, input + offset, length * sizeof(input[0]));
-    } else if (from_ == ANCHOR_RIGHT) {
-      memmove(output, input + offset, length * sizeof(input[0]));
-    }
+  auto input = in.Data.get();
+  auto output = out->Data.get();
+  if (input != output) {
+    memcpy(output, input + offset, length * sizeof(input[0]));
+  } else if (from_ == ANCHOR_RIGHT) {
+    memmove(output, input + offset, length * sizeof(input[0]));
   }
 }
 

@@ -48,7 +48,7 @@ class LogTest : public Log, public testing::Test {
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(LogTest, Do) {
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   for (int i = 0; i < Size; i++) {
     float log = Output[0].Data.get()[i];
     float vlog = logf((i + Size / 2.0f) / Size);

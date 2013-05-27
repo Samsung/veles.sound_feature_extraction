@@ -61,17 +61,14 @@ void Mean::InitializeBuffers(
   buffers->Initialize(in.Size());
 }
 
-void Mean::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<FixedArray<MEAN_TYPE_COUNT>> *out) const noexcept {
-  for (size_t i = 0; i < in.Size(); i++) {
-    for (int j = 0; j < MEAN_TYPE_COUNT; j++) {
-      auto mt = static_cast<MeanTypes>(j);
-      if (types_.find(mt) != types_.end()) {
-        ((*out)[i])[j] = Do(true, in[i].Data.get(), inputFormat_->Size(), mt);
-      } else {
-        ((*out)[i])[j] = 0;
-      }
+void Mean::Do(const Formats::WindowF& in,
+            FixedArray<MEAN_TYPE_COUNT>* out) const noexcept {
+  for (int j = 0; j < MEAN_TYPE_COUNT; j++) {
+    auto mt = static_cast<MeanTypes>(j);
+    if (types_.find(mt) != types_.end()) {
+      (*out)[j] = Do(true, in.Data.get(), inputFormat_->Size(), mt);
+    } else {
+      (*out)[j] = 0;
     }
   }
 }

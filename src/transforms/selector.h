@@ -14,19 +14,19 @@
 #define SRC_TRANSFORMS_SELECTOR_H_
 
 #include "src/formats/window_format.h"
-#include "src/transform_base.h"
+#include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Selector
-    : public UniformFormatTransform<Formats::WindowFormatF> {
+    : public OmpUniformFormatTransform<Formats::WindowFormatF> {
  public:
   Selector();
 
   TRANSFORM_INTRO("Selector", "Selects the specified part of input.")
 
-  TRANSFORM_PARAMETERS(
+  OMP_TRANSFORM_PARAMETERS(
       TP("length", "The number of values to pass through.",
          std::to_string(kDefaultLength))
       TP("from", "The anchor of the selection. Can be either """
@@ -41,8 +41,8 @@ class Selector
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::WindowF>* out) const noexcept;
+  virtual void Do(const Formats::WindowF& in,
+                  Formats::WindowF* out) const noexcept;
 
  private:
   typedef enum {

@@ -16,26 +16,26 @@
 #include "src/formats/raw_format.h"
 #include "src/formats/single_format.h"
 #include "src/formats/window_format.h"
-#include "src/transform_base.h"
+#include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class ZeroCrossingsWindow
-    : public TransformBase<Formats::WindowFormatF, Formats::SingleFormat32> {
+    : public OmpTransformBase<Formats::WindowFormatF, Formats::SingleFormat32> {
  public:
   TRANSFORM_INTRO("ZeroCrossings", "Number of time domain zero crossings "
                                    "of the signal.")
 
-  TRANSFORM_PARAMETERS()
+  OMP_TRANSFORM_PARAMETERS()
 
  protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<int32_t>* buffers) const noexcept;
 
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<int32_t> *out) const noexcept;
+  virtual void Do(const Formats::WindowF& in,
+                  int32_t* out) const noexcept;
 
   static int Do(bool simd, const float* input, size_t length) noexcept;
 };

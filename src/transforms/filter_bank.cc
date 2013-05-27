@@ -177,27 +177,25 @@ void FilterBank::InitializeBuffers(
 }
 
 void FilterBank::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* out) const noexcept {
+    const Formats::WindowF& in,
+    Formats::WindowF* out) const noexcept {
   auto filter = filterBank_.get();
   int length = inputFormat_->Size();
-  for (size_t i = 0; i < in.Size(); i++) {
-    auto input = in[i].Data.get();
-    auto output = (*out)[i].Data.get();
+  auto input = in.Data.get();
+  auto output = out->Data.get();
 #ifdef SIMD
-    for (int i = 0; i < length - FLOAT_STEP + 1; i += FLOAT_STEP) {
-      real_multiply(input + i, filter + i, output + i);
-    }
-    for (int i = (length >> FLOAT_STEP_LOG2) << FLOAT_STEP_LOG2;
-        i < length; i++) {
-      output[i] = input[i] * filter[i];
-    }
-#else
-    for (int i = 0; i < length; i++) {
-      output[i] = input[i] * filter[i];
-    }
-#endif
+  for (int i = 0; i < length - FLOAT_STEP + 1; i += FLOAT_STEP) {
+    real_multiply(input + i, filter + i, output + i);
   }
+  for (int i = (length >> FLOAT_STEP_LOG2) << FLOAT_STEP_LOG2;
+      i < length; i++) {
+    output[i] = input[i] * filter[i];
+  }
+#else
+  for (int i = 0; i < length; i++) {
+    output[i] = input[i] * filter[i];
+  }
+#endif
 }
 
 REGISTER_TRANSFORM(FilterBank);

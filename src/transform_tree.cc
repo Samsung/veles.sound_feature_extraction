@@ -182,6 +182,7 @@ void TransformTree::Node::AllocateBuffers(size_t visitedChildrenCount) noexcept 
 
 void TransformTree::Node::Execute() {
   if (Parent != nullptr) {
+    DBG("Executing");
     auto checkPointStart = std::chrono::high_resolution_clock::now();
     BoundTransform->Do(*Parent->BoundBuffers, BoundBuffers.get());
     auto checkPointFinish = std::chrono::high_resolution_clock::now();
@@ -367,7 +368,7 @@ TransformTree::Execute(const Formats::Raw16& in) {
   root_->Execute();
   auto checkPointFinish = std::chrono::high_resolution_clock::now();
   auto allDuration = checkPointFinish - checkPointStart;
-  INF("Execution took %f s",
+  INF("Finished. Execution took %f s",
       (allDuration.count() + 0.f) /
           std::chrono::high_resolution_clock::period().den);
   auto otherDuration = allDuration;

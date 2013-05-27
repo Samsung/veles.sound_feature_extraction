@@ -24,25 +24,23 @@ void SFM::InitializeBuffers(
   buffers->Initialize(in.Size());
 }
 
-void SFM::Do(const BuffersBase<FixedArray<MEAN_TYPE_COUNT>>& in,
-             BuffersBase<float> *out) const noexcept {
-  for (size_t i = 0; i < in.Size(); i++) {
-    float gMean = in[i][MEAN_TYPE_GEOMETRIC];
-    float aMean = in[i][MEAN_TYPE_ARITHMETIC];
-    if (gMean == 0) {
-      WRN("Warning: buffer #%zu has geometric mean equal to 0.\n", i);
-    }
-    if (aMean == 0) {
-      CRT("Error: buffer #%zu has arithmetic mean equal to 0.\n", i);
-      assert(aMean != 0);
-    }
-    if (gMean / aMean < 0) {
-      CRT("Error: buffer #%zu has geometric and arithmetic means "
-          "of different sign.\n", i);
-      assert(gMean / aMean >= 0);
-    }
-    (*out)[i] = logf(gMean / aMean);
+void SFM::Do(const FixedArray<MEAN_TYPE_COUNT>& in,
+             float* out) const noexcept {
+  float gMean = in[MEAN_TYPE_GEOMETRIC];
+  float aMean = in[MEAN_TYPE_ARITHMETIC];
+  if (gMean == 0) {
+    WRN("Warning: buffer has geometric mean equal to 0.");
   }
+  if (aMean == 0) {
+    CRT("Error: buffer has arithmetic mean equal to 0.");
+    assert(aMean != 0);
+  }
+  if (gMean / aMean < 0) {
+    CRT("Error: buffer has geometric and arithmetic means "
+        "of different sign.");
+    assert(gMean / aMean >= 0);
+  }
+  *out = logf(gMean / aMean);
 }
 
 REGISTER_TRANSFORM(SFM);

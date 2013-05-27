@@ -31,19 +31,16 @@ void ZeroPadding::InitializeBuffers(
   buffers->Initialize(in.Size(), outputFormat_->Size());
 }
 
-void ZeroPadding::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* out) const noexcept {
-  for (size_t i = 0; i < in.Size(); i++) {
-    auto input = in[i].Data.get();
-    auto output = (*out)[i].Data.get();
-    if (input != output) {
-      memcpy(output, input, inputFormat_->Size() * sizeof(input[0]));
-    }
-    memsetf(output + inputFormat_->Size(),
-            outputFormat_->Size() - inputFormat_->Size(),
-            0.f);
+void ZeroPadding::Do(const Formats::WindowF& in,
+                     Formats::WindowF* out) const noexcept {
+  auto input = in.Data.get();
+  auto output = out->Data.get();
+  if (input != output) {
+    memcpy(output, input, inputFormat_->Size() * sizeof(input[0]));
   }
+  memsetf(output + inputFormat_->Size(),
+          outputFormat_->Size() - inputFormat_->Size(),
+          0.f);
 }
 
 REGISTER_TRANSFORM(ZeroPadding);

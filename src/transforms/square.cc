@@ -87,13 +87,10 @@ void SquareWindow::InitializeBuffers(
   buffers->Initialize(in.Size(), inputFormat_->Size());
 }
 
-void SquareWindow::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* out) const noexcept {
+void SquareWindow::Do(const Formats::WindowF& in,
+                      Formats::WindowF* out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");
-  for (size_t i = 0; i < in.Size(); i++) {
-    Do(true, in[i].Data.get(), outputFormat_->Size(), (*out)[i].Data.get());
-  }
+  Do(true, in.Data.get(), outputFormat_->Size(), out->Data.get());
 }
 
 void SquareWindow::Do(bool simd, const float* input, int length,

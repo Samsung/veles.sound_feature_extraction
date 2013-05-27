@@ -23,13 +23,10 @@ void Intensity::InitializeBuffers(
   buffers->Initialize(in.Size());
 }
 
-void Intensity::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<float> *out) const noexcept {
+void Intensity::Do(const Formats::WindowF& in,
+                   float* out) const noexcept {
   int length = inputFormat_->Size();
-  for (size_t i = 0; i < in.Size(); i++) {
-    (*out)[i] = logf(calculate_energy(true, in[i].Data.get(), length));
-  }
+  *out = logf(calculate_energy(true, in.Data.get(), length));
 }
 
 REGISTER_TRANSFORM(Intensity);

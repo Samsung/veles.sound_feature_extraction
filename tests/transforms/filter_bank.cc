@@ -49,7 +49,7 @@ class FilterBankTest : public FilterBank, public testing::Test {
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(FilterBankTest, Do) {
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   for (int i = 0; i < Size; i++) {
     ASSERT_EQF(100 * filterBank_.get()[i], Output[0].Data.get()[i]);
   }
