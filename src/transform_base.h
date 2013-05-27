@@ -27,7 +27,8 @@ class TransformBase;
 
 template <typename FIN, typename FOUT>
 class TransformBaseCommon : public virtual Transform,
-                            public virtual ParameterizableBase {
+                            public virtual ParameterizableBase,
+                            public InverseParameterAware {
   friend class TransformBase<FIN, FOUT, true>;
  public:
   TransformBaseCommon() noexcept
@@ -105,7 +106,7 @@ class TransformBaseCommon : public virtual Transform,
   }
 
   bool IsInverse() const noexcept {
-    auto ip = GetParameters().find(INVERSE_PARAMETER);
+    auto ip = GetParameters().find(kInverseParameterName);
     if (ip == GetParameters().end()) {
       return false;
     }
@@ -145,7 +146,7 @@ class TransformBaseCommon : public virtual Transform,
       const noexcept = 0;
 
   void RegisterInverseParameter() noexcept {
-    RegisterSetter(INVERSE_PARAMETER, [&](const std::string& value) {
+    RegisterSetter(kInverseParameterName, [&](const std::string& value) {
       if (value != "true" && value != "false") {
         return false;
       }
@@ -289,7 +290,7 @@ virtual const std::string& Description() const noexcept { \
         SupportedParameters() const noexcept { \
       static const std::unordered_map<std::string, ParameterTraits> sp = \
           HasInverse()? std::unordered_map<std::string, ParameterTraits> { \
-            TP(INVERSE_PARAMETER, \
+            TP(kInverseParameterName, \
                "Value indicating whether this transform is inverse.", \
                "false") \
             init \
