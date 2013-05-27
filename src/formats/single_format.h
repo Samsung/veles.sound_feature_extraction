@@ -130,7 +130,7 @@ class SingleFormat : public BufferFormatBase<T> {
 
   virtual void Validate(const BuffersBase<T>& buffers) const {
     for (size_t i = 0; i < buffers.Size(); i++) {
-      T value = *buffers[i];
+      T value = buffers[i];
       if (value != value) {
         throw InvalidBuffersException(this->Id(), i,
                                       std::to_string(value));
@@ -144,7 +144,7 @@ class SingleFormat : public BufferFormatBase<T> {
       auto indexStr = std::to_string(i);
       indexStr += ":";
       indexStr += std::string(7 - indexStr.size(), ' ');
-      ret += indexStr + std::to_string(*buffers[i]) + "\n";
+      ret += indexStr + std::to_string(buffers[i]) + "\n";
     }
     return ret;
   }

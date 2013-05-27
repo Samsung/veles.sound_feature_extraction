@@ -35,7 +35,7 @@ class BeatTest : public Beat, public testing::Test {
     Size = data[0];
     Input.Initialize(1, Size);
     for (int i = 0; i < data[0]; ++i) {
-      Input[0]->Data.get()[i] = data[i + 1];
+      Input[0].Data.get()[i] = data[i + 1];
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
@@ -45,9 +45,9 @@ class BeatTest : public Beat, public testing::Test {
 
 TEST_F(BeatTest, Do) {
   Do(Input, &Output);
-  float delta = 122.85f - *Output[0];
+  float delta = 122.85f - Output[0];
   if (delta * delta > 1E-1) {
-    ASSERT_EQ(-1, *Output[0]);
+    ASSERT_EQ(-1, Output[0]);
   }
 }
 

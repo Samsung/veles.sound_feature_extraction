@@ -34,7 +34,7 @@ class UnpackRDFTTest : public UnpackRDFT, public testing::Test {
     Size = size;
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; i++) {
-      Input[0]->Data.get()[i] = i;
+      Input[0].Data.get()[i] = i;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 2000 / 16000, 16000);
     format->SetSize(Size);
@@ -47,7 +47,7 @@ TEST_F(UnpackRDFTTest, DoReal) {
   Initialize(257);
   Do(Input, &Output);
   for (int i = Size; i < (Size - 1) * 2; i++) {
-    ASSERT_EQ(2 * (Size - 1) - i, Output[0]->Data.get()[i]);
+    ASSERT_EQ(2 * (Size - 1) - i, Output[0].Data.get()[i]);
   }
 }
 
@@ -55,8 +55,8 @@ TEST_F(UnpackRDFTTest, DoComplex) {
   Initialize(258);
   Do(Input, &Output);
   for (int i = Size; i < (Size - 2) * 2; i += 2) {
-    ASSERT_EQ(2 * (Size - 2) - i, Output[0]->Data.get()[i]);
-    ASSERT_EQ(2 * (Size - 2) - i + 1, Output[0]->Data.get()[i + 1]);
+    ASSERT_EQ(2 * (Size - 2) - i, Output[0].Data.get()[i]);
+    ASSERT_EQ(2 * (Size - 2) - i + 1, Output[0].Data.get()[i + 1]);
   }
 }
 

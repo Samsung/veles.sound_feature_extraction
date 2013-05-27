@@ -182,8 +182,8 @@ void FilterBank::Do(
   auto filter = filterBank_.get();
   int length = inputFormat_->Size();
   for (size_t i = 0; i < in.Size(); i++) {
-    auto input = in[i]->Data.get();
-    auto output = (*out)[i]->Data.get();
+    auto input = in[i].Data.get();
+    auto output = (*out)[i].Data.get();
 #ifdef SIMD
     for (int i = 0; i < length - FLOAT_STEP + 1; i += FLOAT_STEP) {
       real_multiply(input + i, filter + i, output + i);

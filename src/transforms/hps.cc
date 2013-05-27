@@ -30,7 +30,7 @@ void Hps::Do(
     int sampling_rate = inputFormat_->SamplingRate();
     int length = inputFormat_->Size();
     for (size_t i = 0; i < in.Size(); ++i) {
-      auto signal = in[i]->Data.get();
+      auto signal = in[i].Data.get();
       float max_pitch = 0;
       float fundamental_frequency = 0;
       for (int current_index = 0; (current_index + 1) * kCoefficientsNumber - 1< length;
@@ -59,7 +59,7 @@ void Hps::Do(
       }
 #endif
       assert(result > 0 && result < sampling_rate / 2);
-      *(*out)[i] = result;
+      (*out)[i] = result;
     }
 }
 

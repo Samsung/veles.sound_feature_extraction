@@ -37,7 +37,7 @@ class MeanTest
     Size = 486;
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; i++) {
-      Input[0]->Data.get()[i] = i + 1;
+      Input[0].Data.get()[i] = i + 1;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
@@ -56,7 +56,7 @@ TEST_F(MeanTest, Do) {
   float amean =0.f;
   float gmean = 1.f, tmp = 1.f;
   for (int j = 0; j < Size; j++) {
-    float val = Input[0]->Data.get()[j];
+    float val = Input[0].Data.get()[j];
     amean += val;
     float multmp = tmp * val;
     if (multmp == std::numeric_limits<float>::infinity()) {
@@ -68,15 +68,15 @@ TEST_F(MeanTest, Do) {
   }
   amean /= Size;
   gmean *= powf(tmp, 1.f / Size);
-  ASSERT_EQF(amean, (*Output[0])
+  ASSERT_EQF(amean, (Output[0])
       [SoundFeatureExtraction::Transforms::MEAN_TYPE_ARITHMETIC]);
-  ASSERT_EQF(gmean, (*Output[0])
+  ASSERT_EQF(gmean, (Output[0])
       [SoundFeatureExtraction::Transforms::MEAN_TYPE_GEOMETRIC]);
   ASSERT_EQF(amean,
-             Do(false, Input[0]->Data.get(), Size,
+             Do(false, Input[0].Data.get(), Size,
                 SoundFeatureExtraction::Transforms::MEAN_TYPE_ARITHMETIC));
   ASSERT_EQF(gmean,
-             Do(false, Input[0]->Data.get(), Size,
+             Do(false, Input[0].Data.get(), Size,
                 SoundFeatureExtraction::Transforms::MEAN_TYPE_GEOMETRIC));
 }
 

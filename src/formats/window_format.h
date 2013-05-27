@@ -200,7 +200,7 @@ class WindowFormat
     for (size_t i = 0; i < buffers.Size(); i++) {
       bool allZeros = true;
       for (size_t j = 0; j < size_; j++) {
-        T value = buffers[i]->Data.get()[j];
+        T value = buffers[i].Data.get()[j];
         if (value != value) {
           throw InvalidBuffersException(this->Id(), i,
                                         std::string("[") + std::to_string(j) +
@@ -221,7 +221,7 @@ class WindowFormat
     for (size_t i = 0; i < buffers.Size(); i++) {
       ret += "----" + std::to_string(i) + "----\n";
       for (size_t j = 0; j < size_; j++) {
-        auto strval = std::to_string(buffers[i]->Data.get()[j]);
+        auto strval = std::to_string(buffers[i].Data.get()[j]);
         size_t sizeLimit = 16;
         if (strval[0] != '-') {
           ret += ' ';

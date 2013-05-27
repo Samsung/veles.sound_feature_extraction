@@ -35,7 +35,7 @@ class ComplexToRealTest
     Size = 486;
     Input.Initialize(1, 2 * Size);
     for (int i = 0; i < Size; i++) {
-      Input[0]->Data.get()[i] = i;
+      Input[0].Data.get()[i] = i;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     format->SetAllocatedSize(2 * Size);
@@ -48,7 +48,7 @@ TEST_F(ComplexToRealTest, Do) {
   Do(Input, &Output);
   for (int i = 0; i < Size / 2; i++) {
     int result = 2 * i;
-    ASSERT_EQ(result, Output[0]->Data.get()[i]);
+    ASSERT_EQ(result, Output[0].Data.get()[i]);
   }
 }
 

@@ -34,7 +34,7 @@ class IntensityTest : public Intensity, public testing::Test {
     Size = 378;
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; i++) {
-      Input[0]->Data.get()[i] = i / 40.0f;
+      Input[0].Data.get()[i] = i / 40.0f;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
@@ -50,10 +50,10 @@ TEST_F(IntensityTest, Do) {
   Do(Input, &Output);
   double res = .0;
   for (int i = 0; i < Size; i++) {
-    float tmp = Input[0]->Data.get()[i];
+    float tmp = Input[0].Data.get()[i];
     res += tmp * tmp;
   }
-  ASSERT_EQF(logf(res / Size), *Output[0]);
+  ASSERT_EQF(logf(res / Size), Output[0]);
 }
 
 #define CLASS_NAME IntensityTest

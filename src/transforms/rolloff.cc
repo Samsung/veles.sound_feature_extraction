@@ -44,7 +44,7 @@ void Rolloff::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<float> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    *(*out)[i] = Do(true, in[i]->Data.get(), inputFormat_->Size(), ratio_) *
+    (*out)[i] = Do(true, in[i].Data.get(), inputFormat_->Size(), ratio_) *
         inputFormat_->SamplingRate() / (2 * inputFormat_->SamplesCount());
   }
 }

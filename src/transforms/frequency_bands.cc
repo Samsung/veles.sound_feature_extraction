@@ -101,17 +101,17 @@ void FrequencyBands::Do(
   for (size_t i = 0; i < in.Size(); i += bandsNumber_) {
     for (int j = 0; j < bandsNumber_; j++) {
       if (j > 0) {
-        memsetf((*out)[i + j]->Data.get(),
+        memsetf((*out)[i + j].Data.get(),
                 bands[j - 1], 0.f);
       }
       if (j < bandsNumber_ - 1) {
-        memsetf((*out)[i + j]->Data.get() + bands[j],
+        memsetf((*out)[i + j].Data.get() + bands[j],
                 inputFormat_->Size() - bands[j], 0.f);
       }
-      if ((*out)[i + j]->Data.get() != in[i + j]->Data.get()) {
+      if ((*out)[i + j].Data.get() != in[i + j].Data.get()) {
         int offset = j > 0? bands[j - 1] : 0;
-        memcpy((*out)[i + j]->Data.get() + offset,
-               in[i + j]->Data.get() + offset,
+        memcpy((*out)[i + j].Data.get() + offset,
+               in[i + j].Data.get() + offset,
                (bands[j] - offset) * sizeof(float));
       }
     }

@@ -101,6 +101,8 @@ class BufferFormatBase : public BufferFormat {
 template <typename T>
 class BuffersBase : public Buffers {
  public:
+  typedef T ElementType;
+
   explicit BuffersBase(
       const std::shared_ptr<BufferFormatBase<T>>& format) noexcept
       : Buffers(0, format),
@@ -120,12 +122,12 @@ class BuffersBase : public Buffers {
   virtual ~BuffersBase() noexcept {
   }
 
-  T* operator[](int index) noexcept {
-    return reinterpret_cast<T*>(Buffers::operator [](index));  // NOLINT(*)
+  T& operator[](int index) noexcept {
+    return *reinterpret_cast<T*>(Buffers::operator [](index));  // NOLINT(*)
   }
 
-  const T* operator[](int index) const noexcept {
-    return reinterpret_cast<const T*>(Buffers::operator [](index));  // NOLINT(*)
+  const T& operator[](int index) const noexcept {
+    return *reinterpret_cast<const T*>(Buffers::operator [](index));  // NOLINT(*)
   }
 
   const std::shared_ptr<BufferFormatBase<T>> CastedFormat() const noexcept {

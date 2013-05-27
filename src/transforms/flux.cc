@@ -31,10 +31,10 @@ void Flux::InitializeBuffers(
 void Flux::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<float> *out) const noexcept {
-  *(*out)[0] = 0.f;
+  (*out)[0] = 0.f;
   for (size_t i = 1; i < in.Size(); i++) {
-    *(*out)[i] = Do(true, in[i]->Data.get(), inputFormat_->Size(),
-                    in[i - 1]->Data.get());
+    (*out)[i] = Do(true, in[i].Data.get(), inputFormat_->Size(),
+                    in[i - 1].Data.get());
   }
 }
 

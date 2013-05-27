@@ -36,10 +36,10 @@ class ArgMinMaxTest
     Size = 486;
     Input.Initialize(1, Size);
     for (int i = 0; i < Size / 2; i++) {
-      Input[0]->Data.get()[i] = -i + 1;
+      Input[0].Data.get()[i] = -i + 1;
     }
     for (int i = Size / 2; i < Size; i++) {
-      Input[0]->Data.get()[i] = Size - i + 1;
+      Input[0].Data.get()[i] = Size - i + 1;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
@@ -54,12 +54,12 @@ class ArgMinMaxTest
 TEST_F(ArgMinMaxTest, Do) {
   SetParameter("extremum", "max");
   Do(Input, &Output);
-  ASSERT_EQ(Size / 2, std::get<0>(*Output[0]));
-  ASSERT_EQ(Size / 2 + 1, std::get<1>(*Output[0]));
+  ASSERT_EQ(Size / 2, std::get<0>(Output[0]));
+  ASSERT_EQ(Size / 2 + 1, std::get<1>(Output[0]));
   SetParameter("extremum", "min");
   Do(Input, &Output);
-  ASSERT_EQ(Size / 2 - 1, std::get<0>(*Output[0]));
-  ASSERT_EQ(- Size / 2 + 2, std::get<1>(*Output[0]));
+  ASSERT_EQ(Size / 2 - 1, std::get<0>(Output[0]));
+  ASSERT_EQ(- Size / 2 + 2, std::get<1>(Output[0]));
 }
 
 #define EXTRA_PARAM true

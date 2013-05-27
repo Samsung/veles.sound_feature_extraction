@@ -66,8 +66,8 @@ void SubbandEnergy::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    auto input = in[i]->Data.get();
-    auto output = (*out)[i]->Data.get();
+    auto input = in[i].Data.get();
+    auto output = (*out)[i].Data.get();
     for (int i = 0; i < static_cast<int>(offsets_.size()) - 1; i++) {
       output[i] = calculate_energy(true, input + offsets_[i],
                                    offsets_[i + 1] - offsets_[i]);

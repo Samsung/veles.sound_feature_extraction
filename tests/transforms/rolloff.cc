@@ -35,7 +35,7 @@ class RolloffTest : public Rolloff, public testing::Test {
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; i++) {
       // Always liked exotic functions
-      Input[0]->Data.get()[i] = fabs(sinf(i * i) + i * cosf(i));
+      Input[0].Data.get()[i] = fabs(sinf(i * i) + i * cosf(i));
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
@@ -50,9 +50,9 @@ class RolloffTest : public Rolloff, public testing::Test {
 TEST_F(RolloffTest, Do) {
   SetParameter("ratio", "0.8");
   Do(Input, &Output);
-  float res = Do(false, Input[0]->Data.get(), Size, 0.8f);
+  float res = Do(false, Input[0].Data.get(), Size, 0.8f);
   res *= inputFormat_->SamplingRate() / (2.f * inputFormat_->SamplesCount());
-  ASSERT_EQF(res, *Output[0]);
+  ASSERT_EQF(res, Output[0]);
 }
 
 #define CLASS_NAME RolloffTest

@@ -46,7 +46,7 @@ void ArgMinMax::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<ArgMinMaxResult> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    *(*out)[i] = Do(true, in[i]->Data.get(), inputFormat_->Size(), extremum_);
+    (*out)[i] = Do(true, in[i].Data.get(), inputFormat_->Size(), extremum_);
   }
 }
 

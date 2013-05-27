@@ -35,7 +35,7 @@ class SelectorTest : public Selector, public testing::Test {
     Size = 512;
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; i++) {
-      Input[0]->Data.get()[i] = i;
+      Input[0].Data.get()[i] = i;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
     SetInputFormat(format);
@@ -46,13 +46,13 @@ class SelectorTest : public Selector, public testing::Test {
 TEST_F(SelectorTest, Do) {
   ASSERT_EQ(6, outputFormat_->Size());
   Do(Input, &Output);
-  ASSERT_EQ(0, memcmp(Input[0]->Data.get(),
-                      Output[0]->Data.get(),
+  ASSERT_EQ(0, memcmp(Input[0].Data.get(),
+                      Output[0].Data.get(),
                       6 * sizeof(float)));  // NOLINT(*)
   SetParameter("from", "right");
   Do(Input, &Output);
-  ASSERT_EQ(0, memcmp(Input[0]->Data.get() + 512 - 6,
-                      Output[0]->Data.get(),
+  ASSERT_EQ(0, memcmp(Input[0].Data.get() + 512 - 6,
+                      Output[0].Data.get(),
                       6 * sizeof(float)));  // NOLINT(*)
 }
 

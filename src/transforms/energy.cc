@@ -28,7 +28,7 @@ void Energy::Do(
     BuffersBase<float> *out) const noexcept {
   int length = inputFormat_->Size();
   for (size_t i = 0; i < in.Size(); i++) {
-    *(*out)[i] = calculate_energy(true, in[i]->Data.get(), length);
+    (*out)[i] = calculate_energy(true, in[i].Data.get(), length);
   }
 }
 

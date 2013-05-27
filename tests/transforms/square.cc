@@ -35,7 +35,7 @@ class SquareRawTest : public SquareRaw, public testing::Test {
   virtual void SetUp() {
     Input.Initialize(1, 32000, 0);
     for (int i = 0; i < 32000; i++) {
-      Input[0]->Data.get()[i] = i;
+      Input[0].Data.get()[i] = i;
     }
     auto format = std::make_shared<RawFormat16>(32000, 16000);
     SetInputFormat(format);
@@ -58,7 +58,7 @@ class SquareWindowTest : public SquareWindow, public testing::Test {
     Size = 378;
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; i++) {
-      Input[0]->Data.get()[i] = i;
+      Input[0].Data.get()[i] = i;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
@@ -69,7 +69,7 @@ class SquareWindowTest : public SquareWindow, public testing::Test {
 TEST_F(SquareRawTest, Do) {
   Do(Input, &Output);
   for (int i = 0; i < 32000; i++) {
-    ASSERT_EQ(i * i, Output[0]->Data.get()[i]);
+    ASSERT_EQ(i * i, Output[0].Data.get()[i]);
   }
 }
 
@@ -80,7 +80,7 @@ TEST_F(SquareRawTest, Do) {
 TEST_F(SquareWindowTest, Do) {
   Do(Input, &Output);
   for (int i = 0; i < Size; i++) {
-    ASSERT_EQF(i * i, Output[0]->Data.get()[i]);
+    ASSERT_EQF(i * i, Output[0].Data.get()[i]);
   }
 }
 

@@ -33,7 +33,7 @@ void Beat::InitializeBuffers(
 void Beat::Do(const BuffersBase<Formats::WindowF>& in,
               BuffersBase<float>* out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    Do(in[i]->Data.get(), inputFormat_->Size(), (*out)[i]);
+    Do(in[i].Data.get(), inputFormat_->Size(), &(*out)[i]);
   }
 }
 

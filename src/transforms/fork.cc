@@ -50,9 +50,9 @@ void Fork::Do(
     BuffersBase<Formats::WindowF>* out) const noexcept {
   size_t copy_size = inputFormat_->Size() * sizeof(float);
   for (size_t i = 0, j = 0; i < in.Size(); i++, j += factor_) {
-    auto input = in[i]->Data.get();
+    auto input = in[i].Data.get();
     for (int k = 0; k < factor_; k++) {
-      memcpy((*out)[j + k]->Data.get(), input, copy_size);
+      memcpy((*out)[j + k].Data.get(), input, copy_size);
     }
   }
 }

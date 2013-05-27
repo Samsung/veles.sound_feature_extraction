@@ -36,8 +36,8 @@ void UnpackRDFT::Do(
   size_t offset = inputFormat_->Size();
   size_t length = outputFormat_->Size() - offset;
   for (size_t i = 0; i < in.Size(); i++) {
-    auto input = in[i]->Data.get();
-    auto output = (*out)[i]->Data.get();
+    auto input = in[i].Data.get();
+    auto output = (*out)[i].Data.get();
     if (input != output) {
       memcpy(output, input, offset * sizeof(input[0]));
     }

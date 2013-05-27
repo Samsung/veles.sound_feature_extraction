@@ -34,7 +34,7 @@ class RawFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
       BuffersBase<typename FOUT::BufferType>* buffers) const noexcept {
     buffers->Initialize(in.Size(),
                         FormatConverterBase<FIN, FOUT>::inputFormat_->Size(),
-                        in[0]->AlignmentOffset());
+                        in[0].AlignmentOffset());
   }
 };
 

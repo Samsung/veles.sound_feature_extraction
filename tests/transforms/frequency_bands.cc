@@ -35,10 +35,10 @@ class FrequencyBandsTest : public FrequencyBands, public testing::Test {
     SetParameter("number", "4");
     Input.Initialize(4, Size);
     for (int i = 0; i < Size; i++) {
-      Input[0]->Data.get()[i] = i;
-      Input[1]->Data.get()[i] = i;
-      Input[2]->Data.get()[i] = i;
-      Input[3]->Data.get()[i] = i;
+      Input[0].Data.get()[i] = i;
+      Input[1].Data.get()[i] = i;
+      Input[2].Data.get()[i] = i;
+      Input[3].Data.get()[i] = i;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
     SetInputFormat(format);
@@ -53,28 +53,28 @@ TEST_F(FrequencyBandsTest, Do) {
   ASSERT_EQ(Size, outputFormat_->Size());
   Do(Input, &Output);
   for (int i = 0; i < Size / 4; i++) {
-    ASSERT_EQ(i, Output[0]->Data.get()[i]);
-    ASSERT_EQ(0, Output[1]->Data.get()[i]);
-    ASSERT_EQ(0, Output[2]->Data.get()[i]);
-    ASSERT_EQ(0, Output[3]->Data.get()[i]);
+    ASSERT_EQ(i, Output[0].Data.get()[i]);
+    ASSERT_EQ(0, Output[1].Data.get()[i]);
+    ASSERT_EQ(0, Output[2].Data.get()[i]);
+    ASSERT_EQ(0, Output[3].Data.get()[i]);
   }
   for (int i = Size / 4; i < 2 * Size / 4; i++) {
-    ASSERT_EQ(0, Output[0]->Data.get()[i]);
-    ASSERT_EQ(i, Output[1]->Data.get()[i]);
-    ASSERT_EQ(0, Output[2]->Data.get()[i]);
-    ASSERT_EQ(0, Output[3]->Data.get()[i]);
+    ASSERT_EQ(0, Output[0].Data.get()[i]);
+    ASSERT_EQ(i, Output[1].Data.get()[i]);
+    ASSERT_EQ(0, Output[2].Data.get()[i]);
+    ASSERT_EQ(0, Output[3].Data.get()[i]);
   }
   for (int i = 2 * Size / 4; i < 3 * Size / 4; i++) {
-    ASSERT_EQ(0, Output[0]->Data.get()[i]);
-    ASSERT_EQ(0, Output[1]->Data.get()[i]);
-    ASSERT_EQ(i, Output[2]->Data.get()[i]);
-    ASSERT_EQ(0, Output[3]->Data.get()[i]);
+    ASSERT_EQ(0, Output[0].Data.get()[i]);
+    ASSERT_EQ(0, Output[1].Data.get()[i]);
+    ASSERT_EQ(i, Output[2].Data.get()[i]);
+    ASSERT_EQ(0, Output[3].Data.get()[i]);
   }
   for (int i = 3 * Size / 4; i < Size; i++) {
-    ASSERT_EQ(0, Output[0]->Data.get()[i]);
-    ASSERT_EQ(0, Output[1]->Data.get()[i]);
-    ASSERT_EQ(0, Output[2]->Data.get()[i]);
-    ASSERT_EQ(i, Output[3]->Data.get()[i]);
+    ASSERT_EQ(0, Output[0].Data.get()[i]);
+    ASSERT_EQ(0, Output[1].Data.get()[i]);
+    ASSERT_EQ(0, Output[2].Data.get()[i]);
+    ASSERT_EQ(i, Output[3].Data.get()[i]);
   }
 }
 
@@ -82,28 +82,28 @@ TEST_F(FrequencyBandsTest, DoWithBands) {
   SetParameter("bands", "2000 3000 5000 8000");
   Do(Input, &Output);
   for (int i = 0; i < Size / 4; i++) {
-    ASSERT_EQ(i, Output[0]->Data.get()[i]);
-    ASSERT_EQ(0, Output[1]->Data.get()[i]);
-    ASSERT_EQ(0, Output[2]->Data.get()[i]);
-    ASSERT_EQ(0, Output[3]->Data.get()[i]);
+    ASSERT_EQ(i, Output[0].Data.get()[i]);
+    ASSERT_EQ(0, Output[1].Data.get()[i]);
+    ASSERT_EQ(0, Output[2].Data.get()[i]);
+    ASSERT_EQ(0, Output[3].Data.get()[i]);
   }
   for (int i = Size / 4; i < 3 * Size / 8; i++) {
-    ASSERT_EQ(0, Output[0]->Data.get()[i]);
-    ASSERT_EQ(i, Output[1]->Data.get()[i]);
-    ASSERT_EQ(0, Output[2]->Data.get()[i]);
-    ASSERT_EQ(0, Output[3]->Data.get()[i]);
+    ASSERT_EQ(0, Output[0].Data.get()[i]);
+    ASSERT_EQ(i, Output[1].Data.get()[i]);
+    ASSERT_EQ(0, Output[2].Data.get()[i]);
+    ASSERT_EQ(0, Output[3].Data.get()[i]);
   }
   for (int i = 3 * Size / 8; i < 5 * Size / 8; i++) {
-    ASSERT_EQ(0, Output[0]->Data.get()[i]);
-    ASSERT_EQ(0, Output[1]->Data.get()[i]);
-    ASSERT_EQ(i, Output[2]->Data.get()[i]);
-    ASSERT_EQ(0, Output[3]->Data.get()[i]);
+    ASSERT_EQ(0, Output[0].Data.get()[i]);
+    ASSERT_EQ(0, Output[1].Data.get()[i]);
+    ASSERT_EQ(i, Output[2].Data.get()[i]);
+    ASSERT_EQ(0, Output[3].Data.get()[i]);
   }
   for (int i = 5 * Size / 8; i < Size; i++) {
-    ASSERT_EQ(0, Output[0]->Data.get()[i]);
-    ASSERT_EQ(0, Output[1]->Data.get()[i]);
-    ASSERT_EQ(0, Output[2]->Data.get()[i]);
-    ASSERT_EQ(i, Output[3]->Data.get()[i]);
+    ASSERT_EQ(0, Output[0].Data.get()[i]);
+    ASSERT_EQ(0, Output[1].Data.get()[i]);
+    ASSERT_EQ(0, Output[2].Data.get()[i]);
+    ASSERT_EQ(i, Output[3].Data.get()[i]);
   }
 }
 
@@ -111,28 +111,28 @@ TEST_F(FrequencyBandsTest, TooBigBands) {
   SetParameter("bands", "2000 3000 5000 18000");
   Do(Input, &Output);
   for (int i = 0; i < Size / 4; i++) {
-    ASSERT_EQ(i, Output[0]->Data.get()[i]);
-    ASSERT_EQ(0, Output[1]->Data.get()[i]);
-    ASSERT_EQ(0, Output[2]->Data.get()[i]);
-    ASSERT_EQ(0, Output[3]->Data.get()[i]);
+    ASSERT_EQ(i, Output[0].Data.get()[i]);
+    ASSERT_EQ(0, Output[1].Data.get()[i]);
+    ASSERT_EQ(0, Output[2].Data.get()[i]);
+    ASSERT_EQ(0, Output[3].Data.get()[i]);
   }
   for (int i = Size / 4; i < 3 * Size / 8; i++) {
-    ASSERT_EQ(0, Output[0]->Data.get()[i]);
-    ASSERT_EQ(i, Output[1]->Data.get()[i]);
-    ASSERT_EQ(0, Output[2]->Data.get()[i]);
-    ASSERT_EQ(0, Output[3]->Data.get()[i]);
+    ASSERT_EQ(0, Output[0].Data.get()[i]);
+    ASSERT_EQ(i, Output[1].Data.get()[i]);
+    ASSERT_EQ(0, Output[2].Data.get()[i]);
+    ASSERT_EQ(0, Output[3].Data.get()[i]);
   }
   for (int i = 3 * Size / 8; i < 5 * Size / 8; i++) {
-    ASSERT_EQ(0, Output[0]->Data.get()[i]);
-    ASSERT_EQ(0, Output[1]->Data.get()[i]);
-    ASSERT_EQ(i, Output[2]->Data.get()[i]);
-    ASSERT_EQ(0, Output[3]->Data.get()[i]);
+    ASSERT_EQ(0, Output[0].Data.get()[i]);
+    ASSERT_EQ(0, Output[1].Data.get()[i]);
+    ASSERT_EQ(i, Output[2].Data.get()[i]);
+    ASSERT_EQ(0, Output[3].Data.get()[i]);
   }
   for (int i = 5 * Size / 8; i < Size; i++) {
-    ASSERT_EQ(0, Output[0]->Data.get()[i]);
-    ASSERT_EQ(0, Output[1]->Data.get()[i]);
-    ASSERT_EQ(0, Output[2]->Data.get()[i]);
-    ASSERT_EQ(i, Output[3]->Data.get()[i]);
+    ASSERT_EQ(0, Output[0].Data.get()[i]);
+    ASSERT_EQ(0, Output[1].Data.get()[i]);
+    ASSERT_EQ(0, Output[2].Data.get()[i]);
+    ASSERT_EQ(i, Output[3].Data.get()[i]);
   }
 }
 

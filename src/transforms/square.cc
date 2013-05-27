@@ -25,21 +25,21 @@ void SquareRaw::InitializeBuffers(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw32>* buffers) const noexcept {
   buffers->Initialize(in.Size(), inputFormat_->Size(),
-                      in[0]->AlignmentOffset());
+                      in[0].AlignmentOffset());
 }
 
 void SquareRaw::InitializeBuffers(
     const BuffersBase<Formats::Raw32>& in,
     BuffersBase<Formats::Raw16>* buffers) const noexcept {
   buffers->Initialize(in.Size(), inputFormat_->Size(),
-                      in[0]->AlignmentOffset());
+                      in[0].AlignmentOffset());
 }
 
 void SquareRaw::Do(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw32>* out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    Do(true, in[i]->Data.get(), outputFormat_->Size(), (*out)[i]->Data.get());
+    Do(true, in[i].Data.get(), outputFormat_->Size(), (*out)[i].Data.get());
   }
 }
 
@@ -92,7 +92,7 @@ void SquareWindow::Do(
     BuffersBase<Formats::WindowF>* out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");
   for (size_t i = 0; i < in.Size(); i++) {
-    Do(true, in[i]->Data.get(), outputFormat_->Size(), (*out)[i]->Data.get());
+    Do(true, in[i].Data.get(), outputFormat_->Size(), (*out)[i].Data.get());
   }
 }
 

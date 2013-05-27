@@ -19,8 +19,8 @@ namespace Formats {
 void Int32ToFloatRaw::Do(const BuffersBase<Raw32>& in,
                                  BuffersBase<RawF> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    int32_to_float(in[i]->Data.get(), inputFormat_->Size(),
-                   (*out)[i]->Data.get());
+    int32_to_float(in[i].Data.get(), inputFormat_->Size(),
+                   (*out)[i].Data.get());
   }
 }
 
@@ -28,8 +28,8 @@ void Int32ToFloatWindow::Do(
     const BuffersBase<Window32>& in,
     BuffersBase<WindowF>* out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    int32_to_float(in[i]->Data.get(), inputFormat_->Size(),
-                   (*out)[i]->Data.get());
+    int32_to_float(in[i].Data.get(), inputFormat_->Size(),
+                   (*out)[i].Data.get());
   }
 }
 

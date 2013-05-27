@@ -35,7 +35,7 @@ class CentroidTest : public Centroid, public testing::Test {
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; i++) {
       // Always liked exotic functions
-      Input[0]->Data.get()[i] = fabs(sinf(i * i) + i * cosf(i));
+      Input[0].Data.get()[i] = fabs(sinf(i * i) + i * cosf(i));
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
@@ -49,9 +49,9 @@ class CentroidTest : public Centroid, public testing::Test {
 
 TEST_F(CentroidTest, Do) {
   Do(Input, &Output);
-  double res = Do(false, Input[0]->Data.get(), Size);
+  double res = Do(false, Input[0].Data.get(), Size);
   res *= inputFormat_->SamplingRate() / (2.f * inputFormat_->SamplesCount());
-  ASSERT_EQF(res, *Output[0]);
+  ASSERT_EQF(res, Output[0]);
 }
 
 #define CLASS_NAME CentroidTest

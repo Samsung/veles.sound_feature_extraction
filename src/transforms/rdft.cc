@@ -41,8 +41,8 @@ void RDFT::Do(
   }
   std::vector<float*> inputs(in.Size()), outputs(in.Size());
   for (size_t i = 0; i < in.Size(); i++) {
-    inputs[i] = in[i]->Data.get();
-    outputs[i] = (*out)[i]->Data.get();
+    inputs[i] = in[i].Data.get();
+    outputs[i] = (*out)[i].Data.get();
   }
   auto fftPlan = std::unique_ptr<FFTFInstance, void (*)(FFTFInstance *)>(
       fftf_init_batch(

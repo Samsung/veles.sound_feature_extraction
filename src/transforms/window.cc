@@ -112,8 +112,8 @@ const noexcept {
 
   for (size_t i = 0; i < in.Size(); i++) {
     for (int j = 0; j < windowsCount_; j++) {
-      auto input = in[i]->Data.get() + j * step_;
-      auto output = outref[i * windowsCount_ + j]->Data.get();
+      auto input = in[i].Data.get() + j * step_;
+      auto output = outref[i * windowsCount_ + j].Data.get();
       if (type_ != WINDOW_TYPE_RECTANGULAR) {
 #ifdef __AVX__
         if (align_complement_i16(input) != 0) {
@@ -144,18 +144,18 @@ void RawToWindow::Do(const BuffersBase<Formats::Window16>& in,
   for (size_t i = 0; i < in.Size(); i++) {
     int windowIndex = i % windowsCount_;
     if (windowIndex == 0) {
-      memcpy((*out)[rawIndex]->Data.get(), in[i]->Data.get(),
+      memcpy((*out)[rawIndex].Data.get(), in[i].Data.get(),
              (windowLength - offset) * sizeof(int16_t));
     } else if (windowIndex < windowsCount_ - 1) {
-      memcpy((*out)[rawIndex]->Data.get() +
+      memcpy((*out)[rawIndex].Data.get() +
                  windowLength - offset + step_ * (windowIndex - 1),
-             in[i]->Data.get() + offset, step_ * sizeof(int16_t));
+             in[i].Data.get() + offset, step_ * sizeof(int16_t));
     } else {
-      memcpy((*out)[rawIndex]->Data.get() +
+      memcpy((*out)[rawIndex].Data.get() +
                  windowLength - offset + step_ * (windowIndex - 1),
-             in[i]->Data.get() + offset,
+             in[i].Data.get() + offset,
              (windowLength - offset) * sizeof(int16_t));
-      memset((*out)[rawIndex]->Data.get() +
+      memset((*out)[rawIndex].Data.get() +
                  inputFormat_->Size() - skippedEndingSize,
              0, skippedEndingSize * sizeof(int16_t));
       rawIndex++;
@@ -250,8 +250,8 @@ const noexcept {
   float* window = window_.get();
   int length = inputFormat_->Size();
   for (size_t i = 0; i < in.Size(); i++) {
-    auto input = in[i]->Data.get();
-    auto output = (*out)[i]->Data.get();
+    auto input = in[i].Data.get();
+    auto output = (*out)[i].Data.get();
     ApplyWindow(true, window, length, input, output);
   }
 }

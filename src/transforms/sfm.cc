@@ -27,8 +27,8 @@ void SFM::InitializeBuffers(
 void SFM::Do(const BuffersBase<FixedArray<MEAN_TYPE_COUNT>>& in,
              BuffersBase<float> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    float gMean = (*in[i])[MEAN_TYPE_GEOMETRIC];
-    float aMean = (*in[i])[MEAN_TYPE_ARITHMETIC];
+    float gMean = in[i][MEAN_TYPE_GEOMETRIC];
+    float aMean = in[i][MEAN_TYPE_ARITHMETIC];
     if (gMean == 0) {
       WRN("Warning: buffer #%zu has geometric mean equal to 0.\n", i);
     }
@@ -41,7 +41,7 @@ void SFM::Do(const BuffersBase<FixedArray<MEAN_TYPE_COUNT>>& in,
           "of different sign.\n", i);
       assert(gMean / aMean >= 0);
     }
-    *(*out)[i] = logf(gMean / aMean);
+    (*out)[i] = logf(gMean / aMean);
   }
 }
 

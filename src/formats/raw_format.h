@@ -152,7 +152,7 @@ class RawFormat : public BufferFormatBase<Raw<T>> {
     for (size_t i = 0; i < buffers.Size(); i++) {
       bool allZeros = true;
       for (size_t j = 0; j < size_; j++) {
-        T value = buffers[i]->Data.get()[j];
+        T value = buffers[i].Data.get()[j];
         if (value != value) {
           throw InvalidBuffersException(this->Id(), i,
                                         std::string("[") + std::to_string(j) +

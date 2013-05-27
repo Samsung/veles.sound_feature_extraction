@@ -39,7 +39,7 @@ void ComplexMagnitude::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    Do(true, in[i]->Data.get(), inputFormat_->Size(), (*out)[i]->Data.get());
+    Do(true, in[i].Data.get(), inputFormat_->Size(), (*out)[i].Data.get());
   }
 }
 

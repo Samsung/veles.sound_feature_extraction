@@ -35,8 +35,8 @@ void ZeroPadding::Do(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    auto input = in[i]->Data.get();
-    auto output = (*out)[i]->Data.get();
+    auto input = in[i].Data.get();
+    auto output = (*out)[i].Data.get();
     if (input != output) {
       memcpy(output, input, inputFormat_->Size() * sizeof(input[0]));
     }

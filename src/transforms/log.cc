@@ -51,7 +51,7 @@ void Log::Do(
     BuffersBase<Formats::WindowF>* out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");
   for (size_t i = 0; i < in.Size(); i++) {
-    Do(true, in[i]->Data.get(), inputFormat_->Size(), (*out)[i]->Data.get());
+    Do(true, in[i].Data.get(), inputFormat_->Size(), (*out)[i].Data.get());
   }
 }
 

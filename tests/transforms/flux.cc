@@ -33,8 +33,8 @@ class FluxTest : public Flux, public testing::Test {
   virtual void SetUp() {
     Input.Initialize(2, Size);
     for (int i = 0; i < Size; i++) {
-      Input[0]->Data.get()[i] = fabs(sinf(i * i) + i * cosf(i));
-      Input[1]->Data.get()[i] = 0.f;
+      Input[0].Data.get()[i] = fabs(sinf(i * i) + i * cosf(i));
+      Input[1].Data.get()[i] = 0.f;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
@@ -50,9 +50,9 @@ const int FluxTest::Size = 450;
 
 TEST_F(FluxTest, Do) {
   Do(Input, &Output);
-  float res = Do(false, Input[1]->Data.get(), Size, Input[0]->Data.get());
-  ASSERT_EQ(0.f, *Output[0]);
-  ASSERT_EQF(res, *Output[1]);
+  float res = Do(false, Input[1].Data.get(), Size, Input[0].Data.get());
+  ASSERT_EQ(0.f, Output[0]);
+  ASSERT_EQF(res, Output[1]);
 }
 
 const float extra_param[FluxTest::Size] = { 0.f };

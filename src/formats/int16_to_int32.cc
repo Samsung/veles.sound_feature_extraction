@@ -19,8 +19,8 @@ namespace Formats {
 void Int16ToInt32Raw::Do(const BuffersBase<Raw16>& in,
                                  BuffersBase<Raw32> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    int16_to_int32(in[i]->Data.get(), inputFormat_->Size(),
-                   (*out)[i]->Data.get());
+    int16_to_int32(in[i].Data.get(), inputFormat_->Size(),
+                   (*out)[i].Data.get());
   }
 }
 
@@ -28,8 +28,8 @@ void Int16ToInt32Window::Do(
     const BuffersBase<Window16>& in,
     BuffersBase<Window32> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    int16_to_int32(in[i]->Data.get(), inputFormat_->Size(),
-                   (*out)[i]->Data.get());
+    int16_to_int32(in[i].Data.get(), inputFormat_->Size(),
+                   (*out)[i].Data.get());
   }
 }
 

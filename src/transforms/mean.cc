@@ -68,9 +68,9 @@ void Mean::Do(
     for (int j = 0; j < MEAN_TYPE_COUNT; j++) {
       auto mt = static_cast<MeanTypes>(j);
       if (types_.find(mt) != types_.end()) {
-        (*(*out)[i])[j] = Do(true, in[i]->Data.get(), inputFormat_->Size(), mt);
+        ((*out)[i])[j] = Do(true, in[i].Data.get(), inputFormat_->Size(), mt);
       } else {
-        (*(*out)[i])[j] = 0;
+        ((*out)[i])[j] = 0;
       }
     }
   }

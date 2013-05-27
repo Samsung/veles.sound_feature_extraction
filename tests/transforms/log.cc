@@ -35,7 +35,7 @@ class LogTest : public Log, public testing::Test {
     Size = 378;
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; i++) {
-      Input[0]->Data.get()[i] = (i + Size / 2.0f) / Size;
+      Input[0].Data.get()[i] = (i + Size / 2.0f) / Size;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
@@ -50,7 +50,7 @@ class LogTest : public Log, public testing::Test {
 TEST_F(LogTest, Do) {
   Do(Input, &Output);
   for (int i = 0; i < Size; i++) {
-    float log = Output[0]->Data.get()[i];
+    float log = Output[0].Data.get()[i];
     float vlog = logf((i + Size / 2.0f) / Size);
     ASSERT_EQF(vlog, log);
   }

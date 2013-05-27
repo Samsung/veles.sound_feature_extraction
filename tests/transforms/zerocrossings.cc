@@ -38,10 +38,10 @@ class ZeroCrossingsWindowTest : public ZeroCrossingsWindow, public testing::Test
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; i++) {
       // Always liked exotic functions
-      Input[0]->Data.get()[i] = sinf(i * M_PI / 2);
+      Input[0].Data.get()[i] = sinf(i * M_PI / 2);
     }
-    Input[0]->Data.get()[Size - 1] = 0;
-    Input[0]->Data.get()[Size - 2] = 0;
+    Input[0].Data.get()[Size - 1] = 0;
+    Input[0].Data.get()[Size - 2] = 0;
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
     InitializeBuffers(Input, &Output);
@@ -50,8 +50,8 @@ class ZeroCrossingsWindowTest : public ZeroCrossingsWindow, public testing::Test
 
 TEST_F(ZeroCrossingsWindowTest, Do) {
   Do(Input, &Output);
-  ASSERT_EQ(Size / 2 + 1, *Output[0]);
-  int slowres = Do(false, Input[0]->Data.get(), Size);
+  ASSERT_EQ(Size / 2 + 1, Output[0]);
+  int slowres = Do(false, Input[0].Data.get(), Size);
   ASSERT_EQ(Size / 2 + 1, slowres);
 }
 
@@ -76,9 +76,9 @@ class ZeroCrossingsRawTest : public ZeroCrossingsRaw, public testing::Test {
     Input.Initialize(1, Size, 2);
     for (int i = 0; i < Size; i++) {
       // Always liked exotic functions
-      Input[0]->Data.get()[i] = sinf(i * M_PI / 2) * 1024;
+      Input[0].Data.get()[i] = sinf(i * M_PI / 2) * 1024;
     }
-    Input[0]->Data.get()[3] = 1024;
+    Input[0].Data.get()[3] = 1024;
     auto format = std::make_shared<RawFormat16>(Size, 18000);
     SetInputFormat(format);
     InitializeBuffers(Input, &Output);
@@ -87,8 +87,8 @@ class ZeroCrossingsRawTest : public ZeroCrossingsRaw, public testing::Test {
 
 TEST_F(ZeroCrossingsRawTest, Do) {
   Do(Input, &Output);
-  ASSERT_EQ(Size / 2, *Output[0]);
-  int slowres = Do(false, Input[0]->Data.get(), Size);
+  ASSERT_EQ(Size / 2, Output[0]);
+  int slowres = Do(false, Input[0].Data.get(), Size);
   ASSERT_EQ(Size / 2, slowres);
 }
 
