@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <omp.h>
 #include <stddef.h>
+#include <fftf/api.h>
 #include "src/features_parser.h"
 #include "src/make_unique.h"
 #include "src/transform_tree.h"
@@ -430,6 +431,7 @@ int get_omp_transforms_max_threads_num() {
 
 void set_omp_transforms_max_threads_num(int value) {
   get_set_omp_transforms_max_threads_num(&value, false);
+  fftf_set_openmp_num_threads(get_omp_transforms_max_threads_num());
 }
 
 }
