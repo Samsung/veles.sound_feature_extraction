@@ -52,7 +52,8 @@ void Beat::Do(const float* input, int length,
       float curEnergy = 0;
       int pulses = 3;
       int period = floor(kCoefficient * kMaxFrequency / beatPerMinute);
-      convolute_ones(input, length, period, pulses, X);
+      // convolute_ones(input, length, period, pulses, X);
+      // TODO(v.markovtsev): use the built-in class method
       curEnergy = calculate_energy(true, X, length);
       if (curEnergy > maxEnergy) {
         maxEnergy = curEnergy;
