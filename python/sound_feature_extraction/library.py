@@ -98,6 +98,14 @@ class Library(object):
                     [c_int, POINTER(c_char_p), POINTER(c_void_p),
                      POINTER(c_int)]
                 self._handle.free_results.restype = None
+                self._handle.get_omp_transforms_max_threads_num.argtypes = \
+                    None
+                self._handle.get_omp_transforms_max_threads_num.restype = \
+                    c_int
+                self._handle.set_omp_transforms_max_threads_num.argtypes = \
+                    [c_int]
+                self._handle.set_omp_transforms_max_threads_num.restype = \
+                    None
             except:
                 raise LoadingLibraryFailedException()
             logging.debug("Finished loading functions")
