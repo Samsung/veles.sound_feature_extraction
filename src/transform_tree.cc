@@ -487,9 +487,7 @@ void TransformTree::Dump(const std::string& dotFileName) const {
               timeReport[t->Name()] * 100.f)))
           << "%)</b>";
     }
-    if (t->GetParameters().size() > 1 ||
-        (t->GetParameters().size() > 0 &&
-        InverseParameterAware::HasInverse(*t))) {
+    if (t->GetParameters().size() > 0) {
       fw << "<br /> <br />";
       for (auto p : t->GetParameters()) {
         auto isDefault = false;
