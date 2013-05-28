@@ -31,7 +31,9 @@ class OmpTransformBaseCommon : public virtual ParameterizableBase {
     : max_number_of_threads_(get_omp_transforms_max_threads_num()) {
     RegisterSetter(MaxThreadsNumberParameterName(),
                    [&](const std::string& value) {
-      int tn = Parse<int>(MaxThreadsNumberParameterName(), value);
+      int tn = Parse<int>(
+          OmpTransformBaseCommon<FIN, FOUT>::MaxThreadsNumberParameterName(),
+          value);
       if (tn < 1) {
         return false;
       }
@@ -172,8 +174,11 @@ class OmpTransformBase<F, F, false>
   }
 };
 
+// TODO(v.markovtsev): when gcc < 4.7 support is dropped, change it to "using"
+// template alias
 template <typename F, bool SupportsInversion = false>
-using OmpUniformFormatTransform = OmpTransformBase<F, F, SupportsInversion>;
+class OmpUniformFormatTransform : public OmpTransformBase<F, F, SupportsInversion> {
+};
 
 #define OMP_TRANSFORM_PARAMETERS(init) TRANSFORM_PARAMETERS(FORWARD_MACROS( \
   TP(MaxThreadsNumberParameterName(), \
