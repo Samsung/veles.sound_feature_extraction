@@ -1,5 +1,5 @@
-/*! @file autocorrelation.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::Autocorrelation.
+/*! @file delta.cc
+ *  @brief Tests for SoundFeatureExtraction::Transforms::Delta.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -12,48 +12,45 @@
 
 
 #include <gtest/gtest.h>
-#include "src/transforms/autocorrelation.h"
+#include "src/transforms/delta.h"
 #include <fftf/api.h>
 
 using SoundFeatureExtraction::Formats::WindowF;
 using SoundFeatureExtraction::Formats::WindowFormatF;
 using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::Autocorrelation;
+using SoundFeatureExtraction::Transforms::Delta;
 
-class AutocorrelationTest
-    : public Autocorrelation, public testing::Test {
+class DeltaTest
+    : public Delta, public testing::Test {
  public:
   BuffersBase<WindowF> Input;
   BuffersBase<WindowF> Output;
   int Size;
 
-  AutocorrelationTest()
+  DeltaTest()
       : Input(inputFormat_),
         Output(outputFormat_) {
   }
 
   virtual void SetUp() {
     Size = 486;
-    Input.Initialize(1, Size);
-    for (int i = 0; i < Size / 2; i++) {
-      Input[0].Data.get()[i] = -i + 1;
-    }
-    for (int i = Size / 2; i < Size; i++) {
-      Input[0].Data.get()[i] = Size - i + 1;
+    Input.Initialize(2, Size);
+    for (int i = 0; i < Size; i++) {
+      Input[0].Data.get()[i] = i;
+      Input[1].Data.get()[i] = i + 1;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
     InitializeBuffers(Input, &Output);
-    Initialize();
   }
 };
 
-TEST_F(AutocorrelationTest, Do) {
-  Do(Input[0], &Output[0]);
-  ASSERT_NEAR(Output[0].Data.get()[0], 2, 1.f);
-  ASSERT_NEAR(Output[0].Data.get()[1], 3, 1.f);
-  ASSERT_NEAR(Output[0].Data.get()[3], -2, 1.f);
-  ASSERT_NEAR(Output[0].Data.get()[200], -1.353e+06, 0.001e+06);
+TEST_F(DeltaTest, Do) {
+  ASSERT_EQ(1, Output.Size());
+  Do(Input, &Output);
+  for (int i = 0; i < Size; i++) {
+    ASSERT_NEAR(Output[0].Data.get()[i], 1, 0.00001f);
+  }
 }
 
 #include "tests/google/src/gtest_main.cc"

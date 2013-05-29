@@ -12,11 +12,6 @@
 
 #include "src/transforms/flux.h"
 #include <math.h>
-#ifdef __AVX__
-#include <immintrin.h>
-#elif defined(__ARM_NEON__)
-#include <arm_neon.h>
-#endif
 #include <simd/arithmetic-inl.h>
 
 namespace SoundFeatureExtraction {
