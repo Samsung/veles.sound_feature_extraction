@@ -41,7 +41,19 @@ TEST(Features, All) {
   tt.AddFeature("WPP", { { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "DWPT", "order=4, tree=1 2 3 3" },
-      { "Selector", "length=16, threads_num=1" }
+      { "Selector", "length=16, threads_num=1" }, { "STMSN", "length=25" }
+  });
+  tt.AddFeature("WPP_D1", { { "Window", "type=rectangular" },
+      { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
+      /*{ "Square", "" },*/ { "DWPT", "order=4, tree=1 2 3 3" },
+      { "Selector", "length=16, threads_num=1" }, { "Delta", "" },
+      { "STMSN", "length=25" }
+  });
+  tt.AddFeature("WPP_D2", { { "Window", "type=rectangular" },
+      { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
+      /*{ "Square", "" },*/ { "DWPT", "order=4, tree=1 2 3 3" },
+      { "Selector", "length=16, threads_num=1" }, { "Delta", "" },
+      { "Delta", "" }, { "STMSN", "length=25" }
   });
   tt.AddFeature("SFM", { { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "ComplexMagnitude", "" },
@@ -54,13 +66,39 @@ TEST(Features, All) {
   tt.AddFeature("SBC", { { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" },
-      { "Selector", "length=16, threads_num=1" }
+      { "Selector", "length=16, threads_num=1" }, { "STMSN", "length=25" }
+  });
+  tt.AddFeature("SBC_D1", { { "Window", "type=rectangular" },
+      { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
+      /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" },
+      { "Selector", "length=16, threads_num=1" }, { "Delta", "" },
+      { "STMSN", "length=25" }
+  });
+  tt.AddFeature("SBC_D2", { { "Window", "type=rectangular" },
+      { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
+      /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" },
+      { "Selector", "length=16, threads_num=1" }, { "Delta", "" },
+      { "Delta", "" },{ "STMSN", "length=25" }
   });
   tt.AddFeature("MFCC", { { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "SpectralEnergy", "" }, { "FilterBank", "" },
       { "FilterBank", "" }, { "Log", "" }, { "Square", "" },
       { "Selector", "length=256, threads_num=1" }, { "DCT", "" },
-      { "Selector", "length=16, threads_num=1" }
+      { "Selector", "length=16, threads_num=1" }, { "STMSN", "length=25" }
+  });
+  tt.AddFeature("MFCC_D1", { { "Window", "type=rectangular" }, { "Window", "" },
+      { "RDFT", "" }, { "SpectralEnergy", "" }, { "FilterBank", "" },
+      { "FilterBank", "" }, { "Log", "" }, { "Square", "" },
+      { "Selector", "length=256, threads_num=1" }, { "DCT", "" },
+      { "Selector", "length=16, threads_num=1"}, { "Delta", "" },
+      { "STMSN", "length=25" }
+  });
+  tt.AddFeature("MFCC_D2", { { "Window", "type=rectangular" }, { "Window", "" },
+      { "RDFT", "" }, { "SpectralEnergy", "" }, { "FilterBank", "" },
+      { "FilterBank", "" }, { "Log", "" }, { "Square", "" },
+      { "Selector", "length=256, threads_num=1" }, { "DCT", "" },
+      { "Selector", "length=16, threads_num=1"}, { "Delta", "" },
+      { "Delta", "" }, { "STMSN", "length=25" }
   });
   tt.AddFeature("F0_HPS", { { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "ComplexMagnitude", "" }, { "HPS", "" }
@@ -69,7 +107,7 @@ TEST(Features, All) {
   memcpy(buffers.Data.get(), data, sizeof(data));
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
-  ASSERT_EQ(11, res.size());
+  ASSERT_EQ(17, res.size());
   printf("Validating Energy\n");
   res["Energy"]->Validate();
   printf("Validating Centroid\n");
@@ -82,12 +120,24 @@ TEST(Features, All) {
   res["ZeroCrossings"]->Validate();
   printf("Validating WPP\n");
   res["WPP"]->Validate();
+  printf("Validating WPP_D1\n");
+  res["WPP_D1"]->Validate();
+  printf("Validating WPP_D2\n");
+  res["WPP_D2"]->Validate();
   printf("Validating SBC\n");
   res["SBC"]->Validate();
+  printf("Validating SBC_D1\n");
+  res["SBC_D1"]->Validate();
+  printf("Validating SBC_D2\n");
+  res["SBC_D2"]->Validate();
   printf("Validating DominantFrequency\n");
   res["DominantFrequency"]->Validate();
   printf("Validating MFCC\n");
   res["MFCC"]->Validate();
+  printf("Validating MFCC_D1\n");
+  res["MFCC_D1"]->Validate();
+  printf("Validating MFCC_D2\n");
+  res["MFCC_D2"]->Validate();
   printf("Validating F0_HPS\n");
   res["F0_HPS"]->Validate();
   tt.Dump("/tmp/all.dot");
