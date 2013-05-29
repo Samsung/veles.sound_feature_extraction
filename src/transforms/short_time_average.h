@@ -1,4 +1,4 @@
-/*! @file delta.h
+/*! @file short_time_average.h
  *  @brief New file description.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_DELTA_H_
-#define SRC_TRANSFORMS_DELTA_H_
+#ifndef SRC_TRANSFORMS_SHORT_TIME_AVERAGE_H_
+#define SRC_TRANSFORMS_SHORT_TIME_AVERAGE_H_
 
 #include "src/formats/window_format.h"
 #include "src/transform_base.h"
@@ -19,13 +19,18 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-class Delta
+class ShortTimeAverage
     : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
-  TRANSFORM_INTRO("Delta", "Get the difference between values of adjacent "
-                           "windows.")
+  ShortTimeAverage();
 
-  TRANSFORM_PARAMETERS()
+  TRANSFORM_INTRO("STAvg", "Calculate short-time average values, that is,"
+                           "$w_n[i] = \\sum_{k=n-L/2}^{n+L/2}{w_k[i]}$.")
+
+  TRANSFORM_PARAMETERS(
+      TP("length", "The amount of local values to average.",
+         std::to_string(kDefaultLength))
+  )
 
  protected:
   virtual void InitializeBuffers(
@@ -35,10 +40,12 @@ class Delta
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
                   BuffersBase<Formats::WindowF>* out) const noexcept;
 
-  static void Do(bool simd, const float* prev, const float* cur,
-                 size_t length, float* res) noexcept;
+ private:
+  static const int kDefaultLength = 300;
+
+  int length_;
 };
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction
-#endif  // SRC_TRANSFORMS_DELTA_H_
+#endif  // SRC_TRANSFORMS_SHORT_TIME_AVERAGE_H_
