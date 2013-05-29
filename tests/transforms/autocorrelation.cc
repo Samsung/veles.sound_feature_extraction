@@ -1,6 +1,6 @@
-/*! @file argminmax.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::ArgMinMax.
- *  @author Shapichev Alexey <a.shapichev@samsung.com>
+/*! @file autocorrelation.cc
+ *  @brief Tests for SoundFeatureExtraction::Transforms::Autocorrelation.
+ *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
  *  @section Notes
@@ -12,22 +12,22 @@
 
 
 #include <gtest/gtest.h>
-#include "src/transforms/argminmax.h"
+#include "src/transforms/autocorrelation.h"
+#include <fftf/api.h>
 
 using SoundFeatureExtraction::Formats::WindowF;
 using SoundFeatureExtraction::Formats::WindowFormatF;
 using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::ArgMinMax;
-using SoundFeatureExtraction::Transforms::ArgMinMaxResult;
+using SoundFeatureExtraction::Transforms::Autocorrelation;
 
-class ArgMinMaxTest
-    : public ArgMinMax, public testing::Test {
+class AutocorrelationTest
+    : public Autocorrelation, public testing::Test {
  public:
   BuffersBase<WindowF> Input;
-  BuffersBase<ArgMinMaxResult> Output;
+  BuffersBase<WindowF> Output;
   int Size;
 
-  ArgMinMaxTest()
+  AutocorrelationTest()
       : Input(inputFormat_),
         Output(outputFormat_) {
   }
@@ -44,6 +44,7 @@ class ArgMinMaxTest
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
     InitializeBuffers(Input, &Output);
+    Initialize();
   }
 };
 
@@ -51,21 +52,12 @@ class ArgMinMaxTest
 
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
-TEST_F(ArgMinMaxTest, Do) {
-  SetParameter("extremum", "max");
+TEST_F(AutocorrelationTest, Do) {
   Do(Input[0], &Output[0]);
-  ASSERT_EQ(Size / 2, std::get<0>(Output[0]));
-  ASSERT_EQ(Size / 2 + 1, std::get<1>(Output[0]));
-  SetParameter("extremum", "min");
-  Do(Input[0], &Output[0]);
-  ASSERT_EQ(Size / 2 - 1, std::get<0>(Output[0]));
-  ASSERT_EQ(- Size / 2 + 2, std::get<1>(Output[0]));
+  ASSERT_NEAR(Output[0].Data.get()[0], 2, 1.f);
+  ASSERT_NEAR(Output[0].Data.get()[1], 3, 1.f);
+  ASSERT_NEAR(Output[0].Data.get()[3], -2, 1.f);
+  ASSERT_NEAR(Output[0].Data.get()[200], -1.353e+06, 0.001e+06);
 }
-
-#define EXTRA_PARAM true
-#define CLASS_NAME ArgMinMaxTest
-#define ITER_COUNT 500000
-#define NO_OUTPUT
-#include "tests/transforms/benchmark.inc"
 
 #include "tests/google/src/gtest_main.cc"
