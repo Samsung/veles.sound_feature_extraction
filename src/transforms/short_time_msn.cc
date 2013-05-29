@@ -1,4 +1,4 @@
-/*! @file short_time_average.cc
+/*! @file short_time_msn.cc
  *  @brief New file description.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -10,13 +10,13 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/transforms/short_time_average.h"
 #include <simd/arithmetic-inl.h>
+#include "src/transforms/short_time_msn.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-ShortTimeAverage::ShortTimeAverage()
+ShortTimeMeanScaleNormalization::ShortTimeMeanScaleNormalization()
     : length_(kDefaultLength) {
   RegisterSetter("length", [&](const std::string& value) {
     int length = Parse<int>("length", value);
@@ -28,14 +28,15 @@ ShortTimeAverage::ShortTimeAverage()
   });
 }
 
-void ShortTimeAverage::InitializeBuffers(
+void ShortTimeMeanScaleNormalization::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), inputFormat_->Size());
 }
 
-void ShortTimeAverage::Do(const BuffersBase<Formats::WindowF>& in,
-               BuffersBase<Formats::WindowF>* out) const noexcept {
+void ShortTimeMeanScaleNormalization::Do(
+    const BuffersBase<Formats::WindowF>& in,
+    BuffersBase<Formats::WindowF>* out) const noexcept {
   int back = length_ / 2;
   int front = length_ - back;
   for (size_t i = 0; i < in.Size(); i++) {
@@ -52,15 +53,28 @@ void ShortTimeAverage::Do(const BuffersBase<Formats::WindowF>& in,
         frontind = (int)in.Size();
       }
       float sum = 0.f;
+      float thisval = in[i].Data.get()[j];
+      float min = thisval;
+      float max = thisval;
       for (int k = backind; k < frontind; k++) {
-        sum += in[k].Data.get()[j];
+        float val = in[k].Data.get()[j];
+        sum += val;
+        if (min > val) {
+          min = val;
+        } else if (max < val) {
+          max = val;
+        }
       }
-      (*out)[i].Data.get()[j] = sum / len;
+      if (max - min > 0) {
+        (*out)[i].Data.get()[j] = (thisval - sum / len) / (max - min);
+      } else {
+        (*out)[i].Data.get()[j] = 0;
+      }
     }
   }
 }
 
-REGISTER_TRANSFORM(ShortTimeAverage);
+REGISTER_TRANSFORM(ShortTimeMeanScaleNormalization);
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction
