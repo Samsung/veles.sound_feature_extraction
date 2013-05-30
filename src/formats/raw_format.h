@@ -75,6 +75,14 @@ struct Raw {
     return 0;
 #endif
   }
+
+  T& operator[](int index) {
+    return Data.get()[index];
+  }
+
+  const T& operator[](int index) const {
+    return Data.get()[index];
+  }
 };
 
 typedef Raw<int16_t> Raw16;

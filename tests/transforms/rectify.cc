@@ -34,9 +34,9 @@ class RectifyTest : public Rectify, public testing::Test {
     Size = 486;
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; ++i) {
-      Input[0].Data.get()[i] = i;
+      Input[0][i] = i;
       if (i % 2 == 0) {
-        Input[0].Data.get()[i] *= -1;
+        Input[0][i] *= -1;
       }
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
@@ -49,7 +49,7 @@ class RectifyTest : public Rectify, public testing::Test {
 TEST_F(RectifyTest, Do) {
   Do(Input[0], &Output[0]);
   for (int i = 0; i < Size; i++) {
-    ASSERT_EQ(i, Output[0].Data.get()[i]);
+    ASSERT_EQ(i, Output[0][i]);
   }
 }
 

@@ -35,7 +35,7 @@ class BeatTest : public Beat, public testing::Test {
     Size = data[0];
     Input.Initialize(1, Size);
     for (int i = 0; i < data[0]; ++i) {
-      Input[0].Data.get()[i] = data[i + 1];
+      Input[0][i] = data[i + 1];
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);

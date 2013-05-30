@@ -36,8 +36,8 @@ class DeltaTest
     Size = 486;
     Input.Initialize(2, Size);
     for (int i = 0; i < Size; i++) {
-      Input[0].Data.get()[i] = i;
-      Input[1].Data.get()[i] = i + 1;
+      Input[0][i] = i;
+      Input[1][i] = i + 1;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
@@ -49,7 +49,7 @@ TEST_F(DeltaTest, Do) {
   ASSERT_EQ(1, Output.Size());
   Do(Input, &Output);
   for (int i = 0; i < Size; i++) {
-    ASSERT_NEAR(Output[0].Data.get()[i], 1, 0.00001f);
+    ASSERT_NEAR(Output[0][i], 1, 0.00001f);
   }
 }
 

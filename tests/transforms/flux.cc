@@ -33,8 +33,8 @@ class FluxTest : public Flux, public testing::Test {
   virtual void SetUp() {
     Input.Initialize(2, Size);
     for (int i = 0; i < Size; i++) {
-      Input[0].Data.get()[i] = fabs(sinf(i * i) + i * cosf(i));
-      Input[1].Data.get()[i] = 0.f;
+      Input[0][i] = fabs(sinf(i * i) + i * cosf(i));
+      Input[1][i] = 0.f;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);

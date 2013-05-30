@@ -54,7 +54,7 @@ TEST(Features, MFCCTrivial) {
       { "DCT", "" } });
   Raw16 buffers(48000, 0);
   for (int i = 0; i < 48000; i++) {
-    buffers.Data.get()[i] = 128;
+    buffers[i] = 128;
   }
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);

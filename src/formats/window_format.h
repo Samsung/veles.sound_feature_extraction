@@ -75,6 +75,14 @@ struct Window {
     Data = other.Data;
     return *this;
   }
+
+  T& operator[](int index) {
+    return Data.get()[index];
+  }
+
+  const T& operator[](int index) const {
+    return Data.get()[index];
+  }
 };
 
 typedef Window<int16_t> Window16;

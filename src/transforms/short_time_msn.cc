@@ -53,11 +53,11 @@ void ShortTimeMeanScaleNormalization::Do(
         frontind = (int)in.Size();
       }
       float sum = 0.f;
-      float thisval = in[i].Data.get()[j];
+      float thisval = in[i][j];
       float min = thisval;
       float max = thisval;
       for (int k = backind; k < frontind; k++) {
-        float val = in[k].Data.get()[j];
+        float val = in[k][j];
         sum += val;
         if (min > val) {
           min = val;
@@ -66,9 +66,9 @@ void ShortTimeMeanScaleNormalization::Do(
         }
       }
       if (max - min > 0) {
-        (*out)[i].Data.get()[j] = (thisval - sum / len) / (max - min);
+        (*out)[i][j] = (thisval - sum / len) / (max - min);
       } else {
-        (*out)[i].Data.get()[j] = 0;
+        (*out)[i][j] = 0;
       }
     }
   }

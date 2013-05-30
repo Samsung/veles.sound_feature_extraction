@@ -37,7 +37,7 @@ class ShortTimeMeanScaleNormalizationTest
     Input.Initialize(10, Size);
     for (int k = 0; k < 10; k++) {
       for (int i = 0; i < Size; i++) {
-        Input[k].Data.get()[i] = i + k;
+        Input[k][i] = i + k;
       }
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
@@ -49,21 +49,21 @@ class ShortTimeMeanScaleNormalizationTest
 
 TEST_F(ShortTimeMeanScaleNormalizationTest, Do) {
   Do(Input, &Output);
-  ASSERT_NEAR(Output[0].Data.get()[0], -0.5, 0.00001f);
-  ASSERT_NEAR(Output[0].Data.get()[1], -0.5, 0.00001f);
-  ASSERT_NEAR(Output[0].Data.get()[2], -0.5, 0.00001f);
-  ASSERT_NEAR(Output[1].Data.get()[0], -0.16666f, 0.00001f);
-  ASSERT_NEAR(Output[1].Data.get()[1], -0.16666f, 0.00001f);
-  ASSERT_NEAR(Output[1].Data.get()[2], -0.16666f, 0.00001f);
-  ASSERT_NEAR(Output[2].Data.get()[0], 0, 0.00001f);
-  ASSERT_NEAR(Output[2].Data.get()[1], 0, 0.00001f);
-  ASSERT_NEAR(Output[2].Data.get()[2], 0, 0.00001f);
-  ASSERT_NEAR(Output[3].Data.get()[0], 0, 0.00001f);
-  ASSERT_NEAR(Output[3].Data.get()[1], 0, 0.00001f);
-  ASSERT_NEAR(Output[3].Data.get()[2], 0, 0.00001f);
-  ASSERT_NEAR(Output[9].Data.get()[0], 0.5, 0.00001f);
-  ASSERT_NEAR(Output[9].Data.get()[1], 0.5, 0.00001f);
-  ASSERT_NEAR(Output[9].Data.get()[2], 0.5, 0.00001f);
+  ASSERT_NEAR(Output[0][0], -0.5, 0.00001f);
+  ASSERT_NEAR(Output[0][1], -0.5, 0.00001f);
+  ASSERT_NEAR(Output[0][2], -0.5, 0.00001f);
+  ASSERT_NEAR(Output[1][0], -0.16666f, 0.00001f);
+  ASSERT_NEAR(Output[1][1], -0.16666f, 0.00001f);
+  ASSERT_NEAR(Output[1][2], -0.16666f, 0.00001f);
+  ASSERT_NEAR(Output[2][0], 0, 0.00001f);
+  ASSERT_NEAR(Output[2][1], 0, 0.00001f);
+  ASSERT_NEAR(Output[2][2], 0, 0.00001f);
+  ASSERT_NEAR(Output[3][0], 0, 0.00001f);
+  ASSERT_NEAR(Output[3][1], 0, 0.00001f);
+  ASSERT_NEAR(Output[3][2], 0, 0.00001f);
+  ASSERT_NEAR(Output[9][0], 0.5, 0.00001f);
+  ASSERT_NEAR(Output[9][1], 0.5, 0.00001f);
+  ASSERT_NEAR(Output[9][2], 0.5, 0.00001f);
 }
 
 #include "tests/google/src/gtest_main.cc"

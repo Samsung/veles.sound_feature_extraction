@@ -35,7 +35,7 @@ class FilterBankTest : public FilterBank, public testing::Test {
     Size = 378;
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; i++) {
-      Input[0].Data.get()[i] = 100;
+      Input[0][i] = 100;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
@@ -51,7 +51,7 @@ class FilterBankTest : public FilterBank, public testing::Test {
 TEST_F(FilterBankTest, Do) {
   Do(Input[0], &Output[0]);
   for (int i = 0; i < Size; i++) {
-    ASSERT_EQF(100 * filterBank_.get()[i], Output[0].Data.get()[i]);
+    ASSERT_EQF(100 * filterBank_.get()[i], Output[0][i]);
   }
 }
 

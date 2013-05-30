@@ -36,10 +36,10 @@ class AutocorrelationTest
     Size = 486;
     Input.Initialize(1, Size);
     for (int i = 0; i < Size / 2; i++) {
-      Input[0].Data.get()[i] = -i + 1;
+      Input[0][i] = -i + 1;
     }
     for (int i = Size / 2; i < Size; i++) {
-      Input[0].Data.get()[i] = Size - i + 1;
+      Input[0][i] = Size - i + 1;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
@@ -50,10 +50,10 @@ class AutocorrelationTest
 
 TEST_F(AutocorrelationTest, Do) {
   Do(Input[0], &Output[0]);
-  ASSERT_NEAR(Output[0].Data.get()[0], 2, 1.f);
-  ASSERT_NEAR(Output[0].Data.get()[1], 3, 1.f);
-  ASSERT_NEAR(Output[0].Data.get()[3], -2, 1.f);
-  ASSERT_NEAR(Output[0].Data.get()[200], -1.353e+06, 0.001e+06);
+  ASSERT_NEAR(Output[0][0], 2, 1.f);
+  ASSERT_NEAR(Output[0][1], 3, 1.f);
+  ASSERT_NEAR(Output[0][3], -2, 1.f);
+  ASSERT_NEAR(Output[0][200], -1.353e+06, 0.001e+06);
 }
 
 #include "tests/google/src/gtest_main.cc"

@@ -33,7 +33,7 @@ class RealToComplexTest : public RealToComplex, public testing::Test {
     Size = 486;
     Input.Initialize(1, Size * 2);
     for (int i = 0; i < Size; i++) {
-      Input[0].Data.get()[i] = i;
+      Input[0][i] = i;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     format->SetAllocatedSize(Size * 2);
@@ -45,7 +45,7 @@ class RealToComplexTest : public RealToComplex, public testing::Test {
 TEST_F(RealToComplexTest, Do) {
   Do(Input[0], &Output[0]);
   for (int i = 0; i < Size; i++) {
-    ASSERT_EQ(i, Output[0].Data.get()[i * 2]);
+    ASSERT_EQ(i, Output[0][i * 2]);
   }
 }
 

@@ -34,12 +34,12 @@ class DiffrectTest
   virtual void SetUp() {
     Size = 486;
     Input.Initialize(1, 2 * Size);
-    Input[0].Data.get()[0] = 0;
+    Input[0][0] = 0;
     for (int i = 1; i < Size; i++) {
       int step = (i - 1) % 3;
       if ((i - 1) % 2 == 0)
         step *= -1;
-      Input[0].Data.get()[i] = Input[0].Data.get()[i - 1] + step;
+      Input[0][i] = Input[0][i - 1] + step;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     format->SetAllocatedSize(2 * Size);
@@ -55,7 +55,7 @@ TEST_F(DiffrectTest, Do) {
     if (i % 2 == 0) {
       result = 0;
     }
-    ASSERT_EQ(result, Output[0].Data.get()[i]);
+    ASSERT_EQ(result, Output[0][i]);
   }
 }
 

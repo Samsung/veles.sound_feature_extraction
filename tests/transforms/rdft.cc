@@ -39,7 +39,7 @@ class RDFTTest : public RDFT, public testing::Test {
     Size = 512;
     Input.Initialize(1, Size + 2);
     for (int i = 0; i < Size; i++) {
-      Input[0].Data.get()[i] = (i - Size / 2.0f) / Size;
+      Input[0][i] = (i - Size / 2.0f) / Size;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
     format->SetAllocatedSize(format->Size() + 2);

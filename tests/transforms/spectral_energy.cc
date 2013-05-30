@@ -36,7 +36,7 @@ class SpectralEnergyTest
     Size = 378;
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; i++) {
-      Input[0].Data.get()[i] = i / 40.0f;
+      Input[0][i] = i / 40.0f;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
@@ -51,7 +51,7 @@ class SpectralEnergyTest
 TEST_F(SpectralEnergyTest, Do) {
   Do(Input[0], &Output[0]);
   for (int i = 0; i < Size / 2; i++) {
-    float m = Output[0].Data.get()[i];
+    float m = Output[0][i];
     float re = i * 2;
     float im = i * 2 + 1;
     ASSERT_EQF((re * re + im * im) / 1600.0f, m);

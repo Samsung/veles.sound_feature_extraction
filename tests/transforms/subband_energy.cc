@@ -34,7 +34,7 @@ class SubbandEnergyTest : public SubbandEnergy, public testing::Test {
     Size = 512;
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; i++) {
-      Input[0].Data.get()[i] = i + 1;
+      Input[0][i] = i + 1;
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
     SetInputFormat(format);

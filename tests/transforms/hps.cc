@@ -35,7 +35,7 @@ class HpsTest : public Hps, public testing::Test {
     Size = data[1];
     Input.Initialize(1, Size);
     for (int i = 0; i < data[1]; ++i) {
-      Input[0].Data.get()[i] = data[i + 2];
+      Input[0][i] = data[i + 2];
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     format->SetSamplingRate(data[0]);

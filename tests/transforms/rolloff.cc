@@ -35,7 +35,7 @@ class RolloffTest : public Rolloff, public testing::Test {
     Input.Initialize(1, Size);
     for (int i = 0; i < Size; i++) {
       // Always liked exotic functions
-      Input[0].Data.get()[i] = fabs(sinf(i * i) + i * cosf(i));
+      Input[0][i] = fabs(sinf(i * i) + i * cosf(i));
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
     SetInputFormat(format);
