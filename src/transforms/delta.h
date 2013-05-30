@@ -22,12 +22,28 @@ namespace Transforms {
 class Delta
     : public UniformFormatTransform<Formats::WindowFormatF> {
  public:
+  Delta();
+
   TRANSFORM_INTRO("Delta", "Get the difference between values of adjacent "
                            "windows.")
 
-  TRANSFORM_PARAMETERS()
+  TRANSFORM_PARAMETERS(
+      TP("type", "The algorithm to calculate the deltas with. Allowed values "
+                 "are \"simple\" and \"regression\".", "simple")
+      TP("rlength", "The linear regression window length. Only odd values "
+                    " greater than 1 are accepted.",
+         std::to_string(kDefaultRegressionLength))
+  )
 
  protected:
+  enum Type {
+    kTypeSimple,
+    kTypeRegression
+  };
+
+  static const std::unordered_map<std::string, Type> kTypesMap;
+  static const int kDefaultRegressionLength = 5;
+
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
@@ -35,8 +51,12 @@ class Delta
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
                   BuffersBase<Formats::WindowF>* out) const noexcept;
 
-  static void Do(bool simd, const float* prev, const float* cur,
-                 size_t length, float* res) noexcept;
+  static void DoSimple(bool simd, const float* prev, const float* cur,
+                       size_t length, float* res) noexcept;
+
+ private:
+  Type type_;
+  int rlength_;
 };
 
 }  // namespace Transforms

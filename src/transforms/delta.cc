@@ -16,22 +16,75 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
+const std::unordered_map<std::string, Delta::Type> Delta::kTypesMap = {
+    { "simple", kTypeSimple },
+    { "regression", kTypeRegression }
+};
+
+Delta::Delta()
+  : type_(kTypeSimple),
+    rlength_(kDefaultRegressionLength) {
+  RegisterSetter("type", [&](const std::string& value) {
+    auto pvi = kTypesMap.find(value);
+    if (pvi == kTypesMap.end()) {
+      return false;
+    }
+    type_ = pvi->second;
+    return true;
+  });
+  RegisterSetter("rlength", [&](const std::string& value) {
+    int pv = Parse<int>("rlength", value);
+    if (pv < 3 || pv % 2 == 0) {
+      return false;
+    }
+    rlength_ = pv;
+    return true;
+  });
+}
+
 void Delta::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size() - 1, inputFormat_->Size());
+  switch (type_) {
+    case kTypeSimple:
+      buffers->Initialize(in.Size() - 1, inputFormat_->Size());
+      break;
+    case kTypeRegression:
+      buffers->Initialize(in.Size() - rlength_ + 1, inputFormat_->Size());
+      break;
+  }
 }
 
 void Delta::Do(const BuffersBase<Formats::WindowF>& in,
                BuffersBase<Formats::WindowF>* out) const noexcept {
-  for (size_t i = 1; i < in.Size(); i++) {
-    Do(true, in[i - 1].Data.get(), in[i].Data.get(),
-       inputFormat_->Size(), (*out)[i - 1].Data.get());
+
+  switch (type_) {
+    case kTypeSimple:
+      for (size_t i = 1; i < in.Size(); i++) {
+        DoSimple(true, in[i - 1].Data.get(), in[i].Data.get(),
+                 inputFormat_->Size(), (*out)[i - 1].Data.get());
+      }
+    break;
+    case kTypeRegression: {
+      int rstep = rlength_ / 2;
+      for (size_t i = rstep; i < in.Size() - rstep; i++) {
+        for (int j = 0; j < (int)inputFormat_->Size(); j++) {
+          float sum = 0.f;
+          float norm = 0.f;
+          for (int k = 1; k <= rstep; k++) {
+            sum += (in[i + k][j] - in[i - k][j]) * k;
+            norm += k * k;
+          }
+          (*out)[i][j] = sum / (2 * norm);
+        }
+      }
+      break;
+    }
   }
 }
 
-void Delta::Do(bool simd, const float* prev, const float* cur,
-               size_t length, float* res) noexcept {
+void Delta::DoSimple(bool simd, const float* prev, const float* cur,
+                     size_t length, float* res) noexcept {
   int ilength = length;
   if (simd) {
 #ifdef __AVX__
