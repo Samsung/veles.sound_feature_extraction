@@ -147,4 +147,21 @@ TEST(Window, Hanning) {
   }
 }
 
+
+TEST(Window, Blackman) {
+  std::vector<float> filter(20);
+  std::vector<float> valid = {
+       0.f, 0.0102f, 0.0451f, 0.1144f,
+    0.2269f, 0.3824f, 0.5667f, 0.7520f,
+    0.9035f, 0.9888f, 0.9888f, 0.9035f,
+    0.7520f, 0.5667f, 0.3824f, 0.2269f,
+    0.1144f, 0.0451f, 0.0102f, 0.f };
+  for (size_t i = 0; i < valid.size(); i++) {
+    filter[i] = WindowElement(WINDOW_TYPE_BLACKMAN, 20, i);
+  }
+  for (size_t i = 0; i < valid.size(); i++) {
+    ASSERT_EQF(valid[i], filter[i]);
+  }
+}
+
 #include "tests/google/src/gtest_main.cc"

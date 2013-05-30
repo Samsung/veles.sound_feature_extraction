@@ -75,11 +75,18 @@ TEST(TEST_NAME, BENCH_NAME) {
   for (int i = 0; i < iter_count; i++) {
 #ifndef CUSTOM_FUNC_PEAK
     BENCH_FUNC(true, input, length
+#ifndef PARAM_REORDER
 #ifndef NO_OUTPUT
                , output
 #endif
+#endif
 #ifdef EXTRA_PARAM
                , EXTRA_PARAM
+#endif
+#ifdef PARAM_REORDER
+#ifndef NO_OUTPUT
+               , output
+#endif
 #endif
                );
 #else
@@ -92,11 +99,18 @@ TEST(TEST_NAME, BENCH_NAME) {
   for (int i = 0; i < iter_count; i++) {
 #ifndef CUSTOM_FUNC_BASELINE
     BENCH_FUNC(false, input, length
+#ifndef PARAM_REORDER
 #ifndef NO_OUTPUT
                , output
 #endif
+#endif
 #ifdef EXTRA_PARAM
                , EXTRA_PARAM
+#endif
+#ifdef PARAM_REORDER
+#ifndef NO_OUTPUT
+               , output
+#endif
 #endif
                );
 #else

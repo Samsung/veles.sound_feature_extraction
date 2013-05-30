@@ -38,18 +38,21 @@ TEST(Features, All) {
   });
   tt.AddFeature("ZeroCrossings", { { "ZeroCrossings", "" }
   });
-  tt.AddFeature("WPP", { { "Window", "type=rectangular" },
+  tt.AddFeature("WPP", { { "Preemphasis", "value=0.2" },
+      { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "DWPT", "order=4, tree=1 2 3 3" },
       { "Selector", "length=16, threads_num=1" }, { "STMSN", "length=25" }
   });
-  tt.AddFeature("WPP_D1", { { "Window", "type=rectangular" },
+  tt.AddFeature("WPP_D1", { { "Preemphasis", "value=0.2" },
+      { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "DWPT", "order=4, tree=1 2 3 3" },
       { "Selector", "length=16, threads_num=1" }, { "Delta", "" },
       { "STMSN", "length=25" }
   });
-  tt.AddFeature("WPP_D2", { { "Window", "type=rectangular" },
+  tt.AddFeature("WPP_D2", { { "Preemphasis", "value=0.2" },
+      { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "DWPT", "order=4, tree=1 2 3 3" },
       { "Selector", "length=16, threads_num=1" }, { "Delta", "" },
@@ -63,37 +66,43 @@ TEST(Features, All) {
       { "Window", "" }, { "RDFT", "" },
       { "ComplexMagnitude", "" }, { "ArgMinMax", "extremum=max" }
   });
-  tt.AddFeature("SBC", { { "Window", "type=rectangular" },
+  tt.AddFeature("SBC", { { "Preemphasis", "value=0.2" },
+      { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" },
       { "Selector", "length=16, threads_num=1" }, { "STMSN", "length=25" }
   });
-  tt.AddFeature("SBC_D1", { { "Window", "type=rectangular" },
+  tt.AddFeature("SBC_D1", { { "Preemphasis", "value=0.2" },
+      { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" },
       { "Selector", "length=16, threads_num=1" }, { "Delta", "" },
       { "STMSN", "length=25" }
   });
-  tt.AddFeature("SBC_D2", { { "Window", "type=rectangular" },
+  tt.AddFeature("SBC_D2", { { "Preemphasis", "value=0.2" },
+      { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" },
       { "Selector", "length=16, threads_num=1" }, { "Delta", "" },
       { "Delta", "" },{ "STMSN", "length=25" }
   });
-  tt.AddFeature("MFCC", { { "Window", "type=rectangular" }, { "Window", "" },
+  tt.AddFeature("MFCC", { { "Preemphasis", "value=0.2" },
+      { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "SpectralEnergy", "" }, { "FilterBank", "" },
       { "FilterBank", "" }, { "Log", "" }, { "Square", "" },
       { "Selector", "length=256, threads_num=1" }, { "DCT", "" },
       { "Selector", "length=16, threads_num=1" }, { "STMSN", "length=25" }
   });
-  tt.AddFeature("MFCC_D1", { { "Window", "type=rectangular" }, { "Window", "" },
+  tt.AddFeature("MFCC_D1", { { "Preemphasis", "value=0.2" },
+      { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "SpectralEnergy", "" }, { "FilterBank", "" },
       { "FilterBank", "" }, { "Log", "" }, { "Square", "" },
       { "Selector", "length=256, threads_num=1" }, { "DCT", "" },
       { "Selector", "length=16, threads_num=1"}, { "Delta", "" },
       { "STMSN", "length=25" }
   });
-  tt.AddFeature("MFCC_D2", { { "Window", "type=rectangular" }, { "Window", "" },
+  tt.AddFeature("MFCC_D2", { { "Preemphasis", "value=0.2" },
+      { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "SpectralEnergy", "" }, { "FilterBank", "" },
       { "FilterBank", "" }, { "Log", "" }, { "Square", "" },
       { "Selector", "length=256, threads_num=1" }, { "DCT", "" },

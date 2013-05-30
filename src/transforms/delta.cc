@@ -58,8 +58,8 @@ void Delta::Do(bool simd, const float* prev, const float* cur,
       float32x4_t vecc2 = vld1q_f32(cur + i + 4);
       float32x4_t diff1 = vsubq_f32(vecc1, vecp1);
       float32x4_t diff2 = vsubq_f32(vecc2, vecp2);
-      vst1q_f32(diff1, res + i);
-      vst1q_f32(diff2, res + i + 4);
+      vst1q_f32(res + i, diff1);
+      vst1q_f32(res + i + 4, diff2);
     }
     for (int i = ilength & ~3; i < ilength; i++) {
       res[i] = cur[i] - prev[i];
