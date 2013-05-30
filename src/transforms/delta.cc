@@ -67,16 +67,64 @@ void Delta::Do(const BuffersBase<Formats::WindowF>& in,
     break;
     case kTypeRegression: {
       int rstep = rlength_ / 2;
+      float norm = 2 * rstep * (rstep + 1) * (2 * rstep + 1) / 6;
       for (size_t i = rstep; i < in.Size() - rstep; i++) {
-        for (int j = 0; j < (int)inputFormat_->Size(); j++) {
+#ifdef __AVX__
+        __m256 normvec = _mm256_set1_ps(norm);
+        for (int j = 0; j < (int)inputFormat_->Size() - 7; j += 8) {
+          __m256 sum = _mm256_setzero_ps();
+          __m256 kvec = _mm256_set1_ps(1.f);
+          for (int k = 1; k <= rstep; k++) {
+            __m256 rvec = _mm256_load_ps(in[i + k].Data.get() + j);
+            __m256 lvec = _mm256_load_ps(in[i - k].Data.get() + j);
+            __m256 diff = _mm256_sub_ps(rvec, lvec);
+            diff = _mm256_mul_ps(diff, kvec);
+            sum = _mm256_add_ps(sum, diff);
+            kvec = _mm256_add_ps(kvec, _mm256_set1_ps(1.f));
+          }
+          sum = _mm256_div_ps(sum, normvec);
+          _mm256_store_ps((*out)[i].Data.get() + j, sum);
+        }
+        for (int j = inputFormat_->Size() & ~7; j < (int)inputFormat_->Size();
+             j++) {
           float sum = 0.f;
-          float norm = 0.f;
           for (int k = 1; k <= rstep; k++) {
             sum += (in[i + k][j] - in[i - k][j]) * k;
-            norm += k * k;
           }
-          (*out)[i][j] = sum / (2 * norm);
+          (*out)[i][j] = sum / norm;
         }
+#elif defined(__ARM_NEON__)
+        float32x4_t normvec = vdupq_n_f32(1.f / norm);
+        for (int j = 0; j < (int)inputFormat_->Size() - 3; j += 4) {
+          float32x4_t sum = vdupq_n_f32(0.f);
+          float32x4_t kvec = vdupq_n_f32(1.f);
+          for (int k = 1; k <= rstep; k++) {
+            float32x4_t rvec = vld1q_f32(in[i + k].Data.get() + j);
+            float32x4_t lvec = vld1q_f32(in[i - k].Data.get() + j);
+            float32x4_t diff = vsubq_f32(rvec, lvec);
+            sum = vmlaq_f32(diff, kvec, sum);
+            kvec = vaddq_f32(kvec, vdupq_n_f32(1.f));
+          }
+          sum = vmulq_f32(sum, normvec);
+          vst1q_f32((*out)[i].Data.get() + j, sum);
+        }
+        for (int j = inputFormat_->Size() & ~3; j < (int)inputFormat_->Size();
+             j++) {
+          float sum = 0.f;
+          for (int k = 1; k <= rstep; k++) {
+            sum += (in[i + k][j] - in[i - k][j]) * k;
+          }
+          (*out)[i][j] = sum / norm;
+        }
+#else
+        for (int j = 0; j < (int)inputFormat_->Size(); j++) {
+          float sum = 0.f;
+          for (int k = 1; k <= rstep; k++) {
+            sum += (in[i + k][j] - in[i - k][j]) * k;
+          }
+          (*out)[i][j] = sum / norm;
+        }
+#endif
       }
       break;
     }
