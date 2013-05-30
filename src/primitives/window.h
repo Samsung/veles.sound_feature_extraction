@@ -22,7 +22,8 @@ typedef enum {
   WINDOW_TYPE_RECTANGULAR,
   WINDOW_TYPE_HAMMING,
   WINDOW_TYPE_HANNING,
-  WINDOW_TYPE_HALF_HANNING
+  WINDOW_TYPE_HALF_HANNING,
+  WINDOW_TYPE_BLACKMAN
 } WindowType;
 
 /// @brief The map between window name and window type.
