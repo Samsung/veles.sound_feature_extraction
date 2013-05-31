@@ -25,7 +25,7 @@ namespace Transforms {
 
 using Formats::FixedArray;
 
-const std::unordered_map<std::string, MeanTypes> Mean::MeanTypesMap {
+const std::unordered_map<std::string, MeanTypes> Mean::kMeanTypesMap {
   { "arithmetic", MEAN_TYPE_ARITHMETIC },
   { "geometric", MEAN_TYPE_GEOMETRIC },
 };
@@ -45,8 +45,8 @@ Mean::Mean() : types_(kDefaultMeanTypes) {
           value.begin(), value.end(), typesRegex, 1);
     assert(typesIterator != empty);
     while (typesIterator != empty) {
-      auto mtypeit = MeanTypesMap.find(*typesIterator++);
-      if (mtypeit == MeanTypesMap.end()) {
+      auto mtypeit = kMeanTypesMap.find(*typesIterator++);
+      if (mtypeit == kMeanTypesMap.end()) {
         return false;
       }
       types_.insert(mtypeit->second);

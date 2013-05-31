@@ -32,7 +32,7 @@ struct FixedArray {
     return Data[index];
   }
 
-  F operator[](int index) const {
+  const F& operator[](int index) const {
     if (index < 0 || index > L - 1) {
       throw std::out_of_range("index");
     }

@@ -42,7 +42,7 @@ class Mean
   )
 
  protected:
-  static const std::unordered_map<std::string, MeanTypes> MeanTypesMap;
+  static const std::unordered_map<std::string, MeanTypes> kMeanTypesMap;
 
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
