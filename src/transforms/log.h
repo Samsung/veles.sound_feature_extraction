@@ -13,24 +13,16 @@
 #ifndef SRC_TRANSFORMS_LOG_H_
 #define SRC_TRANSFORMS_LOG_H_
 
+#include "src/formats/single_format.h"
 #include "src/formats/window_format.h"
 #include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-class Log
-    : public OmpUniformFormatTransform<Formats::WindowFormatF, true> {
+class LogTransformBase {
  public:
-  Log();
-
-  TRANSFORM_INTRO("Log",
-                  "Takes the logarithm on each real value of the signal.")
-
-  OMP_TRANSFORM_PARAMETERS(
-      TP("base", "Logarithm base (2, 10 or e).",
-         LogBaseToString(kDefaultLogBase))
-  )
+  LogTransformBase() noexcept;
 
  protected:
   enum LogBase {
@@ -42,20 +34,55 @@ class Log
   static const std::unordered_map<std::string, LogBase> kLogBaseMap;
   static const LogBase kDefaultLogBase;
 
+  static std::string LogBaseToString(LogBase lb) noexcept;
+
+  LogBase base_;
+};
+
+template <class F>
+class Log
+    : public OmpUniformFormatTransform<F, true>,
+      public LogTransformBase {
+ public:
+  Log() {
+    this->RegisterSetter("base", [&](const std::string& value) {
+      auto lbit = kLogBaseMap.find(value);
+      if (lbit == kLogBaseMap.end()) {
+        return false;
+      }
+      base_ = lbit->second;
+      return true;
+    });
+  }
+
+  TRANSFORM_INTRO("Log",
+                  "Takes the logarithm on each real value of the signal.")
+
+  OMP_TRANSFORM_PARAMETERS(
+      TP("base", "Logarithm base (2, 10 or e).",
+         LogBaseToString(kDefaultLogBase))
+  )
+};
+
+class LogWindow : public Log<Formats::WindowFormatF> {
+ protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers)
-  const noexcept;
+      BuffersBase<Formats::WindowF>* buffers) const noexcept;
 
   virtual void Do(const Formats::WindowF& in,
                   Formats::WindowF* out) const noexcept;
 
   void Do(bool simd, const float* input, int length,
           float* output) const noexcept;
+};
 
-  static std::string LogBaseToString(LogBase lb) noexcept;
+class LogSingle : public Log<Formats::SingleFormatF> {
+ protected:
+  virtual void InitializeBuffers(const BuffersBase<float>& in,
+                                 BuffersBase<float>* buffers) const noexcept;
 
-  LogBase base_;
+  virtual void Do(const float& in, float* out) const noexcept;
 };
 
 }  // namespace Transforms

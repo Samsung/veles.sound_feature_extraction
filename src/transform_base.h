@@ -289,8 +289,8 @@ virtual const std::string& Description() const noexcept { \
     virtual const std::unordered_map<std::string, ParameterTraits>& \
         SupportedParameters() const noexcept { \
       static const std::unordered_map<std::string, ParameterTraits> sp = \
-          HasInverse()? std::unordered_map<std::string, ParameterTraits> { \
-            TP(kInverseParameterName, \
+          this->HasInverse()? std::unordered_map<std::string, ParameterTraits> { \
+            TP(this->kInverseParameterName, \
                "Value indicating whether this transform is inverse.", \
                "false") \
             init \

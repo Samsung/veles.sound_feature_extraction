@@ -21,39 +21,33 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-const std::unordered_map<std::string, Log::LogBase> Log::kLogBaseMap {
+const std::unordered_map<std::string, LogTransformBase::LogBase>
+LogTransformBase::kLogBaseMap {
   { "e", LOG_BASE_E },
   { "2", LOG_BASE_2 },
   { "10", LOG_BASE_10 }
 };
 
-const Log::LogBase Log::kDefaultLogBase = LOG_BASE_E;
+const LogTransformBase::LogBase LogTransformBase::kDefaultLogBase = LOG_BASE_E;
 
-Log::Log() : base_(kDefaultLogBase) {
-  RegisterSetter("base", [&](const std::string& value) {
-    auto lbit = kLogBaseMap.find(value);
-    if (lbit == kLogBaseMap.end()) {
-      return false;
-    }
-    base_ = lbit->second;
-    return true;
-  });
+LogTransformBase::LogTransformBase() noexcept
+    : base_(kDefaultLogBase) {
 }
 
-void Log::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_->Size());
+std::string LogTransformBase::LogBaseToString(LogBase lb) noexcept {
+  switch (lb) {
+    case LOG_BASE_E:
+      return "e";
+    case LOG_BASE_2:
+      return "2";
+    case LOG_BASE_10:
+      return "10";
+  }
+  return "";
 }
 
-void Log::Do(const Formats::WindowF& in,
-             Formats::WindowF* out) const noexcept {
-  assert(!IsInverse() && "Not implemented yet");
-  Do(true, in.Data.get(), inputFormat_->Size(), out->Data.get());
-}
-
-void Log::Do(bool simd, const float* input, int length,
-             float* output) const noexcept {
+void LogWindow::Do(bool simd, const float* input, int length,
+                   float* output) const noexcept {
   switch (base_) {
     case LOG_BASE_E: {
       if (simd) {
@@ -81,7 +75,7 @@ void Log::Do(bool simd, const float* input, int length,
 #else
       } {
 #endif
-        for (size_t j = 0; j < inputFormat_->Size(); j++) {
+        for (int j = 0; j < length; j++) {
           output[j] = logf(input[j]);
         }
       }
@@ -100,19 +94,41 @@ void Log::Do(bool simd, const float* input, int length,
   }
 }
 
-std::string Log::LogBaseToString(LogBase lb) noexcept {
-  switch (lb) {
-    case LOG_BASE_E:
-      return "e";
-    case LOG_BASE_2:
-      return "2";
-    case LOG_BASE_10:
-      return "10";
-  }
-  return "";
+void LogWindow::InitializeBuffers(
+    const BuffersBase<Formats::WindowF>& in,
+    BuffersBase<Formats::WindowF>* buffers) const noexcept {
+  buffers->Initialize(in.Size(), this->inputFormat_->Size());
 }
 
-REGISTER_TRANSFORM(Log);
+void LogWindow::Do(const Formats::WindowF& in,
+                  Formats::WindowF* out) const noexcept {
+  assert(!this->IsInverse() && "Not implemented yet");
+  Do(true, in.Data.get(), this->inputFormat_->Size(),
+     out->Data.get());
+}
+
+void LogSingle::InitializeBuffers(const BuffersBase<float>& in,
+                                  BuffersBase<float>* buffers) const noexcept {
+    buffers->Initialize(in.Size());
+  }
+
+void LogSingle::Do(const float& in,
+                   float* out) const noexcept {
+  switch (base_) {
+    case LOG_BASE_E:
+      *out = logf(in);
+      break;
+    case LOG_BASE_2:
+      *out = log2f(in);
+      break;
+    case LOG_BASE_10:
+      *out = log10f(in);
+      break;
+  }
+}
+
+REGISTER_TRANSFORM(LogWindow);
+REGISTER_TRANSFORM(LogSingle);
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction

@@ -181,7 +181,7 @@ class OmpUniformFormatTransform : public OmpTransformBase<F, F, SupportsInversio
 };
 
 #define OMP_TRANSFORM_PARAMETERS(init) TRANSFORM_PARAMETERS(FORWARD_MACROS( \
-  TP(MaxThreadsNumberParameterName(), \
+  TP(this->MaxThreadsNumberParameterName(), \
      "The maximal number of OpenMP threads.", \
      std::to_string(get_omp_transforms_max_threads_num())) \
   init) \

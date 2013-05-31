@@ -18,9 +18,9 @@
 using SoundFeatureExtraction::Formats::WindowF;
 using SoundFeatureExtraction::Formats::WindowFormatF;
 using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::Log;
+using SoundFeatureExtraction::Transforms::LogWindow;
 
-class LogTest : public Log, public testing::Test {
+class LogTest : public LogWindow, public testing::Test {
  public:
   BuffersBase<WindowF> Input;
   BuffersBase<WindowF> Output;
