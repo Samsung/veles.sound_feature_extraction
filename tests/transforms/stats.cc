@@ -31,7 +31,7 @@ class StatsTest
   }
 
   virtual void SetUp() {
-    Input.Initialize(20000);
+    Input.Initialize(50000);
     std::random_device rd;
     std::mt19937 gen(rd());
     std::normal_distribution<float> d(1, 2);

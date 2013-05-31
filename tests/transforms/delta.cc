@@ -46,7 +46,7 @@ class DeltaTest
 };
 
 TEST_F(DeltaTest, Do) {
-  ASSERT_EQ(1, Output.Size());
+  ASSERT_EQ(2, Output.Size());
   Do(Input, &Output);
   for (int i = 0; i < Size; i++) {
     ASSERT_NEAR(Output[0][i], 1, 0.00001f);
