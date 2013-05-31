@@ -54,6 +54,10 @@ class Delta
   static void DoSimple(bool simd, const float* prev, const float* cur,
                        size_t length, float* res) noexcept;
 
+  static void DoRegression(bool simd, const BuffersBase<Formats::WindowF>& in,
+                           int rstep, int i, float norm, int windowSize,
+                           BuffersBase<Formats::WindowF>* out) noexcept;
+
  private:
   Type type_;
   int rlength_;
