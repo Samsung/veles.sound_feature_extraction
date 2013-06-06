@@ -1,4 +1,4 @@
-/*! @file highpass_filter.cc
+/*! @file bandpass_filter.cc
  *  @brief Bandpass filter.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0

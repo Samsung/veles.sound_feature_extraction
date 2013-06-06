@@ -17,151 +17,9 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-const int RawToWindow::kDefaultLength =
-    Formats::WindowFormatF::DEFAULT_WINDOW_SAMPLES;
-const int RawToWindow::kDefaultStep =
-    Formats::WindowFormatF::DEFAULT_WINDOW_STEP;
-const std::string RawToWindow::kDefaultType = "hamming";
-const WindowType RawToWindow::kDefaultTypeEnum = WINDOW_TYPE_HAMMING;
 const std::string Window::kDefaultType = "hamming";
 const WindowType Window::kDefaultTypeEnum = WINDOW_TYPE_HAMMING;
 const bool Window::kDefaultPreDft = false;
-
-RawToWindow::RawToWindow()
-  : window_(nullptr, free),
-    step_(kDefaultStep),
-    length_(kDefaultLength),
-    type_(kDefaultTypeEnum),
-    windowsCount_(0) {
-  RegisterSetter("length", [&](const std::string& value) {
-    int pv = Parse<int>("length", value);
-    if (pv < Formats::WindowFormatF::MIN_WINDOW_SAMPLES ||
-        pv > Formats::WindowFormatF::MAX_WINDOW_SAMPLES) {
-      return false;
-    }
-    length_ = pv;
-    return true;
-  });
-  RegisterSetter("step", [&](const std::string& value) {
-    int pv = Parse<int>("step", value);
-    if (pv < 1) {
-      return false;
-    }
-    step_ = pv;
-    return true;
-  });
-  RegisterSetter("type", [&](const std::string& value) {
-    auto wti = kWindowTypeMap.find(value);
-    if (wti == kWindowTypeMap.end()) {
-      return false;
-    }
-    type_ = wti->second;
-    return true;
-  });
-}
-
-void RawToWindow::OnInputFormatChanged() {
-  // Allocate 2 extra samples to use zero-copy FFT
-  outputFormat_->SetAllocatedSize(length_ + 2);
-  outputFormat_->SetDuration(length_ * 1000 /
-                             outputFormat_->SamplingRate());
-  outputFormat_->SetParentRawSize(inputFormat_->Size());
-}
-
-void RawToWindow::OnOutputFormatChanged() {
-  inputFormat_->SetSize(outputFormat_->ParentRawSize());
-}
-
-void RawToWindow::Initialize() const noexcept {
-  int realSize = inputFormat_->Size() - outputFormat_->Size();
-  windowsCount_ = realSize / step_ + 1;
-  int excess = realSize % step_;
-  if (excess != 0) {
-    WRN("(input buffer size %zu - window length %zu) = %i is not "
-        "divisible by step %i. It's excess (%i samples) will not be "
-        "processed.",
-        inputFormat_->Size(), outputFormat_->Size(),
-        realSize, step_, excess);
-  }
-
-  window_ = Window::InitializeWindow(outputFormat_->Size(), type_);
-}
-
-void RawToWindow::InitializeBuffers(
-    const BuffersBase<Formats::Raw16>& in,
-    BuffersBase<Formats::Window16>* buffers) const noexcept {
-  buffers->Initialize(in.Size() * windowsCount_,
-                      outputFormat_->AllocatedSize());
-}
-
-void RawToWindow::InitializeBuffers(
-    const BuffersBase<Formats::Window16>& in,
-    BuffersBase<Formats::Raw16>* buffers) const noexcept {
-  buffers->Initialize(in.Size() / windowsCount_, inputFormat_->Size(), 0);
-}
-
-void RawToWindow::Do(const BuffersBase<Formats::Raw16>& in,
-                     BuffersBase<Formats::Window16> *out)
-const noexcept {
-  BuffersBase<Formats::Window16>& outref = *out;
-#ifdef __AVX__
-  int16_t intbuf[outputFormat_->Size()] __attribute__ ((aligned (32)));  // NOLINT(*)
-#endif
-  float fbuf[outputFormat_->Size()] __attribute__ ((aligned (64)));  // NOLINT(*)
-  float* window = window_.get();
-
-  for (size_t i = 0; i < in.Size(); i++) {
-    for (int j = 0; j < windowsCount_; j++) {
-      auto input = in[i].Data.get() + j * step_;
-      auto output = outref[i * windowsCount_ + j].Data.get();
-      if (type_ != WINDOW_TYPE_RECTANGULAR) {
-#ifdef __AVX__
-        if (align_complement_i16(input) != 0) {
-          memcpy(intbuf, input, outputFormat_->Size() * sizeof(int16_t));
-          int16_to_float(intbuf, outputFormat_->Size(), fbuf);
-        } else {
-          int16_to_float(input, outputFormat_->Size(), fbuf);
-        }
-#else
-        int16_to_float(input, outputFormat_->Size(), fbuf);
-#endif
-        Window::ApplyWindow(true, window, outputFormat_->Size(), fbuf, fbuf);
-        float_to_int16(fbuf, outputFormat_->Size(), output);
-      } else {  // type_ != WINDOW_TYPE_RECTANGULAR
-        memcpy(output, input, outputFormat_->Size() * sizeof(int16_t));
-      }
-    }
-  }
-}
-
-void RawToWindow::Do(const BuffersBase<Formats::Window16>& in,
-                     BuffersBase<Formats::Raw16> *out) const noexcept {
-  int windowLength = outputFormat_->Size();
-  int offset = (windowLength - step_) / 2;
-  int rawIndex = 0;
-  size_t skippedEndingSize = inputFormat_->Size() -
-      step_ * (windowsCount_ - 1) - outputFormat_->Size();
-  for (size_t i = 0; i < in.Size(); i++) {
-    int windowIndex = i % windowsCount_;
-    if (windowIndex == 0) {
-      memcpy((*out)[rawIndex].Data.get(), in[i].Data.get(),
-             (windowLength - offset) * sizeof(int16_t));
-    } else if (windowIndex < windowsCount_ - 1) {
-      memcpy((*out)[rawIndex].Data.get() +
-                 windowLength - offset + step_ * (windowIndex - 1),
-             in[i].Data.get() + offset, step_ * sizeof(int16_t));
-    } else {
-      memcpy((*out)[rawIndex].Data.get() +
-                 windowLength - offset + step_ * (windowIndex - 1),
-             in[i].Data.get() + offset,
-             (windowLength - offset) * sizeof(int16_t));
-      memset((*out)[rawIndex].Data.get() +
-                 inputFormat_->Size() - skippedEndingSize,
-             0, skippedEndingSize * sizeof(int16_t));
-      rawIndex++;
-    }
-  }
-}
 
 Window::Window()
   : window_(nullptr, free),
@@ -256,7 +114,58 @@ const noexcept {
   }
 }
 
-REGISTER_TRANSFORM(RawToWindow);
+void WindowSplitter16::Do(const BuffersBase<Formats::Raw16>& in,
+                          BuffersBase<Formats::Window16> *out)
+const noexcept {
+#ifdef __AVX__
+  int16_t intbuf[outputFormat_->Size()] __attribute__ ((aligned (32)));  // NOLINT(*)
+#endif
+  float fbuf[outputFormat_->Size()] __attribute__ ((aligned (64)));  // NOLINT(*)
+  float* window = window_.get();
+
+  for (size_t i = 0; i < in.Size(); i++) {
+    for (int j = 0; j < windowsCount_; j++) {
+      auto input = in[i].Data.get() + j * step_;
+      auto output = (*out)[i * windowsCount_ + j].Data.get();
+      if (type_ != WINDOW_TYPE_RECTANGULAR) {
+#ifdef __AVX__
+        if (align_complement_i16(input) != 0) {
+          memcpy(intbuf, input, outputFormat_->Size() * sizeof(int16_t));
+          int16_to_float(intbuf, outputFormat_->Size(), fbuf);
+        } else {
+          int16_to_float(input, outputFormat_->Size(), fbuf);
+        }
+#else
+        int16_to_float(input, outputFormat_->Size(), fbuf);
+#endif
+        Window::ApplyWindow(true, window, outputFormat_->Size(), fbuf, fbuf);
+        float_to_int16(fbuf, outputFormat_->Size(), output);
+      } else {  // type_ != WINDOW_TYPE_RECTANGULAR
+        memcpy(output, input, outputFormat_->Size() * sizeof(input[0]));
+      }
+    }
+  }
+}
+
+void WindowSplitterF::Do(const BuffersBase<Formats::RawF>& in,
+                         BuffersBase<Formats::WindowF> *out)
+const noexcept {
+  for (size_t i = 0; i < in.Size(); i++) {
+    for (int j = 0; j < windowsCount_; j++) {
+      auto input = in[i].Data.get() + j * step_;
+      auto output = (*out)[i * windowsCount_ + j].Data.get();
+      if (type_ != WINDOW_TYPE_RECTANGULAR) {
+        Window::ApplyWindow(true, window_.get(), outputFormat_->Size(),
+                            input, output);
+      } else {
+        memcpy(output, input, outputFormat_->Size() * sizeof(input[0]));
+      }
+    }
+  }
+}
+
+REGISTER_TRANSFORM(WindowSplitter16);
+REGISTER_TRANSFORM(WindowSplitterF);
 REGISTER_TRANSFORM(Window);
 
 }  // namespace Transforms

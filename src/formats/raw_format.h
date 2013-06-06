@@ -38,8 +38,9 @@ struct Raw {
   : Data(reinterpret_cast<T*>(malloc_aligned_offset(
       size * sizeof(T), alignmentOffset)),
       [=](T *ptr) {
-    free(reinterpret_cast<char*>(ptr) - alignmentOffset);
-  }) {
+        free(reinterpret_cast<char*>(ptr) - alignmentOffset);
+      }
+    ) {
   }
 #else
   explicit Raw(size_t size, int alignmentOffset UNUSED)
@@ -84,6 +85,8 @@ typedef Raw<float> RawF;
 template <typename T>
 class RawFormat : public BufferFormatBase<Raw<T>> {
  public:
+  typedef T BufferElementType;
+
   RawFormat() noexcept
       : size_(0) {
   }

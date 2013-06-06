@@ -17,9 +17,9 @@
 using SoundFeatureExtraction::Formats::WindowF;
 using SoundFeatureExtraction::Formats::WindowFormatF;
 using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::Rectify;
+using SoundFeatureExtraction::Transforms::RectifyWindow;
 
-class RectifyTest : public Rectify, public testing::Test {
+class RectifyTest : public RectifyWindow, public testing::Test {
  public:
   BuffersBase<WindowF> Input;
   BuffersBase<WindowF> Output;

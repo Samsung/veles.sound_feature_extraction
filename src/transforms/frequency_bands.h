@@ -36,6 +36,8 @@ class FrequencyBands
          kDefaultBandsConfig)
   )
 
+  virtual void Initialize() const noexcept;
+
  protected:
   static const int kDefaultBandsNumber;
   static const std::string kDefaultBandsConfig;
@@ -50,6 +52,7 @@ class FrequencyBands
  private:
   int bandsNumber_;
   std::string bandsConfig_;
+  mutable std::vector<int> bands_;
 };
 
 }  // namespace Transforms

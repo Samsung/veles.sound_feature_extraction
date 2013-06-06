@@ -56,24 +56,11 @@ FrequencyBands::FrequencyBands()
   });
 }
 
-void FrequencyBands::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_->Size());
-}
-
-void FrequencyBands::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* out) const noexcept {
-  if (in.Size() % bandsNumber_ != 0) {
-    WRN("Warning: the number of windows is not a multiple "
-        "of bands number. The remainder is left untouched.");
-  }
-
-  std::vector<int> bands;
+void FrequencyBands::Initialize() const noexcept {
+  bands_.clear();
   if (bandsConfig_ == "") {
     for (int i = 0; i < bandsNumber_; i++) {
-      bands.push_back(inputFormat_->Size() * (i + 1) / bandsNumber_);
+      bands_.push_back(inputFormat_->Size() * (i + 1) / bandsNumber_);
     }
   } else {
     static const boost::regex bandsRegex("\\s*(\\d+)\\s*");
@@ -90,29 +77,49 @@ void FrequencyBands::Do(
             inputFormat_->SamplingRate() / 2,
             inputFormat_->SamplingRate(),
             freq);
-        bands.push_back(inputFormat_->Size());
+        bands_.push_back(inputFormat_->Size());
         break;
       }
-      bands.push_back((freq * 2 * inputFormat_->Size()) /
+      bands_.push_back((freq * 2 * inputFormat_->Size()) /
                       inputFormat_->SamplingRate());
     }
+    if ((size_t)bands_.back() < inputFormat_->Size()) {
+      bands_.push_back(inputFormat_->Size());
+    }
+  }
+}
+
+void FrequencyBands::InitializeBuffers(
+    const BuffersBase<Formats::WindowF>& in,
+    BuffersBase<Formats::WindowF>* buffers) const noexcept {
+  buffers->Initialize(in.Size(), inputFormat_->Size());
+}
+
+void FrequencyBands::Do(
+    const BuffersBase<Formats::WindowF>& in,
+    BuffersBase<Formats::WindowF>* out) const noexcept {
+
+  if (in.Size() % bands_.size() != 0) {
+    WRN("Warning: the number of windows (%zu) is not a multiple "
+        "of bands number (%zu). The remainder is left untouched.",
+        in.Size(), bands_.size());
   }
 
-  for (size_t i = 0; i < in.Size(); i += bandsNumber_) {
-    for (int j = 0; j < bandsNumber_; j++) {
+  for (size_t i = 0; i < in.Size(); i += bands_.size()) {
+    for (int j = 0; j < (int)bands_.size(); j++) {
       if (j > 0) {
         memsetf((*out)[i + j].Data.get(),
-                bands[j - 1], 0.f);
+                bands_[j - 1], 0.f);
       }
-      if (j < bandsNumber_ - 1) {
-        memsetf((*out)[i + j].Data.get() + bands[j],
-                inputFormat_->Size() - bands[j], 0.f);
+      if (j < (int)bands_.size() - 1) {
+        memsetf((*out)[i + j].Data.get() + bands_[j],
+                inputFormat_->Size() - bands_[j], 0.f);
       }
       if ((*out)[i + j].Data.get() != in[i + j].Data.get()) {
-        int offset = j > 0? bands[j - 1] : 0;
+        int offset = j > 0? bands_[j - 1] : 0;
         memcpy((*out)[i + j].Data.get() + offset,
                in[i + j].Data.get() + offset,
-               (bands[j] - offset) * sizeof(float));
+               (bands_[j] - offset) * sizeof(float));
       }
     }
   }

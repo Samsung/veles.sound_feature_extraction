@@ -40,12 +40,14 @@ class BufferFormatBase : public BufferFormat {
 
   BufferFormatBase() noexcept
       : BufferFormat(CutNamespaces(std::demangle(typeid(T).name()))),
-        samplingRate_(0) {
+        samplingRate_(0),
+        incompatible_(false) {
   }
 
   BufferFormatBase(int samplingRate)
       : BufferFormat(CutNamespaces(std::demangle(typeid(T).name()))),
-        samplingRate_(samplingRate) {
+        samplingRate_(samplingRate),
+        incompatible_(false) {
     ValidateSamplingRate(samplingRate_);
   }
 
@@ -57,7 +59,7 @@ class BufferFormatBase : public BufferFormat {
   }
 
   virtual bool MustReallocate(const BufferFormat& other) const noexcept {
-    if (*this != other) {
+    if (*this != other || Incompatible()) {
       return true;
     }
     return MustReallocate(
@@ -100,6 +102,14 @@ class BufferFormatBase : public BufferFormat {
     samplingRate_ = value;
   }
 
+  bool Incompatible() const noexcept {
+    return incompatible_;
+  }
+
+  void SetIncompatible(bool value) noexcept {
+    incompatible_ = value;
+  }
+
  protected:
   std::string CutNamespaces(std::string&& str) {
     return str.substr(str.find_last_of(':') + 1, std::string::npos);
@@ -122,6 +132,7 @@ class BufferFormatBase : public BufferFormat {
 
  private:
   int samplingRate_;
+  bool incompatible_;
 };
 
 template <typename T>

@@ -13,20 +13,24 @@
 #ifndef SRC_TRANSFORMS_FIR_FILTER_BASE_H_
 #define SRC_TRANSFORMS_FIR_FILTER_BASE_H_
 
-#include <simd/convolute.h>
 #include <vector>
 #include "src/omp_transform_base.h"
 #include "src/formats/raw_format.h"
 #include "src/primitives/window.h"
 
+struct ConvoluteHandle;
+
+namespace std {
+  class mutex;
+}
+
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class FirFilterBase
-    : public OmpUniformFormatTransform<Formats::RawFormat16> {
+    : public OmpUniformFormatTransform<Formats::RawFormatF> {
  public:
   FirFilterBase() noexcept;
-  ~FirFilterBase();
 
   virtual void Initialize() const noexcept;
 
@@ -35,15 +39,17 @@ class FirFilterBase
 
   virtual void CalculateFilter(float* filter) const noexcept = 0;
 
+  virtual void OnFormatChanged();
+
   virtual void InitializeBuffers(
-      const BuffersBase<Formats::Raw16>& in,
-      BuffersBase<Formats::Raw16>* buffers) const noexcept;
+      const BuffersBase<Formats::RawF>& in,
+      BuffersBase<Formats::RawF>* buffers) const noexcept;
 
-  virtual void Do(const Formats::Raw16& in,
-                  Formats::Raw16 *out) const noexcept;
+  virtual void Do(const Formats::RawF& in,
+                  Formats::RawF *out) const noexcept;
 
-  static const int MIN_FILTER_LENGTH = 10;
-  static const int MAX_FILTER_LENGTH = 512;
+  static const int MIN_FILTER_LENGTH = 16;
+  static const int MAX_FILTER_LENGTH = 100000;
   static const int DEFAULT_FILTER_LENGTH = 150;
 
   static const int MIN_FILTER_FREQUENCY = 100;
@@ -53,10 +59,14 @@ class FirFilterBase
   static const int DEFAULT_FILTER_LOW_FREQUENCY = 50;
 
  private:
+  struct SyncHandle {
+    std::shared_ptr<ConvoluteHandle> handle;
+    std::shared_ptr<std::mutex> mutex;
+  };
+
   WindowType windowType_;
   mutable std::vector<float> filter_;
-  mutable std::vector<float> dataBuffer_;
-  mutable ConvoluteHandle convoluteHandle_;
+  mutable std::vector<SyncHandle> convolutionHandles_;
 };
 
 #define FIR_FILTER_PARAMETERS(init) OMP_TRANSFORM_PARAMETERS( \

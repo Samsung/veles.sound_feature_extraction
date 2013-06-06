@@ -65,19 +65,19 @@ TEST(Window, Hamming) {
   }
 }
 
-TEST(Window, HalfHanning) {
+TEST(Window, HalfHanningRight) {
   std::vector<float> filter(20);
   std::vector<float> valid { 1.0000f, 0.7500f, 0.2500f, 0.0000f };
   for (size_t i = 0; i < valid.size(); i++) {
-    filter[i] = WindowElement(WINDOW_TYPE_HALF_HANNING, 4, i);
+    filter[i] = WindowElement(WINDOW_TYPE_HALF_HANNING_RIGHT, 4, i);
   }
   for (size_t i = 0; i < valid.size(); i++) {
-      ASSERT_EQF(valid[i], filter[i]);
+    ASSERT_EQF(valid[i], filter[i]);
   }
 
   valid = { 1.0000f, 0.8535f, 0.5000f, 0.1464f, 0.0000f };
   for (size_t i = 0; i < valid.size(); i++) {
-    filter[i] = WindowElement(WINDOW_TYPE_HALF_HANNING, 5, i);
+    filter[i] = WindowElement(WINDOW_TYPE_HALF_HANNING_RIGHT, 5, i);
   }
   for (size_t i = 0; i < valid.size(); i++) {
     ASSERT_EQF(valid[i], filter[i]);
@@ -88,7 +88,7 @@ TEST(Window, HalfHanning) {
             0.4131f, 0.3289f, 0.2500f, 0.1786f, 0.1169f,
             0.0669f, 0.0301f, 0.0075f, 0.0000f};
   for (size_t i = 0; i < valid.size(); i++) {
-    filter[i] = WindowElement(WINDOW_TYPE_HALF_HANNING, 19, i);
+    filter[i] = WindowElement(WINDOW_TYPE_HALF_HANNING_RIGHT, 19, i);
   }
   for (size_t i = 0; i < valid.size(); i++) {
     ASSERT_EQF(valid[i], filter[i]);
@@ -99,7 +99,7 @@ TEST(Window, HalfHanning) {
             0.4587f, 0.3772f, 0.2991f, 0.2265f, 0.1613f,
             0.1054f, 0.0602f, 0.0270f, 0.0068f, 0.0000f };
   for (size_t i = 0; i < valid.size(); i++) {
-    filter[i] = WindowElement(WINDOW_TYPE_HALF_HANNING, 20, i);
+    filter[i] = WindowElement(WINDOW_TYPE_HALF_HANNING_RIGHT, 20, i);
   }
   for (size_t i = 0; i < valid.size(); i++) {
     ASSERT_EQF(valid[i], filter[i]);

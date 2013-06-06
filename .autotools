@@ -35,7 +35,7 @@
 <flagvalue id="cflags-gprof" value="false"/>
 <flagvalue id="cflags-gcov" value="false"/>
 </flag>
-<option id="user" value="--enable-eina-logging --enable-parallel-build --enable-debug --with-built-in-fftf --with-built-in-boost --with-built-in-simd --disable-doxygen"/>
+<option id="user" value="--with-built-in-simd --enable-eina-logging --enable-parallel-build --enable-debug --with-built-in-fftf --with-built-in-boost --disable-doxygen"/>
 <option id="autogen" value="autogen.sh"/>
 <option id="autogenOpts" value=""/>
 </configuration>
@@ -74,7 +74,7 @@
 <flagvalue id="cflags-gprof" value="false"/>
 <flagvalue id="cflags-gcov" value="false"/>
 </flag>
-<option id="user" value="--enable-debug --disable-doxygen --enable-parallel-build --with-built-in-boost --with-built-in-fftf --with-built-in-simd "/>
+<option id="user" value="--enable-debug --enable-eina-logging --disable-doxygen --enable-parallel-build --with-built-in-boost --with-built-in-fftf --with-built-in-simd"/>
 <option id="autogen" value="autogen.sh"/>
 <option id="autogenOpts" value=""/>
 </configuration>
@@ -113,7 +113,7 @@
 <flagvalue id="cflags-gprof" value="false"/>
 <flagvalue id="cflags-gcov" value="false"/>
 </flag>
-<option id="user" value="--enable-eina-logging --with-built-in-simd --enable-parallel-build --with-built-in-fftf --with-built-in-boost --disable-doxygen --enable-lto"/>
+<option id="user" value="--enable-parallel-build --enable-eina-logging --with-built-in-fftf --with-built-in-boost --disable-doxygen --enable-lto --with-built-in-simd"/>
 <option id="autogen" value="autogen.sh"/>
 <option id="autogenOpts" value=""/>
 </configuration>
@@ -152,7 +152,7 @@
 <flagvalue id="cflags-gprof" value="false"/>
 <flagvalue id="cflags-gcov" value="false"/>
 </flag>
-<option id="user" value="--disable-doxygen --enable-parallel-build --with-built-in-boost --with-built-in-fftf --enable-lto --with-built-in-simd "/>
+<option id="user" value="--disable-doxygen --enable-eina-logging  --enable-parallel-build --with-built-in-boost --with-built-in-fftf --enable-lto --with-built-in-simd"/>
 <option id="autogen" value="autogen.sh"/>
 <option id="autogenOpts" value=""/>
 </configuration>

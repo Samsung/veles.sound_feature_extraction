@@ -14,6 +14,7 @@
 #include "src/transforms/autocorrelation.h"
 #include <simd/correlate.h>
 #include <fftf/api.h>
+#include <mutex>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -21,13 +22,14 @@ namespace Transforms {
 void Autocorrelation::Initialize() const noexcept {
   correlationHandles_.resize(MaxThreadsNumber());
   for (int i = 0; i < MaxThreadsNumber(); i++) {
-    auto handle = cross_correlate_initialize(inputFormat_->Size(),
-                                             inputFormat_->Size());
     correlationHandles_[i].handle = std::shared_ptr<CrossCorrelateHandle>(
-        new CrossCorrelateHandle(handle), [](CrossCorrelateHandle *ptr) {
-      cross_correlate_finalize(*ptr);
-      delete ptr;
-    });
+        new CrossCorrelateHandle(cross_correlate_initialize(
+            inputFormat_->Size(), inputFormat_->Size())),
+        [](CrossCorrelateHandle *ptr) {
+          cross_correlate_finalize(*ptr);
+          delete ptr;
+        }
+    );
     correlationHandles_[i].mutex = std::make_shared<std::mutex>();
   }
 }
