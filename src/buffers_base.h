@@ -39,7 +39,14 @@ class BufferFormatBase : public BufferFormat {
   typedef T BufferType;
 
   BufferFormatBase() noexcept
-  : BufferFormat(CutNamespaces(std::demangle(typeid(T).name()))) {
+      : BufferFormat(CutNamespaces(std::demangle(typeid(T).name()))),
+        samplingRate_(0) {
+  }
+
+  BufferFormatBase(int samplingRate)
+      : BufferFormat(CutNamespaces(std::demangle(typeid(T).name()))),
+        samplingRate_(samplingRate) {
+    ValidateSamplingRate(samplingRate_);
   }
 
   virtual std::function<void(void*)> Destructor() const noexcept {  // NOLINT(*)
@@ -83,6 +90,16 @@ class BufferFormatBase : public BufferFormat {
     return std::move(ret);
   }
 
+  int SamplingRate() const noexcept {
+    assert(samplingRate_ > 0);
+    return samplingRate_;
+  }
+
+  void SetSamplingRate(int value) {
+    ValidateSamplingRate(value);
+    samplingRate_ = value;
+  }
+
  protected:
   std::string CutNamespaces(std::string&& str) {
     return str.substr(str.find_last_of(':') + 1, std::string::npos);
@@ -96,6 +113,15 @@ class BufferFormatBase : public BufferFormat {
   virtual void Validate(const BuffersBase<T>& buffers) const = 0;
 
   virtual std::string Dump(const BuffersBase<T>& buffers) const noexcept = 0;
+
+  static void ValidateSamplingRate(int value) {
+    if (value < MIN_SAMPLING_RATE || value > MAX_SAMPLING_RATE) {
+      throw Formats::InvalidSamplingRateException(value);
+    }
+  }
+
+ private:
+  int samplingRate_;
 };
 
 template <typename T>

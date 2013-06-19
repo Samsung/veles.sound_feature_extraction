@@ -20,6 +20,14 @@
 namespace SoundFeatureExtraction {
 
 namespace Formats {
+
+class InvalidSamplingRateException : public ExceptionBase {
+ public:
+  explicit InvalidSamplingRateException(int samplingRate)
+  : ExceptionBase("Sampling rate " + std::to_string(samplingRate) +
+                  " is not supported or invalid.") {}
+};
+
 }  // namespace Formats
 
 class InvalidFormatException : public ExceptionBase {
@@ -53,9 +61,18 @@ class BufferFormat {
 
   virtual const void* PayloadPointer(const void* buffer) const noexcept = 0;
 
+  virtual int SamplingRate() const noexcept = 0;
+
+  virtual void SetSamplingRate(int value) = 0;
+
   virtual void Validate(const Buffers& buffers) const = 0;
 
   virtual std::string Dump(const Buffers& buffers) const = 0;
+
+  virtual void DeriveFrom(const BufferFormat& format) noexcept;
+
+  static const int MIN_SAMPLING_RATE = 2000;
+  static const int MAX_SAMPLING_RATE = 48000;
 
  private:
   std::string id_;

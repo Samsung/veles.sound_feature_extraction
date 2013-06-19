@@ -22,10 +22,6 @@ struct ParentChunk {
 
 class ParentTestFormat : public BufferFormatBase<ParentChunk> {
  public:
-  BufferFormat& operator=(const BufferFormat&) {
-    return *this;
-  }
-
   virtual bool MustReallocate(const BufferFormatBase<ParentChunk>&)
       const noexcept {
     return true;
@@ -60,7 +56,7 @@ class ParentTestTransform
  protected:
 
   virtual void InitializeBuffers(const BuffersBase<Raw16>&,
-                                        BuffersBase<ParentChunk>*)
+                                 BuffersBase<ParentChunk>*)
   const noexcept {
   }
 
@@ -74,10 +70,6 @@ struct ChildChunk {
 
 class ChildTestFormat : public BufferFormatBase<ChildChunk> {
  public:
-  BufferFormat& operator=(const BufferFormat&) {
-    return *this;
-  }
-
   virtual bool MustReallocate(const BufferFormatBase<ChildChunk>&)
       const noexcept {
     return true;
@@ -112,12 +104,12 @@ class ChildTestTransform
 
  protected:
   virtual void InitializeBuffers(const BuffersBase<ParentChunk>&,
-                                         BuffersBase<ChildChunk>*)
+                                 BuffersBase<ChildChunk>*)
   const noexcept {
   }
 
   virtual void Do(const BuffersBase<ParentChunk>&,
-                          BuffersBase<ChildChunk> *) const noexcept {
+                  BuffersBase<ChildChunk> *) const noexcept {
   }
 };
 

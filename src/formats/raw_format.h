@@ -17,7 +17,6 @@
 #include "src/config.h"
 #include "src/buffers_base.h"
 #include "src/exceptions.h"
-#include "src/formats/format_limits.h"
 #include <simd/memory.h>
 
 namespace SoundFeatureExtraction {
@@ -27,13 +26,6 @@ class InvalidRawFormatSizeException : public ExceptionBase {
  public:
   explicit InvalidRawFormatSizeException(size_t size)
   : ExceptionBase("Buffer size " + std::to_string(size) +
-                  " is not supported or invalid.") {}
-};
-
-class InvalidRawFormatSamplingRateException : public ExceptionBase {
- public:
-  explicit InvalidRawFormatSamplingRateException(int samplingRate)
-  : ExceptionBase("Sampling rate " + std::to_string(samplingRate) +
                   " is not supported or invalid.") {}
 };
 
@@ -93,25 +85,13 @@ template <typename T>
 class RawFormat : public BufferFormatBase<Raw<T>> {
  public:
   RawFormat() noexcept
-      : size_(DEFAULT_SIZE),
-        samplingRate_(DEFAULT_SAMPLING_RATE) {
-  }
-
-  RawFormat(RawFormat&& other) noexcept
-      : size_(other.size_),
-        samplingRate_(other.samplingRate_) {
-  }
-
-  RawFormat(const RawFormat& other) noexcept
-      : size_(other.size_),
-        samplingRate_(other.samplingRate_) {
+      : size_(0) {
   }
 
   RawFormat(size_t size, int samplingRate)
-      : size_(size),
-        samplingRate_(samplingRate) {
+      : BufferFormatBase<Raw<T>>(samplingRate),
+        size_(size) {
     ValidateSize(size_);
-    ValidateSamplingRate(samplingRate_);
   }
 
   BufferFormat& operator=(const BufferFormat& other) {
@@ -120,15 +100,6 @@ class RawFormat : public BufferFormatBase<Raw<T>> {
     }
     *this = reinterpret_cast<const RawFormat&>(other);
     return *this;
-  }
-
-  int SamplingRate() const noexcept {
-    return samplingRate_;
-  }
-
-  void SetSamplingRate(int value) {
-    ValidateSamplingRate(value);
-    samplingRate_ = value;
   }
 
   /// @brief Returns the raw buffer size in samples.
@@ -144,6 +115,9 @@ class RawFormat : public BufferFormatBase<Raw<T>> {
   virtual size_t PayloadSizeInBytes() const noexcept {
     return size_ * sizeof(T);
   }
+
+  static const size_t MIN_RAW_SIZE = 128;
+  static const size_t MAX_RAW_SIZE = (1 << 30);
 
  protected:
   virtual bool MustReallocate(const BufferFormatBase<Raw<T>>& other)
@@ -185,12 +159,6 @@ class RawFormat : public BufferFormatBase<Raw<T>> {
   static void ValidateSize(size_t value) {
     if (value < MIN_RAW_SIZE || value > MAX_RAW_SIZE) {
       throw InvalidRawFormatSizeException(value);
-    }
-  }
-
-  static void ValidateSamplingRate(int value) {
-    if (value < MIN_SAMPLING_RATE || value > MAX_SAMPLING_RATE) {
-      throw InvalidRawFormatSamplingRateException(value);
     }
   }
 };

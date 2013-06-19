@@ -12,14 +12,15 @@
 
 #include "src/transforms/window.h"
 #include <fftf/api.h>
-#include "src/formats/format_limits.h"
 #include <simd/arithmetic-inl.h>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-const int RawToWindow::kDefaultLength = DEFAULT_WINDOW_SAMPLES;
-const int RawToWindow::kDefaultStep = DEFAULT_WINDOW_STEP;
+const int RawToWindow::kDefaultLength =
+    Formats::WindowFormatF::DEFAULT_WINDOW_SAMPLES;
+const int RawToWindow::kDefaultStep =
+    Formats::WindowFormatF::DEFAULT_WINDOW_STEP;
 const std::string RawToWindow::kDefaultType = "hamming";
 const WindowType RawToWindow::kDefaultTypeEnum = WINDOW_TYPE_HAMMING;
 const std::string Window::kDefaultType = "hamming";
@@ -29,17 +30,16 @@ const bool Window::kDefaultPreDft = false;
 RawToWindow::RawToWindow()
   : window_(nullptr, free),
     step_(kDefaultStep),
+    length_(kDefaultLength),
     type_(kDefaultTypeEnum),
     windowsCount_(0) {
-  outputFormat_->SetDuration(kDefaultLength * 1000
-                             / outputFormat_->SamplingRate());
   RegisterSetter("length", [&](const std::string& value) {
     int pv = Parse<int>("length", value);
-    if (pv < MIN_WINDOW_SAMPLES || pv > MAX_WINDOW_SAMPLES) {
+    if (pv < Formats::WindowFormatF::MIN_WINDOW_SAMPLES ||
+        pv > Formats::WindowFormatF::MAX_WINDOW_SAMPLES) {
       return false;
     }
-    outputFormat_->SetAllocatedSize(pv);
-    outputFormat_->SetDuration(pv * 1000 / outputFormat_->SamplingRate());
+    length_ = pv;
     return true;
   });
   RegisterSetter("step", [&](const std::string& value) {
@@ -61,14 +61,14 @@ RawToWindow::RawToWindow()
 }
 
 void RawToWindow::OnInputFormatChanged() {
-  outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
   // Allocate 2 extra samples to use zero-copy FFT
-  outputFormat_->SetAllocatedSize(outputFormat_->Size() + 2);
+  outputFormat_->SetAllocatedSize(length_ + 2);
+  outputFormat_->SetDuration(length_ * 1000 /
+                             outputFormat_->SamplingRate());
   outputFormat_->SetParentRawSize(inputFormat_->Size());
 }
 
 void RawToWindow::OnOutputFormatChanged() {
-  inputFormat_->SetSamplingRate(outputFormat_->SamplingRate());
   inputFormat_->SetSize(outputFormat_->ParentRawSize());
 }
 

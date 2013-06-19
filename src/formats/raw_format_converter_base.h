@@ -25,7 +25,6 @@ class RawFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
   virtual void OnInputFormatChanged() {
     auto outputFormat = FormatConverterBase<FIN, FOUT>::outputFormat_;
     auto inputFormat = FormatConverterBase<FIN, FOUT>::inputFormat_;
-    outputFormat->SetSamplingRate(inputFormat->SamplingRate());
     outputFormat->SetSize(inputFormat->Size());
   }
 

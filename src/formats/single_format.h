@@ -98,7 +98,12 @@ class SingleFormat : public BufferFormatBase<T> {
   SingleFormat() noexcept {
   }
 
-  SingleFormat(const SingleFormat& other UNUSED) noexcept {
+  SingleFormat(int samplingRate)
+      : BufferFormatBase<T>(samplingRate) {
+  }
+
+  SingleFormat(const SingleFormat& other) noexcept
+      : BufferFormatBase<T>(other) {
   }
 
   virtual const std::string& Id() const noexcept {

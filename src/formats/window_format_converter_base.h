@@ -27,7 +27,6 @@ class WindowFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
     auto inputFormat = FormatConverterBase<FIN, FOUT>::inputFormat_;
     outputFormat->SetAllocatedSize(inputFormat->AllocatedSize());
     outputFormat->SetDuration(inputFormat->Duration());
-    outputFormat->SetSamplingRate(inputFormat->SamplingRate());
     outputFormat->SetSize(inputFormat->Size());
     outputFormat->SetParentRawSize(inputFormat->ParentRawSize());
   }

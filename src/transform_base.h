@@ -49,9 +49,11 @@ class TransformBaseCommon : public virtual Transform,
   virtual void SetInputFormat(const std::shared_ptr<BufferFormat>& format) {
     if (!IsInverse() || *inputFormat_ == *outputFormat_) {
       inputFormat_ = std::static_pointer_cast<FIN>(format);
+      outputFormat_->DeriveFrom(*inputFormat_);
       OnInputFormatChanged();
     } else {
       outputFormat_ = std::static_pointer_cast<FOUT>(format);
+      inputFormat_->DeriveFrom(*outputFormat_);
       OnOutputFormatChanged();
     }
   }

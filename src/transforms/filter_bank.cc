@@ -12,7 +12,6 @@
 
 #include "src/transforms/filter_bank.h"
 #include <math.h>
-#include "src/formats/format_limits.h"
 #include <simd/arithmetic-inl.h>
 
 namespace SoundFeatureExtraction {

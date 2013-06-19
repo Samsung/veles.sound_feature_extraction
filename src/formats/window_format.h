@@ -15,23 +15,15 @@
 
 #include "src/attributes.h"
 #include "src/buffers_base.h"
-#include "src/formats/format_limits.h"
 #include <simd/memory.h>
 
 namespace SoundFeatureExtraction {
 namespace Formats {
 
-class InvalidWindowFormatDurationException : public ExceptionBase {
+class InvalidWindowDurationException : public ExceptionBase {
  public:
-  explicit InvalidWindowFormatDurationException(size_t duration)
+  explicit InvalidWindowDurationException(size_t duration)
   : ExceptionBase("Duration " + std::to_string(duration) +
-                  " is not supported or invalid.") {}
-};
-
-class InvalidWindowFormatSamplingRateException : public ExceptionBase {
- public:
-  explicit InvalidWindowFormatSamplingRateException(int samplingRate)
-  : ExceptionBase("Sampling rate " + std::to_string(samplingRate) +
                   " is not supported or invalid.") {}
 };
 
@@ -95,30 +87,28 @@ class WindowFormat
       public Attributes
 {
  public:
-  WindowFormat() noexcept
-      : duration_(DEFAULT_WINDOW_DURATION),
-        samplingRate_(DEFAULT_SAMPLING_RATE),
-        size_(SamplesCount()),
+   WindowFormat() noexcept
+      : duration_(0),
+        size_(0),
         allocatedSize_(size_),
         parentRawSize_(0) {
   }
 
-  WindowFormat(const WindowFormat& other) noexcept
-      : duration_(other.duration_),
-        samplingRate_(other.samplingRate_),
-        size_(other.size_),
-        allocatedSize_(other.allocatedSize_),
-        parentRawSize_(other.parentRawSize_) {
-  }
-
   WindowFormat(size_t duration, int samplingRate, size_t parentRawSize = 0)
-      : duration_(duration),
-        samplingRate_(samplingRate),
+      : BufferFormatBase<Window<T>>(samplingRate),
+        duration_(duration),
         size_(SamplesCount()),
         allocatedSize_(size_),
         parentRawSize_(parentRawSize) {
     ValidateDuration(duration_);
-    ValidateSamplingRate(samplingRate_);
+  }
+
+  WindowFormat(const WindowFormat& other) noexcept
+      : BufferFormatBase<Window<T>>(other),
+        duration_(other.duration_),
+        size_(other.size_),
+        allocatedSize_(other.allocatedSize_),
+        parentRawSize_(other.parentRawSize_) {
   }
 
   BufferFormat& operator=(const BufferFormat& other) {
@@ -130,6 +120,7 @@ class WindowFormat
   }
 
   size_t Duration() const noexcept {
+    assert(duration_ > 0);
     return duration_;
   }
 
@@ -142,17 +133,8 @@ class WindowFormat
     }
   }
 
-  int SamplingRate() const noexcept {
-    return samplingRate_;
-  }
-
-  void SetSamplingRate(int value) {
-    ValidateSamplingRate(value);
-    samplingRate_ = value;
-  }
-
   size_t SamplesCount() const noexcept {
-    return duration_ * samplingRate_ / 1000;
+    return Duration() * this->SamplingRate() / 1000;
   }
 
   /// @brief Returns the current buffer size in data units (sizeof(T)).
@@ -192,6 +174,11 @@ class WindowFormat
   void SetParentRawSize(size_t value) noexcept {
      parentRawSize_ = value;
   }
+
+  static const int MIN_WINDOW_SAMPLES = 32;
+  static const int MAX_WINDOW_SAMPLES = 8096;
+  static const int DEFAULT_WINDOW_SAMPLES = 512;
+  static const int DEFAULT_WINDOW_STEP = 205;
 
  protected:
   virtual bool MustReallocate(const BufferFormatBase<Window<T>>& other)
@@ -245,22 +232,25 @@ class WindowFormat
     return ret;
   }
 
+  static constexpr size_t MIN_WINDOW_DURATION() {
+    return 1 + MIN_WINDOW_SAMPLES * 1000 /
+        BufferFormatBase<Window<T>>::MAX_SAMPLING_RATE;
+  }
+
+  static constexpr size_t MAX_WINDOW_DURATION() {
+    return MAX_WINDOW_SAMPLES * 1000 /
+        BufferFormatBase<Window<T>>::MIN_SAMPLING_RATE;
+  }
+
  private:
   size_t duration_;
-  int samplingRate_;
   size_t size_;
   size_t allocatedSize_;
   size_t parentRawSize_;
 
   static void ValidateDuration(size_t value) {
-    if (value < MIN_WINDOW_DURATION || value > MAX_WINDOW_DURATION) {
-      throw InvalidWindowFormatDurationException(value);
-    }
-  }
-
-  static void ValidateSamplingRate(int value) {
-    if (value < MIN_SAMPLING_RATE || value > MAX_SAMPLING_RATE) {
-      throw InvalidWindowFormatSamplingRateException(value);
+    if (value < MIN_WINDOW_DURATION() || value > MAX_WINDOW_DURATION()) {
+      throw InvalidWindowDurationException(value);
     }
   }
 };

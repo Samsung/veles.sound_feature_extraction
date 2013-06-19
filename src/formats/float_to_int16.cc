@@ -17,16 +17,15 @@ namespace SoundFeatureExtraction {
 namespace Formats {
 
 void FloatToInt16Raw::Do(const BuffersBase<RawF>& in,
-                                 BuffersBase<Raw16> *out) const noexcept {
+                         BuffersBase<Raw16> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
     float_to_int16(in[i].Data.get(), inputFormat_->Size(),
                    (*out)[i].Data.get());
   }
 }
 
-void FloatToInt16Window::Do(
-    const BuffersBase<WindowF>& in,
-    BuffersBase<Window16> *out) const noexcept {
+void FloatToInt16Window::Do(const BuffersBase<WindowF>& in,
+                            BuffersBase<Window16> *out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
     float_to_int16(in[i].Data.get(), inputFormat_->Size(),
                    (*out)[i].Data.get());

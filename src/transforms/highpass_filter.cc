@@ -12,7 +12,6 @@
 
 #include "src/transforms/highpass_filter.h"
 #include <math.h>
-#include "src/formats/format_limits.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {

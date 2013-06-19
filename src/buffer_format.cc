@@ -39,4 +39,8 @@ bool BufferFormat::operator!=(const BufferFormat& other) const noexcept {
   return this->id_ != other.id_;
 }
 
+void BufferFormat::DeriveFrom(const BufferFormat& format) noexcept {
+  SetSamplingRate(format.SamplingRate());
+}
+
 }  // namespace SoundFeatureExtraction

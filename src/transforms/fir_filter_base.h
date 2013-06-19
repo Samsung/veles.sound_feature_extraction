@@ -16,7 +16,6 @@
 #include <simd/convolute.h>
 #include <vector>
 #include "src/omp_transform_base.h"
-#include "src/formats/format_limits.h"
 #include "src/formats/raw_format.h"
 #include "src/primitives/window.h"
 
@@ -42,6 +41,16 @@ class FirFilterBase
 
   virtual void Do(const Formats::Raw16& in,
                   Formats::Raw16 *out) const noexcept;
+
+  static const int MIN_FILTER_LENGTH = 10;
+  static const int MAX_FILTER_LENGTH = 512;
+  static const int DEFAULT_FILTER_LENGTH = 150;
+
+  static const int MIN_FILTER_FREQUENCY = 100;
+  static const int MAX_FILTER_FREQUENCY = 24000;
+
+  static const int DEFAULT_FILTER_HIGH_FREQUENCY = 8000;
+  static const int DEFAULT_FILTER_LOW_FREQUENCY = 50;
 
  private:
   WindowType windowType_;
