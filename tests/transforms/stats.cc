@@ -38,9 +38,8 @@ class StatsTest
     for (size_t i = 0; i < Input.Size(); i++) {
       Input[i] = d(gen);
     }
-    auto format = std::make_shared<SingleFormatF>();
+    auto format = std::make_shared<SingleFormatF>(16000);
     SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
@@ -48,12 +47,25 @@ class StatsTest
 
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
-TEST_F(StatsTest, Do) {
+TEST_F(StatsTest, DoAll) {
+  InitializeBuffers(Input, &Output);
   Do(Input, &Output);
   ASSERT_EQF(1, Output[0][0]);
   ASSERT_EQF(2 * 2, Output[0][1]);
   ASSERT_EQF(0, Output[0][2]);
   ASSERT_EQF(0, Output[0][3]);
+}
+
+TEST_F(StatsTest, DoInterval) {
+  SetParameter("interval", "25000");
+  InitializeBuffers(Input, &Output);
+  Do(Input, &Output);
+  for (int i = 0; i < 2; i++) {
+    ASSERT_EQF(1, Output[i][0]);
+    ASSERT_EQF(2 * 2, Output[i][1]);
+    ASSERT_EQF(0, Output[i][2]);
+    ASSERT_EQF(0, Output[i][3]);
+  }
 }
 
 #include "tests/google/src/gtest_main.cc"

@@ -44,10 +44,13 @@ class Stats
       TP("types", "Stats types to calculate (names separated with spaces, "
                   "\"all\" for all).",
          "all")
+      TP("interval", "\"Texture\" interval, must be bigger than 1. "
+                     "Zero means all buffers.",
+         "0")
   )
 
  protected:
-  typedef float(*CalculateFunc)(const BuffersBase<float>&);
+  typedef float(*CalculateFunc)(const float*);
 
   static const std::unordered_map<std::string, StatsType> kStatsTypesMap;
   static const std::unordered_map<int, CalculateFunc> kStatsFuncs;
@@ -60,13 +63,19 @@ class Stats
                   BuffersBase<StatsArray>* out)
   const noexcept;
 
-  static float CalculateAverage(const BuffersBase<float>& in) noexcept;
-  static float CalculateDispersion(const BuffersBase<float>& in) noexcept;
-  static float CalculateSkew(const BuffersBase<float>& in) noexcept;
-  static float CalculateKurtosis(const BuffersBase<float>& in) noexcept;
+  void Calculate(const float* rawMoments, int index,
+                 BuffersBase<StatsArray>* out) const noexcept;
+  static void CalculateRawMoments(const BuffersBase<float>& in,
+                                  int startIndex, int length,
+                                  float* rawMoments) noexcept;
+  static float CalculateAverage(const float* rawMoments) noexcept;
+  static float CalculateDispersion(const float* rawMoments) noexcept;
+  static float CalculateSkew(const float* rawMoments) noexcept;
+  static float CalculateKurtosis(const float* rawMoments) noexcept;
 
 private:
   std::set<StatsType> types_;
+  int interval_;
 };
 
 }  // namespace Transforms

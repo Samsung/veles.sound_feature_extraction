@@ -31,8 +31,10 @@ const std::unordered_map<int, Stats::CalculateFunc> Stats::kStatsFuncs {
   { STATS_TYPE_KURTOSIS, Stats::CalculateKurtosis }
 };
 
-Stats::Stats() : types_({ STATS_TYPE_AVERAGE, STATS_TYPE_DISPERSION,
-                          STATS_TYPE_SKEW, STATS_TYPE_KURTOSIS}) {
+Stats::Stats()
+    : types_({ STATS_TYPE_AVERAGE, STATS_TYPE_DISPERSION,
+               STATS_TYPE_SKEW, STATS_TYPE_KURTOSIS}),
+      interval_(0) {
   RegisterSetter("types", [&](const std::string& value) {
     static const boost::regex allRegex("^\\s*(\\w+\\s*(\\s|$))+");
     boost::smatch match;
@@ -60,75 +62,104 @@ Stats::Stats() : types_({ STATS_TYPE_AVERAGE, STATS_TYPE_DISPERSION,
     }
     return true;
   });
+  RegisterSetter("interval", [&](const std::string& value) {
+    int iv = Parse<int>("interval", value);
+    if (iv < 2) {
+      return false;
+    }
+    interval_ = iv;
+    return true;
+  });
 }
 
 void Stats::InitializeBuffers(
-    const BuffersBase<float>& in UNUSED,
+    const BuffersBase<float>& in,
     BuffersBase<StatsArray>* buffers) const noexcept {
-  buffers->Initialize(1);
+  if (interval_ != 0) {
+    if (in.Size() % interval_ == 0) {
+      buffers->Initialize(in.Size() / interval_);
+    } else {
+      buffers->Initialize(in.Size() / interval_ + 1);
+    }
+  } else {
+    buffers->Initialize(1);
+  }
 }
 
 void Stats::Do(const BuffersBase<float>& in,
                BuffersBase<StatsArray>* out) const noexcept {
+  float rawMoments[4];
+  if (interval_ == 0) {
+    CalculateRawMoments(in, 0, in.Size(), rawMoments);
+    Calculate(rawMoments, 0, out);
+  } else {
+    size_t i;
+    for (i = 0; i < in.Size() - interval_ + 1; i+= interval_) {
+      CalculateRawMoments(in, i, interval_, rawMoments);
+      Calculate(rawMoments, i / interval_, out);
+    }
+    if (i < in.Size()) {
+      CalculateRawMoments(in, i, in.Size() - i, rawMoments);
+      Calculate(rawMoments, i / interval_ + 1, out);
+    }
+  }
+}
+
+void Stats::Calculate(const float* rawMoments, int index,
+                      BuffersBase<StatsArray>* out) const noexcept {
   for (auto stat : types_) {
-    int ind = 0;
+    int sind = 0;
     int istat = stat;
     while (istat >>= 1) {
-      ind++;
+      sind++;
     }
-    (*out)[0][ind] = kStatsFuncs.find(stat)->second(in);
+    (*out)[index][sind] = kStatsFuncs.find(stat)->second(rawMoments);
   }
 }
 
-float Stats::CalculateAverage(const BuffersBase<float>& in) noexcept {
-  double avg1 = 0;
-  for (size_t i = 0; i < in.Size(); i++) {
-    avg1 += in[i];
-  }
-  return avg1 / in.Size();
-}
-
-float Stats::CalculateDispersion(const BuffersBase<float>& in) noexcept {
-  double avg1 = 0, avg2 = 0;
-  for (size_t i = 0; i < in.Size(); i++) {
-    double v = in[i];
-    avg1 += v;
-    avg2 += v * v;
-  }
-  avg1 /= in.Size();
-  avg2 /= in.Size();
-  return avg2 - avg1 * avg1;
-}
-
-float Stats::CalculateSkew(const BuffersBase<float>& in) noexcept {
-  double avg1 = 0, avg2 = 0, avg3 = 0;
-  for (size_t i = 0; i < in.Size(); i++) {
-    double v = in[i];
-    avg1 += v;
-    avg2 += v * v;
-    avg3 += v * v * v;
-  }
-  avg1 /= in.Size();
-  avg2 /= in.Size();
-  avg3 /= in.Size();
-  double u2 = avg2 - avg1 * avg1;
-  double u3 = avg3 - 3 * avg2 * avg1 + 2 * avg1 * avg1 * avg1;
-  return u3 / (sqrt(u2) * u2);
-}
-
-float Stats::CalculateKurtosis(const BuffersBase<float>& in) noexcept {
+void Stats::CalculateRawMoments(const BuffersBase<float>& in,
+                                int startIndex, int length,
+                                float* rawMoments) noexcept {
   double avg1 = 0, avg2 = 0, avg3 = 0, avg4 = 0;
-  for (size_t i = 0; i < in.Size(); i++) {
+  for (int i = startIndex; i < startIndex + length; i++) {
     double v = in[i];
     avg1 += v;
     avg2 += v * v;
     avg3 += v * v * v;
     avg4 += v * v * v * v;
   }
-  avg1 /= in.Size();
-  avg2 /= in.Size();
-  avg3 /= in.Size();
-  avg4 /= in.Size();
+  avg1 /= length;
+  avg2 /= length;
+  avg3 /= length;
+  avg4 /= length;
+  rawMoments[0] = avg1;
+  rawMoments[1] = avg2;
+  rawMoments[2] = avg3;
+  rawMoments[3] = avg4;
+}
+
+float Stats::CalculateAverage(const float* rawMoments) noexcept {
+  return rawMoments[0];
+}
+
+float Stats::CalculateDispersion(const float* rawMoments) noexcept {
+  return rawMoments[1] - rawMoments[0] * rawMoments[0];
+}
+
+float Stats::CalculateSkew(const float* rawMoments) noexcept {
+  float avg1 = rawMoments[0];
+  float avg2 = rawMoments[1];
+  float avg3 = rawMoments[2];
+  double u2 = avg2 - avg1 * avg1;
+  double u3 = avg3 - 3 * avg2 * avg1 + 2 * avg1 * avg1 * avg1;
+  return u3 / (sqrt(u2) * u2);
+}
+
+float Stats::CalculateKurtosis(const float* rawMoments) noexcept {
+  float avg1 = rawMoments[0];
+  float avg2 = rawMoments[1];
+  float avg3 = rawMoments[2];
+  float avg4 = rawMoments[3];
   double u2 = avg2 - avg1 * avg1;
   double u4 = avg4 - 4 * avg3 * avg1 + 6 * avg2 * avg1 * avg1
       - 3 * avg1 * avg1 * avg1 * avg1;
