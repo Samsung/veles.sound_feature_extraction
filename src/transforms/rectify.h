@@ -13,30 +13,49 @@
 #ifndef SRC_TRANSFORMS_RECTIFY_H_
 #define SRC_TRANSFORMS_RECTIFY_H_
 
+#include "src/formats/raw_format.h"
 #include "src/formats/window_format.h"
 #include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-class Rectify
-    : public OmpUniformFormatTransform<Formats::WindowFormatF> {
- public:
+class RectifyBase {
+ protected:
+  static void Do(bool simd, const float* input, int length,
+                 float* output) noexcept;
+};
 
-  TRANSFORM_INTRO("Rectify", "Wave rectification")
+template <class F>
+class RectifyTemplate
+    : public OmpUniformFormatTransform<F>,
+      public RectifyBase {
+ public:
+  TRANSFORM_INTRO("Rectify", "Wave rectification to decrease high-frequency "
+                             "content.")
 
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
+  virtual void Do(const typename F::BufferType& in,
+                  typename F::BufferType* out) const noexcept {
+    RectifyBase::Do(true, in.Data.get(), this->inputFormat_->Size(),
+                    out->Data.get());
+  }
+};
+
+class RectifyWindow : public RectifyTemplate<Formats::WindowFormatF> {
+ protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<Formats::WindowF>* buffers) const noexcept;
+};
 
-  virtual void Do(const Formats::WindowF& in,
-                  Formats::WindowF* out) const noexcept;
-
-  static void Do(bool simd, const float* input, int length,
-                 float* output) noexcept;
+class RectifyRaw : public RectifyTemplate<Formats::RawFormatF> {
+ protected:
+  virtual void InitializeBuffers(
+      const BuffersBase<Formats::RawF>& in,
+      BuffersBase<Formats::RawF>* buffers) const noexcept;
 };
 
 }  // namespace Transforms

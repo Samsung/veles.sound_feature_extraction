@@ -20,7 +20,7 @@ using SoundFeatureExtraction::Formats::WindowFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::Beat;
 
-class BeatTest : public Beat, public testing::Test {
+class BeatTest : public Beat<WindowFormatF>, public testing::Test {
  public:
   BuffersBase<WindowF> Input;
   BuffersBase<float> Output;

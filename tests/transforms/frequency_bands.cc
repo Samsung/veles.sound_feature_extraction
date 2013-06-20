@@ -42,6 +42,7 @@ class FrequencyBandsTest : public FrequencyBands, public testing::Test {
     }
     auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
     SetInputFormat(format);
+    Initialize();
     InitializeBuffers(Input, &Output);
   }
 };
@@ -80,6 +81,7 @@ TEST_F(FrequencyBandsTest, Do) {
 
 TEST_F(FrequencyBandsTest, DoWithBands) {
   SetParameter("bands", "2000 3000 5000 8000");
+  Initialize();
   Do(Input, &Output);
   for (int i = 0; i < Size / 4; i++) {
     ASSERT_EQ(i, Output[0][i]);
@@ -109,6 +111,7 @@ TEST_F(FrequencyBandsTest, DoWithBands) {
 
 TEST_F(FrequencyBandsTest, TooBigBands) {
   SetParameter("bands", "2000 3000 5000 18000");
+  Initialize();
   Do(Input, &Output);
   for (int i = 0; i < Size / 4; i++) {
     ASSERT_EQ(i, Output[0][i]);

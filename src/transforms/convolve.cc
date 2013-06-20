@@ -1,6 +1,6 @@
-/*! @file beat.cc
- *  @brief Beat detection.
- *  @author Shapichev Alexey <a.shapichev@samsung.com>
+/*! @file convolve.cc
+ *  @brief Convolve a raw signal with a window function.
+ *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
  *  @section Notes
@@ -10,19 +10,16 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/transforms/beat.h"
-
+#include "src/transforms/convolve.h"
+#include <math.h>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-using BeatRaw16 = Beat<Formats::RawFormat16>;
-using BeatRawF = Beat<Formats::RawFormatF>;
-using BeatWindowF = Beat<Formats::WindowFormatF>;
+void ConvolveFilter::CalculateFilter(float*) const noexcept {
+}
 
-REGISTER_TRANSFORM(BeatRaw16);
-REGISTER_TRANSFORM(BeatRawF);
-REGISTER_TRANSFORM(BeatWindowF);
+REGISTER_TRANSFORM(ConvolveFilter);
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction

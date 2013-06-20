@@ -18,7 +18,7 @@ const std::unordered_map<std::string, WindowType> kWindowTypeMap {
   { "rectangular", WINDOW_TYPE_RECTANGULAR },
   { "hamming", WINDOW_TYPE_HAMMING },
   { "hanning", WINDOW_TYPE_HANNING },
-  { "half-hanning", WINDOW_TYPE_HALF_HANNING},
+  { "half-hanning-right", WINDOW_TYPE_HALF_HANNING_RIGHT},
   { "blackman", WINDOW_TYPE_BLACKMAN}
 };
 
@@ -33,8 +33,8 @@ static float HanningWindow(int index, int length) {
   return 0.5f - 0.5f * cosf(2 * M_PI * index / (length - 1));
 }
 
-static float HalfHanningWindow(int index, int length) {
-  return cosf(M_PI * index /(2 * (length - 1))) * cosf(M_PI * index / (2 * (length - 1)));
+static float HalfHanningWindowRight(int index, int length) {
+  return HanningWindow(index + length - 1, length * 2 - 1);
 }
 
 static float BlackmanWindow(int index, int length) {
@@ -50,8 +50,8 @@ float WindowElement(WindowType type, int length, int index) {
       return HammingWindow(index, length);
     case WINDOW_TYPE_HANNING:
       return HanningWindow(index, length);
-    case WINDOW_TYPE_HALF_HANNING:
-      return HalfHanningWindow(index, length);
+    case WINDOW_TYPE_HALF_HANNING_RIGHT:
+      return HalfHanningWindowRight(index, length);
     case WINDOW_TYPE_BLACKMAN:
       return BlackmanWindow(index, length);
   }

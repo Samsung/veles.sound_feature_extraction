@@ -17,10 +17,10 @@
 using SoundFeatureExtraction::Formats::WindowF;
 using SoundFeatureExtraction::Formats::WindowFormatF;
 using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::Diffrect;
+using SoundFeatureExtraction::Transforms::DiffrectWindow;
 
 class DiffrectTest
-    : public Diffrect, public testing::Test {
+    : public DiffrectWindow, public testing::Test {
  public:
   BuffersBase<WindowF> Input;
   BuffersBase<WindowF> Output;

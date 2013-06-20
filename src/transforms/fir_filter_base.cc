@@ -12,14 +12,15 @@
 
 #include "src/transforms/fir_filter_base.h"
 #include <simd/arithmetic-inl.h>
+#include <simd/convolute.h>
+#include <mutex>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 FirFilterBase::FirFilterBase() noexcept
 : length_(DEFAULT_FILTER_LENGTH),
-  windowType_(WINDOW_TYPE_HAMMING),
-  convoluteHandle_(convolute_initialize(0, 0)) {
+  windowType_(WINDOW_TYPE_HAMMING) {
   RegisterSetter("length", [&](const std::string& value) {
     int pv = Parse<int>("length", value);
     if (pv < MIN_FILTER_LENGTH || pv > MAX_FILTER_LENGTH) {
@@ -38,37 +39,48 @@ FirFilterBase::FirFilterBase() noexcept
   });
 }
 
-FirFilterBase::~FirFilterBase() {
-  convolute_finalize(convoluteHandle_);
-}
-
 void FirFilterBase::Initialize() const noexcept {
   filter_.resize(length_);
   for (int i = 0; i < length_; i++) {
     filter_[i] = WindowElement(windowType_, length_, i);
   }
   CalculateFilter(&filter_[0]);
-  dataBuffer_.resize(inputFormat_->Size() + filter_.size() - 1);
-  convolute_finalize(convoluteHandle_);
-  convoluteHandle_ = convolute_initialize(inputFormat_->Size(),
-                                          filter_.size());
+
+  convolutionHandles_.resize(MaxThreadsNumber());
+  for (int i = 0; i < MaxThreadsNumber(); i++) {
+    convolutionHandles_[i].handle = std::shared_ptr<ConvoluteHandle>(
+        new ConvoluteHandle(convolute_initialize(inputFormat_->Size(),
+                                                 filter_.size())),
+        [](ConvoluteHandle* ptr) {
+          convolute_finalize(*ptr);
+          delete ptr;
+        }
+    );
+    convolutionHandles_[i].mutex = std::make_shared<std::mutex>();
+  }
+}
+
+void FirFilterBase::OnFormatChanged() {
+  outputFormat_->SetSize(inputFormat_->Size() + length_ - 1);
 }
 
 void FirFilterBase::InitializeBuffers(
-    const BuffersBase<Formats::Raw16>& in,
-    BuffersBase<Formats::Raw16>* buffers) const noexcept {
+    const BuffersBase<Formats::RawF>& in,
+    BuffersBase<Formats::RawF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), outputFormat_->Size(),
                       in[0].AlignmentOffset());
 }
 
-void FirFilterBase::Do(const Formats::Raw16& in,
-                       Formats::Raw16 *out)
+void FirFilterBase::Do(const Formats::RawF& in,
+                       Formats::RawF *out)
 const noexcept {
-  int16_to_float(in.Data.get(), inputFormat_->Size(), &dataBuffer_[0]);
-  convolute(convoluteHandle_, &dataBuffer_[0],
-            &filter_[0], &dataBuffer_[0]);
-  float_to_int16(&dataBuffer_[0], inputFormat_->Size(),
-                 out->Data.get());
+  for (auto hp : convolutionHandles_) {
+    if (hp.mutex->try_lock()) {
+      convolute(*hp.handle, in.Data.get(), &filter_[0], out->Data.get());
+      hp.mutex->unlock();
+      break;
+    }
+  }
 }
 
 }  // namespace Formats

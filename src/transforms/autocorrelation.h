@@ -13,11 +13,14 @@
 #ifndef SRC_TRANSFORMS_DIFFRECT_H_
 #define SRC_TRANSFORMS_DIFFRECT_H_
 
-#include <mutex>
 #include "src/formats/window_format.h"
 #include "src/omp_transform_base.h"
 
-struct ConvoluteHandle;
+typedef struct ConvoluteHandle CrossCorrelateHandle;
+
+namespace std {
+  class mutex;
+}
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -44,7 +47,7 @@ class Autocorrelation
 
  private:
   struct SyncHandle {
-    std::shared_ptr<ConvoluteHandle> handle;
+    std::shared_ptr<CrossCorrelateHandle> handle;
     std::shared_ptr<std::mutex> mutex;
   };
 

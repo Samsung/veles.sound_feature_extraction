@@ -87,7 +87,9 @@ class WindowFormat
       public Attributes
 {
  public:
-   WindowFormat() noexcept
+  typedef T BufferElementType;
+
+  WindowFormat() noexcept
       : duration_(0),
         size_(0),
         allocatedSize_(size_),

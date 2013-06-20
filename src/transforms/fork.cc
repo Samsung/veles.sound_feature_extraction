@@ -37,6 +37,7 @@ void Fork::OnFormatChanged() {
   }
   outputFormat_->SetAttributeValue(kCloningFactorAttributeName,
                                    prevFactor * factor_);
+  outputFormat_->SetIncompatible(true);
 }
 
 void Fork::InitializeBuffers(

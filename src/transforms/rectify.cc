@@ -20,19 +20,21 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void Rectify::InitializeBuffers(
+void RectifyWindow::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
   buffers->Initialize(in.Size(), inputFormat_->Size());
 }
 
-void Rectify::Do(const Formats::WindowF& in,
-                 Formats::WindowF* out) const noexcept {
-  Do(true, in.Data.get(), inputFormat_->Size(), out->Data.get());
+void RectifyRaw::InitializeBuffers(
+    const BuffersBase<Formats::RawF>& in,
+    BuffersBase<Formats::RawF>* buffers) const noexcept {
+  buffers->Initialize(in.Size(), outputFormat_->Size(),
+                      in[0].AlignmentOffset());
 }
 
-void Rectify::Do(bool simd, const float* input, int length,
-                 float* output) noexcept {
+void RectifyBase::Do(bool simd, const float* input, int length,
+                     float* output) noexcept {
   if (simd) {
 #ifdef __AVX__
     const __m256 SIGNMASK =  _mm256_set1_ps(-0.f);
@@ -71,7 +73,8 @@ void Rectify::Do(bool simd, const float* input, int length,
   }
 }
 
-REGISTER_TRANSFORM(Rectify);
+REGISTER_TRANSFORM(RectifyWindow);
+REGISTER_TRANSFORM(RectifyRaw);
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction
