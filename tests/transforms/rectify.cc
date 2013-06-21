@@ -55,6 +55,7 @@ TEST_F(RectifyTest, Do) {
 
 #define CLASS_NAME RectifyTest
 #define ITER_COUNT 500000
+#define BENCH_FUNC RectifyBase::Do
 #include "tests/transforms/benchmark.inc"
 
 #include "tests/google/src/gtest_main.cc"

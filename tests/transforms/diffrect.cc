@@ -61,6 +61,7 @@ TEST_F(DiffrectTest, Do) {
 
 #define CLASS_NAME DiffrectTest
 #define ITER_COUNT 500000
+#define BENCH_FUNC DiffrectBase::Do
 #include "tests/transforms/benchmark.inc"
 
 #include "tests/google/src/gtest_main.cc"
