@@ -43,7 +43,8 @@ void Fork::OnFormatChanged() {
 void Fork::InitializeBuffers(
     const BuffersBase<Formats::WindowF>& in,
     BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size() * factor_, inputFormat_->Size());
+  buffers->Initialize(in.Size() * factor_,
+                      outputFormat_->AllocatedSize());
 }
 
 void Fork::Do(

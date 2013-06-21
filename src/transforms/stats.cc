@@ -98,7 +98,7 @@ void Stats::Do(const BuffersBase<float>& in,
       CalculateRawMoments(in, i, interval_, rawMoments);
       Calculate(rawMoments, i / interval_, out);
     }
-    if (i < in.Size()) {
+    if (i % interval_ != 0) {
       CalculateRawMoments(in, i, in.Size() - i, rawMoments);
       Calculate(rawMoments, i / interval_ + 1, out);
     }

@@ -37,11 +37,12 @@ TEST(Features, Tempo) {
       { "Beat", "" } });
   Raw16 buffers(test_size, 0);
   size_t i;
-  for (i = 0; i < test_size; i += sizeof(data) / 2) {
-    memcpy(buffers.Data.get() + i, data, sizeof(data) / 2);
+  memset(buffers.Data.get(), 0, 2 * test_size);
+  for (i = 0; i < test_size - sizeof(data) / 2 + 1;
+      i += sizeof(data) / 2) {
+    memcpy(buffers.Data.get() + i, data, sizeof(data));
   }
-  memcpy(buffers.Data.get() + i - sizeof(data) / 2,
-         data, test_size - (i - sizeof(data) / 2));
+  memcpy(buffers.Data.get() + i, data, (test_size - i) * 2);
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   ASSERT_EQ(1, res.size());

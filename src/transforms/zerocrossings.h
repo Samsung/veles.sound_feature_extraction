@@ -36,7 +36,7 @@ class ZeroCrossingsTemplate
     auto result = DoInternal(true, in.Data.get(),
                              this->inputFormat_->Size());
     assert(result >= 0 &&
-           result <= static_cast<int>(this->inputFormat_->Size() / 2) + 1);
+           result <= static_cast<int>(this->inputFormat_->Size()));
     *out = result;
   }
 

@@ -36,7 +36,10 @@ TEST(Features, All) {
   tt.AddFeature("Flux", { { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "ComplexMagnitude", "" }, { "Flux", "" }
   });
-  tt.AddFeature("ZeroCrossings", { { "ZeroCrossings", "" }
+  tt.AddFeature("ZeroCrossings", {
+      { "Window", "type=rectangular,length=512,step=205" },
+      { "ZeroCrossings", "" },
+      { "Stats", "interval=50" }
   });
   tt.AddFeature("WPP", { { "Preemphasis", "value=0.2" },
       { "Window", "type=rectangular" },
