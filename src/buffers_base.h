@@ -51,14 +51,16 @@ class BufferFormatBase : public BufferFormat {
     ValidateSamplingRate(samplingRate_);
   }
 
-  virtual std::function<void(void*)> Destructor() const noexcept {  // NOLINT(*)
+  virtual std::function<void(void*)> Destructor()  // NOLINT(*)
+      const noexcept override final {
     return [](void* ptr) {  // NOLINT(whitespace/braces)
       auto instance = reinterpret_cast<T*>(ptr);
       delete instance;
     };
   }
 
-  virtual bool MustReallocate(const BufferFormat& other) const noexcept {
+  virtual bool MustReallocate(const BufferFormat& other)
+      const noexcept override final {
     if (*this != other || Incompatible()) {
       return true;
     }
@@ -66,22 +68,24 @@ class BufferFormatBase : public BufferFormat {
         reinterpret_cast<const BufferFormatBase<T>&>(other));
   }
 
-  virtual size_t PayloadSizeInBytes() const noexcept {
+  virtual size_t PayloadSizeInBytes() const noexcept override {
     return 0;
   }
 
-  virtual const void* PayloadPointer(const void* buffer) const noexcept {
+  virtual const void* PayloadPointer(const void* buffer)
+      const noexcept override final {
     return PayloadPointer(*reinterpret_cast<const T*>(buffer));
   }
 
-  virtual void Validate(const Buffers& buffers) const {
+  virtual void Validate(const Buffers& buffers) const override final {
     if (*this != *buffers.Format()) {
       throw InvalidFormatException(Id(), buffers.Format()->Id());
     }
     Validate(reinterpret_cast<const BuffersBase<T>&>(buffers));
   }
 
-  virtual std::string Dump(const Buffers& buffers) const noexcept {
+  virtual std::string Dump(const Buffers& buffers)
+      const noexcept override final {
     if (*this != *buffers.Format()) {
       throw InvalidFormatException(Id(), buffers.Format()->Id());
     }
@@ -92,12 +96,12 @@ class BufferFormatBase : public BufferFormat {
     return std::move(ret);
   }
 
-  int SamplingRate() const noexcept {
+  virtual int SamplingRate() const noexcept override final {
     assert(samplingRate_ > 0);
     return samplingRate_;
   }
 
-  void SetSamplingRate(int value) {
+  virtual void SetSamplingRate(int value) override final {
     ValidateSamplingRate(value);
     samplingRate_ = value;
   }

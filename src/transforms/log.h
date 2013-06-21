@@ -68,10 +68,10 @@ class LogWindow : public Log<Formats::WindowFormatF> {
  protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept;
+      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
 
   virtual void Do(const Formats::WindowF& in,
-                  Formats::WindowF* out) const noexcept;
+                  Formats::WindowF* out) const noexcept override;
 
   void Do(bool simd, const float* input, int length,
           float* output) const noexcept;
@@ -80,9 +80,9 @@ class LogWindow : public Log<Formats::WindowFormatF> {
 class LogSingle : public Log<Formats::SingleFormatF> {
  protected:
   virtual void InitializeBuffers(const BuffersBase<float>& in,
-                                 BuffersBase<float>* buffers) const noexcept;
+                                 BuffersBase<float>* buffers) const noexcept override;
 
-  virtual void Do(const float& in, float* out) const noexcept;
+  virtual void Do(const float& in, float* out) const noexcept override;
 };
 
 }  // namespace Transforms

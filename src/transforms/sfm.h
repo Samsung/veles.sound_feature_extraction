@@ -35,7 +35,7 @@ class SFM
   const noexcept;
 
   virtual void Do(const Formats::FixedArray<MEAN_TYPE_COUNT>& in,
-                  float* out) const noexcept;
+                  float* out) const noexcept override;
 };
 
 }  // namespace Transforms

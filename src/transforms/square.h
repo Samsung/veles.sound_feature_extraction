@@ -32,17 +32,17 @@ class SquareRaw
 
   virtual void InitializeBuffers(
       const BuffersBase<Formats::Raw16>& in,
-      BuffersBase<Formats::Raw32>* buffers) const noexcept;
+      BuffersBase<Formats::Raw32>* buffers) const noexcept override;
 
   virtual void InitializeBuffers(
       const BuffersBase<Formats::Raw32>& in,
-      BuffersBase<Formats::Raw16>* buffers) const noexcept;
+      BuffersBase<Formats::Raw16>* buffers) const noexcept override;
 
   virtual void Do(const BuffersBase<Formats::Raw16>& in,
-                  BuffersBase<Formats::Raw32>* out) const noexcept;
+                  BuffersBase<Formats::Raw32>* out) const noexcept override;
 
   virtual void Do(const BuffersBase<Formats::Raw32>& in,
-                  BuffersBase<Formats::Raw16>* out) const noexcept;
+                  BuffersBase<Formats::Raw16>* out) const noexcept override;
 
   static void Do(bool simd, const int16_t* input, int length,
                  int32_t* output) noexcept;
@@ -59,10 +59,10 @@ class SquareWindow
  protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept;
+      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
 
   virtual void Do(const Formats::WindowF& in,
-                  Formats::WindowF* out) const noexcept;
+                  Formats::WindowF* out) const noexcept override;
 
   static void Do(bool simd, const float* input, int length,
                  float* output) noexcept;

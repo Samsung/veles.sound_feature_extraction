@@ -32,21 +32,21 @@ class FirFilterBase
  public:
   FirFilterBase() noexcept;
 
-  virtual void Initialize() const noexcept;
+  virtual void Initialize() const noexcept override;
 
  protected:
   int length_;
 
   virtual void CalculateFilter(float* filter) const noexcept = 0;
 
-  virtual void OnFormatChanged();
+  virtual void OnFormatChanged() override;
 
   virtual void InitializeBuffers(
       const BuffersBase<Formats::RawF>& in,
-      BuffersBase<Formats::RawF>* buffers) const noexcept;
+      BuffersBase<Formats::RawF>* buffers) const noexcept override;
 
   virtual void Do(const Formats::RawF& in,
-                  Formats::RawF *out) const noexcept;
+                  Formats::RawF *out) const noexcept override;
 
   static const int MIN_FILTER_LENGTH = 16;
   static const int MAX_FILTER_LENGTH = 100000;

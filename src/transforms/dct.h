@@ -30,10 +30,10 @@ class DCT
  protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept;
+      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::WindowF>* out) const noexcept;
+                  BuffersBase<Formats::WindowF>* out) const noexcept override;
 };
 
 }  // namespace Transforms

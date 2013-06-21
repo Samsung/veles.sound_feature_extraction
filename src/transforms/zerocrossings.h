@@ -32,10 +32,10 @@ class ZeroCrossingsWindow
  protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<int32_t>* buffers) const noexcept;
+      BuffersBase<int32_t>* buffers) const noexcept override;
 
   virtual void Do(const Formats::WindowF& in,
-                  int32_t* out) const noexcept;
+                  int32_t* out) const noexcept override;
 
   static int Do(bool simd, const float* input, size_t length) noexcept;
 };
@@ -51,10 +51,10 @@ class ZeroCrossingsRaw
  protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::Raw16>& in,
-      BuffersBase<int32_t>* buffers) const noexcept;
+      BuffersBase<int32_t>* buffers) const noexcept override;
 
   virtual void Do(const BuffersBase<Formats::Raw16>& in,
-                  BuffersBase<int32_t> *out) const noexcept;
+                  BuffersBase<int32_t> *out) const noexcept override;
 
   static int Do(bool simd, const int16_t* input, size_t length) noexcept;
 };

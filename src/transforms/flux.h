@@ -31,10 +31,10 @@ class Flux
  protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<float>* buffers) const noexcept;
+      BuffersBase<float>* buffers) const noexcept override;
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<float> *out) const noexcept;
+                  BuffersBase<float> *out) const noexcept override;
 
   static float Do(bool simd, const float* input, size_t length,
                   const float* prev) noexcept;

@@ -26,17 +26,17 @@ class UnpackRDFT
 
   OMP_TRANSFORM_PARAMETERS()
 
-  void Initialize() const noexcept;
+  void Initialize() const noexcept override;
 
  protected:
-  virtual void OnFormatChanged();
+  virtual void OnFormatChanged() override;
 
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept;
+      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
 
   virtual void Do(const Formats::WindowF& in,
-                  Formats::WindowF* out) const noexcept;
+                  Formats::WindowF* out) const noexcept override;
 
  private:
   mutable bool realMode_;

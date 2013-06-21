@@ -52,7 +52,7 @@ class DiffrectWindow
  protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept;
+      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
 };
 
 class DiffrectRaw
@@ -60,7 +60,7 @@ class DiffrectRaw
  protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::RawF>& in,
-      BuffersBase<Formats::RawF>* buffers) const noexcept;
+      BuffersBase<Formats::RawF>* buffers) const noexcept override;
 };
 
 }  // namespace Transforms

@@ -48,14 +48,14 @@ class RectifyWindow : public RectifyTemplate<Formats::WindowFormatF> {
  protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept;
+      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
 };
 
 class RectifyRaw : public RectifyTemplate<Formats::RawFormatF> {
  protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::RawF>& in,
-      BuffersBase<Formats::RawF>* buffers) const noexcept;
+      BuffersBase<Formats::RawF>* buffers) const noexcept override;
 };
 
 }  // namespace Transforms

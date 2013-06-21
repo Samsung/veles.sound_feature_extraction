@@ -40,7 +40,7 @@ class FilterBank
          std::to_string(kDefaultMaxFrequency))
   )
 
-  virtual void Initialize() const noexcept;
+  virtual void Initialize() const noexcept override;
 
  protected:
   enum ScaleType {
@@ -60,7 +60,7 @@ class FilterBank
   const noexcept;
 
   virtual void Do(const Formats::WindowF& in,
-                  Formats::WindowF* out) const noexcept;
+                  Formats::WindowF* out) const noexcept override;
 
 
   static float LinearToScale(ScaleType type, float freq);

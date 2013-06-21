@@ -40,11 +40,11 @@ class ArgMinMax
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<ArgMinMaxResult>* buffers)
-  const noexcept;
+  const noexcept override;
 
   virtual void Do(const Formats::WindowF& in,
                   ArgMinMaxResult *out)
-  const noexcept;
+  const noexcept override;
 
   static ArgMinMaxResult Do(bool simd, const float* input, size_t length,
                             bool min) noexcept;

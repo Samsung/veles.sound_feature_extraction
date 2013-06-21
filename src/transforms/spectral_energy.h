@@ -30,7 +30,7 @@ class SpectralEnergy
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void OnFormatChanged();
+  virtual void OnFormatChanged() override;
 
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
@@ -38,7 +38,7 @@ class SpectralEnergy
   const noexcept;
 
   virtual void Do(const Formats::WindowF& in,
-                  Formats::WindowF* out) const noexcept;
+                  Formats::WindowF* out) const noexcept override;
 
   static void Do(bool simd, const float* input, int length,
                  float* output) noexcept;

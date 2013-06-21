@@ -38,10 +38,10 @@ class Preemphasis
 
   virtual void InitializeBuffers(
       const BuffersBase<Formats::Raw16>& in,
-      BuffersBase<Formats::Raw16>* buffers) const noexcept;
+      BuffersBase<Formats::Raw16>* buffers) const noexcept override;
 
   virtual void Do(const Formats::Raw16& in,
-                  Formats::Raw16* out) const noexcept;
+                  Formats::Raw16* out) const noexcept override;
 
   static void Do(bool simd, const int16_t* input, size_t length,
                  float k, int16_t* output) noexcept;

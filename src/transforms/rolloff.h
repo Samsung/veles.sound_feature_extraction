@@ -36,10 +36,10 @@ class Rolloff
  protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<float>* buffers) const noexcept;
+      BuffersBase<float>* buffers) const noexcept override;
 
   virtual void Do(const Formats::WindowF& in,
-                  float* out) const noexcept;
+                  float* out) const noexcept override;
 
   static int Do(bool simd, const float* input, size_t length,
                 float ratio) noexcept;

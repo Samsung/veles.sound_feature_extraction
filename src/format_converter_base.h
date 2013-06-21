@@ -22,25 +22,26 @@ template <typename FIN, typename FOUT>
 class FormatConverterBase
     : public FormatConverter, public TransformBase<FIN, FOUT> {
  public:
-  virtual void SetInputFormat(const std::shared_ptr<BufferFormat>& format) {
+  virtual void SetInputFormat(const std::shared_ptr<BufferFormat>& format)
+      override final {
     TransformBase<FIN, FOUT>::SetInputFormat(format);
   }
 
   virtual const std::unordered_map<std::string, ParameterTraits>&
-  SupportedParameters() const noexcept {
+  SupportedParameters() const noexcept override final {
     return FormatConverter::SupportedParameters();
   }
 
   virtual const std::unordered_map<std::string, std::string>&
-  GetParameters() const noexcept {
+  GetParameters() const noexcept override final {
     return FormatConverter::GetParameters();
   }
 
   virtual void SetParameters(
-      const std::unordered_map<std::string, std::string>&) {
+      const std::unordered_map<std::string, std::string>&) override final {
   }
 
-  virtual void Initialize() const noexcept {
+  virtual void Initialize() const noexcept override final {
   }
 
  protected:

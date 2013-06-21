@@ -42,7 +42,7 @@ class OmpTransformBaseCommon : public virtual ParameterizableBase {
     });
   }
 
-  static constexpr const char* MaxThreadsNumberParameterName() {
+  static constexpr const char* MaxThreadsNumberParameterName() noexcept {
     return "threads_num";
   }
 
@@ -57,7 +57,7 @@ class OmpTransformBaseCommon : public virtual ParameterizableBase {
   typedef BuffersBase<InElement> InBuffers;
   typedef BuffersBase<OutElement> OutBuffers;
 
-  virtual void Do(const InBuffers& in, OutBuffers* out) const noexcept {
+  void Do(const InBuffers& in, OutBuffers* out) const noexcept {
 #ifdef HAVE_OPENMP
     #pragma omp parallel for num_threads(MaxThreadsNumber())
 #endif
@@ -69,7 +69,8 @@ class OmpTransformBaseCommon : public virtual ParameterizableBase {
   virtual void Do(const InElement& in, OutElement* out) const noexcept = 0;
 
  private:
-  virtual void DoInverse(const OutBuffers& in, InBuffers* out) const noexcept {
+  void DoInverse(const OutBuffers& in, InBuffers* out)
+      const noexcept {
 #ifdef HAVE_OPENMP
     #pragma omp parallel for num_threads(MaxThreadsNumber())
 #endif
@@ -94,7 +95,7 @@ class OmpTransformBase<FIN, FOUT, false>
  protected:
   virtual void Do(const typename TransformBase<FIN, FOUT, false>::InBuffers& in,
                   typename TransformBase<FIN, FOUT, false>::OutBuffers* out)
-  const noexcept {
+      const noexcept override final {
     OmpTransformBaseCommon<FIN, FOUT>::Do(in, out);
   }
 
@@ -102,7 +103,7 @@ class OmpTransformBase<FIN, FOUT, false>
   virtual void DoInverse(
       const typename OmpTransformBaseCommon<FIN, FOUT>::OutElement& in UNUSED,
       typename OmpTransformBaseCommon<FIN, FOUT>::InElement* out UNUSED)
-      const noexcept {
+      const noexcept override final {
     std::unexpected();
   }
 };
@@ -114,13 +115,13 @@ class OmpTransformBase<FIN, FOUT, true>
  protected:
   virtual void Do(const typename TransformBase<FIN, FOUT, true>::InBuffers& in,
                   typename TransformBase<FIN, FOUT, true>::OutBuffers* out)
-  const noexcept {
+      const noexcept override final {
     OmpTransformBaseCommon<FIN, FOUT>::Do(in, out);
   }
 
   virtual void Do(const typename TransformBase<FIN, FOUT, true>::OutBuffers& in,
                   typename TransformBase<FIN, FOUT, true>::InBuffers* out)
-  const noexcept {
+      const noexcept override final {
     OmpTransformBaseCommon<FIN, FOUT>::DoInverse(in, out);
   }
 
@@ -133,7 +134,7 @@ class OmpTransformBase<FIN, FOUT, true>
   virtual void DoInverse(
       const typename OmpTransformBaseCommon<FIN, FOUT>::OutElement& in,
       typename OmpTransformBaseCommon<FIN, FOUT>::InElement* out)
-  const noexcept {
+      const noexcept override final {
     Do(in, out);
   }
 };
@@ -146,14 +147,15 @@ class OmpTransformBase<F, F, true>
  protected:
   virtual void Do(const typename TransformBase<F, F, true>::InBuffers& in,
                   typename TransformBase<F, F, true>::OutBuffers* out)
-  const noexcept {
+      const noexcept override final  {
     OmpTransformBaseCommon<F, F>::Do(in, out);
   }
 
  private:
   virtual void DoInverse(
       const typename OmpTransformBaseCommon<F, F>::OutElement& in,
-      typename OmpTransformBaseCommon<F, F>::InElement* out) const noexcept {
+      typename OmpTransformBaseCommon<F, F>::InElement* out)
+      const noexcept override final {
     this->Do(in, out);
   }
 };
@@ -165,7 +167,7 @@ class OmpTransformBase<F, F, false>
  protected:
   virtual void Do(const typename TransformBase<F, F, false>::InBuffers& in,
                   typename TransformBase<F, F, false>::OutBuffers* out)
-  const noexcept {
+      const noexcept override final {
     OmpTransformBaseCommon<F, F>::Do(in, out);
   }
 
@@ -173,7 +175,7 @@ class OmpTransformBase<F, F, false>
   virtual void DoInverse(
       const typename OmpTransformBaseCommon<F, F>::OutElement& in UNUSED,
       typename OmpTransformBaseCommon<F, F>::InElement* out UNUSED)
-      const noexcept {
+      const noexcept override final {
     std::unexpected();
   }
 };

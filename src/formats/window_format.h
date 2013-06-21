@@ -60,7 +60,7 @@ struct Window {
   Window(const Window& other) : Data(other.Data) {
   }
 
-  explicit Window(T* ptr) : Data(ptr, [](T* p) {}) {
+  explicit Window(T* ptr) : Data(ptr, [](T*) {}) {
   }
 
   Window& operator=(const Window& other) {

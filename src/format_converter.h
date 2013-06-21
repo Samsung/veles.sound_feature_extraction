@@ -34,7 +34,7 @@ class FormatConverter : public virtual Transform {
   virtual void SetParameters(
       const std::unordered_map<std::string, std::string>& parameters);
 
-  virtual void Initialize() const noexcept;
+  virtual void Initialize() const noexcept override;
 
   static std::string Name(const BufferFormat& in,
                           const BufferFormat& out);

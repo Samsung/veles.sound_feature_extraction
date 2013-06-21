@@ -43,17 +43,17 @@ class Window
          std::to_string(kDefaultPreDft))
   )
 
-  virtual void Initialize() const noexcept;
+  virtual void Initialize() const noexcept override;
 
  protected:
   typedef std::unique_ptr<float, void(*)(void*)> WindowContentsPtr;
 
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept;
+      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
 
   virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::WindowF> *out) const noexcept;
+                  BuffersBase<Formats::WindowF> *out) const noexcept override;
 
   mutable WindowContentsPtr window_;
 
@@ -212,13 +212,13 @@ class WindowSplitterTemplate
 class WindowSplitter16 : public WindowSplitterTemplate<int16_t> {
  protected:
   virtual void Do(const BuffersBase<Formats::Raw16>& in,
-                  BuffersBase<Formats::Window16> *out) const noexcept;
+                  BuffersBase<Formats::Window16> *out) const noexcept override;
 };
 
 class WindowSplitterF : public WindowSplitterTemplate<float> {
  protected:
   virtual void Do(const BuffersBase<Formats::RawF>& in,
-                  BuffersBase<Formats::WindowF> *out) const noexcept;
+                  BuffersBase<Formats::WindowF> *out) const noexcept override;
 };
 
 }  // namespace Transforms

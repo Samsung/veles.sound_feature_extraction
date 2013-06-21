@@ -57,7 +57,7 @@ class Stats
 
   virtual void InitializeBuffers(
       const BuffersBase<float>& in,
-      BuffersBase<StatsArray>* buffers) const noexcept;
+      BuffersBase<StatsArray>* buffers) const noexcept override;
 
   virtual void Do(const BuffersBase<float>& in,
                   BuffersBase<StatsArray>* out)
