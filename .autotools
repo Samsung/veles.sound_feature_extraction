@@ -113,7 +113,7 @@
 <flagvalue id="cflags-gprof" value="false"/>
 <flagvalue id="cflags-gcov" value="false"/>
 </flag>
-<option id="user" value="--enable-benchmarks --enable-parallel-build --enable-eina-logging --with-built-in-fftf --with-built-in-boost --disable-doxygen --enable-lto --with-built-in-simd"/>
+<option id="user" value="--enable-benchmarks --enable-parallel-build --enable-eina-logging --with-built-in-fftf --with-built-in-boost --disable-doxygen --with-built-in-simd"/>
 <option id="autogen" value="autogen.sh"/>
 <option id="autogenOpts" value=""/>
 </configuration>
