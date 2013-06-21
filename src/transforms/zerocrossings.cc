@@ -27,16 +27,8 @@ void ZeroCrossingsWindow::InitializeBuffers(
   buffers->Initialize(in.Size());
 }
 
-void ZeroCrossingsWindow::Do(const Formats::WindowF& in,
-                             int32_t* out) const noexcept {
-  auto result = Do(true, in.Data.get(), inputFormat_->Size());
-  assert(result >= 0 &&
-         result <= static_cast<int>(inputFormat_->Size() / 2) + 1);
-  *out = result;
-}
-
-int ZeroCrossingsWindow::Do(bool simd, const float* input, size_t length)
-    noexcept {
+int ZeroCrossingsWindow::DoInternal(bool simd, const float* input,
+                                    size_t length) const noexcept {
   int ilength = length;
   if (simd) {
 #ifdef __AVX__
@@ -123,19 +115,8 @@ void ZeroCrossingsRaw::InitializeBuffers(
   buffers->Initialize(in.Size());
 }
 
-void ZeroCrossingsRaw::Do(
-    const BuffersBase<Formats::Raw16>& in,
-    BuffersBase<int32_t> *out) const noexcept {
-  for (size_t i = 0; i < in.Size(); i++) {
-    auto result = Do(true, in[i].Data.get(), inputFormat_->Size());
-    assert(result >= 0 &&
-           result <= static_cast<int>(inputFormat_->Size() / 2) + 1);
-    (*out)[i] = result;
-  }
-}
-
-int ZeroCrossingsRaw::Do(bool simd, const int16_t* input, size_t length)
-    noexcept {
+int ZeroCrossingsRaw::DoInternal(bool simd, const int16_t* input,
+                                 size_t length) const noexcept {
   int ilength = length;
   if (simd) {
 #ifdef __AVX__

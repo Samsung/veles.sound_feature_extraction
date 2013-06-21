@@ -21,8 +21,9 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-class ZeroCrossingsWindow
-    : public OmpTransformBase<Formats::WindowFormatF, Formats::SingleFormat32> {
+template <class F>
+class ZeroCrossingsTemplate
+    : public OmpTransformBase<F, Formats::SingleFormat32> {
  public:
   TRANSFORM_INTRO("ZeroCrossings", "Number of time domain zero crossings "
                                    "of the signal.")
@@ -30,33 +31,39 @@ class ZeroCrossingsWindow
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
+  virtual void Do(const typename F::BufferType& in,
+                  int32_t* out) const noexcept override final {
+    auto result = DoInternal(true, in.Data.get(),
+                             this->inputFormat_->Size());
+    assert(result >= 0 &&
+           result <= static_cast<int>(this->inputFormat_->Size() / 2) + 1);
+    *out = result;
+  }
+
+  virtual int DoInternal(bool simd, const typename F::BufferElementType* input,
+                         size_t length) const noexcept = 0;
+};
+
+class ZeroCrossingsWindow
+    : public ZeroCrossingsTemplate<Formats::WindowFormatF> {
+ protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::WindowF>& in,
       BuffersBase<int32_t>* buffers) const noexcept override;
 
-  virtual void Do(const Formats::WindowF& in,
-                  int32_t* out) const noexcept override;
-
-  static int Do(bool simd, const float* input, size_t length) noexcept;
+  virtual int DoInternal(bool simd, const float* input, size_t length)
+      const noexcept override;
 };
 
 class ZeroCrossingsRaw
-    : public TransformBase<Formats::RawFormat16, Formats::SingleFormat32> {
- public:
-  TRANSFORM_INTRO("ZeroCrossings", "Number of time domain zero crossings "
-                                   "of the signal.")
-
-  TRANSFORM_PARAMETERS()
-
+    : public ZeroCrossingsTemplate<Formats::RawFormat16> {
  protected:
   virtual void InitializeBuffers(
       const BuffersBase<Formats::Raw16>& in,
       BuffersBase<int32_t>* buffers) const noexcept override;
 
-  virtual void Do(const BuffersBase<Formats::Raw16>& in,
-                  BuffersBase<int32_t> *out) const noexcept override;
-
-  static int Do(bool simd, const int16_t* input, size_t length) noexcept;
+  virtual int DoInternal(bool simd, const int16_t* input, size_t length)
+      const noexcept override;
 };
 
 }  // namespace Transforms

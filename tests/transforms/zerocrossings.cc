@@ -51,13 +51,14 @@ class ZeroCrossingsWindowTest : public ZeroCrossingsWindow, public testing::Test
 TEST_F(ZeroCrossingsWindowTest, Do) {
   Do(Input[0], &Output[0]);
   ASSERT_EQ(Size / 2 + 1, Output[0]);
-  int slowres = Do(false, Input[0].Data.get(), Size);
+  int slowres = DoInternal(false, Input[0].Data.get(), Size);
   ASSERT_EQ(Size / 2 + 1, slowres);
 }
 
 #define CLASS_NAME ZeroCrossingsWindowTest
 #define ITER_COUNT 400000
 #define NO_OUTPUT
+#define BENCH_FUNC DoInternal
 #include "tests/transforms/benchmark.inc"
 
 class ZeroCrossingsRawTest : public ZeroCrossingsRaw, public testing::Test {
@@ -86,9 +87,9 @@ class ZeroCrossingsRawTest : public ZeroCrossingsRaw, public testing::Test {
 };
 
 TEST_F(ZeroCrossingsRawTest, Do) {
-  Do(Input, &Output);
+  Do(Input[0], &Output[0]);
   ASSERT_EQ(Size / 2, Output[0]);
-  int slowres = Do(false, Input[0].Data.get(), Size);
+  int slowres = DoInternal(false, Input[0].Data.get(), Size);
   ASSERT_EQ(Size / 2, slowres);
 }
 
