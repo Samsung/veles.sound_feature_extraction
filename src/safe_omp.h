@@ -22,7 +22,7 @@
 #define HAVE_OPENMP
 #endif
 
-#ifdef HAVE_OPENMP
+#if defined(HAVE_OPENMP) && !defined(DEBUG)
 #include <omp.h>
 #else
 inline int omp_get_max_threads() noexcept {
