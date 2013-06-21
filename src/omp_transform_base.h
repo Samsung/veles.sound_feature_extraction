@@ -13,7 +13,7 @@
 #ifndef SRC_OMP_TRANSFORM_BASE_H_
 #define SRC_OMP_TRANSFORM_BASE_H_
 
-#include <omp.h>
+#include "src/safe_omp.h"
 #include "src/transform_base.h"
 
 extern "C" {
@@ -42,7 +42,7 @@ class OmpTransformBaseCommon : public virtual ParameterizableBase {
     });
   }
 
-  static constexpr std::string MaxThreadsNumberParameterName() {
+  static constexpr const char* MaxThreadsNumberParameterName() {
     return "threads_num";
   }
 
@@ -58,7 +58,9 @@ class OmpTransformBaseCommon : public virtual ParameterizableBase {
   typedef BuffersBase<OutElement> OutBuffers;
 
   virtual void Do(const InBuffers& in, OutBuffers* out) const noexcept {
+#ifdef HAVE_OPENMP
     #pragma omp parallel for num_threads(MaxThreadsNumber())
+#endif
     for (size_t i = 0; i < in.Size(); i++) {
       Do(in[i], &(*out)[i]);
     }
@@ -68,7 +70,9 @@ class OmpTransformBaseCommon : public virtual ParameterizableBase {
 
  private:
   virtual void DoInverse(const OutBuffers& in, InBuffers* out) const noexcept {
+#ifdef HAVE_OPENMP
     #pragma omp parallel for num_threads(MaxThreadsNumber())
+#endif
     for (size_t i = 0; i < in.Size(); i++) {
       DoInverse(in[i], &(*out)[i]);
     }

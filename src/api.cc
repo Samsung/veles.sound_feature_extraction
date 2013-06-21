@@ -12,11 +12,11 @@
 
 #include <SoundFeatureExtraction/api.h>
 #include <assert.h>
-#include <omp.h>
 #include <stddef.h>
 #include <fftf/api.h>
 #include "src/features_parser.h"
 #include "src/make_unique.h"
+#include "src/safe_omp.h"
 #include "src/transform_tree.h"
 #include "src/transform_registry.h"
 
