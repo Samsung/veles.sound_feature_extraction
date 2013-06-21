@@ -16,20 +16,16 @@
 namespace SoundFeatureExtraction {
 namespace Formats {
 
-void Int16ToFloatRaw::Do(const BuffersBase<Raw16>& in,
-                         BuffersBase<RawF> *out) const noexcept {
-  for (size_t i = 0; i < in.Size(); i++) {
-    int16_to_float(in[i].Data.get(), inputFormat_->Size(),
-                   (*out)[i].Data.get());
-  }
+void Int16ToFloatRaw::Do(const Raw16& in,
+                         RawF *out) const noexcept {
+  int16_to_float(in.Data.get(), inputFormat_->Size(),
+                 out->Data.get());
 }
 
-void Int16ToFloatWindow::Do(const BuffersBase<Window16>& in,
-                            BuffersBase<WindowF>* out) const noexcept {
-  for (size_t i = 0; i < in.Size(); i++) {
-    int16_to_float(in[i].Data.get(), inputFormat_->Size(),
-                   (*out)[i].Data.get());
-  }
+void Int16ToFloatWindow::Do(const Window16& in,
+                            WindowF* out) const noexcept {
+  int16_to_float(in.Data.get(), inputFormat_->Size(),
+                 out->Data.get());
 }
 
 REGISTER_TRANSFORM(Int16ToFloatRaw);

@@ -24,15 +24,15 @@ namespace Formats {
 class FloatToInt32Raw
     : public RawFormatConverterBase<RawFormatF, RawFormat32> {
  protected:
-  virtual void Do(const BuffersBase<RawF>& in,
-                  BuffersBase<Raw32> *out) const noexcept override;
+  virtual void Do(const RawF& in,
+                  Raw32 *out) const noexcept override;
 };
 
 class FloatToInt32Window
     : public WindowFormatConverterBase<WindowFormatF, WindowFormat32> {
  protected:
-  virtual void Do(const BuffersBase<WindowF>& in,
-                  BuffersBase<Window32> *out) const noexcept override;
+  virtual void Do(const WindowF& in,
+                  Window32 *out) const noexcept override;
 };
 
 }  // namespace Formats

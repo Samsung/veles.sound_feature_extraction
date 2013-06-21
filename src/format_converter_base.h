@@ -14,13 +14,14 @@
 #define SRC_FORMAT_CONVERTER_BASE_H_
 
 #include "src/format_converter.h"
-#include "src/transform_base.h"
+#include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 
 template <typename FIN, typename FOUT>
 class FormatConverterBase
-    : public FormatConverter, public TransformBase<FIN, FOUT> {
+    : public virtual FormatConverter,
+      public virtual OmpTransformBase<FIN, FOUT> {
  public:
   virtual void SetInputFormat(const std::shared_ptr<BufferFormat>& format)
       override final {
