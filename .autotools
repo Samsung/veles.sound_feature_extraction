@@ -47,7 +47,7 @@
 <option id="no-create" value="false"/>
 <option id="quiet" value="false"/>
 <option id="version" value="false"/>
-<option id="host" value="arm-v7a15v3r1-linux-gnueabi"/>
+<option id="host" value="arm-v7a15v4r1-linux-gnueabi"/>
 <option id="build" value=""/>
 <option id="target" value=""/>
 <option id="prefix" value=""/>
@@ -74,7 +74,7 @@
 <flagvalue id="cflags-gprof" value="false"/>
 <flagvalue id="cflags-gcov" value="false"/>
 </flag>
-<option id="user" value="--enable-debug --enable-eina-logging --disable-doxygen --enable-parallel-build --with-built-in-boost --with-built-in-fftf --with-built-in-simd"/>
+<option id="user" value="--enable-debug --disable-doxygen --enable-parallel-build --with-built-in-boost --with-built-in-fftf --with-built-in-simd"/>
 <option id="autogen" value="autogen.sh"/>
 <option id="autogenOpts" value=""/>
 </configuration>
@@ -125,7 +125,7 @@
 <option id="no-create" value="false"/>
 <option id="quiet" value="false"/>
 <option id="version" value="false"/>
-<option id="host" value="arm-v7a15v3r1-linux-gnueabi"/>
+<option id="host" value="arm-v7a15v4r1-linux-gnueabi"/>
 <option id="build" value=""/>
 <option id="target" value=""/>
 <option id="prefix" value=""/>
@@ -152,7 +152,7 @@
 <flagvalue id="cflags-gprof" value="false"/>
 <flagvalue id="cflags-gcov" value="false"/>
 </flag>
-<option id="user" value="--disable-doxygen --enable-eina-logging  --enable-parallel-build --with-built-in-boost --with-built-in-fftf --enable-lto --with-built-in-simd"/>
+<option id="user" value="--disable-doxygen --enable-parallel-build --with-built-in-boost --with-built-in-fftf --enable-lto --with-built-in-simd"/>
 <option id="autogen" value="autogen.sh"/>
 <option id="autogenOpts" value=""/>
 </configuration>
