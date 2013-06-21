@@ -143,26 +143,27 @@ class WindowSplitterTemplate
   }
 
  protected:
-  virtual void OnInputFormatChanged() {
+  virtual void OnInputFormatChanged() override final {
     // Allocate 2 extra samples to use zero-copy FFT
     this->outputFormat_->SetAllocatedSize(length_ + 2);
-    this->outputFormat_->SetDuration(length_ * 1000 /
-                                     this->outputFormat_->SamplingRate());
+    this->outputFormat_->SetSize(length_);
     this->outputFormat_->SetParentRawSize(this->inputFormat_->Size());
   }
 
-  virtual void OnOutputFormatChanged() {
+  virtual void OnOutputFormatChanged() override final {
     this->inputFormat_->SetSize(this->outputFormat_->ParentRawSize());
   }
 
   virtual void InitializeBuffers(const BuffersBase<Formats::Raw<T>>& in,
-        BuffersBase<Formats::Window<T>>* buffers) const noexcept {
+        BuffersBase<Formats::Window<T>>* buffers)
+      const noexcept override final {
     buffers->Initialize(in.Size() * windowsCount_,
                         this->outputFormat_->AllocatedSize());
   }
 
   virtual void InitializeBuffers(const BuffersBase<Formats::Window<T>>& in,
-        BuffersBase<Formats::Raw<T>>* buffers) const noexcept {
+        BuffersBase<Formats::Raw<T>>* buffers)
+      const noexcept override final {
     buffers->Initialize(in.Size() / windowsCount_,
                         this->inputFormat_->Size(), 0);
   }

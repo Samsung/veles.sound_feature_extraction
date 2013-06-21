@@ -50,7 +50,7 @@ class CentroidTest : public Centroid, public testing::Test {
 TEST_F(CentroidTest, Do) {
   Do(Input[0], &Output[0]);
   double res = Do(false, Input[0].Data.get(), Size);
-  res *= inputFormat_->SamplingRate() / (2.f * inputFormat_->SamplesCount());
+  res /= inputFormat_->Duration();
   ASSERT_EQF(res, Output[0]);
 }
 

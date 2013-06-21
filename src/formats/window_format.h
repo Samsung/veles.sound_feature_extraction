@@ -22,7 +22,7 @@ namespace Formats {
 
 class InvalidWindowDurationException : public ExceptionBase {
  public:
-  explicit InvalidWindowDurationException(size_t duration)
+  explicit InvalidWindowDurationException(float duration)
   : ExceptionBase("Duration " + std::to_string(duration) +
                   " is not supported or invalid.") {}
 };
@@ -90,24 +90,20 @@ class WindowFormat
   typedef T BufferElementType;
 
   WindowFormat() noexcept
-      : duration_(0),
-        size_(0),
+      : size_(0),
         allocatedSize_(size_),
         parentRawSize_(0) {
   }
 
-  WindowFormat(size_t duration, int samplingRate, size_t parentRawSize = 0)
+  WindowFormat(size_t size, int samplingRate, size_t parentRawSize = 0)
       : BufferFormatBase<Window<T>>(samplingRate),
-        duration_(duration),
-        size_(SamplesCount()),
+        size_(size),
         allocatedSize_(size_),
         parentRawSize_(parentRawSize) {
-    ValidateDuration(duration_);
   }
 
   WindowFormat(const WindowFormat& other) noexcept
       : BufferFormatBase<Window<T>>(other),
-        duration_(other.duration_),
         size_(other.size_),
         allocatedSize_(other.allocatedSize_),
         parentRawSize_(other.parentRawSize_) {
@@ -121,22 +117,16 @@ class WindowFormat
     return *this;
   }
 
-  size_t Duration() const noexcept {
-    assert(duration_ > 0);
-    return duration_;
+  float Duration() const noexcept {
+    return size_ * 2 / this->SamplingRate();
   }
 
-  void SetDuration(size_t value) {
+  void SetDuration(float value) {
     ValidateDuration(value);
-    duration_ = value;
-    size_ = SamplesCount();
+    size_ = value * this->SamplingRate() / 2;
     if (size_ > allocatedSize_) {
       throw TooBigWindowSizeException(size_, allocatedSize_);
     }
-  }
-
-  size_t SamplesCount() const noexcept {
-    return Duration() * this->SamplingRate() / 1000;
   }
 
   /// @brief Returns the current buffer size in data units (sizeof(T)).
@@ -245,7 +235,6 @@ class WindowFormat
   }
 
  private:
-  size_t duration_;
   size_t size_;
   size_t allocatedSize_;
   size_t parentRawSize_;

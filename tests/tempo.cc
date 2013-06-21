@@ -11,7 +11,6 @@
  */
 
 #include <gtest/gtest.h>
-#include <fftf/api.h>
 #include "src/transform_tree.h"
 #include "src/transform_registry.h"
 #include "src/formats/raw_format.h"
@@ -22,9 +21,9 @@ using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::BuffersBase;
 
 TEST(Features, Tempo) {
-  fftf_set_backend(FFTF_BACKEND_LIBAV);
-  TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
-  tt.SetValidateAfterEachTransform(true);
+  size_t test_size = 661504;
+  TransformTree tt( { test_size, 22050 } );  // NOLINT(*)
+  //tt.SetValidateAfterEachTransform(true);
   tt.AddFeature("Tempo", {
       { "Window", "length=512" },
       { "Fork", "factor=6" },
@@ -36,8 +35,13 @@ TEST(Features, Tempo) {
       { "Convolve", "window = half-hanning-right, length=12800" },
       { "Diffrect", "" },
       { "Beat", "" } });
-  Raw16 buffers(48000, 0);
-  memcpy(buffers.Data.get(), data, sizeof(data));
+  Raw16 buffers(test_size, 0);
+  size_t i;
+  for (i = 0; i < test_size; i += sizeof(data) / 2) {
+    memcpy(buffers.Data.get() + i, data, sizeof(data) / 2);
+  }
+  memcpy(buffers.Data.get() + i - sizeof(data) / 2,
+         data, test_size - (i - sizeof(data) / 2));
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   ASSERT_EQ(1, res.size());

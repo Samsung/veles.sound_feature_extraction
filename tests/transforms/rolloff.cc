@@ -51,7 +51,7 @@ TEST_F(RolloffTest, Do) {
   SetParameter("ratio", "0.8");
   Do(Input[0], &Output[0]);
   float res = Do(false, Input[0].Data.get(), Size, 0.8f);
-  res *= inputFormat_->SamplingRate() / (2.f * inputFormat_->SamplesCount());
+  res /= inputFormat_->Duration();
   ASSERT_EQF(res, Output[0]);
 }
 
