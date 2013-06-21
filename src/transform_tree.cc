@@ -255,28 +255,42 @@ void TransformTree::AddTransform(const std::string& name,
     throw TransformNotRegisteredException(name);
   }
   // tfit is actually a map from input format to real constructor
+  TransformFactory::TransformConstructor ctor;
   auto ctorit = tfit->second.find(
       (*currentNode)->BoundTransform->OutputFormat()->Id());
   if (ctorit == tfit->second.end()) {
-    ctorit = tfit->second.begin();
+    DBG("Formats mismatch, iterating input formats (%zu)",
+        tfit->second.size());
+    // No matching format found, try to add the format converter first
+    for (auto ctoritfmt : tfit->second) {
+      auto t = ctoritfmt.second();
+      DBG("Probing %s -> %s",
+          (*currentNode)->BoundTransform->OutputFormat()->Id().c_str(),
+          t->InputFormat()->Id().c_str());
+      auto convName = FormatConverter::Name(
+          *(*currentNode)->BoundTransform->OutputFormat(), *t->InputFormat());
+      try {
+        AddTransform(convName, "", relatedFeature, currentNode);
+      }
+      catch (const TransformNotRegisteredException&) {
+        continue;
+      }
+      ctor = ctoritfmt.second;
+      break;
+    }
+  } else {
+    ctor = ctorit->second;
   }
-  auto ctor = ctorit->second;
+  if (ctor == nullptr) {
+    throw IncompatibleTransformFormatException(*(*currentNode)->BoundTransform,
+                                               name);
+  }
 
   // Create the transform "name"
   auto t = ctor();
   {
     auto tparams = Transform::Parse(parameters);
     t->SetParameters(tparams);
-  }
-
-  // Add the format converter, if needed
-  if (*t->InputFormat() != *(*currentNode)->BoundTransform->OutputFormat()) {
-    DBG("Formats mismatch (%s -> %s), probing for a suitable converter",
-        (*currentNode)->BoundTransform->OutputFormat()->Id().c_str(),
-        t->InputFormat()->Id().c_str());
-    auto convName = FormatConverter::Name(
-        *(*currentNode)->BoundTransform->OutputFormat(), *t->InputFormat());
-    AddTransform(convName, "", relatedFeature, currentNode);
   }
 
   // Try to reuse the already existing transform

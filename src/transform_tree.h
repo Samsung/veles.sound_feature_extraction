@@ -47,12 +47,10 @@ class TransformNotRegisteredException : public ExceptionBase {
 class IncompatibleTransformFormatException : public ExceptionBase {
  public:
   IncompatibleTransformFormatException(const Transform& parent,
-                                       const Transform& child)
-  : ExceptionBase("Transform \"" + child.Name() + "\" has input format \"" +
-                  child.InputFormat()->Id() +
-                  "\", while the previous transform \"" +
-                  parent.Name() + "\" has output format \"" +
-                  parent.OutputFormat()->Id() + "\".") {
+                                       const std::string& child)
+  : ExceptionBase("Transform \"" + child + "\" is incompatible with "
+                  "output format \"" + parent.OutputFormat()->Id() +
+                  "\" of transform \"" + parent.Name() + "\".") {
   }
 };
 
