@@ -52,6 +52,12 @@ class BufferFormatBase : public BufferFormat {
     ValidateSamplingRate(samplingRate_);
   }
 
+  BufferFormatBase(const BufferFormatBase& other)
+      : BufferFormat(other.Id()),
+        samplingRate_(other.samplingRate_),
+        incompatible_(false) {
+  }
+
   virtual std::function<void(void*)> Destructor()  // NOLINT(*)
       const noexcept override final {
     return [](void* ptr) {  // NOLINT(whitespace/braces)
