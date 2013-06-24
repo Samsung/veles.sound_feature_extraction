@@ -23,14 +23,37 @@ using SoundFeatureExtraction::BuffersBase;
 TEST(Features, MusicalSurface) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
   tt.SetValidateAfterEachTransform(true);
-  tt.AddFeature("Energy", { { "Window", "length=512" }, { "Energy", "" } });
-  tt.AddFeature("Centroid", { { "Window", "length=512" }, { "RDFT", "" },
-      { "ComplexMagnitude", "" }, { "Centroid", "" } });
-  tt.AddFeature("Rolloff", { { "Window", "length=512" }, { "RDFT", "" },
-      { "ComplexMagnitude", "" }, { "Rolloff", "" } });
-  tt.AddFeature("Flux", { { "Window", "length=512" }, { "RDFT", "" },
-      { "ComplexMagnitude", "" }, { "Flux", "" } });
-  tt.AddFeature("ZeroCrossings", { { "ZeroCrossings", "" } });
+  tt.AddFeature("Centroid", {
+      { "Window", "length=512,step=205" },
+      { "RDFT", "" },
+      { "ComplexMagnitude", "" },
+      { "Centroid", "" },
+      { "Stats", "" }
+  });
+  tt.AddFeature("Rolloff", {
+      { "Window", "length=512,step=205" },
+      { "RDFT", "" },
+      { "ComplexMagnitude", "" },
+      { "Rolloff", "" },
+      { "Stats", "" }
+  });
+  tt.AddFeature("Flux", {
+      { "Window", "length=512,step=205" },
+      { "RDFT", "" },
+      { "ComplexMagnitude", "" },
+      { "Flux", "" },
+      { "Stats", "" }
+  });
+  tt.AddFeature("Energy", {
+      { "Window", "length=512,step=205" },
+      { "Energy", "" },
+      { "Stats", "" }
+  });
+  tt.AddFeature("ZeroCrossings", {
+      { "Window", "type=rectangular,length=512,step=205" },
+      { "ZeroCrossings", "" },
+      { "Stats", "" }
+  });
   Raw16 buffers(48000, 0);
   memcpy(buffers.Data.get(), data, sizeof(data));
   tt.PrepareForExecution();
