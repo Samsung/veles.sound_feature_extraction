@@ -37,7 +37,8 @@ struct ParameterTraits {
 
 class Parameterizable {
  public:
-  virtual ~Parameterizable() {}
+  virtual ~Parameterizable() {
+ }
 
   virtual const std::unordered_map<std::string, ParameterTraits>&
   SupportedParameters() const noexcept = 0;

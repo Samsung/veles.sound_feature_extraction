@@ -28,7 +28,7 @@ const std::string Logger::kDefaultLoggerColor =
 
 Logger::Logger(const std::string &domain = "default",
                const std::string &color = kDefaultLoggerColor,
-               bool suppressLoggingInitialized)
+               bool suppressLoggingInitialized) noexcept
     : log_domain_(kUnintializedLogDomain_)
     , domain_str_(domain)
     , color_(color)
@@ -38,7 +38,7 @@ Logger::Logger(const std::string &domain = "default",
 #endif
 }
 
-Logger::Logger(const Logger& other)
+Logger::Logger(const Logger& other) noexcept
     : log_domain_(kUnintializedLogDomain_)
     , domain_str_(other.domain_str_)
     , color_(other.color_)
@@ -48,7 +48,7 @@ Logger::Logger(const Logger& other)
 #endif
 }
 
-Logger::Logger(Logger&& other)
+Logger::Logger(Logger&& other) noexcept
     : log_domain_(kUnintializedLogDomain_)
     , domain_str_(std::move(std::forward<std::string>(
         other.domain_str_)))
@@ -61,18 +61,18 @@ Logger::Logger(Logger&& other)
 #endif
 }
 
-Logger& Logger::operator=(const Logger& other) {
-  log_domain_ = (kUnintializedLogDomain_)
-    , domain_str_ = (other.domain_str_)
-    , color_ = (other.color_)
-    , suppressLoggingInitialized_ = (other.suppressLoggingInitialized_);
+Logger& Logger::operator=(const Logger& other) noexcept {
+  log_domain_ = (kUnintializedLogDomain_);
+  domain_str_ = (other.domain_str_);
+  color_ = (other.color_);
+  suppressLoggingInitialized_ = (other.suppressLoggingInitialized_);
 #ifdef EINA
   Initialize();
 #endif
   return *this;
 }
 
-Logger& Logger::operator=(Logger&& other) {
+Logger& Logger::operator=(Logger&& other) noexcept {
   log_domain_ = (kUnintializedLogDomain_);
   domain_str_ = (std::move(std::forward<std::string>(
         other.domain_str_)));
@@ -94,7 +94,7 @@ Logger::~Logger() {
 
 #ifdef EINA
 
-void Logger::Initialize() {
+void Logger::Initialize() noexcept {
   Deinitialize();
   eina_init();
   eina_log_threads_enable();
@@ -118,7 +118,7 @@ void Logger::Initialize() {
   delete[] fullDomain;
 }
 
-void Logger::Deinitialize() {
+void Logger::Deinitialize() noexcept {
   if (log_domain_ != kUnintializedLogDomain_ &&
       log_domain_ != EINA_LOG_DOMAIN_GLOBAL) {
     if (!suppressLoggingInitialized_) {
@@ -131,29 +131,29 @@ void Logger::Deinitialize() {
 
 #endif
 
-int Logger::log_domain() const {
+int Logger::log_domain() const noexcept {
 #ifdef EINA
   assert(log_domain_ != kUnintializedLogDomain_);
 #endif
   return log_domain_;
 }
 
-std::string Logger::domain_str() const {
+std::string Logger::domain_str() const noexcept {
   return domain_str_;
 }
 
-void Logger::set_domain_str(const std::string &value) {
+void Logger::set_domain_str(const std::string &value) noexcept {
   domain_str_ = value;
 #ifdef EINA
   Initialize();
 #endif
 }
 
-std::string Logger::color() const {
+std::string Logger::color() const noexcept {
   return color_;
 }
 
-void Logger::set_color(const std::string &value) {
+void Logger::set_color(const std::string &value) noexcept {
   color_ = value;
 #ifdef EINA
   Initialize();

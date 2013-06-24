@@ -13,9 +13,9 @@
 #ifndef SRC_FORMATS_WINDOW_FORMAT_H_
 #define SRC_FORMATS_WINDOW_FORMAT_H_
 
+#include <simd/memory.h>
 #include "src/attributes.h"
 #include "src/buffers_base.h"
-#include <simd/memory.h>
 
 namespace SoundFeatureExtraction {
 namespace Formats {
@@ -84,7 +84,8 @@ typedef Window<float> WindowF;
 template <class T>
 class WindowFormat
     : public BufferFormatBase<Window<T>>,
-      public Attributes
+      public Attributes,
+      public FormatLogger<WindowFormat<T>>
 {
  public:
   typedef T BufferElementType;
@@ -196,7 +197,7 @@ class WindowFormat
         allZeros &= (value == 0);
       }
       if (allZeros) {
-        throw InvalidBuffersException(this->Id(), i, "all zeros");
+        WRN("%s", InvalidBuffersException(this->Id(), i, "all zeros").what());
       }
     }
   }

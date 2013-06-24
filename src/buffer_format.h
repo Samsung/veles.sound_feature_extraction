@@ -46,8 +46,6 @@ class BufferFormat {
   BufferFormat(const BufferFormat& other) noexcept;
   BufferFormat& operator=(const BufferFormat& other) noexcept;
 
-  virtual ~BufferFormat() noexcept {}
-
   virtual const std::string& Id() const noexcept;
 
   bool operator==(const BufferFormat& other) const noexcept;

@@ -26,7 +26,8 @@ class ExceptionBase : public std::exception {
   explicit ExceptionBase(const std::string& message) noexcept
   : message_(message) {}
 
-  virtual ~ExceptionBase() noexcept {}
+  virtual ~ExceptionBase() noexcept {
+  }
 
   virtual const char* what() const noexcept {
     return message_.c_str();

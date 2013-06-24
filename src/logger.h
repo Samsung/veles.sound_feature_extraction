@@ -83,27 +83,27 @@ namespace SoundFeatureExtraction {
 class Logger {
  public:
   Logger(const std::string &domain, const std::string &color,
-         bool suppressLoggingInitialized = true);
+         bool suppressLoggingInitialized = true) noexcept;
 
-  Logger(const Logger& other);
+  Logger(const Logger& other) noexcept;
 
-  Logger(Logger&& other);
+  Logger(Logger&& other) noexcept;
 
-  Logger& operator=(const Logger& other);
+  Logger& operator=(const Logger& other) noexcept;
 
-  Logger& operator=(Logger&& other);
+  Logger& operator=(Logger&& other) noexcept;
 
   virtual ~Logger();
 
-  int log_domain() const;
+  int log_domain() const noexcept;
 
-  std::string domain_str() const;
+  std::string domain_str() const noexcept;
 
-  void set_domain_str(const std::string &value);
+  void set_domain_str(const std::string &value) noexcept;
 
-  std::string color() const;
+  std::string color() const noexcept;
 
-  void set_color(const std::string &value);
+  void set_color(const std::string &value) noexcept;
 
  protected:
   static const int kUnintializedLogDomain_ = -1;
@@ -116,8 +116,8 @@ class Logger {
   bool suppressLoggingInitialized_;
 
 #ifdef EINA
-  void Initialize();
-  void Deinitialize();
+  void Initialize() noexcept;
+  void Deinitialize() noexcept;
 #endif
 };
 

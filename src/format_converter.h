@@ -19,8 +19,6 @@ namespace SoundFeatureExtraction {
 
 class FormatConverter : public virtual Transform {
  public:
-  virtual ~FormatConverter() {}
-
   virtual const std::string& Name() const noexcept;
 
   virtual const std::string& Description() const noexcept;

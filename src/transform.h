@@ -23,7 +23,8 @@ namespace SoundFeatureExtraction {
 /// @brief Transform abstract class.
 class Transform : public virtual Parameterizable {
  public:
-  virtual ~Transform() {}
+  virtual ~Transform() {
+ }
 
   /// @defgroup PureVirt Pure virtual interface methods
   /// @{

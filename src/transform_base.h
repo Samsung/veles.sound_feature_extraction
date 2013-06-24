@@ -36,8 +36,6 @@ class TransformBaseCommon : public virtual Transform,
         outputFormat_(std::make_shared<FOUT>()) {
   }
 
-  virtual ~TransformBaseCommon() {}
-
   virtual const std::shared_ptr<BufferFormat> InputFormat()
       const noexcept override final {
     if (!IsInverse() || *inputFormat_ == *outputFormat_) {
@@ -312,8 +310,8 @@ virtual const std::string& Description() const noexcept override final { \
 template<class T>
 class TransformLogger : public Logger {
  public:
-  TransformLogger() : Logger(std::demangle(typeid(T).name()),
-                             EINA_COLOR_LIGHTBLUE) {
+  TransformLogger() noexcept : Logger(std::demangle(typeid(T).name()),
+                                      EINA_COLOR_LIGHTBLUE) {
   }
 };
 

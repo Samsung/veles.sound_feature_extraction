@@ -151,6 +151,9 @@ float Stats::CalculateSkew(const float* rawMoments) noexcept {
   float avg2 = rawMoments[1];
   float avg3 = rawMoments[2];
   double u2 = avg2 - avg1 * avg1;
+  if (u2 == 0) {
+    return 0;
+  }
   double u3 = avg3 - 3 * avg2 * avg1 + 2 * avg1 * avg1 * avg1;
   return u3 / (sqrt(u2) * u2);
 }
@@ -161,6 +164,9 @@ float Stats::CalculateKurtosis(const float* rawMoments) noexcept {
   float avg3 = rawMoments[2];
   float avg4 = rawMoments[3];
   double u2 = avg2 - avg1 * avg1;
+  if (u2 == 0) {
+    return 1e10f;
+  }
   double u4 = avg4 - 4 * avg3 * avg1 + 6 * avg2 * avg1 * avg1
       - 3 * avg1 * avg1 * avg1 * avg1;
   return u4 / (u2 * u2) - 3;

@@ -33,7 +33,7 @@ class Attributes {
   Attributes() : attrs_(std::make_shared<AttributesMap>()) {
   }
 
-  virtual ~Attributes() noexcept {
+  virtual ~Attributes() {
   }
 
   template<typename T>

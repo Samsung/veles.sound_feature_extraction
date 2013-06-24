@@ -13,11 +13,11 @@
 #ifndef SRC_FORMATS_RAW_FORMAT_H_
 #define SRC_FORMATS_RAW_FORMAT_H_
 
+#include <simd/memory.h>
 #include <memory>
 #include "src/config.h"
 #include "src/buffers_base.h"
 #include "src/exceptions.h"
-#include <simd/memory.h>
 
 namespace SoundFeatureExtraction {
 namespace Formats {
@@ -83,7 +83,9 @@ typedef Raw<int32_t> Raw32;
 typedef Raw<float> RawF;
 
 template <typename T>
-class RawFormat : public BufferFormatBase<Raw<T>> {
+class RawFormat
+    : public BufferFormatBase<Raw<T>>,
+      public FormatLogger<RawFormat<T>> {
  public:
   typedef T BufferElementType;
 
@@ -146,7 +148,7 @@ class RawFormat : public BufferFormatBase<Raw<T>> {
         allZeros &= (value == 0);
       }
       if (allZeros) {
-        throw InvalidBuffersException(this->Id(), i, "all zeros");
+        WRN("%s", InvalidBuffersException(this->Id(), i, "all zeros").what());
       }
     }
   }

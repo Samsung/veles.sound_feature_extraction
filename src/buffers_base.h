@@ -18,6 +18,7 @@
 #include "src/buffer_format.h"
 #include "src/buffers.h"
 #include "src/demangle.h"
+#include "src/logger.h"
 
 namespace SoundFeatureExtraction {
 
@@ -181,9 +182,6 @@ class BuffersBase : public Buffers {
     initialized_ = true;
   }
 
-  virtual ~BuffersBase() noexcept {
-  }
-
   T& operator[](int index) noexcept {
     return *reinterpret_cast<T*>(Buffers::operator [](index));  // NOLINT(*)
   }
@@ -201,6 +199,14 @@ private:
   BuffersBase& operator=(const BuffersBase<T>& other) = delete;
 
   bool initialized_;
+};
+
+template<class T>
+class FormatLogger : public Logger {
+ public:
+  FormatLogger() noexcept : Logger(std::demangle(typeid(T).name()),
+                                   EINA_COLOR_ORANGE) {
+  }
 };
 
 }  // namespace SoundFeatureExtraction
