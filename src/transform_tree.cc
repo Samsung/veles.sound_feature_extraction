@@ -21,6 +21,10 @@
 #include "src/format_converter.h"
 #include "src/transform_registry.h"
 
+/// @brief Temporary fix for a buggy system_clock implementation in libstdc++.
+/// @see http://gcc.1065356.n5.nabble.com/patch-Default-to-enable-libstdcxx-time-auto-td940166i40.html
+#define BUGGY_SYSTEM_CLOCK_FIX 1000.f
+
 namespace SoundFeatureExtraction {
 
 class RootTransform : public Transform {
@@ -382,9 +386,7 @@ TransformTree::Execute(const Formats::Raw16& in) {
   root_->Execute();
   auto checkPointFinish = std::chrono::high_resolution_clock::now();
   auto allDuration = checkPointFinish - checkPointStart;
-  INF("Finished. Execution took %f s",
-      (allDuration.count() + 0.f) /
-          std::chrono::high_resolution_clock::period().den);
+  INF("Finished. Execution took %f s", ConvertDuration(allDuration));
   auto otherDuration = allDuration;
   for (auto cit : transformsCache_) {
     otherDuration -= cit.second.ElapsedTime;
@@ -438,15 +440,14 @@ TransformTree::ExecutionTimeReport() const noexcept {
   if (allIt == transformsCache_.end()) {
     return ret;
   }
-  auto allTime = allIt->second.ElapsedTime.count();
+  auto allTime = allIt->second.ElapsedTime;
   for (auto cit : transformsCache_) {
     if (cit.first != "All") {
       ret.insert(std::make_pair(
-          cit.first, (cit.second.ElapsedTime.count() + 0.f) / allTime));
+          cit.first, (cit.second.ElapsedTime.count() + 0.f) / allTime.count()));
     } else {
       ret.insert(std::make_pair(
-          cit.first,
-          (allTime + 0.f) / std::chrono::high_resolution_clock::period().den));
+          cit.first, ConvertDuration(allTime)));
     }
   }
   return std::move(ret);
@@ -469,9 +470,7 @@ void TransformTree::Dump(const std::string& dotFileName) const {
   }
   float redShift = redThreshold * maxTimeRatio;
   const int initialLight = 0x30;
-  auto allTime = timeReport["All"] *
-      std::chrono::high_resolution_clock::period().den;
-
+  auto allTime = timeReport["All"];
   std::ofstream fw;
   fw.exceptions(std::ifstream::failbit | std::ifstream::badbit);
   fw.open(dotFileName);
@@ -495,7 +494,8 @@ void TransformTree::Dump(const std::string& dotFileName) const {
     if (includeTime) {
       fw << "<b>"
           << std::to_string(static_cast<int>(
-              (roundf((node.ElapsedTime.count() * 100.f) / allTime))))
+              (roundf((node.ElapsedTime.count() * 100.f *
+                  BUGGY_SYSTEM_CLOCK_FIX ) / allTime))))
           << "% ("
           << std::to_string(static_cast<int>(roundf(
               timeReport[t->Name()] * 100.f)))
@@ -528,14 +528,13 @@ void TransformTree::Dump(const std::string& dotFileName) const {
           "fillcolor=\"#85b3de\", label=<" << feature;
       if (includeTime) {
         fw << "<br /><font point-size=\"10\">";
-        auto featureTime = node.ElapsedTime.count();
+        auto featureTime = node.ElapsedTime;
         node.ActionOnEachParent([&](const Node& parent) {
-          featureTime += parent.ElapsedTime.count()
-              / parent.RelatedFeatures.size();
+          featureTime += parent.ElapsedTime / parent.RelatedFeatures.size();
         });
         fw << "<b>"
           << std::to_string(static_cast<int>(
-              (roundf((featureTime * 100.f) / allTime))))
+              (roundf((ConvertDuration(featureTime) * 100.f) / allTime))))
           << "%</b></font>";
       }
       fw << ">]" << std::endl;
@@ -589,6 +588,13 @@ bool TransformTree::DumpBuffersAfterEachTransform() const noexcept {
 
 void TransformTree::SetDumpBuffersAfterEachTransform(bool value) noexcept {
   dumpBuffersAfterEachTransform_ = value;
+}
+
+float TransformTree::ConvertDuration(
+    const std::chrono::high_resolution_clock::duration& d) noexcept {
+  return (d.count() + 0.f) * BUGGY_SYSTEM_CLOCK_FIX *
+      std::chrono::high_resolution_clock::period::num /
+      std::chrono::high_resolution_clock::period::den;
 }
 
 }  // namespace SoundFeatureExtraction

@@ -186,6 +186,9 @@ class TransformTree : public Logger {
       const Transform& base) noexcept;
   void SaveTransformToCache(const std::shared_ptr<Transform>& t) noexcept;
 
+  static float ConvertDuration(
+      const std::chrono::high_resolution_clock::duration& d) noexcept;
+
   std::shared_ptr<Node> root_;
   std::shared_ptr<Formats::RawFormat16> rootFormat_;
   bool treeIsPrepared_;
