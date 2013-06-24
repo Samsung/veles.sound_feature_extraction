@@ -29,16 +29,16 @@ class Formatters(object):
                 return conv_array[0]
 
         if format_name.find("FixedArray<") > -1:
-            length_pos = format_name.find(")") + 1
+            length_pos = format_name.find(")")
             comma_pos = format_name.find(",")
             length = int(format_name[length_pos + 1:comma_pos])
             atype = format_name[comma_pos + 2:
-                                format_name.length - 1]
+                                len(format_name) - 1]
             res = Formatters.reinterpret_cast(array, atype)
-            if res.size != length:
+            if res.size % length != 0:
                 logging.error("Format size mismatch: real " + res.size +
-                              " vs stated " + length + " (format " +
-                              format_name + ")")
+                              " is not a multiple of " + length +
+                              " (format " + format_name + ")")
             return res
         if format_name.startswith("Window<"):
             atype = format_name[7:len(format_name) - 1]

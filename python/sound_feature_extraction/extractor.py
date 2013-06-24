@@ -92,6 +92,7 @@ class Extractor(object):
         null_results = POINTER(c_void_p)()
         Library().free_results(len(self.features), fnames, null_results,
                                rlengths)
+        logging.debug("Freed the service information")
         return ret
 
     def free_results(self, results):
