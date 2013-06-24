@@ -118,7 +118,7 @@ class WindowFormat
   }
 
   float Duration() const noexcept {
-    return size_ * 2 / this->SamplingRate();
+    return size_ * 2.f / this->SamplingRate();
   }
 
   void SetDuration(float value) {
