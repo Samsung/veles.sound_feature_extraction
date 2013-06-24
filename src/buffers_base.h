@@ -139,6 +139,27 @@ class BufferFormatBase : public BufferFormat {
   bool incompatible_;
 };
 
+namespace Validation {
+  template <class TE>
+  struct Validator {
+    static bool Validate(const TE&) noexcept {
+      return true;
+    }
+
+    static bool Validate(TE&&) noexcept {
+      return true;
+    }
+  };
+
+  template <>
+  struct Validator<float> {
+    static bool Validate(float value) noexcept {
+      return value == value && value != __builtin_inff() &&
+        value != -__builtin_inff();
+    }
+  };
+}  // namespace Validation
+
 template <typename T>
 class BuffersBase : public Buffers {
  public:

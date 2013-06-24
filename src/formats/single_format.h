@@ -39,13 +39,13 @@ struct FixedArray {
     return Data[index];
   }
 
-  bool operator!=(const FixedArray& other) {
+  bool Validate() const noexcept {
     for (int i = 0; i < L; i++) {
-      if (Data[i] != other[i]) {
-        return true;
+      if (!Validation::Validator<F>::Validate(this->Data[i])) {
+        return false;
       }
     }
-    return false;
+    return true;
   }
 };
 
@@ -106,7 +106,7 @@ class SingleFormat : public BufferFormatBase<T> {
       : BufferFormatBase<T>(other) {
   }
 
-  virtual const std::string& Id() const noexcept {
+  virtual const std::string& Id() const noexcept override final {
     static const std::string id(std::demangle(typeid(T).name()));
     return id;
   }
@@ -119,31 +119,80 @@ class SingleFormat : public BufferFormatBase<T> {
     return *this;
   }
 
-  virtual size_t PayloadSizeInBytes() const noexcept {
+  virtual size_t PayloadSizeInBytes() const noexcept override {
     return sizeof(T);
   }
 
  protected:
   virtual bool MustReallocate(const BufferFormatBase<T>& other UNUSED)
-      const noexcept {
+      const noexcept override {
     return false;
   }
 
-  virtual const void* PayloadPointer(const T& item) const noexcept {
+  virtual const void* PayloadPointer(const T& item) const noexcept override {
     return &item;
   }
 
-  virtual void Validate(const BuffersBase<T>& buffers) const {
+  template <class F>
+  static typename std::enable_if<std::is_arithmetic<F>::value>::type
+  SpecializedValidate(const BuffersBase<F>& buffers,
+                      const std::string& id) {
     for (size_t i = 0; i < buffers.Size(); i++) {
-      T value = buffers[i];
-      if (value != value) {
-        throw InvalidBuffersException(this->Id(), i,
+      F value = buffers[i];
+      if (!Validation::Validator<F>::Validate(value)) {
+        throw InvalidBuffersException(id, i,
                                       std::to_string(value));
       }
     }
   }
 
-  virtual std::string Dump(const BuffersBase<T>& buffers) const noexcept {
+  template<uint8_t L, typename F = float>
+  static void SpecializedValidate(const BuffersBase<FixedArray<L, F>>& buffers,
+                                  const std::string& id) {
+    for (size_t i = 0; i < buffers.Size(); i++) {
+      T value = buffers[i];
+      if (!value.Validate()) {
+        throw InvalidBuffersException(id, i,
+                                      std::to_string(value));
+      }
+    }
+  }
+
+
+  template<std::size_t I, typename... TP>
+  static typename std::enable_if<I == sizeof...(TP), bool>::type
+  ValidateTupleElement(const std::tuple<TP...>&) noexcept {
+    return true;
+  }
+
+  template<std::size_t I = 0, typename... TP>
+  static typename std::enable_if<I < sizeof...(TP), bool>::type
+  ValidateTupleElement(const std::tuple<TP...>& t) noexcept {
+    return Validation::
+        Validator<typename std::tuple_element<I, std::tuple<TP...>>::type>::
+        Validate(std::get<I>(t)) &
+        ValidateTupleElement<I + 1, TP...>(t);
+  }
+
+
+  template<typename... Args>
+  static void SpecializedValidate(
+      const BuffersBase<std::tuple<Args...>>& buffers,
+      const std::string& id) {
+    for (size_t i = 0; i < buffers.Size(); i++) {
+      const T& value = buffers[i];
+      if (!ValidateTupleElement(value)) {
+          throw InvalidBuffersException(id, i, std::to_string(value));
+      }
+    }
+  }
+
+  void Validate(const BuffersBase<T>& buffers) const {
+    SpecializedValidate(buffers, this->Id());
+  }
+
+  virtual std::string Dump(const BuffersBase<T>& buffers)
+      const noexcept override {
     std::string ret;
     for (size_t i = 0; i < buffers.Size(); i++) {
       auto indexStr = std::to_string(i);

@@ -188,7 +188,7 @@ class WindowFormat
       bool allZeros = true;
       for (size_t j = 0; j < size_; j++) {
         T value = buffers[i].Data.get()[j];
-        if (value != value) {
+        if (!Validation::Validator<T>::Validate(value)) {
           throw InvalidBuffersException(this->Id(), i,
                                         std::string("[") + std::to_string(j) +
                                         "] = " + std::to_string(value));
