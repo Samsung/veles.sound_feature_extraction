@@ -168,6 +168,8 @@ void TransformTree::Node::AllocateBuffers(size_t visitedChildrenCount) noexcept 
                                                BoundTransform->OutputFormat());
     } else {
       // Honestly allocate the buffers
+      DBG("Allocating new %s buffers",
+          BoundTransform->OutputFormat()->Id().c_str());
       BoundBuffers = BoundTransform->CreateOutputBuffers(
           *Parent->BoundBuffers);
     }
@@ -198,6 +200,10 @@ void TransformTree::Node::Execute() {
         BoundBuffers->Validate();
       }
       catch(const InvalidBuffersException& e) {
+#ifdef DEBUG
+        DBG("----Buffers before----\n%s\n\n----Buffers after----\n%s\n",
+            Parent->BoundBuffers->Dump().c_str(), BoundBuffers->Dump().c_str());
+#endif
         throw TransformResultedInInvalidBuffersException(BoundTransform->Name(),
                                                          e.what());
       }

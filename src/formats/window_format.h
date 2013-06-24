@@ -222,7 +222,7 @@ class WindowFormat
       }
       ret += "\n";
     }
-    return ret;
+    return std::move(ret);
   }
 
   static constexpr size_t MIN_WINDOW_DURATION() {
