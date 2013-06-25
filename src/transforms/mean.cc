@@ -66,7 +66,7 @@ void Mean::Do(const Formats::WindowF& in,
   for (int j = 0; j < MEAN_TYPE_COUNT; j++) {
     auto mt = static_cast<MeanTypes>(j);
     if (types_.find(mt) != types_.end()) {
-      (*out)[j] = Do(true, in.Data.get(), inputFormat_->Size(), mt);
+      (*out)[j] = Do(UseSimd(), in.Data.get(), inputFormat_->Size(), mt);
     } else {
       (*out)[j] = 0;
     }

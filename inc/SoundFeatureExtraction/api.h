@@ -104,6 +104,10 @@ int get_omp_transforms_max_threads_num();
 
 void set_omp_transforms_max_threads_num(int value);
 
+bool get_use_simd();
+
+void set_use_simd(int value);
+
 #if __GNUC__ >= 4
 #pragma GCC visibility pop
 #endif

@@ -17,6 +17,7 @@
 #include "src/features_parser.h"
 #include "src/make_unique.h"
 #include "src/safe_omp.h"
+#include "src/simd_transform.h"
 #include "src/transform_tree.h"
 #include "src/transform_registry.h"
 
@@ -33,6 +34,7 @@ using SoundFeatureExtraction::Formats::RawFormat16;
 using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Buffers;
+using SoundFeatureExtraction::SimdTransform;
 
 extern "C" {
 struct FeaturesConfiguration {
@@ -432,6 +434,14 @@ int get_omp_transforms_max_threads_num() {
 void set_omp_transforms_max_threads_num(int value) {
   get_set_omp_transforms_max_threads_num(&value, false);
   fftf_set_openmp_num_threads(get_omp_transforms_max_threads_num());
+}
+
+bool get_use_simd() {
+  return SimdTransform::UseSimd();
+}
+
+void set_use_simd(int value) {
+  SimdTransform::SetUseSimd(value);
 }
 
 }

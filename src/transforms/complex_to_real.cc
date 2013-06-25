@@ -33,7 +33,7 @@ void ComplexToReal::InitializeBuffers(
 
 void ComplexToReal::Do(const Formats::WindowF& in,
     Formats::WindowF* out) const noexcept {
-  Do(true, in.Data.get(), inputFormat_->Size(), out->Data.get());
+  Do(UseSimd(), in.Data.get(), inputFormat_->Size(), out->Data.get());
 }
 
 void ComplexToReal::Do(bool simd, const float* input, int length,

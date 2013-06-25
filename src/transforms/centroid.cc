@@ -29,7 +29,7 @@ void Centroid::InitializeBuffers(
 
 void Centroid::Do(const Formats::WindowF& in,
                   float* out) const noexcept {
-  *out = Do(true, in.Data.get(), inputFormat_->Size()) /
+  *out = Do(UseSimd(), in.Data.get(), inputFormat_->Size()) /
       inputFormat_->Duration();
 }
 

@@ -39,7 +39,7 @@ void SquareRaw::Do(
     const BuffersBase<Formats::Raw16>& in,
     BuffersBase<Formats::Raw32>* out) const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
-    Do(true, in[i].Data.get(), outputFormat_->Size(), (*out)[i].Data.get());
+    Do(UseSimd(), in[i].Data.get(), outputFormat_->Size(), (*out)[i].Data.get());
   }
 }
 
@@ -90,7 +90,7 @@ void SquareWindow::InitializeBuffers(
 void SquareWindow::Do(const Formats::WindowF& in,
                       Formats::WindowF* out) const noexcept {
   assert(!IsInverse() && "Not implemented yet");
-  Do(true, in.Data.get(), outputFormat_->Size(), out->Data.get());
+  Do(UseSimd(), in.Data.get(), outputFormat_->Size(), out->Data.get());
 }
 
 void SquareWindow::Do(bool simd, const float* input, int length,

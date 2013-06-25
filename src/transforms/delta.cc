@@ -54,7 +54,7 @@ void Delta::Do(const BuffersBase<Formats::WindowF>& in,
   switch (type_) {
     case kTypeSimple:
       for (size_t i = 1; i < in.Size(); i++) {
-        DoSimple(true, in[i - 1].Data.get(), in[i].Data.get(),
+        DoSimple(UseSimd(), in[i - 1].Data.get(), in[i].Data.get(),
                  inputFormat_->Size(), (*out)[i].Data.get());
       }
       for (size_t i = 0; i < inputFormat_->Size(); i++) {
@@ -65,12 +65,12 @@ void Delta::Do(const BuffersBase<Formats::WindowF>& in,
       int rstep = rlength_ / 2;
       float norm = 2 * rstep * (rstep + 1) * (2 * rstep + 1) / 6;
       for (size_t i = rstep; i < in.Size() - rstep; i++) {
-        DoRegression(true, in, rstep, i, norm, inputFormat_->Size(), out);
+        DoRegression(UseSimd(), in, rstep, i, norm, inputFormat_->Size(), out);
       }
       for (size_t i = rstep - 1; i > 0; i--) {
         norm = 2 * i * (i + 1) * (2 * i + 1) / 6;
-        DoRegression(true, in, i, i, norm, inputFormat_->Size(), out);
-        DoRegression(true, in, in.Size() - i, i, norm, inputFormat_->Size(),
+        DoRegression(UseSimd(), in, i, i, norm, inputFormat_->Size(), out);
+        DoRegression(UseSimd(), in, in.Size() - i, i, norm, inputFormat_->Size(),
                      out);
       }
       for (size_t i = 0; i < inputFormat_->Size(); i++) {

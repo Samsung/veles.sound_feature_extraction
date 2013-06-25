@@ -42,7 +42,7 @@ void Rolloff::InitializeBuffers(
 
 void Rolloff::Do(const Formats::WindowF& in,
                  float* out) const noexcept {
-  *out = Do(true, in.Data.get(), inputFormat_->Size(), ratio_) /
+  *out = Do(UseSimd(), in.Data.get(), inputFormat_->Size(), ratio_) /
       inputFormat_->Duration();
 }
 

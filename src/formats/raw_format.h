@@ -158,8 +158,8 @@ class RawFormat
     for (size_t i = 0; i < buffers.Size(); i++) {
       ret += "----" + std::to_string(i) + "----\n";
       for (size_t j = 0; j < size_; j++) {
-        auto strval = std::to_string(buffers[i].Data.get()[j]);
-        size_t sizeLimit = 24;
+        auto strval = std::to_string(buffers[i][j]);
+        size_t sizeLimit = 16;
         if (strval[0] != '-') {
           ret += ' ';
           sizeLimit--;

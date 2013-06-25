@@ -103,7 +103,7 @@ void LogWindow::InitializeBuffers(
 void LogWindow::Do(const Formats::WindowF& in,
                   Formats::WindowF* out) const noexcept {
   assert(!this->IsInverse() && "Not implemented yet");
-  Do(true, in.Data.get(), this->inputFormat_->Size(),
+  Do(UseSimd(), in.Data.get(), this->inputFormat_->Size(),
      out->Data.get());
 }
 

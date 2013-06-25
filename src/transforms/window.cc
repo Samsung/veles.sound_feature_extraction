@@ -110,7 +110,7 @@ const noexcept {
   for (size_t i = 0; i < in.Size(); i++) {
     auto input = in[i].Data.get();
     auto output = (*out)[i].Data.get();
-    ApplyWindow(true, window, length, input, output);
+    ApplyWindow(UseSimd(), window, length, input, output);
   }
 }
 
@@ -138,7 +138,7 @@ const noexcept {
 #else
         int16_to_float(input, outputFormat_->Size(), fbuf);
 #endif
-        Window::ApplyWindow(true, window, outputFormat_->Size(), fbuf, fbuf);
+        Window::ApplyWindow(UseSimd(), window, outputFormat_->Size(), fbuf, fbuf);
         float_to_int16(fbuf, outputFormat_->Size(), output);
       } else {  // type_ != WINDOW_TYPE_RECTANGULAR
         memcpy(output, input, outputFormat_->Size() * sizeof(input[0]));
@@ -155,7 +155,7 @@ const noexcept {
       auto input = in[i].Data.get() + j * step_;
       auto output = (*out)[i * windowsCount_ + j].Data.get();
       if (type_ != WINDOW_TYPE_RECTANGULAR) {
-        Window::ApplyWindow(true, window_.get(), outputFormat_->Size(),
+        Window::ApplyWindow(UseSimd(), window_.get(), outputFormat_->Size(),
                             input, output);
       } else {
         memcpy(output, input, outputFormat_->Size() * sizeof(input[0]));

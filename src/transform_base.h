@@ -18,6 +18,7 @@
 #include "src/buffers_base.h"
 #include "src/logger.h"
 #include "src/parameters_base.h"
+#include "src/simd_transform.h"
 #include "src/transform_registry.h"
 
 namespace SoundFeatureExtraction {
@@ -28,7 +29,8 @@ class TransformBase;
 template <typename FIN, typename FOUT>
 class TransformBaseCommon : public virtual Transform,
                             public virtual ParameterizableBase,
-                            public virtual InverseParameterAware {
+                            public virtual InverseParameterAware,
+                            public virtual SimdTransform {
   friend class TransformBase<FIN, FOUT, true>;
  public:
   TransformBaseCommon() noexcept

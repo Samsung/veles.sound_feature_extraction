@@ -26,7 +26,7 @@ void Energy::InitializeBuffers(
 void Energy::Do(const Formats::WindowF& in,
                 float* out) const noexcept {
   int length = inputFormat_->Size();
-  *out = calculate_energy(true, in.Data.get(), length);
+  *out = calculate_energy(UseSimd(), in.Data.get(), length);
 }
 
 REGISTER_TRANSFORM(Energy);

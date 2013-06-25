@@ -66,7 +66,7 @@ class Beat : public TransformBase<F, Formats::SingleFormatF> {
           X[i] = input[i] + (i >= period ? X[i - period] : 0) -
               (i >= period * pulses ? input[i - period * pulses] : 0);
         }
-        curEnergy = calculate_energy(true, X, length);
+        curEnergy = calculate_energy(Beat::UseSimd(), X, length);
         if (curEnergy > maxEnergy) {
           maxEnergy = curEnergy;
           result = beatPerMinute;

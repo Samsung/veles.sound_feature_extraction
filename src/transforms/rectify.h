@@ -39,7 +39,7 @@ class RectifyTemplate
  protected:
   virtual void Do(const typename F::BufferType& in,
                   typename F::BufferType* out) const noexcept {
-    RectifyBase::Do(true, in.Data.get(), this->inputFormat_->Size(),
+    RectifyBase::Do(this->UseSimd(), in.Data.get(), this->inputFormat_->Size(),
                     out->Data.get());
   }
 };

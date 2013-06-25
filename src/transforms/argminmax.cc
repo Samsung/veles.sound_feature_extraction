@@ -44,7 +44,7 @@ void ArgMinMax::InitializeBuffers(
 
 void ArgMinMax::Do(const Formats::WindowF& in,
                    ArgMinMaxResult *out) const noexcept {
-  *out = Do(true, in.Data.get(), inputFormat_->Size(), extremum_);
+  *out = Do(UseSimd(), in.Data.get(), inputFormat_->Size(), extremum_);
 }
 
 ArgMinMaxResult ArgMinMax::Do(bool simd, const float* input, size_t length,

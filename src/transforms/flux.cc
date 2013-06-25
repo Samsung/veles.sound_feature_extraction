@@ -28,7 +28,7 @@ void Flux::Do(
     BuffersBase<float> *out) const noexcept {
   (*out)[0] = 0.f;
   for (size_t i = 1; i < in.Size(); i++) {
-    (*out)[i] = Do(true, in[i].Data.get(), inputFormat_->Size(),
+    (*out)[i] = Do(UseSimd(), in[i].Data.get(), inputFormat_->Size(),
                     in[i - 1].Data.get());
   }
 }

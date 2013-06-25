@@ -45,7 +45,7 @@ void Preemphasis::InitializeBuffers(
 void Preemphasis::Do(const Formats::Raw16& in,
                      Formats::Raw16* out) const noexcept {
 
-  Do(true, in.Data.get(), inputFormat_->Size(), k_, out->Data.get());
+  Do(UseSimd(), in.Data.get(), inputFormat_->Size(), k_, out->Data.get());
 }
 
 void Preemphasis::Do(bool simd, const int16_t* input, size_t length,

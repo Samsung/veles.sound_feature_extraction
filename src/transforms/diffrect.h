@@ -42,7 +42,7 @@ class DiffrectTemplate
 
   virtual void Do(const typename F::BufferType& in,
                   typename F::BufferType* out) const noexcept {
-    DiffrectBase::Do(true, in.Data.get(), this->inputFormat_->Size(),
+    DiffrectBase::Do(this->UseSimd(), in.Data.get(), this->inputFormat_->Size(),
                      out->Data.get());
   }
 };
