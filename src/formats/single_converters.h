@@ -21,14 +21,8 @@ namespace SoundFeatureExtraction {
 template <typename FIN, typename FOUT>
 class SingleFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
  protected:
-  virtual void OnInputFormatChanged() override final {
-  }
-
-  virtual void InitializeBuffers(
-      const BuffersBase<typename FIN::BufferType>& in,
-      BuffersBase<typename FOUT::BufferType>* buffers)
-      const noexcept override final {
-      buffers->Initialize(in.Size());
+  virtual BuffersCountChange OnInputFormatChanged() override final {
+   return BuffersCountChange::Identity;
   }
 };
 

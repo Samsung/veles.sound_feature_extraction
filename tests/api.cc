@@ -132,8 +132,8 @@ TEST(API, report_extraction_graph) {
   do {
     std::string numberStr = *percentIterator++;
     int value = std::stoi(numberStr);
-    ASSERT_GT(value, -1);
-    ASSERT_LT(value, 101);
+    EXPECT_GT(value, -1);
+    EXPECT_LT(value, 101);
   }
   while (percentIterator != empty);
 

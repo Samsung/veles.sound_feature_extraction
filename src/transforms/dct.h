@@ -13,14 +13,14 @@
 #ifndef SRC_TRANSFORMS_DCT_H_
 #define SRC_TRANSFORMS_DCT_H_
 
-#include "src/formats/window_format.h"
+#include "src/formats/raw_format.h"
 #include "src/transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class DCT
-    : public UniformFormatTransform<Formats::WindowFormatF, true> {
+    : public UniformFormatTransform<Formats::RawFormatF, true> {
  public:
   TRANSFORM_INTRO("DCT", "Performs Discrete Cosine Transform "
                          "on the signal.")
@@ -28,12 +28,11 @@ class DCT
   TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
+  virtual void Do(const BuffersBase<float*>& in,
+                  BuffersBase<float*>* out) const noexcept override;
 
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::WindowF>* out) const noexcept override;
+  virtual void DoInverse(const BuffersBase<float*>& in,
+                         BuffersBase<float*>* out) const noexcept override;
 };
 
 }  // namespace Transforms

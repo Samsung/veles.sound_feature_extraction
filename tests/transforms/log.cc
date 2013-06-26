@@ -10,36 +10,24 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-
-#include <gtest/gtest.h>
 #include <math.h>
 #include "src/transforms/log.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::LogWindow;
+using SoundFeatureExtraction::Transforms::LogRaw;
 
-class LogTest : public LogWindow, public testing::Test {
+class LogTest : public TransformTest<LogRaw> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<WindowF> Output;
   int Size;
-
-  LogTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 378;
-    Input.Initialize(1, Size);
+    SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; i++) {
-      Input[0][i] = (i + Size / 2.0f) / Size;
+      (*Input)[0][i] = (i + Size / 2.0f) / Size;
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
@@ -48,9 +36,9 @@ class LogTest : public LogWindow, public testing::Test {
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(LogTest, Do) {
-  Do(Input[0], &Output[0]);
+  Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size; i++) {
-    float log = Output[0][i];
+    float log = (*Output)[0][i];
     float vlog = logf((i + Size / 2.0f) / Size);
     ASSERT_EQF(vlog, log);
   }
@@ -58,6 +46,4 @@ TEST_F(LogTest, Do) {
 
 #define CLASS_NAME LogTest
 #include "tests/transforms/benchmark.inc"
-
-#include "tests/google/src/gtest_main.cc"
 

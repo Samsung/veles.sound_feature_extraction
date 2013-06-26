@@ -13,14 +13,13 @@
 #ifndef SRC_TRANSFORMS_SPECTRAL_ENERGY_H_
 #define SRC_TRANSFORMS_SPECTRAL_ENERGY_H_
 
-#include "src/formats/window_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class SpectralEnergy
-    : public OmpUniformFormatTransform<Formats::WindowFormatF>,
+    : public OmpUniformFormatTransform<Formats::RawFormatF>,
       public TransformLogger<SpectralEnergy> {
  public:
   TRANSFORM_INTRO("SpectralEnergy",
@@ -30,15 +29,10 @@ class SpectralEnergy
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void OnFormatChanged() override;
+  virtual BuffersCountChange OnFormatChanged() override;
 
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers)
-  const noexcept;
-
-  virtual void Do(const Formats::WindowF& in,
-                  Formats::WindowF* out) const noexcept override;
+  virtual void Do(const float* in,
+                  float* out) const noexcept override;
 
   static void Do(bool simd, const float* input, int length,
                  float* output) noexcept;

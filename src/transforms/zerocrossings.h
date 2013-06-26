@@ -15,8 +15,7 @@
 
 #include "src/formats/raw_format.h"
 #include "src/formats/single_format.h"
-#include "src/formats/window_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -31,9 +30,9 @@ class ZeroCrossingsTemplate
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void Do(const typename F::BufferType& in,
+  virtual void Do(const typename F::BufferElementType* in,
                   int32_t* out) const noexcept override final {
-    auto result = DoInternal(this->UseSimd(), in.Data.get(),
+    auto result = DoInternal(this->UseSimd(), in,
                              this->inputFormat_->Size());
     assert(result >= 0 &&
            result <= static_cast<int>(this->inputFormat_->Size()));
@@ -44,24 +43,16 @@ class ZeroCrossingsTemplate
                          size_t length) const noexcept = 0;
 };
 
-class ZeroCrossingsWindow
-    : public ZeroCrossingsTemplate<Formats::WindowFormatF> {
+class ZeroCrossingsF
+    : public ZeroCrossingsTemplate<Formats::RawFormatF> {
  protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<int32_t>* buffers) const noexcept override;
-
   virtual int DoInternal(bool simd, const float* input, size_t length)
       const noexcept override;
 };
 
-class ZeroCrossingsRaw
+class ZeroCrossings16
     : public ZeroCrossingsTemplate<Formats::RawFormat16> {
  protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::Raw16>& in,
-      BuffersBase<int32_t>* buffers) const noexcept override;
-
   virtual int DoInternal(bool simd, const int16_t* input, size_t length)
       const noexcept override;
 };

@@ -35,17 +35,10 @@ Preemphasis::Preemphasis()
   });
 }
 
-void Preemphasis::InitializeBuffers(
-    const BuffersBase<Formats::Raw16>& in,
-    BuffersBase<Formats::Raw16>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), outputFormat_->Size(),
-                      in[0].AlignmentOffset());
-}
+void Preemphasis::Do(const int16_t* in,
+                     int16_t* out) const noexcept {
 
-void Preemphasis::Do(const Formats::Raw16& in,
-                     Formats::Raw16* out) const noexcept {
-
-  Do(UseSimd(), in.Data.get(), inputFormat_->Size(), k_, out->Data.get());
+  Do(UseSimd(), in, inputFormat_->Size(), k_, out);
 }
 
 void Preemphasis::Do(bool simd, const int16_t* input, size_t length,

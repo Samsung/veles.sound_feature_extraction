@@ -40,10 +40,11 @@ SubbandEnergy::SubbandEnergy()
   });
 }
 
-void SubbandEnergy::OnFormatChanged() {
+BuffersCountChange SubbandEnergy::OnFormatChanged() {
   WaveletFilterBank::ValidateLength(treeFingerprint_,
                                     inputFormat_->Size());
   outputFormat_->SetSize(treeFingerprint_.size());
+  return BuffersCountChange::Identity;
 }
 
 void SubbandEnergy::Initialize() const noexcept {
@@ -56,19 +57,11 @@ void SubbandEnergy::Initialize() const noexcept {
   offsets_.push_back(offset);
 }
 
-void SubbandEnergy::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), treeFingerprint_.size());
-}
-
-void SubbandEnergy::Do(const Formats::WindowF& in,
-                       Formats::WindowF* out) const noexcept {
-  auto input = in.Data.get();
-  auto output = out->Data.get();
+void SubbandEnergy::Do(const float* in,
+                       float* out) const noexcept {
   for (int i = 0; i < static_cast<int>(offsets_.size()) - 1; i++) {
-    output[i] = calculate_energy(UseSimd(), input + offsets_[i],
-                                 offsets_[i + 1] - offsets_[i]);
+    out[i] = calculate_energy(UseSimd(), in + offsets_[i],
+                              offsets_[i + 1] - offsets_[i]);
   }
 }
 

@@ -16,29 +16,22 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void ZeroPadding::OnFormatChanged() {
+BuffersCountChange ZeroPadding::OnFormatChanged() {
   int length = inputFormat_->Size();
   if ((length & (length - 1)) == 0) {
     outputFormat_->SetSize(length);
   } else {
     outputFormat_->SetSize(next_highest_power_of_2(length));
   }
+  return BuffersCountChange::Identity;
 }
 
-void ZeroPadding::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), outputFormat_->Size());
-}
-
-void ZeroPadding::Do(const Formats::WindowF& in,
-                     Formats::WindowF* out) const noexcept {
-  auto input = in.Data.get();
-  auto output = out->Data.get();
-  if (input != output) {
-    memcpy(output, input, inputFormat_->Size() * sizeof(input[0]));
+void ZeroPadding::Do(const float* in,
+                     float* out) const noexcept {
+  if (in != out) {
+    memcpy(out, in, inputFormat_->Size() * sizeof(in[0]));
   }
-  memsetf(output + inputFormat_->Size(),
+  memsetf(out + inputFormat_->Size(),
           outputFormat_->Size() - inputFormat_->Size(),
           0.f);
 }

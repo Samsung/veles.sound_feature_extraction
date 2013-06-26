@@ -10,53 +10,40 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <gtest/gtest.h>
 #include <math.h>
 #include "src/transforms/centroid.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::Centroid;
 
-class CentroidTest : public Centroid, public testing::Test {
+class CentroidTest : public TransformTest<Centroid> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<float> Output;
   int Size;
-
-  CentroidTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 450;
-    Input.Initialize(1, Size);
+    SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; i++) {
       // Always liked exotic functions
-      Input[0][i] = fabs(sinf(i * i) + i * cosf(i));
+      (*Input)[0][i] = fabs(sinf(i * i) + i * cosf(i));
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
-#define EPSILON 0.0025f
+#define EPSILON 0.005f
 
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(CentroidTest, Do) {
-  Do(Input[0], &Output[0]);
-  double res = Do(false, Input[0].Data.get(), Size);
+  Do((*Input)[0], &(*Output)[0]);
+  double res = Do(false, (*Input)[0], Size);
   res /= inputFormat_->Duration();
-  ASSERT_EQF(res, Output[0]);
+  ASSERT_EQF(res, (*Output)[0]);
 }
 
 #define CLASS_NAME CentroidTest
 #define ITER_COUNT 400000
 #define NO_OUTPUT
 #include "tests/transforms/benchmark.inc"
-
-#include "tests/google/src/gtest_main.cc"

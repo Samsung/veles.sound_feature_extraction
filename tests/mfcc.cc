@@ -17,7 +17,6 @@
 #include "tests/speech_sample.inc"
 
 using SoundFeatureExtraction::TransformTree;
-using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::BuffersBase;
 
 TEST(Features, MFCC) {
@@ -27,10 +26,10 @@ TEST(Features, MFCC) {
   // squared magnitude
   tt.AddFeature("MFCC", { { "Window", "length=512" }, { "RDFT", "" },
       { "SpectralEnergy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
-      { "Log", "" }, { "Square", "" }, { "Selector", "length=256" },
+      { "Selector", "length=256" }, { "Log", "" }, { "Square", "" },
       { "DCT", "" } });
-  Raw16 buffers(48000, 0);
-  memcpy(buffers.Data.get(), data, sizeof(data));
+  int16_t* buffers = new int16_t[48000];
+  memcpy(buffers, data, sizeof(data));
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   ASSERT_EQ(1, res.size());
@@ -50,9 +49,9 @@ TEST(Features, MFCCTrivial) {
   // squared magnitude
   tt.AddFeature("MFCC", { { "Window", "length=512" }, { "RDFT", "" },
       { "SpectralEnergy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
-      { "Log", "" }, { "Square", "" }, { "Selector", "length=256" },
+      { "Selector", "length=256" },{ "Log", "" }, { "Square", "" },
       { "DCT", "" } });
-  Raw16 buffers(48000, 0);
+  int16_t* buffers = new int16_t[48000];
   for (int i = 0; i < 48000; i++) {
     buffers[i] = 128;
   }

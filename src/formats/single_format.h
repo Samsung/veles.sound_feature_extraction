@@ -119,25 +119,16 @@ class SingleFormat : public BufferFormatBase<T> {
     return *this;
   }
 
-  virtual size_t PayloadSizeInBytes() const noexcept override {
-    return sizeof(T);
-  }
-
  protected:
-  virtual bool MustReallocate(const BufferFormatBase<T>& other UNUSED)
-      const noexcept override {
-    return false;
-  }
-
-  virtual const void* PayloadPointer(const T& item) const noexcept override {
-    return &item;
+  virtual size_t UnalignedSizeInBytes() const noexcept override {
+    return sizeof(T);
   }
 
   template <class F>
   static typename std::enable_if<std::is_arithmetic<F>::value>::type
   SpecializedValidate(const BuffersBase<F>& buffers,
                       const std::string& id) {
-    for (size_t i = 0; i < buffers.Size(); i++) {
+    for (size_t i = 0; i < buffers.Count(); i++) {
       F value = buffers[i];
       if (!Validation::Validator<F>::Validate(value)) {
         throw InvalidBuffersException(id, i,
@@ -149,7 +140,7 @@ class SingleFormat : public BufferFormatBase<T> {
   template<uint8_t L, typename F = float>
   static void SpecializedValidate(const BuffersBase<FixedArray<L, F>>& buffers,
                                   const std::string& id) {
-    for (size_t i = 0; i < buffers.Size(); i++) {
+    for (size_t i = 0; i < buffers.Count(); i++) {
       T value = buffers[i];
       if (!value.Validate()) {
         throw InvalidBuffersException(id, i,
@@ -179,7 +170,7 @@ class SingleFormat : public BufferFormatBase<T> {
   static void SpecializedValidate(
       const BuffersBase<std::tuple<Args...>>& buffers,
       const std::string& id) {
-    for (size_t i = 0; i < buffers.Size(); i++) {
+    for (size_t i = 0; i < buffers.Count(); i++) {
       const T& value = buffers[i];
       if (!ValidateTupleElement(value)) {
           throw InvalidBuffersException(id, i, std::to_string(value));
@@ -194,7 +185,7 @@ class SingleFormat : public BufferFormatBase<T> {
   virtual std::string Dump(const BuffersBase<T>& buffers)
       const noexcept override {
     std::string ret;
-    for (size_t i = 0; i < buffers.Size(); i++) {
+    for (size_t i = 0; i < buffers.Count(); i++) {
       auto indexStr = std::to_string(i);
       indexStr += ":";
       indexStr += std::string(7 - indexStr.size(), ' ');

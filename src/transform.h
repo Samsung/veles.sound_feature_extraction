@@ -20,6 +20,26 @@
 
 namespace SoundFeatureExtraction {
 
+class BuffersCountChange {
+ public:
+  BuffersCountChange() noexcept;
+
+  BuffersCountChange(int constant) noexcept;
+
+  BuffersCountChange(int num, int den) noexcept;
+
+  BuffersCountChange(const std::function<size_t(size_t)>& calc) noexcept;
+
+  bool operator==(const BuffersCountChange& other) const noexcept;
+
+  size_t operator()(size_t count) const noexcept;
+
+  static const BuffersCountChange Identity;
+
+ private:
+  std::function<size_t(size_t)> calc_;
+};
+
 /// @brief Transform abstract class.
 class Transform : public virtual Parameterizable {
  public:
@@ -34,29 +54,38 @@ class Transform : public virtual Parameterizable {
 
   virtual const std::shared_ptr<BufferFormat> InputFormat() const noexcept = 0;
 
-  virtual void SetInputFormat(const std::shared_ptr<BufferFormat>& format) = 0;
-
   virtual const std::shared_ptr<BufferFormat> OutputFormat()
       const noexcept = 0;
 
   virtual void Initialize() const noexcept = 0;
 
-  virtual std::shared_ptr<Buffers> CreateOutputBuffers(const Buffers& in)
-      const noexcept = 0;
-
   virtual void Do(const Buffers& in, Buffers* out) const noexcept = 0;
+
+  virtual std::shared_ptr<Buffers> CreateOutputBuffers(
+      size_t count, void* reusedMemory = nullptr) const noexcept = 0;
   /// @}
 
   /// @defgroup NonVirt Non-virtual methods
   /// @{
-  std::shared_ptr<Transform> Clone() const noexcept;
+  void UpdateInputFormat(const std::shared_ptr<BufferFormat>& format);
 
-  bool operator==(const Transform& other) const noexcept;
+  BuffersCountChange CalculateBuffersCountChange() const noexcept;
+
+  std::shared_ptr<Transform> Clone() const noexcept;
 
   std::string SafeName() const noexcept;
 
   std::string HtmlEscapedName() const noexcept;
+
+  bool operator==(const Transform& other) const noexcept;
   /// @}
+
+protected:
+  virtual BuffersCountChange SetInputFormat(
+      const std::shared_ptr<BufferFormat>& format) = 0;
+
+ private:
+  BuffersCountChange buffersCountChange_;
 };
 
 }  // namespace SoundFeatureExtraction

@@ -13,8 +13,7 @@
 #ifndef SRC_TRANSFORMS_PREEMPHASIS_H_
 #define SRC_TRANSFORMS_PREEMPHASIS_H_
 
-#include "src/formats/raw_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -36,12 +35,8 @@ class Preemphasis
  protected:
   static const float kDefaultK;
 
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::Raw16>& in,
-      BuffersBase<Formats::Raw16>* buffers) const noexcept override;
-
-  virtual void Do(const Formats::Raw16& in,
-                  Formats::Raw16* out) const noexcept override;
+  virtual void Do(const int16_t* in,
+                  int16_t* out) const noexcept override;
 
   static void Do(bool simd, const int16_t* input, size_t length,
                  float k, int16_t* output) noexcept;

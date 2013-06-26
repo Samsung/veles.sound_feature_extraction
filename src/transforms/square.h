@@ -13,43 +13,35 @@
 #ifndef SRC_TRANSFORMS_SQUARE_H_
 #define SRC_TRANSFORMS_SQUARE_H_
 
-#include "src/formats/raw_format.h"
-#include "src/formats/window_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class SquareRaw
-    : public TransformBase<Formats::RawFormat16, Formats::RawFormat32, true> {
+    : public OmpTransformBase<Formats::RawFormat16,
+                              Formats::RawFormat32,
+                              true> {
  public:
   TRANSFORM_INTRO("Square", "Squares the signal (raw format).")
 
-  TRANSFORM_PARAMETERS()
+  OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void OnInputFormatChanged();
+  virtual BuffersCountChange OnInputFormatChanged() override;
 
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::Raw16>& in,
-      BuffersBase<Formats::Raw32>* buffers) const noexcept override;
+  virtual void Do(const int16_t* in,
+                  int32_t* out) const noexcept override;
 
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::Raw32>& in,
-      BuffersBase<Formats::Raw16>* buffers) const noexcept override;
-
-  virtual void Do(const BuffersBase<Formats::Raw16>& in,
-                  BuffersBase<Formats::Raw32>* out) const noexcept override;
-
-  virtual void Do(const BuffersBase<Formats::Raw32>& in,
-                  BuffersBase<Formats::Raw16>* out) const noexcept override;
+  virtual void DoInverse(const int32_t* in,
+                         int16_t* out) const noexcept override;
 
   static void Do(bool simd, const int16_t* input, int length,
                  int32_t* output) noexcept;
 };
 
-class SquareWindow
-    : public OmpUniformFormatTransform<Formats::WindowFormatF, true> {
+class SquareF
+    : public OmpUniformFormatTransform<Formats::RawFormatF, true> {
  public:
   TRANSFORM_INTRO("Square", "Squares the signal (window floating point "
                             "format).")
@@ -57,12 +49,11 @@ class SquareWindow
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
+  virtual void Do(const float* in,
+                  float* out) const noexcept override;
 
-  virtual void Do(const Formats::WindowF& in,
-                  Formats::WindowF* out) const noexcept override;
+  virtual void DoInverse(const float* in,
+                         float* out) const noexcept override;
 
   static void Do(bool simd, const float* input, int length,
                  float* output) noexcept;

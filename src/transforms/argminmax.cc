@@ -36,15 +36,9 @@ ArgMinMax::ArgMinMax() : extremum_(kDefaultExtremum) {
   });
 }
 
-void ArgMinMax::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<ArgMinMaxResult>* buffers) const noexcept {
-  buffers->Initialize(in.Size());
-}
-
-void ArgMinMax::Do(const Formats::WindowF& in,
+void ArgMinMax::Do(const float* in,
                    ArgMinMaxResult *out) const noexcept {
-  *out = Do(UseSimd(), in.Data.get(), inputFormat_->Size(), extremum_);
+  *out = Do(UseSimd(), in, inputFormat_->Size(), extremum_);
 }
 
 ArgMinMaxResult ArgMinMax::Do(bool simd, const float* input, size_t length,

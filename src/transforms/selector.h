@@ -13,14 +13,13 @@
 #ifndef SRC_TRANSFORMS_SELECTOR_H_
 #define SRC_TRANSFORMS_SELECTOR_H_
 
-#include "src/formats/window_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Selector
-    : public OmpUniformFormatTransform<Formats::WindowFormatF> {
+    : public OmpUniformFormatTransform<Formats::RawFormatF> {
  public:
   Selector();
 
@@ -35,14 +34,10 @@ class Selector
   )
 
  protected:
-  virtual void OnFormatChanged() override;
+  virtual BuffersCountChange OnFormatChanged() override;
 
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
-
-  virtual void Do(const Formats::WindowF& in,
-                  Formats::WindowF* out) const noexcept override;
+  virtual void Do(const float* in,
+                  float* out) const noexcept override;
 
  private:
   typedef enum {
@@ -53,7 +48,7 @@ class Selector
   static const int kDefaultLength;
   static const Anchor kDefaultAnchor;
 
-  int length_;
+  size_t length_;
   Anchor from_;
 };
 

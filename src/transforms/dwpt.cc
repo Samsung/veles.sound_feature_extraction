@@ -47,15 +47,10 @@ DWPT::DWPT()
   });
 }
 
-void DWPT::OnFormatChanged() {
+BuffersCountChange DWPT::OnFormatChanged() {
   WaveletFilterBank::ValidateLength(treeFingerprint_,
                                     inputFormat_->Size());
-}
-
-void DWPT::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_->Size());
+  return BuffersCountChange::Identity;
 }
 
 void DWPT::Initialize() const noexcept {
@@ -63,11 +58,15 @@ void DWPT::Initialize() const noexcept {
       waveletType_, waveletOrder_, treeFingerprint_);
 }
 
-void DWPT::Do(const Formats::WindowF& in,
-              Formats::WindowF* out) const noexcept {
-  assert(!IsInverse() && "Not implemented yet");
+void DWPT::Do(const float* in,
+              float* out) const noexcept {
   assert(filterBank_ != nullptr && "Initialize() was not called");
-  filterBank_->Apply(in.Data.get(), inputFormat_->Size(), out->Data.get());
+  filterBank_->Apply(in, inputFormat_->Size(), out);
+}
+
+void DWPT::DoInverse(const float* in UNUSED,
+                     float* out UNUSED) const noexcept {
+  assert("Not implemented yet");
 }
 
 REGISTER_TRANSFORM(DWPT);

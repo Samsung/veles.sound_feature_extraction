@@ -13,14 +13,14 @@
 #ifndef SRC_TRANSFORMS_TEMPLATE_TRANSFORM_H_
 #define SRC_TRANSFORMS_TEMPLATE_TRANSFORM_H_
 
-#include "src/formats/window_format.h"
+#include "src/formats/raw_format.h"
 #include "src/transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class TemplateTransform
-    : public UniformFormatTransform<Formats::WindowFormatF> {
+    : public UniformFormatTransform<Formats::RawFormatF> {
  public:
   TemplateTransform();
 
@@ -34,12 +34,8 @@ class TemplateTransform
   virtual void Initialize() const noexcept override;
 
  protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
-
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::WindowF>* out) const noexcept override;
+  virtual void Do(const BuffersBase<float*>& in,
+                  BuffersBase<float*>* out) const noexcept override;
 };
 
 }  // namespace Transforms

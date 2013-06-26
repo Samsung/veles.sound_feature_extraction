@@ -42,20 +42,14 @@ Delta::Delta()
   });
 }
 
-void Delta::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_->Size());
-}
-
-void Delta::Do(const BuffersBase<Formats::WindowF>& in,
-               BuffersBase<Formats::WindowF>* out) const noexcept {
+void Delta::Do(const BuffersBase<float*>& in,
+               BuffersBase<float*>* out) const noexcept {
 
   switch (type_) {
     case kTypeSimple:
-      for (size_t i = 1; i < in.Size(); i++) {
-        DoSimple(UseSimd(), in[i - 1].Data.get(), in[i].Data.get(),
-                 inputFormat_->Size(), (*out)[i].Data.get());
+      for (size_t i = 1; i < in.Count(); i++) {
+        DoSimple(UseSimd(), in[i - 1], in[i],
+                 inputFormat_->Size(), (*out)[i]);
       }
       for (size_t i = 0; i < inputFormat_->Size(); i++) {
         (*out)[0][i] = (*out)[1][i];
@@ -64,18 +58,18 @@ void Delta::Do(const BuffersBase<Formats::WindowF>& in,
     case kTypeRegression: {
       int rstep = rlength_ / 2;
       float norm = 2 * rstep * (rstep + 1) * (2 * rstep + 1) / 6;
-      for (size_t i = rstep; i < in.Size() - rstep; i++) {
+      for (size_t i = rstep; i < in.Count() - rstep; i++) {
         DoRegression(UseSimd(), in, rstep, i, norm, inputFormat_->Size(), out);
       }
       for (size_t i = rstep - 1; i > 0; i--) {
         norm = 2 * i * (i + 1) * (2 * i + 1) / 6;
         DoRegression(UseSimd(), in, i, i, norm, inputFormat_->Size(), out);
-        DoRegression(UseSimd(), in, in.Size() - i, i, norm, inputFormat_->Size(),
+        DoRegression(UseSimd(), in, in.Count() - i, i, norm, inputFormat_->Size(),
                      out);
       }
       for (size_t i = 0; i < inputFormat_->Size(); i++) {
         (*out)[0][i] = (*out)[1][i];
-        (*out)[in.Size() - 1][i] = (*out)[in.Size() - 2][i];
+        (*out)[in.Count() - 1][i] = (*out)[in.Count() - 2][i];
       }
       break;
     }
@@ -128,9 +122,9 @@ void Delta::DoSimple(bool simd, const float* prev, const float* cur,
   }
 }
 
-void Delta::DoRegression(bool simd, const BuffersBase<Formats::WindowF>& in,
+void Delta::DoRegression(bool simd, const BuffersBase<float*>& in,
                          int rstep, int i, float norm, int windowSize,
-                         BuffersBase<Formats::WindowF>* out) noexcept {
+                         BuffersBase<float*>* out) noexcept {
   if (simd) {
 #ifdef __AVX__
     __m256 normvec = _mm256_set1_ps(norm);
@@ -138,15 +132,15 @@ void Delta::DoRegression(bool simd, const BuffersBase<Formats::WindowF>& in,
       __m256 sum = _mm256_setzero_ps();
       __m256 kvec = _mm256_set1_ps(1.f);
       for (int k = 1; k <= rstep; k++) {
-        __m256 rvec = _mm256_load_ps(in[i + k].Data.get() + j);
-        __m256 lvec = _mm256_load_ps(in[i - k].Data.get() + j);
+        __m256 rvec = _mm256_load_ps(in[i + k] + j);
+        __m256 lvec = _mm256_load_ps(in[i - k] + j);
         __m256 diff = _mm256_sub_ps(rvec, lvec);
         diff = _mm256_mul_ps(diff, kvec);
         sum = _mm256_add_ps(sum, diff);
         kvec = _mm256_add_ps(kvec, _mm256_set1_ps(1.f));
       }
       sum = _mm256_div_ps(sum, normvec);
-      _mm256_store_ps((*out)[i].Data.get() + j, sum);
+      _mm256_store_ps((*out)[i] + j, sum);
     }
     for (int j = windowSize & ~7; j < windowSize; j++) {
       float sum = 0.f;
@@ -163,14 +157,14 @@ void Delta::DoRegression(bool simd, const BuffersBase<Formats::WindowF>& in,
       float32x4_t sum = vdupq_n_f32(0.f);
       float32x4_t kvec = vdupq_n_f32(1.f);
       for (int k = 1; k <= rstep; k++) {
-        float32x4_t rvec = vld1q_f32(in[i + k].Data.get() + j);
-        float32x4_t lvec = vld1q_f32(in[i - k].Data.get() + j);
+        float32x4_t rvec = vld1q_f32(in[i + k] + j);
+        float32x4_t lvec = vld1q_f32(in[i - k] + j);
         float32x4_t diff = vsubq_f32(rvec, lvec);
         sum = vmlaq_f32(diff, kvec, sum);
         kvec = vaddq_f32(kvec, vdupq_n_f32(1.f));
       }
       sum = vmulq_f32(sum, normvec);
-      vst1q_f32((*out)[i].Data.get() + j, sum);
+      vst1q_f32((*out)[i] + j, sum);
     }
     for (int j = windowSize & ~3; j < windowSize; j++) {
       float sum = 0.f;

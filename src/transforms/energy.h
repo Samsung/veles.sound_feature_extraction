@@ -13,26 +13,21 @@
 #ifndef SRC_TRANSFORMS_ENERGY_H_
 #define SRC_TRANSFORMS_ENERGY_H_
 
-#include "src/formats/window_format.h"
 #include "src/formats/single_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Energy
-    : public OmpTransformBase<Formats::WindowFormatF, Formats::SingleFormatF> {
+    : public OmpTransformBase<Formats::RawFormatF, Formats::SingleFormatF> {
  public:
   TRANSFORM_INTRO("Energy", "Sound energy calculation.")
 
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<float>* buffers) const noexcept override;
-
-  virtual void Do(const Formats::WindowF& in,
+  virtual void Do(const float* in,
                   float* out) const noexcept override;
 };
 

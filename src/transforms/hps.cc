@@ -18,20 +18,15 @@ namespace Transforms {
 
 const int Hps::kCoefficientsNumber = 3;
 
-void Hps::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<float>* buffers) const noexcept {
-  buffers->Initialize(in.Size());
-}
-
-void Hps::Do(const Formats::WindowF& in,
+void Hps::Do(const float* in,
              float* out) const noexcept {
     int sampling_rate = inputFormat_->SamplingRate();
     int length = inputFormat_->Size();
-    auto signal = in.Data.get();
+    auto signal = in;
     float max_pitch = 0;
     float fundamental_frequency = 0;
-    for (int current_index = 0; (current_index + 1) * kCoefficientsNumber - 1< length;
+    for (int current_index = 0;
+        (current_index + 1) * kCoefficientsNumber - 1 < length;
          ++current_index) {
       float current_pitch = 1.0;
       for (int j = 0; j < kCoefficientsNumber; ++j) {

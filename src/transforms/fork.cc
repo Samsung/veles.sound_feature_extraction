@@ -29,32 +29,18 @@ Fork::Fork() : factor_(kDefaultFactor) {
   });
 }
 
-void Fork::OnFormatChanged() {
-  int prevFactor = 1;
-  if (outputFormat_->HasAttribute(kCloningFactorAttributeName)) {
-    prevFactor = outputFormat_->GetAttributeValue<int>(
-        kCloningFactorAttributeName);
-  }
-  outputFormat_->SetAttributeValue(kCloningFactorAttributeName,
-                                   prevFactor * factor_);
-  outputFormat_->SetIncompatible(true);
-}
-
-void Fork::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size() * factor_,
-                      outputFormat_->AllocatedSize());
+BuffersCountChange Fork::OnFormatChanged() {
+  return BuffersCountChange(factor_, 1);
 }
 
 void Fork::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* out) const noexcept {
+    const BuffersBase<float*>& in,
+    BuffersBase<float*>* out) const noexcept {
   size_t copy_size = inputFormat_->Size() * sizeof(float);
-  for (size_t i = 0, j = 0; i < in.Size(); i++, j += factor_) {
-    auto input = in[i].Data.get();
+  for (size_t i = 0, j = 0; i < in.Count(); i++, j += factor_) {
+    auto input = in[i];
     for (int k = 0; k < factor_; k++) {
-      memcpy((*out)[j + k].Data.get(), input, copy_size);
+      memcpy((*out)[j + k], input, copy_size);
     }
   }
 }

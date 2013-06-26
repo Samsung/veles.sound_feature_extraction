@@ -12,37 +12,25 @@
 
 
 #include <math.h>
-#include <gtest/gtest.h>
 #include "src/transforms/mean.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::Formats::FixedArray;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::Mean;
 
-class MeanTest
-    : public Mean, public testing::Test {
+class MeanTest : public TransformTest<Mean> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<FixedArray<SoundFeatureExtraction::Transforms::MEAN_TYPE_COUNT>> Output;
   int Size;
 
-  MeanTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
-
   virtual void SetUp() {
-    Size = 486;
-    Input.Initialize(1, Size);
-    for (int i = 0; i < Size; i++) {
-      Input[0][i] = i + 1;
-    }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
-    SetInputFormat(format);
     SetParameter("types", "arithmetic geometric");
-    InitializeBuffers(Input, &Output);
+    Size = 486;
+    SetUpTransform(1, Size, 18000);
+    for (int i = 0; i < Size; i++) {
+      (*Input)[0][i] = i + 1;
+    }
   }
 };
 
@@ -51,12 +39,12 @@ class MeanTest
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(MeanTest, Do) {
-  Do(Input[0], &Output[0]);
+  Do((*Input)[0], &(*Output)[0]);
 
   float amean =0.f;
   float gmean = 1.f, tmp = 1.f;
   for (int j = 0; j < Size; j++) {
-    float val = Input[0][j];
+    float val = (*Input)[0][j];
     amean += val;
     float multmp = tmp * val;
     if (multmp == std::numeric_limits<float>::infinity()) {
@@ -68,15 +56,15 @@ TEST_F(MeanTest, Do) {
   }
   amean /= Size;
   gmean *= powf(tmp, 1.f / Size);
-  ASSERT_EQF(amean, (Output[0])
+  ASSERT_EQF(amean, ((*Output)[0])
       [SoundFeatureExtraction::Transforms::MEAN_TYPE_ARITHMETIC]);
-  ASSERT_EQF(gmean, (Output[0])
+  ASSERT_EQF(gmean, ((*Output)[0])
       [SoundFeatureExtraction::Transforms::MEAN_TYPE_GEOMETRIC]);
   ASSERT_EQF(amean,
-             Do(false, Input[0].Data.get(), Size,
+             Do(false, (*Input)[0], Size,
                 SoundFeatureExtraction::Transforms::MEAN_TYPE_ARITHMETIC));
   ASSERT_EQF(gmean,
-             Do(false, Input[0].Data.get(), Size,
+             Do(false, (*Input)[0], Size,
                 SoundFeatureExtraction::Transforms::MEAN_TYPE_GEOMETRIC));
 }
 
@@ -92,5 +80,3 @@ TEST_F(MeanTest, Do) {
 #undef BENCH_NAME
 #define BENCH_NAME BenchmarkGeometric
 #include "tests/transforms/benchmark.inc"
-
-#include "tests/google/src/gtest_main.cc"

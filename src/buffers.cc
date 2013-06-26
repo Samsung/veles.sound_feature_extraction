@@ -11,92 +11,76 @@
  */
 
 #include "src/buffers.h"
+#include <simd/memory.h>
 #include <assert.h>
 #include <string.h>
 
 namespace SoundFeatureExtraction {
 
-Buffers::Buffers(size_t size,
-                 const std::shared_ptr<BufferFormat>& format) noexcept
-    : format_(format) {
-  assert(size <= (1 << 20));
-  auto buffers = new std::vector<void*>();
-  buffers->resize(size);
-  auto destroy = format_ != nullptr? format_->Destructor() : [](void*){};
-  buffers_ = std::shared_ptr<std::vector<void*>>( // NOLINT(*)
-      buffers, [=](std::vector<void*>* vec) {
-    for (size_t i = 0; i < vec->size(); i++) {
-      if (vec->at(i) != nullptr) {
-        destroy(vec->at(i));
-      }
-    }
-    delete vec;
-  });
-}
-
-Buffers::Buffers(const Buffers& other) noexcept
-    : format_(other.format_),
-      buffers_(other.buffers_) {
-}
-
-Buffers::Buffers(const Buffers& other,
-                 const std::shared_ptr<BufferFormat>& format) noexcept
+Buffers::Buffers(const std::shared_ptr<BufferFormat>& format,
+                 size_t count, void* reusedMemory) noexcept
     : format_(format),
-      buffers_(other.buffers_) {
+      count_(count) {
+  assert(count <= (1 << 30));
+  count_ = count;
+  size_t sizeEach = format_->SizeInBytes();
+  void* memory = reusedMemory == nullptr ?
+      malloc_aligned(count_ * sizeEach) : reusedMemory;
+  buffers_ = std::shared_ptr<void>(
+      memory,
+      [=](void* buffers) {
+        if (reusedMemory == nullptr) {
+          free(buffers);
+        }
+      });
 }
 
 Buffers& Buffers::operator=(const Buffers& other) noexcept {
   assert(format_ == other.format_);
+  format_ = other.format_;
   buffers_ = other.buffers_;
+  count_ = other.count_;
   return *this;
 }
 
-size_t Buffers::Size() const noexcept {
-  return buffers_->size();
+size_t Buffers::Count() const noexcept {
+  return count_;
 }
 
-void Buffers::SetSize(size_t size) noexcept {
-  if (size < buffers_->size()) {
-    auto destroy = format_->Destructor();
-    for (size_t i = size; i < buffers_->size(); i++) {
-      if (buffers_->at(i) != nullptr) {
-        destroy(buffers_->at(i));
-        buffers_->assign(i, nullptr);
-      }
-    }
-  }
-  buffers_->resize(size);
+size_t Buffers::SizeInBytes() const noexcept {
+  return count_ * format_->SizeInBytes();
 }
 
-const std::shared_ptr<BufferFormat> Buffers::Format() const noexcept {
+std::shared_ptr<BufferFormat> Buffers::Format() const noexcept {
   return format_;
 }
 
 void* Buffers::operator[](size_t index) noexcept {
-  assert(index < Size());
-  return buffers_->at(index);
+  assert(index < Count());
+  return reinterpret_cast<char*>(buffers_.get()) +
+      index * format_->SizeInBytes();
 }
 
 const void* Buffers::operator[](size_t index) const noexcept {
-  assert(index < Size());
-  return buffers_->at(index);
+  assert(index < Count());
+  return reinterpret_cast<const char*>(buffers_.get()) +
+      index * format_->SizeInBytes();
 }
 
-void Buffers::Set(size_t index, void* buffer) noexcept {
-  assert(static_cast<size_t>(index) < buffers_->size());
-  (*buffers_)[index] = buffer;
+void* Buffers::Data() noexcept {
+  return buffers_.get();
 }
 
-const void *const *Buffers::Data() const noexcept {
-  return reinterpret_cast<const void *const *>(&(*buffers_)[0]);
+const void* Buffers::Data() const noexcept {
+  return buffers_.get();
 }
 
 void Buffers::Validate() const {
-  Format()->Validate(*this);
+  format_->Validate(*this);
 }
 
 std::string Buffers::Dump() const noexcept {
-  return Format()->Dump(*this);
+  return format_->Dump(*this);
 }
 
 } /* namespace SoundFeatureExtraction */

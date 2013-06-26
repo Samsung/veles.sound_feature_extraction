@@ -10,52 +10,38 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <gtest/gtest.h>
 #include "src/transform_tree.h"
-#include "src/formats/raw_format.h"
 #include "src/transforms/rdft.h"
 #include "tests/speech_sample.inc"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::RDFT;
 using SoundFeatureExtraction::TransformTree;
-using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::BuffersBase;
 
-class RDFTTest : public RDFT, public testing::Test {
+class RDFTTest : public TransformTest<RDFT> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<WindowF> Output;
   int Size;
-
-  RDFTTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 512;
-    Input.Initialize(1, Size + 2);
+    SetUpTransform(1, Size, 16000);
     for (int i = 0; i < Size; i++) {
-      Input[0][i] = (i - Size / 2.0f) / Size;
+      (*Input)[0][i] = (i - Size / 2.0f) / Size;
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
-    format->SetAllocatedSize(format->Size() + 2);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
 TEST_F(RDFTTest, Forward) {
-  Do(Input, &Output);
+  Do((*Input), &(*Output));
 }
 
 TEST_F(RDFTTest, Backward) {
   SetParameter("inverse", "true");
   outputFormat_->SetSize(Size);
-  Do(Input, &Output);
+  Do((*Input), &(*Output));
 }
 
 TEST(RDFT, Multiple) {
@@ -67,13 +53,11 @@ TEST(RDFT, Multiple) {
       { "RDFT", "" }, { "IRDFT", "" }, { "RDFT", "" }, { "IRDFT", "" },
       { "RDFT", "" }, { "IRDFT", "" }
   });
-  Raw16 buffers(48000, 0);
-  memcpy(buffers.Data.get(), data, sizeof(data));
+  int16_t* buffers = new int16_t[48000];
+  memcpy(buffers, data, sizeof(data));
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   ASSERT_EQ(1, res.size());
   res["3RDFT"]->Validate();
 }
-
-#include "tests/google/src/gtest_main.cc"
 

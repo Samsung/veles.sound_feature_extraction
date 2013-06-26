@@ -14,8 +14,7 @@
 #define SRC_TRANSFORMS_LOG_H_
 
 #include "src/formats/single_format.h"
-#include "src/formats/window_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -33,7 +32,6 @@ class LogTransformBase {
 
   static const std::unordered_map<std::string, LogBase> kLogBaseMap;
   static const LogBase kDefaultLogBase;
-
   static std::string LogBaseToString(LogBase lb) noexcept;
 
   LogBase base_;
@@ -64,14 +62,13 @@ class Log
   )
 };
 
-class LogWindow : public Log<Formats::WindowFormatF> {
+class LogRaw : public Log<Formats::RawFormatF> {
  protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
+  virtual void Do(const float* in,
+                  float* out) const noexcept override;
 
-  virtual void Do(const Formats::WindowF& in,
-                  Formats::WindowF* out) const noexcept override;
+  virtual void DoInverse(const float* in,
+                         float* out) const noexcept override;
 
   void Do(bool simd, const float* input, int length,
           float* output) const noexcept;
@@ -79,10 +76,9 @@ class LogWindow : public Log<Formats::WindowFormatF> {
 
 class LogSingle : public Log<Formats::SingleFormatF> {
  protected:
-  virtual void InitializeBuffers(const BuffersBase<float>& in,
-                                 BuffersBase<float>* buffers) const noexcept override;
-
   virtual void Do(const float& in, float* out) const noexcept override;
+
+  virtual void DoInverse(const float& in, float* out) const noexcept override;
 };
 
 }  // namespace Transforms

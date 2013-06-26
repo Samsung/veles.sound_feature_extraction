@@ -14,10 +14,8 @@
 #define SRC_TRANSFORMS_BEAT_H_
 
 #include <string>
-#include "src/formats/window_format.h"
 #include "src/formats/single_format.h"
-#include "src/formats/raw_format.h"
-#include "src/transform_base.h"
+#include "src/transforms/common.h"
 #include "src/primitives/energy.h"
 #include <math.h>
 #include <string>
@@ -26,28 +24,20 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 template <class F>
-class Beat : public TransformBase<F, Formats::SingleFormatF> {
+class Beat : public OmpTransformBase<F, Formats::SingleFormatF> {
  public:
   TRANSFORM_INTRO("Beat", "Find the tempo of a musical signal.")
 
-  TRANSFORM_PARAMETERS()
+  OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<typename F::BufferType>& in,
-      BuffersBase<float>* buffers) const noexcept {
-    buffers->Initialize(in.Size());
-  }
-
-  virtual void Do(const BuffersBase<typename F::BufferType>& in,
-                  BuffersBase<float>* out) const noexcept {
-    for (size_t i = 0; i < in.Size(); ++i) {
-      Do(in[i].Data.get(), this->inputFormat_->Size() ,(*out)[i]);
-    }
+  virtual void Do(const typename F::BufferElementType* in,
+                  float* out) const noexcept override {
+    Do(in, this->inputFormat_->Size(), out);
   }
 
   static void Do(const typename F::BufferElementType* input,
-                 int length, float& output) noexcept {
+                 int length, float* output) noexcept {
     auto result = 150.f;
     float step, maxEnergy = 0;
     float minBeatPerMinute, maxBeatPerMinute;
@@ -75,7 +65,7 @@ class Beat : public TransformBase<F, Formats::SingleFormatF> {
       }
     }
     free(X);
-    output = result;
+    *output = result;
   }
 
  private:

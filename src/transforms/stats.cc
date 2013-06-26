@@ -72,17 +72,17 @@ Stats::Stats()
   });
 }
 
-void Stats::InitializeBuffers(
-    const BuffersBase<float>& in,
-    BuffersBase<StatsArray>* buffers) const noexcept {
+BuffersCountChange Stats::OnInputFormatChanged() {
   if (interval_ != 0) {
-    if (in.Size() % interval_ == 0) {
-      buffers->Initialize(in.Size() / interval_);
-    } else {
-      buffers->Initialize(in.Size() / interval_ + 1);
-    }
+    auto interval = interval_;
+    return BuffersCountChange([=](size_t inSize) {
+      if (inSize % interval == 0) {
+        return inSize / interval;
+      }
+      return inSize / interval + 1;
+    });
   } else {
-    buffers->Initialize(1);
+    return BuffersCountChange(1);
   }
 }
 
@@ -90,16 +90,16 @@ void Stats::Do(const BuffersBase<float>& in,
                BuffersBase<StatsArray>* out) const noexcept {
   float rawMoments[4];
   if (interval_ == 0) {
-    CalculateRawMoments(in, 0, in.Size(), rawMoments);
+    CalculateRawMoments(in, 0, in.Count(), rawMoments);
     Calculate(rawMoments, 0, out);
   } else {
     size_t i;
-    for (i = 0; i < in.Size() - interval_ + 1; i+= interval_) {
+    for (i = 0; i < in.Count() - interval_ + 1; i+= interval_) {
       CalculateRawMoments(in, i, interval_, rawMoments);
       Calculate(rawMoments, i / interval_, out);
     }
     if (i % interval_ != 0) {
-      CalculateRawMoments(in, i, in.Size() - i, rawMoments);
+      CalculateRawMoments(in, i, in.Count() - i, rawMoments);
       Calculate(rawMoments, i / interval_ + 1, out);
     }
   }

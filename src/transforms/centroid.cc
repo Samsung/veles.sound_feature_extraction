@@ -21,15 +21,9 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void Centroid::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<float>* buffers) const noexcept {
-  buffers->Initialize(in.Size());
-}
-
-void Centroid::Do(const Formats::WindowF& in,
+void Centroid::Do(const float* in,
                   float* out) const noexcept {
-  *out = Do(UseSimd(), in.Data.get(), inputFormat_->Size()) /
+  *out = Do(UseSimd(), in, inputFormat_->Size()) /
       inputFormat_->Duration();
 }
 

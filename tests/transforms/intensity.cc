@@ -10,35 +10,24 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <gtest/gtest.h>
 #include <math.h>
 #include "src/transforms/intensity.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::Intensity;
 
-class IntensityTest : public Intensity, public testing::Test {
+class IntensityTest : public TransformTest<Intensity> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<float> Output;
   int Size;
-
-  IntensityTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 378;
-    Input.Initialize(1, Size);
+    SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; i++) {
-      Input[0][i] = i / 40.0f;
+      (*Input)[0][i] = i / 40.0f;
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
@@ -47,13 +36,13 @@ class IntensityTest : public Intensity, public testing::Test {
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(IntensityTest, Do) {
-  Do(Input[0], &Output[0]);
+  Do((*Input)[0], &(*Output)[0]);
   double res = .0;
   for (int i = 0; i < Size; i++) {
-    float tmp = Input[0][i];
+    float tmp = (*Input)[0][i];
     res += tmp * tmp;
   }
-  ASSERT_EQF(logf(res / Size), Output[0]);
+  ASSERT_EQF(logf(res / Size), (*Output)[0]);
 }
 
 #define CLASS_NAME IntensityTest
@@ -62,5 +51,3 @@ TEST_F(IntensityTest, Do) {
 #define NO_OUTPUT
 #include "src/primitives/energy.h"
 #include "tests/transforms/benchmark.inc"
-
-#include "tests/google/src/gtest_main.cc"

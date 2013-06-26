@@ -40,48 +40,12 @@ class BufferFormatBase : public BufferFormat {
   typedef T BufferType;
 
   BufferFormatBase() noexcept
-      : BufferFormat(CutNamespaces(std::demangle(typeid(T).name()))),
-        samplingRate_(0),
-        incompatible_(false) {
+      : BufferFormat(CutNamespaces(std::demangle(typeid(T).name()))) {
   }
 
   BufferFormatBase(int samplingRate)
-      : BufferFormat(CutNamespaces(std::demangle(typeid(T).name()))),
-        samplingRate_(samplingRate),
-        incompatible_(false) {
-    ValidateSamplingRate(samplingRate_);
-  }
-
-  BufferFormatBase(const BufferFormatBase& other)
-      : BufferFormat(other.Id()),
-        samplingRate_(other.samplingRate_),
-        incompatible_(false) {
-  }
-
-  virtual std::function<void(void*)> Destructor()  // NOLINT(*)
-      const noexcept override final {
-    return [](void* ptr) {  // NOLINT(whitespace/braces)
-      auto instance = reinterpret_cast<T*>(ptr);
-      delete instance;
-    };
-  }
-
-  virtual bool MustReallocate(const BufferFormat& other)
-      const noexcept override final {
-    if (*this != other || Incompatible()) {
-      return true;
-    }
-    return MustReallocate(
-        reinterpret_cast<const BufferFormatBase<T>&>(other));
-  }
-
-  virtual size_t PayloadSizeInBytes() const noexcept override {
-    return 0;
-  }
-
-  virtual const void* PayloadPointer(const void* buffer)
-      const noexcept override final {
-    return PayloadPointer(*reinterpret_cast<const T*>(buffer));
+      : BufferFormat(CutNamespaces(std::demangle(typeid(T).name())),
+                     samplingRate) {
   }
 
   virtual void Validate(const Buffers& buffers) const override final {
@@ -97,28 +61,10 @@ class BufferFormatBase : public BufferFormat {
       throw InvalidFormatException(Id(), buffers.Format()->Id());
     }
     std::string ret("Buffers count: ");
-    ret += std::to_string(buffers.Size());
+    ret += std::to_string(buffers.Count());
     ret += "\n";
     ret += Dump(reinterpret_cast<const BuffersBase<T>&>(buffers));
     return std::move(ret);
-  }
-
-  virtual int SamplingRate() const noexcept override final {
-    assert(samplingRate_ > 0);
-    return samplingRate_;
-  }
-
-  virtual void SetSamplingRate(int value) override final {
-    ValidateSamplingRate(value);
-    samplingRate_ = value;
-  }
-
-  bool Incompatible() const noexcept {
-    return incompatible_;
-  }
-
-  void SetIncompatible(bool value) noexcept {
-    incompatible_ = value;
   }
 
  protected:
@@ -126,24 +72,9 @@ class BufferFormatBase : public BufferFormat {
     return str.substr(str.find_last_of(':') + 1, std::string::npos);
   }
 
-  virtual bool MustReallocate(const BufferFormatBase<T>& other) const noexcept
-      = 0;
-
-  virtual const void* PayloadPointer(const T& item) const noexcept = 0;
-
   virtual void Validate(const BuffersBase<T>& buffers) const = 0;
 
   virtual std::string Dump(const BuffersBase<T>& buffers) const noexcept = 0;
-
-  static void ValidateSamplingRate(int value) {
-    if (value < MIN_SAMPLING_RATE || value > MAX_SAMPLING_RATE) {
-      throw Formats::InvalidSamplingRateException(value);
-    }
-  }
-
- private:
-  int samplingRate_;
-  bool incompatible_;
 };
 
 namespace Validation {
@@ -172,20 +103,9 @@ class BuffersBase : public Buffers {
  public:
   typedef T ElementType;
 
-  explicit BuffersBase(
-      const std::shared_ptr<BufferFormatBase<T>>& format) noexcept
-      : Buffers(0, format),
-        initialized_(false) {
-  }
-
-  template <typename... TArgs>
-  void Initialize(size_t size, TArgs... args) noexcept {
-    assert(!initialized_ && "Already initialized");
-    Buffers::SetSize(size);
-    for (size_t i = 0; i < size; i++) {
-      Set(i, new T(args...));
-    }
-    initialized_ = true;
+  BuffersBase(const std::shared_ptr<BufferFormatBase<T>>& format,
+              size_t count, void* reusedMemory = nullptr)
+      : Buffers(format, count, reusedMemory) {
   }
 
   T& operator[](int index) noexcept {
@@ -196,15 +116,49 @@ class BuffersBase : public Buffers {
     return *reinterpret_cast<const T*>(Buffers::operator [](index));  // NOLINT(*)
   }
 
-  const std::shared_ptr<BufferFormatBase<T>> CastedFormat() const noexcept {
-    return std::static_pointer_cast<BufferFormatBase<T>>(Format());
+  const std::shared_ptr<BufferFormatBase<T>> Format() const noexcept {
+    return std::static_pointer_cast<BufferFormatBase<T>>(Buffers::Format());
   }
 
 private:
-  BuffersBase(const BuffersBase<T>& other) = delete;
-  BuffersBase& operator=(const BuffersBase<T>& other) = delete;
+  BuffersBase(const BuffersBase<T>&) = delete;
+  BuffersBase& operator=(const BuffersBase<T>&) = delete;
 
-  bool initialized_;
+  void RunConstructors() {
+    if (!std::is_pointer<T>::value) {
+      for (size_t i = 0; i < this->Count(); i++) {
+        auto mem = reinterpret_cast<T *>(Buffers::operator [](i));
+        new(mem) T();
+      }
+    }
+  }
+};
+
+template <typename T>
+class BuffersBase<T*> : public Buffers {
+ public:
+  typedef T* ElementType;
+
+  BuffersBase(const std::shared_ptr<BufferFormatBase<T*>>& format,
+              size_t count, void* reusedMemory = nullptr)
+      : Buffers(format, count, reusedMemory) {
+  }
+
+  T* operator[](int index) noexcept {
+    return reinterpret_cast<T*>(Buffers::operator [](index));  // NOLINT(*)
+  }
+
+  const T* operator[](int index) const noexcept {
+    return reinterpret_cast<const T*>(Buffers::operator [](index));  // NOLINT(*)
+  }
+
+  const std::shared_ptr<BufferFormatBase<T*>> Format() const noexcept {
+    return std::static_pointer_cast<BufferFormatBase<T*>>(Buffers::Format());
+  }
+
+private:
+  BuffersBase(const BuffersBase<T*>&) = delete;
+  BuffersBase& operator=(const BuffersBase<T*>&) = delete;
 };
 
 template<class T>

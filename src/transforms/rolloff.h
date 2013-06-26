@@ -13,16 +13,15 @@
 #ifndef SRC_TRANSFORMS_ROLLOFF_H_
 #define SRC_TRANSFORMS_ROLLOFF_H_
 
-#include "src/formats/window_format.h"
 #include "src/formats/single_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 /// @brief \f$R: \displaystyle\sum_{f=0}^{f=R}{Value[f]} = ratio \times \displaystyle\sum_{f=0}^{f=N}{Value[f]}\f$.
 class Rolloff
-    : public OmpTransformBase<Formats::WindowFormatF, Formats::SingleFormatF> {
+    : public OmpTransformBase<Formats::RawFormatF, Formats::SingleFormatF> {
  public:
   Rolloff();
 
@@ -34,11 +33,7 @@ class Rolloff
   )
 
  protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<float>* buffers) const noexcept override;
-
-  virtual void Do(const Formats::WindowF& in,
+  virtual void Do(const float* in,
                   float* out) const noexcept override;
 
   static int Do(bool simd, const float* input, size_t length,

@@ -24,15 +24,119 @@ extern "C" {
 
 namespace SoundFeatureExtraction {
 
-template <typename FIN, typename FOUT>
-class OmpTransformBaseCommon : public virtual ParameterizableBase {
+template <typename FINELEMENT, typename FOUTELEMENT,
+          bool SupportsInversion = false>
+class OmpTransformBaseDoInverseBufferTypeDispatcher {
+  public:
+   virtual ~OmpTransformBaseDoInverseBufferTypeDispatcher() {}
+};
+
+template <typename FINELEMENT, typename FOUTELEMENT>
+class OmpTransformBaseDoInverseBufferTypeDispatcher<FINELEMENT,
+                                                    FOUTELEMENT,
+                                                    true> {
+  public:
+   virtual ~OmpTransformBaseDoInverseBufferTypeDispatcher() {}
+
+  protected:
+   virtual void DoInverse(const FOUTELEMENT& in, FINELEMENT* out)
+      const noexcept = 0;
+};
+
+template <typename FINELEMENT, typename FOUTELEMENT>
+class OmpTransformBaseDoInverseBufferTypeDispatcher<FINELEMENT*,
+                                                    FOUTELEMENT,
+                                                    true> {
+  public:
+   virtual ~OmpTransformBaseDoInverseBufferTypeDispatcher() {}
+
+  protected:
+   virtual void DoInverse(const FOUTELEMENT& in, FINELEMENT* out)
+      const noexcept = 0;
+};
+
+template <typename FINELEMENT, typename FOUTELEMENT>
+class OmpTransformBaseDoInverseBufferTypeDispatcher<FINELEMENT,
+                                                    FOUTELEMENT*,
+                                                    true> {
+  public:
+   virtual ~OmpTransformBaseDoInverseBufferTypeDispatcher() {}
+
+  protected:
+   virtual void DoInverse(const FOUTELEMENT* in, FINELEMENT* out)
+      const noexcept = 0;
+};
+
+template <typename FINELEMENT, typename FOUTELEMENT>
+class OmpTransformBaseDoInverseBufferTypeDispatcher<FINELEMENT*,
+                                                    FOUTELEMENT*,
+                                                    true> {
+  public:
+   virtual ~OmpTransformBaseDoInverseBufferTypeDispatcher() {}
+
+  protected:
+   virtual void DoInverse(const FOUTELEMENT* in, FINELEMENT* out)
+      const noexcept = 0;
+};
+
+template <typename FINELEMENT, typename FOUTELEMENT>
+class OmpTransformBaseDoBufferTypeDispatcher {
+ public:
+  virtual ~OmpTransformBaseDoBufferTypeDispatcher() {}
+
+ protected:
+  virtual void Do(const FINELEMENT& in, FOUTELEMENT* out) const noexcept = 0;
+};
+
+
+template <typename FINELEMENT, typename FOUTELEMENT>
+class OmpTransformBaseDoBufferTypeDispatcher<FINELEMENT*, FOUTELEMENT> {
+ public:
+  virtual ~OmpTransformBaseDoBufferTypeDispatcher() {}
+
+ protected:
+  virtual void Do(const FINELEMENT* in, FOUTELEMENT* out) const noexcept = 0;
+};
+
+template <typename FINELEMENT, typename FOUTELEMENT>
+class OmpTransformBaseDoBufferTypeDispatcher<FINELEMENT, FOUTELEMENT*> {
+ public:
+  virtual ~OmpTransformBaseDoBufferTypeDispatcher() {}
+
+ protected:
+  virtual void Do(const FINELEMENT& in, FOUTELEMENT* out) const noexcept = 0;
+};
+
+template <typename FINELEMENT, typename FOUTELEMENT>
+class OmpTransformBaseDoBufferTypeDispatcher<FINELEMENT*, FOUTELEMENT*> {
+ public:
+  virtual ~OmpTransformBaseDoBufferTypeDispatcher() {}
+
+ protected:
+  virtual void Do(const FINELEMENT* in, FOUTELEMENT* out) const noexcept = 0;
+};
+
+template <typename FINELEMENT, typename FOUTELEMENT,
+          bool SupportsInversion>
+class OmpTransformBaseBufferTypeDispatcher
+    : public virtual OmpTransformBaseDoBufferTypeDispatcher<FINELEMENT,
+                                                            FOUTELEMENT>,
+      public virtual OmpTransformBaseDoInverseBufferTypeDispatcher<
+          FINELEMENT, FOUTELEMENT, SupportsInversion> {
+};
+
+template <typename FIN, typename FOUT, bool SupportsInversion = false>
+class OmpTransformBaseCommon
+    : public virtual OmpTransformBaseBufferTypeDispatcher<
+          typename FIN::BufferType, typename FOUT::BufferType,
+          SupportsInversion>,
+      public virtual TransformBase<FIN, FOUT, SupportsInversion> {
  public:
   OmpTransformBaseCommon() noexcept
     : max_number_of_threads_(get_omp_transforms_max_threads_num()) {
-    RegisterSetter(MaxThreadsNumberParameterName(),
-                   [&](const std::string& value) {
-      int tn = Parse<int>(
-          OmpTransformBaseCommon<FIN, FOUT>::MaxThreadsNumberParameterName(),
+    this->RegisterSetter(MaxThreadsNumberParameterName(),
+                         [&](const std::string& value) {
+      int tn = this->template Parse<int>(this->MaxThreadsNumberParameterName(),
           value);
       if (tn < 1) {
         return false;
@@ -51,139 +155,218 @@ class OmpTransformBaseCommon : public virtual ParameterizableBase {
     return max_number_of_threads_ < api_max? max_number_of_threads_ : api_max;
   }
 
- protected:
-  typedef typename FIN::BufferType InElement;
-  typedef typename FOUT::BufferType OutElement;
-  typedef BuffersBase<InElement> InBuffers;
-  typedef BuffersBase<OutElement> OutBuffers;
-
-  void Do(const InBuffers& in, OutBuffers* out) const noexcept {
-#ifdef HAVE_OPENMP
-    #pragma omp parallel for num_threads(MaxThreadsNumber())
-#endif
-    for (size_t i = 0; i < in.Size(); i++) {
-      Do(in[i], &(*out)[i]);
-    }
-  }
-
-  virtual void Do(const InElement& in, OutElement* out) const noexcept = 0;
-
  private:
-  void DoInverse(const OutBuffers& in, InBuffers* out)
-      const noexcept {
-#ifdef HAVE_OPENMP
-    #pragma omp parallel for num_threads(MaxThreadsNumber())
-#endif
-    for (size_t i = 0; i < in.Size(); i++) {
-      DoInverse(in[i], &(*out)[i]);
-    }
-  }
-
-  virtual void DoInverse(const OutElement& in, InElement* out)
-  const noexcept = 0;
-
   int max_number_of_threads_;
 };
 
+template <typename FIN, typename FOUT,
+          typename FINELEMENT, typename FOUTELEMENT,
+          bool SupportsInversion>
+class OmpTransformBaseBufferTypeProxy;
+
+template <typename FIN, typename FOUT,
+          typename FINELEMENT, typename FOUTELEMENT>
+class OmpTransformBaseBufferTypeProxy<FIN, FOUT, FINELEMENT, FOUTELEMENT, false>
+    : public virtual OmpTransformBaseCommon<FIN, FOUT, false> {
+  protected:
+   using OmpTransformBaseBufferTypeDispatcher<
+       typename FIN::BufferType, typename FOUT::BufferType, false>::Do;
+
+   virtual void Do(
+       const typename TransformBase<FIN, FOUT, false>::InBuffers& in,
+       typename TransformBase<FIN, FOUT, false>::OutBuffers* out)
+       const noexcept override final {
+#ifdef HAVE_OPENMP
+    #pragma omp parallel for num_threads(this->MaxThreadsNumber())
+#endif
+    for (size_t i = 0; i < in.Count(); i++) {
+      this->Do(in[i], &(*out)[i]);
+    }
+  }
+};
+
+template <typename FIN, typename FOUT,
+          typename FINELEMENT, typename FOUTELEMENT>
+class OmpTransformBaseBufferTypeProxy<FIN, FOUT, FINELEMENT, FOUTELEMENT*,
+                                      false>
+    : public virtual OmpTransformBaseCommon<FIN, FOUT, false> {
+  protected:
+   using OmpTransformBaseBufferTypeDispatcher<
+       typename FIN::BufferType, typename FOUT::BufferType, false>::Do;
+
+   virtual void Do(
+       const typename TransformBase<FIN, FOUT, false>::InBuffers& in,
+       typename TransformBase<FIN, FOUT, false>::OutBuffers* out)
+       const noexcept override final {
+#ifdef HAVE_OPENMP
+    #pragma omp parallel for num_threads(this->MaxThreadsNumber())
+#endif
+    for (size_t i = 0; i < in.Count(); i++) {
+      this->Do(in[i], (*out)[i]);
+    }
+  }
+};
+
+template <typename FIN, typename FOUT,
+          typename FINELEMENT, typename FOUTELEMENT>
+class OmpTransformBaseBufferTypeProxy<FIN, FOUT, FINELEMENT, FOUTELEMENT,
+                                      true>
+    : public virtual OmpTransformBaseCommon<FIN, FOUT, true> {
+  protected:
+   using OmpTransformBaseBufferTypeDispatcher<
+       typename FIN::BufferType, typename FOUT::BufferType, true>::Do;
+   using OmpTransformBaseBufferTypeDispatcher<
+       typename FIN::BufferType, typename FOUT::BufferType, true>::DoInverse;
+
+   virtual void Do(
+       const typename TransformBase<FIN, FOUT, true>::InBuffers& in,
+       typename TransformBase<FIN, FOUT, true>::OutBuffers* out)
+       const noexcept override final {
+#ifdef HAVE_OPENMP
+    #pragma omp parallel for num_threads(this->MaxThreadsNumber())
+#endif
+    for (size_t i = 0; i < in.Count(); i++) {
+      this->Do(in[i], &(*out)[i]);
+    }
+  }
+
+  virtual void DoInverse(
+      const typename TransformBase<FIN, FOUT, true>::OutBuffers& in,
+      typename TransformBase<FIN, FOUT, true>::InBuffers* out)
+      const noexcept override final {
+#ifdef HAVE_OPENMP
+    #pragma omp parallel for num_threads(this->MaxThreadsNumber())
+#endif
+    for (size_t i = 0; i < in.Count(); i++) {
+      this->DoInverse(in[i], &(*out)[i]);
+    }
+  }
+};
+
+template <typename FIN, typename FOUT,
+          typename FINELEMENT, typename FOUTELEMENT>
+class OmpTransformBaseBufferTypeProxy<FIN, FOUT, FINELEMENT*, FOUTELEMENT,
+                                      true>
+    : public virtual OmpTransformBaseCommon<FIN, FOUT, true> {
+  protected:
+   using OmpTransformBaseBufferTypeDispatcher<
+       typename FIN::BufferType, typename FOUT::BufferType, true>::Do;
+   using OmpTransformBaseBufferTypeDispatcher<
+       typename FIN::BufferType, typename FOUT::BufferType, true>::DoInverse;
+
+   virtual void Do(
+       const typename TransformBase<FIN, FOUT, true>::InBuffers& in,
+       typename TransformBase<FIN, FOUT, true>::OutBuffers* out)
+       const noexcept override final {
+#ifdef HAVE_OPENMP
+    #pragma omp parallel for num_threads(this->MaxThreadsNumber())
+#endif
+    for (size_t i = 0; i < in.Count(); i++) {
+      this->Do(in[i], &(*out)[i]);
+    }
+  }
+
+  virtual void DoInverse(
+      const typename TransformBase<FIN, FOUT, true>::OutBuffers& in,
+      typename TransformBase<FIN, FOUT, true>::InBuffers* out)
+      const noexcept override final {
+#ifdef HAVE_OPENMP
+    #pragma omp parallel for num_threads(this->MaxThreadsNumber())
+#endif
+    for (size_t i = 0; i < in.Count(); i++) {
+      this->DoInverse(in[i], (*out)[i]);
+    }
+  }
+};
+
+template <typename FIN, typename FOUT,
+          typename FINELEMENT, typename FOUTELEMENT>
+class OmpTransformBaseBufferTypeProxy<FIN, FOUT, FINELEMENT, FOUTELEMENT*,
+                                      true>
+    : public virtual OmpTransformBaseCommon<FIN, FOUT, true> {
+  protected:
+   using OmpTransformBaseBufferTypeDispatcher<
+       typename FIN::BufferType, typename FOUT::BufferType, true>::Do;
+   using OmpTransformBaseBufferTypeDispatcher<
+       typename FIN::BufferType, typename FOUT::BufferType, true>::DoInverse;
+
+   virtual void Do(
+       const typename TransformBase<FIN, FOUT, true>::InBuffers& in,
+       typename TransformBase<FIN, FOUT, true>::OutBuffers* out)
+       const noexcept override final {
+#ifdef HAVE_OPENMP
+    #pragma omp parallel for num_threads(this->MaxThreadsNumber())
+#endif
+    for (size_t i = 0; i < in.Count(); i++) {
+      this->Do(in[i], (*out)[i]);
+    }
+  }
+
+  virtual void DoInverse(
+      const typename TransformBase<FIN, FOUT, true>::OutBuffers& in,
+      typename TransformBase<FIN, FOUT, true>::InBuffers* out)
+      const noexcept override final {
+#ifdef HAVE_OPENMP
+    #pragma omp parallel for num_threads(this->MaxThreadsNumber())
+#endif
+    for (size_t i = 0; i < in.Count(); i++) {
+      this->DoInverse(in[i], &(*out)[i]);
+    }
+  }
+};
+
+template <typename FIN, typename FOUT,
+          typename FINELEMENT, typename FOUTELEMENT>
+class OmpTransformBaseBufferTypeProxy<FIN, FOUT, FINELEMENT*, FOUTELEMENT*,
+                                      true>
+    : public virtual OmpTransformBaseCommon<FIN, FOUT, true> {
+  protected:
+   using OmpTransformBaseBufferTypeDispatcher<
+       typename FIN::BufferType, typename FOUT::BufferType, true>::Do;
+   using OmpTransformBaseBufferTypeDispatcher<
+       typename FIN::BufferType, typename FOUT::BufferType, true>::DoInverse;
+
+   virtual void Do(
+       const typename TransformBase<FIN, FOUT, true>::InBuffers& in,
+       typename TransformBase<FIN, FOUT, true>::OutBuffers* out)
+       const noexcept override final {
+#ifdef HAVE_OPENMP
+    #pragma omp parallel for num_threads(this->MaxThreadsNumber())
+#endif
+    for (size_t i = 0; i < in.Count(); i++) {
+      this->Do(in[i], (*out)[i]);
+    }
+  }
+
+  virtual void DoInverse(
+      const typename TransformBase<FIN, FOUT, true>::OutBuffers& in,
+      typename TransformBase<FIN, FOUT, true>::InBuffers* out)
+      const noexcept override final {
+#ifdef HAVE_OPENMP
+    #pragma omp parallel for num_threads(this->MaxThreadsNumber())
+#endif
+    for (size_t i = 0; i < in.Count(); i++) {
+      this->DoInverse(in[i], (*out)[i]);
+    }
+  }
+};
+
+/// @brief So this is what the previous 300+ lines were intended for...
 template <typename FIN, typename FOUT, bool SupportsInversion = false>
-class OmpTransformBase;
-
-template <typename FIN, typename FOUT>
-class OmpTransformBase<FIN, FOUT, false>
-    : public virtual TransformBase<FIN, FOUT, false>,
-      public virtual OmpTransformBaseCommon<FIN, FOUT> {
- protected:
-  virtual void Do(const typename TransformBase<FIN, FOUT, false>::InBuffers& in,
-                  typename TransformBase<FIN, FOUT, false>::OutBuffers* out)
-      const noexcept override final {
-    OmpTransformBaseCommon<FIN, FOUT>::Do(in, out);
-  }
-
- private:
-  virtual void DoInverse(
-      const typename OmpTransformBaseCommon<FIN, FOUT>::OutElement& in UNUSED,
-      typename OmpTransformBaseCommon<FIN, FOUT>::InElement* out UNUSED)
-      const noexcept override final {
-    std::unexpected();
-  }
+class OmpTransformBase
+    : public virtual OmpTransformBaseBufferTypeProxy<
+          FIN, FOUT, typename FIN::BufferType, typename FOUT::BufferType,
+          SupportsInversion> {
 };
 
-template <typename FIN, typename FOUT>
-class OmpTransformBase<FIN, FOUT, true>
-    : public virtual TransformBase<FIN, FOUT, true>,
-      public virtual OmpTransformBaseCommon<FIN, FOUT> {
- protected:
-  virtual void Do(const typename TransformBase<FIN, FOUT, true>::InBuffers& in,
-                  typename TransformBase<FIN, FOUT, true>::OutBuffers* out)
-      const noexcept override final {
-    OmpTransformBaseCommon<FIN, FOUT>::Do(in, out);
-  }
-
-  virtual void Do(const typename TransformBase<FIN, FOUT, true>::OutBuffers& in,
-                  typename TransformBase<FIN, FOUT, true>::InBuffers* out)
-      const noexcept override final {
-    OmpTransformBaseCommon<FIN, FOUT>::DoInverse(in, out);
-  }
-
-  virtual void Do(
-      const typename OmpTransformBaseCommon<FIN, FOUT>::OutElement& in,
-      typename OmpTransformBaseCommon<FIN, FOUT>::InElement* out)
-      const noexcept = 0;
-
- private:
-  virtual void DoInverse(
-      const typename OmpTransformBaseCommon<FIN, FOUT>::OutElement& in,
-      typename OmpTransformBaseCommon<FIN, FOUT>::InElement* out)
-      const noexcept override final {
-    Do(in, out);
-  }
-};
-
-template <typename F>
-class OmpTransformBase<F, F, true>
-    : public virtual UniformFormatTransform<F, true>,
-      public virtual OmpTransformBaseCommon<F, F> {
-  using OmpTransformBaseCommon<F, F>::Do;
- protected:
-  virtual void Do(const typename TransformBase<F, F, true>::InBuffers& in,
-                  typename TransformBase<F, F, true>::OutBuffers* out)
-      const noexcept override final  {
-    OmpTransformBaseCommon<F, F>::Do(in, out);
-  }
-
- private:
-  virtual void DoInverse(
-      const typename OmpTransformBaseCommon<F, F>::OutElement& in,
-      typename OmpTransformBaseCommon<F, F>::InElement* out)
-      const noexcept override final {
-    this->Do(in, out);
-  }
-};
-
-template <typename F>
-class OmpTransformBase<F, F, false>
-    : public virtual UniformFormatTransform<F, false>,
-      public virtual OmpTransformBaseCommon<F, F> {
- protected:
-  virtual void Do(const typename TransformBase<F, F, false>::InBuffers& in,
-                  typename TransformBase<F, F, false>::OutBuffers* out)
-      const noexcept override final {
-    OmpTransformBaseCommon<F, F>::Do(in, out);
-  }
-
- private:
-  virtual void DoInverse(
-      const typename OmpTransformBaseCommon<F, F>::OutElement& in UNUSED,
-      typename OmpTransformBaseCommon<F, F>::InElement* out UNUSED)
-      const noexcept override final {
-    std::unexpected();
-  }
-};
-
-// TODO(v.markovtsev): when gcc < 4.7 support is dropped, change it to "using"
-// template alias
+/// @brief OpenMP aware transform base class with the same input and output
+/// formats.
+/// @note Another diamond problem solving here. We take OnFormatChanged()
+/// interface simplification from UniformFormatTransform.
 template <typename F, bool SupportsInversion = false>
-class OmpUniformFormatTransform : public OmpTransformBase<F, F, SupportsInversion> {
+class OmpUniformFormatTransform
+    : public virtual OmpTransformBase<F, F, SupportsInversion>,
+      public virtual UniformFormatTransform<F, SupportsInversion> {
 };
 
 #define OMP_TRANSFORM_PARAMETERS(init) TRANSFORM_PARAMETERS(FORWARD_MACROS( \

@@ -18,12 +18,6 @@ namespace Transforms {
 
 using Formats::FixedArray;
 
-void SFM::InitializeBuffers(
-    const BuffersBase<FixedArray<MEAN_TYPE_COUNT>>& in,
-    BuffersBase<float>* buffers) const noexcept {
-  buffers->Initialize(in.Size());
-}
-
 void SFM::Do(const FixedArray<MEAN_TYPE_COUNT>& in,
              float* out) const noexcept {
   float gMean = in[MEAN_TYPE_GEOMETRIC];

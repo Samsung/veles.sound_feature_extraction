@@ -13,9 +13,8 @@
 #ifndef SRC_TRANSFORMS_CENTROID_H_
 #define SRC_TRANSFORMS_CENTROID_H_
 
-#include "src/formats/window_format.h"
 #include "src/formats/single_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -23,7 +22,7 @@ namespace Transforms {
 /// @brief Calculates \f$\frac{\displaystyle\sum_{f=0}^{SamplingRate / 2}{f
 /// Value[f]}}{\displaystyle\sum_{f=0}^{SamplingRate / 2}{Value[f]}}\f$.
 class Centroid
-    : public OmpTransformBase<Formats::WindowFormatF, Formats::SingleFormatF> {
+    : public OmpTransformBase<Formats::RawFormatF, Formats::SingleFormatF> {
  public:
   TRANSFORM_INTRO("Centroid", "Window's center of mass in frequency domain "
                               "calculation.")
@@ -31,11 +30,7 @@ class Centroid
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<float>* buffers) const noexcept override;
-
-  virtual void Do(const Formats::WindowF& in,
+  virtual void Do(const float* in,
                   float* out) const noexcept override;
 
   static float Do(bool simd, const float* input, size_t length) noexcept;

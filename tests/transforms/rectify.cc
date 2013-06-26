@@ -10,46 +10,34 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <gtest/gtest.h>
 #include <math.h>
 #include "src/transforms/rectify.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::RectifyWindow;
+using SoundFeatureExtraction::Transforms::Rectify;
 
-class RectifyTest : public RectifyWindow, public testing::Test {
+class RectifyTest : public TransformTest<Rectify> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<WindowF> Output;
   int Size;
-
-  RectifyTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 486;
-    Input.Initialize(1, Size);
+    SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; ++i) {
-      Input[0][i] = i;
+      (*Input)[0][i] = i;
       if (i % 2 == 0) {
-        Input[0][i] *= -1;
+        (*Input)[0][i] *= -1;
       }
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
-    format->SetAllocatedSize(2 * Size);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
 TEST_F(RectifyTest, Do) {
-  Do(Input[0], &Output[0]);
+  Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size; i++) {
-    ASSERT_EQ(i, Output[0][i]);
+    ASSERT_EQ(i, (*Output)[0][i]);
   }
 }
 
@@ -57,5 +45,3 @@ TEST_F(RectifyTest, Do) {
 #define ITER_COUNT 500000
 #define BENCH_FUNC RectifyBase::Do
 #include "tests/transforms/benchmark.inc"
-
-#include "tests/google/src/gtest_main.cc"

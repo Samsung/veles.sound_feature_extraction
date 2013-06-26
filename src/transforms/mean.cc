@@ -55,18 +55,12 @@ Mean::Mean() : types_(kDefaultMeanTypes) {
   });
 }
 
-void Mean::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<FixedArray<MEAN_TYPE_COUNT>>* buffers) const noexcept {
-  buffers->Initialize(in.Size());
-}
-
-void Mean::Do(const Formats::WindowF& in,
+void Mean::Do(const float* in,
             FixedArray<MEAN_TYPE_COUNT>* out) const noexcept {
   for (int j = 0; j < MEAN_TYPE_COUNT; j++) {
     auto mt = static_cast<MeanTypes>(j);
     if (types_.find(mt) != types_.end()) {
-      (*out)[j] = Do(UseSimd(), in.Data.get(), inputFormat_->Size(), mt);
+      (*out)[j] = Do(UseSimd(), in, inputFormat_->Size(), mt);
     } else {
       (*out)[j] = 0;
     }

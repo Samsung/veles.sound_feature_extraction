@@ -34,7 +34,7 @@ Logger::Logger(const std::string &domain = "default",
     , color_(color)
     , suppressLoggingInitialized_(suppressLoggingInitialized) {
 #ifdef EINA
-  Initialize();
+  InitializeEina();
 #endif
 }
 
@@ -44,7 +44,7 @@ Logger::Logger(const Logger& other) noexcept
     , color_(other.color_)
     , suppressLoggingInitialized_(other.suppressLoggingInitialized_) {
 #ifdef EINA
-  Initialize();
+  InitializeEina();
 #endif
 }
 
@@ -57,7 +57,7 @@ Logger::Logger(Logger&& other) noexcept
         std::move(std::forward<bool>(
             other.suppressLoggingInitialized_))) {
 #ifdef EINA
-  Initialize();
+  InitializeEina();
 #endif
 }
 
@@ -67,7 +67,7 @@ Logger& Logger::operator=(const Logger& other) noexcept {
   color_ = (other.color_);
   suppressLoggingInitialized_ = (other.suppressLoggingInitialized_);
 #ifdef EINA
-  Initialize();
+  InitializeEina();
 #endif
   return *this;
 }
@@ -81,21 +81,21 @@ Logger& Logger::operator=(Logger&& other) noexcept {
         std::move(std::forward<bool>(
             other.suppressLoggingInitialized_)));
 #ifdef EINA
-  Initialize();
+  InitializeEina();
 #endif
   return *this;
 }
 
 Logger::~Logger() {
 #ifdef EINA
-  Deinitialize();
+  DisposeEina();
 #endif
 }
 
 #ifdef EINA
 
-void Logger::Initialize() noexcept {
-  Deinitialize();
+void Logger::InitializeEina() noexcept {
+  DisposeEina();
   eina_init();
   eina_log_threads_enable();
   int len = kCommonDomain.size() + strlen(domain_str_.c_str()) + 1;
@@ -118,7 +118,7 @@ void Logger::Initialize() noexcept {
   delete[] fullDomain;
 }
 
-void Logger::Deinitialize() noexcept {
+void Logger::DisposeEina() noexcept {
   if (log_domain_ != kUnintializedLogDomain_ &&
       log_domain_ != EINA_LOG_DOMAIN_GLOBAL) {
     if (!suppressLoggingInitialized_) {
@@ -145,7 +145,7 @@ std::string Logger::domain_str() const noexcept {
 void Logger::set_domain_str(const std::string &value) noexcept {
   domain_str_ = value;
 #ifdef EINA
-  Initialize();
+  InitializeEina();
 #endif
 }
 
@@ -156,7 +156,7 @@ std::string Logger::color() const noexcept {
 void Logger::set_color(const std::string &value) noexcept {
   color_ = value;
 #ifdef EINA
-  Initialize();
+  InitializeEina();
 #endif
 }
 

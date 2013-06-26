@@ -34,26 +34,16 @@ void Autocorrelation::Initialize() const noexcept {
   }
 }
 
-void Autocorrelation::OnFormatChanged() {
-  size_t newSize = inputFormat_->Size() * 2 - 1;
-  if (outputFormat_->AllocatedSize() < newSize) {
-    outputFormat_->SetAllocatedSize(newSize);
-  }
-  outputFormat_->SetSize(newSize);
+BuffersCountChange Autocorrelation::OnFormatChanged() {
+  outputFormat_->SetSize(inputFormat_->Size() * 2 - 1);
+  return BuffersCountChange::Identity;
 }
 
-void Autocorrelation::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), outputFormat_->Size());
-}
-
-void Autocorrelation::Do(const Formats::WindowF& in, Formats::WindowF* out)
+void Autocorrelation::Do(const float* in, float* out)
 const noexcept {
   for (auto hp : correlationHandles_) {
     if (hp.mutex->try_lock()) {
-      cross_correlate(*hp.handle, in.Data.get(), in.Data.get(),
-                      out->Data.get());
+      cross_correlate(*hp.handle, in, in, out);
       hp.mutex->unlock();
       break;
     }

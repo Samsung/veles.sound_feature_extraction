@@ -15,8 +15,7 @@
 
 #include <vector>
 #include <simd/wavelet_types.h>
-#include "src/formats/window_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 #include "src/primitives/wavelet_filter_bank.h"
 
 namespace SoundFeatureExtraction {
@@ -48,7 +47,7 @@ namespace Transforms {
 ///             ------ 3
 ///
 class DWPT
-    : public OmpUniformFormatTransform<Formats::WindowFormatF, true> {
+    : public OmpUniformFormatTransform<Formats::RawFormatF, true> {
  public:
   DWPT();
 
@@ -68,14 +67,13 @@ class DWPT
   virtual void Initialize() const noexcept override;
 
  protected:
-  virtual void OnFormatChanged() override;
+  virtual BuffersCountChange OnFormatChanged() override;
 
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
+  virtual void Do(const float* in,
+                  float* out) const noexcept override;
 
-  virtual void Do(const Formats::WindowF& in,
-                  Formats::WindowF* out) const noexcept override;
+  virtual void DoInverse(const float* in,
+                         float* out) const noexcept override;
 
  private:
   static const std::vector<int> kDefaultTreeFingerprint;

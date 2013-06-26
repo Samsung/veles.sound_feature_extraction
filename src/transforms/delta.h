@@ -13,14 +13,14 @@
 #ifndef SRC_TRANSFORMS_DELTA_H_
 #define SRC_TRANSFORMS_DELTA_H_
 
-#include "src/formats/window_format.h"
+#include "src/formats/raw_format.h"
 #include "src/transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Delta
-    : public UniformFormatTransform<Formats::WindowFormatF> {
+    : public UniformFormatTransform<Formats::RawFormatF> {
  public:
   Delta();
 
@@ -44,19 +44,15 @@ class Delta
   static const std::unordered_map<std::string, Type> kTypesMap;
   static const int kDefaultRegressionLength = 5;
 
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
-
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::WindowF>* out) const noexcept override;
+  virtual void Do(const BuffersBase<float*>& in,
+                  BuffersBase<float*>* out) const noexcept override;
 
   static void DoSimple(bool simd, const float* prev, const float* cur,
                        size_t length, float* res) noexcept;
 
-  static void DoRegression(bool simd, const BuffersBase<Formats::WindowF>& in,
+  static void DoRegression(bool simd, const BuffersBase<float*>& in,
                            int rstep, int i, float norm, int windowSize,
-                           BuffersBase<Formats::WindowF>* out) noexcept;
+                           BuffersBase<float*>* out) noexcept;
 
  private:
   Type type_;

@@ -10,48 +10,36 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <gtest/gtest.h>
 #include <math.h>
 #include "src/transforms/zerocrossings.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
-using SoundFeatureExtraction::Formats::Raw16;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::Formats::RawFormat16;
 using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::ZeroCrossingsWindow;
-using SoundFeatureExtraction::Transforms::ZeroCrossingsRaw;
+using SoundFeatureExtraction::Transforms::ZeroCrossingsF;
+using SoundFeatureExtraction::Transforms::ZeroCrossings16;
 
-class ZeroCrossingsWindowTest : public ZeroCrossingsWindow, public testing::Test {
+class ZeroCrossingsWindowTest : public TransformTest<ZeroCrossingsF> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<int32_t> Output;
   int Size;
-
-  ZeroCrossingsWindowTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 450;
-    Input.Initialize(1, Size);
+    SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; i++) {
       // Always liked exotic functions
-      Input[0][i] = sinf(i * M_PI / 2);
+      (*Input)[0][i] = sinf(i * M_PI / 2);
     }
-    Input[0][Size - 1] = 0;
-    Input[0][Size - 2] = 0;
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
+    (*Input)[0][Size - 1] = 0;
+    (*Input)[0][Size - 2] = 0;
   }
 };
 
 TEST_F(ZeroCrossingsWindowTest, Do) {
-  Do(Input[0], &Output[0]);
-  ASSERT_EQ(Size / 2 + 1, Output[0]);
-  int slowres = DoInternal(false, Input[0].Data.get(), Size);
+  Do((*Input)[0], &(*Output)[0]);
+  ASSERT_EQ(Size / 2 + 1, (*Output)[0]);
+  int slowres = DoInternal(false, (*Input)[0], Size);
   ASSERT_EQ(Size / 2 + 1, slowres);
 }
 
@@ -61,35 +49,25 @@ TEST_F(ZeroCrossingsWindowTest, Do) {
 #define BENCH_FUNC DoInternal
 #include "tests/transforms/benchmark.inc"
 
-class ZeroCrossingsRawTest : public ZeroCrossingsRaw, public testing::Test {
+class ZeroCrossingsRawTest : public TransformTest<ZeroCrossings16> {
  public:
-  BuffersBase<Raw16> Input;
-  BuffersBase<int32_t> Output;
   int Size;
-
-  ZeroCrossingsRawTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 1024;
-    Input.Initialize(1, Size, 2);
+    SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; i++) {
       // Always liked exotic functions
-      Input[0][i] = sinf(i * M_PI / 2) * 1024;
+      (*Input)[0][i] = sinf(i * M_PI / 2) * 1024;
     }
-    Input[0][3] = 1024;
-    auto format = std::make_shared<RawFormat16>(Size, 18000);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
+    (*Input)[0][3] = 1024;
   }
 };
 
 TEST_F(ZeroCrossingsRawTest, Do) {
-  Do(Input[0], &Output[0]);
-  ASSERT_EQ(Size / 2, Output[0]);
-  int slowres = DoInternal(false, Input[0].Data.get(), Size);
+  Do((*Input)[0], &(*Output)[0]);
+  ASSERT_EQ(Size / 2, (*Output)[0]);
+  int slowres = DoInternal(false, (*Input)[0], Size);
   ASSERT_EQ(Size / 2, slowres);
 }
 
@@ -98,5 +76,3 @@ TEST_F(ZeroCrossingsRawTest, Do) {
 #undef INPUT_TYPE
 #define INPUT_TYPE int16_t
 #include "tests/transforms/benchmark.inc"
-
-#include "tests/google/src/gtest_main.cc"

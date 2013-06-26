@@ -10,46 +10,33 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <gtest/gtest.h>
 #include "src/transforms/dct.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::DCT;
 
-class DCTTest : public DCT, public testing::Test {
+class DCTTest : public TransformTest<DCT> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<WindowF> Output;
   int Size;
-
-  DCTTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 512;
-    Input.Initialize(1, Size);
+    SetUpTransform(1, Size, 16000);
     for (int i = 0; i < Size; i++) {
-      Input[0][i] = (i - Size / 2.0f) / Size;
+      (*Input)[0][i] = (i - Size / 2.0f) / Size;
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
 TEST_F(DCTTest, Forward) {
   ASSERT_EQ(inputFormat_->Size(), outputFormat_->Size());
-  Do(Input, &Output);
+  Do((*Input), &(*Output));
 }
 
 TEST_F(DCTTest, Backward) {
   SetParameter("inverse", "true");
   ASSERT_EQ(inputFormat_->Size(), outputFormat_->Size());
-  Do(Input, &Output);
+  Do((*Input), &(*Output));
 }
-
-#include "tests/google/src/gtest_main.cc"

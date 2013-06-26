@@ -16,20 +16,12 @@
 namespace SoundFeatureExtraction {
 namespace Formats {
 
-void Int32ToInt16Raw::Do(const Raw32& in,
-                         Raw16 *out) const noexcept {
-  int32_to_int16(in.Data.get(), inputFormat_->Size(),
-                 out->Data.get());
-}
-
-void Int32ToInt16Window::Do(const Window32& in,
-                            Window16 *out) const noexcept {
-    int32_to_int16(in.Data.get(), inputFormat_->Size(),
-                   out->Data.get());
+void Int32ToInt16Raw::Do(const int32_t* in,
+                         int16_t* out) const noexcept {
+  int32_to_int16(in, inputFormat_->Size(), out);
 }
 
 REGISTER_TRANSFORM(Int32ToInt16Raw);
-REGISTER_TRANSFORM(Int32ToInt16Window);
 
 }  // namespace Formats
 }  // namespace SoundFeatureExtraction

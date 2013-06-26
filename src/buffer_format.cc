@@ -11,20 +11,20 @@
  */
 
 #include "src/buffer_format.h"
+#include <assert.h>
 
 namespace SoundFeatureExtraction {
 
+BufferFormat::BufferFormat(const std::string& id,
+                           int samplingRate) noexcept
+    : id_(id),
+      samplingRate_(samplingRate) {
+  ValidateSamplingRate(samplingRate_);
+}
+
 BufferFormat::BufferFormat(const std::string& id) noexcept
-: id_(id) {
-}
-
-BufferFormat::BufferFormat(const BufferFormat& other) noexcept
-: id_(other.id_) {
-}
-
-BufferFormat& BufferFormat::operator=(const BufferFormat& other) noexcept {
-  id_ = other.id_;
-  return *this;
+    : id_(id),
+      samplingRate_(0) {
 }
 
 const std::string& BufferFormat::Id() const noexcept {
@@ -39,8 +39,28 @@ bool BufferFormat::operator!=(const BufferFormat& other) const noexcept {
   return this->id_ != other.id_;
 }
 
-void BufferFormat::DeriveFrom(const BufferFormat& format) noexcept {
+void BufferFormat::CopySourceDetailsFrom(const BufferFormat& format) noexcept {
   SetSamplingRate(format.SamplingRate());
+}
+
+size_t BufferFormat::SizeInBytes() const noexcept {
+  return Aligned(UnalignedSizeInBytes());
+}
+
+ int BufferFormat::SamplingRate() const noexcept {
+  assert(samplingRate_ > 0);
+  return samplingRate_;
+}
+
+void BufferFormat::SetSamplingRate(int value) {
+  ValidateSamplingRate(value);
+  samplingRate_ = value;
+}
+
+void BufferFormat::ValidateSamplingRate(int value) {
+  if (value < MIN_SAMPLING_RATE || value > MAX_SAMPLING_RATE) {
+    throw Formats::InvalidSamplingRateException(value);
+  }
 }
 
 }  // namespace SoundFeatureExtraction

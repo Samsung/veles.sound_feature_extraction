@@ -16,13 +16,11 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-using BeatRaw16 = Beat<Formats::RawFormat16>;
-using BeatRawF = Beat<Formats::RawFormatF>;
-using BeatWindowF = Beat<Formats::WindowFormatF>;
+using Beat16 = Beat<Formats::RawFormat16>;
+using BeatF = Beat<Formats::RawFormatF>;
 
-REGISTER_TRANSFORM(BeatRaw16);
-REGISTER_TRANSFORM(BeatRawF);
-REGISTER_TRANSFORM(BeatWindowF);
+REGISTER_TRANSFORM(Beat16);
+REGISTER_TRANSFORM(BeatF);
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction

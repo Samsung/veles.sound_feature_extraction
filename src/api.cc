@@ -17,7 +17,7 @@
 #include "src/features_parser.h"
 #include "src/make_unique.h"
 #include "src/safe_omp.h"
-#include "src/simd_transform.h"
+#include "src/simd_aware.h"
 #include "src/transform_tree.h"
 #include "src/transform_registry.h"
 
@@ -31,10 +31,9 @@ using SoundFeatureExtraction::RawFeaturesMap;
 using SoundFeatureExtraction::Features::ParseFeaturesException;
 using SoundFeatureExtraction::TransformTree;
 using SoundFeatureExtraction::Formats::RawFormat16;
-using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Buffers;
-using SoundFeatureExtraction::SimdTransform;
+using SoundFeatureExtraction::SimdAware;
 
 extern "C" {
 struct FeaturesConfiguration {
@@ -301,7 +300,7 @@ FeatureExtractionResult extract_speech_features(
 
   std::unordered_map<std::string, std::shared_ptr<Buffers>> retmap;
   try {
-    retmap = fc->Tree->Execute(Raw16(buffer));
+    retmap = fc->Tree->Execute(buffer);
   }
   catch (const std::exception& ex) {
     fprintf(stderr, "Caught an exception with message \"%s\".\n", ex.what());
@@ -314,15 +313,14 @@ FeatureExtractionResult extract_speech_features(
   int i = 0;
   for (auto res : retmap) {
     copy_string(res.first, *featureNames + i);
-    size_t sizeEach = res.second->Format()->PayloadSizeInBytes();
+    size_t sizeEach = res.second->Format()->SizeInBytes();
     assert(sizeEach > 0);
-    size_t size = sizeEach * res.second->Size();
+    size_t size = sizeEach * res.second->Count();
     (*resultLengths)[i] = size;
     (*results)[i] = new char[size];
-    for (int j = 0; j < static_cast<int>(res.second->Size()); j++) {
+    for (size_t j = 0; j < res.second->Count(); j++) {
       memcpy(reinterpret_cast<char *>((*results)[i]) + j * sizeEach,
-             res.second->Format()->PayloadPointer((*res.second)[j]),
-             sizeEach);
+             (*res.second)[j], sizeEach);
     }
     i++;
   }
@@ -437,11 +435,11 @@ void set_omp_transforms_max_threads_num(int value) {
 }
 
 bool get_use_simd() {
-  return SimdTransform::UseSimd();
+  return SimdAware::UseSimd();
 }
 
 void set_use_simd(int value) {
-  SimdTransform::SetUseSimd(value);
+  SimdAware::SetUseSimd(value);
 }
 
 }

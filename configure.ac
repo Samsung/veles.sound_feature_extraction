@@ -71,6 +71,7 @@ AC_SUBST([SIMD_DIR])
 AM_COND_IF([TESTS], [
     AC_CONFIG_FILES(tests/primitives/Makefile
                     tests/transforms/Makefile
+                    tests/allocators/Makefile
                     )
 ])
 
@@ -80,6 +81,7 @@ AC_CONFIG_FILES(src/boost/Makefile
                 src/formats/Makefile
                 src/transforms/Makefile
                 src/primitives/Makefile
+                src/allocators/Makefile
                 )
 
 AC_OUTPUT

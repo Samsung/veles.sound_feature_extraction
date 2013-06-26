@@ -11,36 +11,24 @@
  */
 
 
-#include <gtest/gtest.h>
 #include <math.h>
 #include "src/transforms/spectral_energy.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::SpectralEnergy;
 
-class SpectralEnergyTest
-    : public SpectralEnergy, public testing::Test {
+class SpectralEnergyTest : public TransformTest<SpectralEnergy> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<WindowF> Output;
   int Size;
-
-  SpectralEnergyTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 378;
-    Input.Initialize(1, Size);
+    SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; i++) {
-      Input[0][i] = i / 40.0f;
+      (*Input)[0][i] = i / 40.0f;
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
@@ -49,9 +37,9 @@ class SpectralEnergyTest
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(SpectralEnergyTest, Do) {
-  Do(Input[0], &Output[0]);
+  Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size / 2; i++) {
-    float m = Output[0][i];
+    float m = (*Output)[0][i];
     float re = i * 2;
     float im = i * 2 + 1;
     ASSERT_EQF((re * re + im * im) / 1600.0f, m);
@@ -61,5 +49,3 @@ TEST_F(SpectralEnergyTest, Do) {
 #define CLASS_NAME SpectralEnergyTest
 #define ITER_COUNT 500000
 #include "tests/transforms/benchmark.inc"
-
-#include "tests/google/src/gtest_main.cc"

@@ -55,9 +55,7 @@ class Stats
   static const std::unordered_map<std::string, StatsType> kStatsTypesMap;
   static const std::unordered_map<int, CalculateFunc> kStatsFuncs;
 
-  virtual void InitializeBuffers(
-      const BuffersBase<float>& in,
-      BuffersBase<StatsArray>* buffers) const noexcept override;
+  virtual BuffersCountChange OnInputFormatChanged() override;
 
   virtual void Do(const BuffersBase<float>& in,
                   BuffersBase<StatsArray>* out)

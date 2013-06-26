@@ -58,7 +58,7 @@ class InverseParameterAware {
   /// @brief Checks for the support of doing an inverse transform.
   /// @details This function tests the transform's parameters for
   /// the existence of INVERSE_PARAMETER.
-  static bool HasInverse(const Transform& transform) noexcept;
+  static bool HasInverseTransform(const Transform& transform) noexcept;
 };
 
 /// @brief Helper class used to register transforms. Usually, you do not
@@ -85,7 +85,7 @@ class RegisterTransform : InverseParameterAware {
       return ptr;
     }));
     // Insert the inverse constructor functor, if needed
-    if (HasInverse(t)) {
+    if (HasInverseTransform(t)) {
       map[std::string("I") + t.Name()].insert(std::make_pair(
           t.OutputFormat()->Id(), []() {
         auto ptr = std::make_shared<T>();

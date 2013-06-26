@@ -11,39 +11,27 @@
  */
 
 
-#include <gtest/gtest.h>
 #include "src/transforms/argminmax.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::ArgMinMax;
 using SoundFeatureExtraction::Transforms::ArgMinMaxResult;
 
-class ArgMinMaxTest
-    : public ArgMinMax, public testing::Test {
+class ArgMinMaxTest : public TransformTest<ArgMinMax> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<ArgMinMaxResult> Output;
   int Size;
-
-  ArgMinMaxTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 486;
-    Input.Initialize(1, Size);
+    SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size / 2; i++) {
-      Input[0][i] = -i + 1;
+      (*Input)[0][i] = -i + 1;
     }
     for (int i = Size / 2; i < Size; i++) {
-      Input[0][i] = Size - i + 1;
+      (*Input)[0][i] = Size - i + 1;
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
@@ -53,13 +41,13 @@ class ArgMinMaxTest
 
 TEST_F(ArgMinMaxTest, Do) {
   SetParameter("extremum", "max");
-  Do(Input[0], &Output[0]);
-  ASSERT_EQ(Size / 2, std::get<0>(Output[0]));
-  ASSERT_EQ(Size / 2 + 1, std::get<1>(Output[0]));
+  Do((*Input)[0], &(*Output)[0]);
+  ASSERT_EQ(Size / 2, std::get<0>((*Output)[0]));
+  ASSERT_EQ(Size / 2 + 1, std::get<1>((*Output)[0]));
   SetParameter("extremum", "min");
-  Do(Input[0], &Output[0]);
-  ASSERT_EQ(Size / 2 - 1, std::get<0>(Output[0]));
-  ASSERT_EQ(- Size / 2 + 2, std::get<1>(Output[0]));
+  Do((*Input)[0], &(*Output)[0]);
+  ASSERT_EQ(Size / 2 - 1, std::get<0>((*Output)[0]));
+  ASSERT_EQ(- Size / 2 + 2, std::get<1>((*Output)[0]));
 }
 
 #define EXTRA_PARAM true
@@ -67,5 +55,3 @@ TEST_F(ArgMinMaxTest, Do) {
 #define ITER_COUNT 500000
 #define NO_OUTPUT
 #include "tests/transforms/benchmark.inc"
-
-#include "tests/google/src/gtest_main.cc"

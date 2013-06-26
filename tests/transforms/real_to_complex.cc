@@ -10,47 +10,33 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <gtest/gtest.h>
 #include "src/transforms/real_to_complex.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::RealToComplex;
 
-class RealToComplexTest : public RealToComplex, public testing::Test {
+class RealToComplexTest : public TransformTest<RealToComplex> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<WindowF> Output;
   int Size;
-
-  RealToComplexTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 486;
-    Input.Initialize(1, Size * 2);
+    SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; i++) {
-      Input[0][i] = i;
+      (*Input)[0][i] = i;
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
-    format->SetAllocatedSize(Size * 2);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
 TEST_F(RealToComplexTest, Do) {
-  Do(Input[0], &Output[0]);
+  Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size; i++) {
-    ASSERT_EQ(i, Output[0][i * 2]);
+    ASSERT_EQ(i, (*Output)[0][i * 2]);
   }
 }
 
 #define CLASS_NAME RealToComplexTest
 #define ITER_COUNT 500000
 #include "tests/transforms/benchmark.inc"
-
-#include "tests/google/src/gtest_main.cc"

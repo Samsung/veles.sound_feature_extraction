@@ -13,54 +13,24 @@
 #ifndef SRC_TRANSFORMS_DIFFRECT_H_
 #define SRC_TRANSFORMS_DIFFRECT_H_
 
-#include "src/formats/raw_format.h"
-#include "src/formats/window_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-class DiffrectBase {
- protected:
-  static void Do(bool simd, const float* input, int length,
-                 float* output) noexcept;
-};
-
-template <class F>
-class DiffrectTemplate
-    : public OmpUniformFormatTransform<F>,
-      public DiffrectBase {
+class Diffrect : public OmpUniformFormatTransform<Formats::RawFormatF> {
  public:
   TRANSFORM_INTRO("Diffrect", "Find the difference from one sample to the next.")
 
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void OnFormatChanged() {
-    this->outputFormat_->SetSize(this->inputFormat_->Size() - 1);
-  }
+  virtual BuffersCountChange OnFormatChanged() override;
 
-  virtual void Do(const typename F::BufferType& in,
-                  typename F::BufferType* out) const noexcept {
-    DiffrectBase::Do(this->UseSimd(), in.Data.get(), this->inputFormat_->Size(),
-                     out->Data.get());
-  }
-};
+  virtual void Do(const float* in, float* out) const noexcept override;
 
-class DiffrectWindow
-    : public DiffrectTemplate<Formats::WindowFormatF> {
- protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
-};
-
-class DiffrectRaw
-    : public DiffrectTemplate<Formats::RawFormatF> {
- protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::RawF>& in,
-      BuffersBase<Formats::RawF>* buffers) const noexcept override;
+  static void Do(bool simd, const float* input, int length,
+                 float* output) noexcept;
 };
 
 }  // namespace Transforms

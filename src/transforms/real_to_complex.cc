@@ -21,19 +21,14 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void RealToComplex::OnFormatChanged() {
+BuffersCountChange RealToComplex::OnFormatChanged() {
   outputFormat_->SetSize(inputFormat_->Size() * 2);
+  return BuffersCountChange::Identity;
 }
 
-void RealToComplex::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), outputFormat_->Size());
-}
-
-void RealToComplex::Do(const Formats::WindowF& in,
-                       Formats::WindowF* out) const noexcept {
-  Do(false, in.Data.get(), inputFormat_->Size(), out->Data.get());
+void RealToComplex::Do(const float* in,
+                       float* out) const noexcept {
+  Do(UseSimd(), in, inputFormat_->Size(), out);
 }
 
 void RealToComplex::Do(bool simd, const float* input, int length,

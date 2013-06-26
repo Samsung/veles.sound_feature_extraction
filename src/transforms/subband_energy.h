@@ -13,8 +13,7 @@
 #ifndef SRC_TRANSFORMS_SUBBAND_ENERGY_H_
 #define SRC_TRANSFORMS_SUBBAND_ENERGY_H_
 
-#include "src/formats/window_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 #include "src/primitives/wavelet_filter_bank.h"
 
 namespace SoundFeatureExtraction {
@@ -28,7 +27,7 @@ namespace Transforms {
 /// each being equal to the corresponding subband energy. Numbers count is the
 /// same as the length of the binary tree fingerprint.
 class SubbandEnergy
-    : public OmpUniformFormatTransform<Formats::WindowFormatF> {
+    : public OmpUniformFormatTransform<Formats::RawFormatF> {
  public:
   SubbandEnergy();
 
@@ -45,15 +44,10 @@ class SubbandEnergy
   virtual void Initialize() const noexcept override;
 
  protected:
-  virtual void OnFormatChanged() override;
+  virtual BuffersCountChange OnFormatChanged() override;
 
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers)
-  const noexcept;
-
-  virtual void Do(const Formats::WindowF& in,
-                  Formats::WindowF* out) const noexcept override;
+  virtual void Do(const float* in,
+                  float* out) const noexcept override;
 
  private:
   static const std::vector<int> kDefaultTreeFingerprint;

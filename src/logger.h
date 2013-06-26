@@ -105,7 +105,7 @@ class Logger {
 
   void set_color(const std::string &value) noexcept;
 
- protected:
+ private:
   static const int kUnintializedLogDomain_ = -1;
   static const std::string kCommonDomain;
   static const std::string kDefaultLoggerColor;
@@ -116,8 +116,8 @@ class Logger {
   bool suppressLoggingInitialized_;
 
 #ifdef EINA
-  void Initialize() noexcept;
-  void Deinitialize() noexcept;
+  void InitializeEina() noexcept;
+  void DisposeEina() noexcept;
 #endif
 };
 

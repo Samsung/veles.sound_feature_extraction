@@ -21,23 +21,18 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void SpectralEnergy::OnFormatChanged() {
+BuffersCountChange SpectralEnergy::OnFormatChanged() {
   if (inputFormat_->Size() % 2 == 1) {
     WRN("Input buffer size is odd (%zu), truncated\n",
         inputFormat_->Size());
   }
   outputFormat_->SetSize(inputFormat_->Size() / 2);
+  return BuffersCountChange::Identity;
 }
 
-void SpectralEnergy::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_->Size() / 2);
-}
-
-void SpectralEnergy::Do(const Formats::WindowF& in,
-                        Formats::WindowF* out) const noexcept {
-  Do(UseSimd(), in.Data.get(), inputFormat_->Size(), out->Data.get());
+void SpectralEnergy::Do(const float* in,
+                        float* out) const noexcept {
+  Do(UseSimd(), in, inputFormat_->Size(), out);
 }
 
 void SpectralEnergy::Do(bool simd, const float* input, int length,

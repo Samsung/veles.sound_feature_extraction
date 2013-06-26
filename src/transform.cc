@@ -19,6 +19,44 @@ using boost::algorithm::replace_all_copy;
 
 namespace SoundFeatureExtraction {
 
+const BuffersCountChange BuffersCountChange::Identity;
+
+BuffersCountChange::BuffersCountChange() noexcept
+    : calc_([=](size_t inSize) { return inSize; }) {
+}
+
+BuffersCountChange::BuffersCountChange(int constant) noexcept
+    : calc_([=](size_t) { return constant; }) {
+}
+
+BuffersCountChange::BuffersCountChange(int num, int den) noexcept
+    : calc_([=](size_t inSize) {
+              return inSize * num / den;
+            }) {
+}
+
+BuffersCountChange::BuffersCountChange(
+    const std::function<size_t(size_t)>& calc) noexcept
+    : calc_(calc) {
+}
+
+bool BuffersCountChange::operator==(
+    const BuffersCountChange& other) const noexcept {
+  return calc_ == nullptr && other.calc_ == nullptr;
+}
+
+size_t BuffersCountChange::operator()(size_t count) const noexcept {
+  return calc_(count);
+}
+
+void Transform::UpdateInputFormat(const std::shared_ptr<BufferFormat>& format) {
+  buffersCountChange_ = SetInputFormat(format);
+}
+
+BuffersCountChange Transform::CalculateBuffersCountChange() const noexcept {
+  return buffersCountChange_;
+}
+
 std::shared_ptr<Transform> Transform::Clone() const noexcept {
   auto copy = TransformFactory::Instance().Map()
       .find(this->Name())->second
@@ -40,8 +78,9 @@ bool Transform::operator==(const Transform& other) const noexcept {
 
 std::string Transform::SafeName() const noexcept {
   return replace_all_copy(replace_all_copy(replace_all_copy(replace_all_copy(
-      replace_all_copy(
-      Name(), " ", ""), "->", "To"), "!", ""), ">", "_"), "<", "_");
+      replace_all_copy(replace_all_copy(
+      Name(), " ", ""), "->", "To"), "!", ""), ">", "_"), "<", "_"),
+      "*", "Array");
 }
 
 std::string Transform::HtmlEscapedName() const noexcept {

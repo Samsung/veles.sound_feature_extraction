@@ -18,7 +18,6 @@
 #include "tests/speech_sample.inc"
 
 using SoundFeatureExtraction::TransformTree;
-using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::BuffersBase;
 
 TEST(Features, All) {
@@ -115,8 +114,8 @@ TEST(Features, All) {
   tt.AddFeature("F0_HPS", { { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "ComplexMagnitude", "" }, { "HPS", "" }
   });
-  Raw16 buffers(48000, 0);
-  memcpy(buffers.Data.get(), data, sizeof(data));
+  int16_t* buffers = new int16_t[48000];
+  memcpy(buffers, data, sizeof(data));
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   ASSERT_EQ(17, res.size());

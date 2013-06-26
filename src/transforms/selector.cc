@@ -23,7 +23,7 @@ Selector::Selector()
   : length_(kDefaultLength),
     from_(kDefaultAnchor) {
   RegisterSetter("length", [&](const std::string& value) {
-    int length = Parse<int>("length", value);
+    int length = Parse<size_t>("length", value);
     if (length < 1) {
       return false;
     }
@@ -42,27 +42,19 @@ Selector::Selector()
   });
 }
 
-void Selector::OnFormatChanged() {
-  outputFormat_->SetSize(
-      std::min(length_, static_cast<int>(inputFormat_->Size())));
+BuffersCountChange Selector::OnFormatChanged() {
+  outputFormat_->SetSize(std::min(length_, inputFormat_->Size()));
+  return BuffersCountChange::Identity;
 }
 
-void Selector::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), outputFormat_->Size());
-}
-
-void Selector::Do(const Formats::WindowF& in,
-                  Formats::WindowF* out) const noexcept {
+void Selector::Do(const float* in,
+                  float* out) const noexcept {
   int length = outputFormat_->Size();
   int offset = (from_ == ANCHOR_LEFT? 0 : inputFormat_->Size() - length);
-  auto input = in.Data.get();
-  auto output = out->Data.get();
-  if (input != output) {
-    memcpy(output, input + offset, length * sizeof(input[0]));
+  if (in != out) {
+    memcpy(out, in + offset, length * sizeof(in[0]));
   } else if (from_ == ANCHOR_RIGHT) {
-    memmove(output, input + offset, length * sizeof(input[0]));
+    memmove(out, in + offset, length * sizeof(in[0]));
   }
 }
 

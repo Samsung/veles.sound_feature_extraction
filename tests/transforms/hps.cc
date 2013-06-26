@@ -10,44 +10,30 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <gtest/gtest.h>
 #include <math.h>
 #include "src/transforms/hps.h"
+#include "tests/transforms/transform_test.h"
 #include "tests/transforms/hps_test.inc"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::Hps;
 
-class HpsTest : public Hps, public testing::Test {
+class HpsTest : public TransformTest<Hps> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<float> Output;
   int Size;
-
-  HpsTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = data[1];
-    Input.Initialize(1, Size);
+    SetUpTransform(1, Size, data[0]);
     for (int i = 0; i < data[1]; ++i) {
-      Input[0][i] = data[i + 2];
+      (*Input)[0][i] = data[i + 2];
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
-    format->SetSamplingRate(data[0]);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
 TEST_F(HpsTest, Do) {
-  Do(Input[0], &Output[0]);
-  float delta = Output[0] - 110.671507f;
+  Do((*Input)[0], &(*Output)[0]);
+  float delta = (*Output)[0] - 110.671507f;
   ASSERT_LT(delta * delta, 1.0f);
 }
-
-#include "tests/google/src/gtest_main.cc"

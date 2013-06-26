@@ -169,30 +169,20 @@ void FilterBank::Initialize() const noexcept {
   }
 }
 
-void FilterBank::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_->Size());
-}
-
-void FilterBank::Do(
-    const Formats::WindowF& in,
-    Formats::WindowF* out) const noexcept {
+void FilterBank::Do(const float* in, float* out) const noexcept {
   auto filter = filterBank_.get();
   int length = inputFormat_->Size();
-  auto input = in.Data.get();
-  auto output = out->Data.get();
 #ifdef SIMD
   for (int i = 0; i < length - FLOAT_STEP + 1; i += FLOAT_STEP) {
-    real_multiply(input + i, filter + i, output + i);
+    real_multiply(in + i, filter + i, out + i);
   }
   for (int i = (length >> FLOAT_STEP_LOG2) << FLOAT_STEP_LOG2;
       i < length; i++) {
-    output[i] = input[i] * filter[i];
+    out[i] = in[i] * filter[i];
   }
 #else
   for (int i = 0; i < length; i++) {
-    output[i] = input[i] * filter[i];
+    out[i] = in[i] * filter[i];
   }
 #endif
 }

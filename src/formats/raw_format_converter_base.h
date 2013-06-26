@@ -1,5 +1,5 @@
 /*! @file raw_format_converter_base.h
- *  @brief RawFormatConverterBase class definition.
+ *  @brief Base class for all raw frames format converters.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -20,19 +20,11 @@ namespace SoundFeatureExtraction {
 template <typename FIN, typename FOUT>
 class RawFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
  protected:
-  virtual void OnInputFormatChanged() override final {
+  virtual BuffersCountChange OnInputFormatChanged() override final {
     auto outputFormat = FormatConverterBase<FIN, FOUT>::outputFormat_;
     auto inputFormat = FormatConverterBase<FIN, FOUT>::inputFormat_;
     outputFormat->SetSize(inputFormat->Size());
-  }
-
-  virtual void InitializeBuffers(
-      const BuffersBase<typename FIN::BufferType>& in,
-      BuffersBase<typename FOUT::BufferType>* buffers)
-      const noexcept override final {
-    buffers->Initialize(in.Size(),
-                        FormatConverterBase<FIN, FOUT>::inputFormat_->Size(),
-                        in[0].AlignmentOffset());
+    return BuffersCountChange::Identity;
   }
 };
 

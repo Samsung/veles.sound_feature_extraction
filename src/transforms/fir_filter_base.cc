@@ -60,23 +60,17 @@ void FirFilterBase::Initialize() const noexcept {
   }
 }
 
-void FirFilterBase::OnFormatChanged() {
+BuffersCountChange FirFilterBase::OnFormatChanged() {
   outputFormat_->SetSize(inputFormat_->Size() + length_ - 1);
+  return BuffersCountChange::Identity;
 }
 
-void FirFilterBase::InitializeBuffers(
-    const BuffersBase<Formats::RawF>& in,
-    BuffersBase<Formats::RawF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), outputFormat_->Size(),
-                      in[0].AlignmentOffset());
-}
-
-void FirFilterBase::Do(const Formats::RawF& in,
-                       Formats::RawF *out)
+void FirFilterBase::Do(const float* in,
+                       float* out)
 const noexcept {
   for (auto hp : convolutionHandles_) {
     if (hp.mutex->try_lock()) {
-      convolute(*hp.handle, in.Data.get(), &filter_[0], out->Data.get());
+      convolute(*hp.handle, in, &filter_[0], out);
       hp.mutex->unlock();
       break;
     }

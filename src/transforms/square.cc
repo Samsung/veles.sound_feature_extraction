@@ -16,36 +16,19 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void SquareRaw::OnInputFormatChanged() {
+BuffersCountChange SquareRaw::OnInputFormatChanged() {
   outputFormat_->SetSize(inputFormat_->Size());
   outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
+  return BuffersCountChange::Identity;
 }
 
-void SquareRaw::InitializeBuffers(
-    const BuffersBase<Formats::Raw16>& in,
-    BuffersBase<Formats::Raw32>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_->Size(),
-                      in[0].AlignmentOffset());
+void SquareRaw::Do(const int16_t* in,
+                   int32_t* out) const noexcept {
+  Do(UseSimd(), in, outputFormat_->Size(), out);
 }
 
-void SquareRaw::InitializeBuffers(
-    const BuffersBase<Formats::Raw32>& in,
-    BuffersBase<Formats::Raw16>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_->Size(),
-                      in[0].AlignmentOffset());
-}
-
-void SquareRaw::Do(
-    const BuffersBase<Formats::Raw16>& in,
-    BuffersBase<Formats::Raw32>* out) const noexcept {
-  for (size_t i = 0; i < in.Size(); i++) {
-    Do(UseSimd(), in[i].Data.get(), outputFormat_->Size(), (*out)[i].Data.get());
-  }
-}
-
-void SquareRaw::Do(
-    const BuffersBase<Formats::Raw32>& in UNUSED,
-    BuffersBase<Formats::Raw16>* out UNUSED) const noexcept {
+void SquareRaw::DoInverse(const int32_t* in UNUSED,
+                          int16_t* out UNUSED) const noexcept {
   assert(false && "Not implemented yet");
 }
 
@@ -81,19 +64,17 @@ void SquareRaw::Do(bool simd, const int16_t* input, int length,
   }
 }
 
-void SquareWindow::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_->Size());
+void SquareF::Do(const float* in,
+                      float* out) const noexcept {
+  Do(UseSimd(), in, outputFormat_->Size(), out);
 }
 
-void SquareWindow::Do(const Formats::WindowF& in,
-                      Formats::WindowF* out) const noexcept {
-  assert(!IsInverse() && "Not implemented yet");
-  Do(UseSimd(), in.Data.get(), outputFormat_->Size(), out->Data.get());
+void SquareF::DoInverse(const float* in UNUSED,
+                        float* out UNUSED) const noexcept {
+  assert(false && "Not implemented yet");
 }
 
-void SquareWindow::Do(bool simd, const float* input, int length,
+void SquareF::Do(bool simd, const float* input, int length,
                       float* output) noexcept {
   if (simd) {
 #ifdef SIMD
@@ -115,7 +96,7 @@ void SquareWindow::Do(bool simd, const float* input, int length,
 }
 
 REGISTER_TRANSFORM(SquareRaw);
-REGISTER_TRANSFORM(SquareWindow);
+REGISTER_TRANSFORM(SquareF);
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction

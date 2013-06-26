@@ -21,20 +21,16 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void DiffrectWindow::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), outputFormat_->Size());
+BuffersCountChange Diffrect::OnFormatChanged() {
+  outputFormat_->SetSize(inputFormat_->Size() - 1);
+  return BuffersCountChange::Identity;
 }
 
-void DiffrectRaw::InitializeBuffers(
-    const BuffersBase<Formats::RawF>& in,
-    BuffersBase<Formats::RawF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), outputFormat_->Size(),
-                      in[0].AlignmentOffset());
+void Diffrect::Do(const float* in, float* out) const noexcept {
+  Do(UseSimd(), in, inputFormat_->Size(), out);
 }
 
-void DiffrectBase::Do(bool simd, const float* input, int length,
+void Diffrect::Do(bool simd, const float* input, int length,
                       float* output) noexcept {
   if (simd) {
 #ifdef __AVX__
@@ -73,8 +69,7 @@ void DiffrectBase::Do(bool simd, const float* input, int length,
   }
 }
 
-REGISTER_TRANSFORM(DiffrectWindow);
-REGISTER_TRANSFORM(DiffrectRaw);
+REGISTER_TRANSFORM(Diffrect);
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction

@@ -23,9 +23,9 @@ class FormatConverterBase
     : public virtual FormatConverter,
       public virtual OmpTransformBase<FIN, FOUT> {
  public:
-  virtual void SetInputFormat(const std::shared_ptr<BufferFormat>& format)
+  virtual BuffersCountChange SetInputFormat(const std::shared_ptr<BufferFormat>& format)
       override final {
-    TransformBase<FIN, FOUT>::SetInputFormat(format);
+    return TransformBase<FIN, FOUT>::SetInputFormat(format);
   }
 
   virtual const std::unordered_map<std::string, ParameterTraits>&
@@ -46,7 +46,7 @@ class FormatConverterBase
   }
 
  protected:
-  virtual void OnInputFormatChanged() = 0;
+  virtual BuffersCountChange OnInputFormatChanged() = 0;
 };
 
 }  // namespace SoundFeatureExtraction

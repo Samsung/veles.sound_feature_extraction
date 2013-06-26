@@ -13,7 +13,7 @@
 #ifndef SRC_TRANSFORMS_ROLLOFF_H_
 #define SRC_TRANSFORMS_ROLLOFF_H_
 
-#include "src/formats/window_format.h"
+#include "src/formats/raw_format.h"
 #include "src/formats/single_format.h"
 #include "src/transform_base.h"
 
@@ -22,18 +22,14 @@ namespace Transforms {
 
 /// @brief \f$||\overrightarrow{Value(f)}-\overrightarrow{Value_pre(f)}||\f$.
 class Flux
-    : public TransformBase<Formats::WindowFormatF, Formats::SingleFormatF> {
+    : public TransformBase<Formats::RawFormatF, Formats::SingleFormatF> {
  public:
   TRANSFORM_INTRO("Flux", "Measure of spectral change.")
 
   TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<float>* buffers) const noexcept override;
-
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
+  virtual void Do(const BuffersBase<float*>& in,
                   BuffersBase<float> *out) const noexcept override;
 
   static float Do(bool simd, const float* input, size_t length,

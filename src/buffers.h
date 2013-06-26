@@ -14,45 +14,39 @@
 #define SRC_BUFFERS_H_
 
 #include <memory>
-#include <vector>
 #include "src/buffer_format.h"
 
 namespace SoundFeatureExtraction {
 
 class Buffers {
  public:
-  Buffers(size_t size, const std::shared_ptr<BufferFormat>& format) noexcept;
-  Buffers(const Buffers& other) noexcept;
-  Buffers(const Buffers& other,
-          const std::shared_ptr<BufferFormat>& format) noexcept;
+  Buffers(const std::shared_ptr<BufferFormat>& format,
+          size_t count = 0, void* reusedMemory = nullptr) noexcept;
   Buffers& operator=(const Buffers& other) noexcept;
 
   virtual ~Buffers() {
   }
 
-  size_t Size() const noexcept;
+  size_t Count() const noexcept;
+  size_t SizeInBytes() const noexcept;
 
   void* operator[](size_t index) noexcept;
   const void* operator[](size_t index) const noexcept;
 
-  const void* const* Data() const noexcept;
+  std::shared_ptr<BufferFormat> Format() const noexcept;
 
   void Validate() const;
 
   std::string Dump() const noexcept;
 
-  virtual const std::shared_ptr<BufferFormat> Format() const noexcept;
-
  protected:
-  /// @defgroup TypeUnsafe Underlying type-unsafe operations
-  /// @{
-  void Set(size_t index, void* buffer) noexcept;
-  void SetSize(size_t size) noexcept;
-  /// @}
+  void* Data() noexcept;
+  const void* Data() const noexcept;
 
  private:
   std::shared_ptr<BufferFormat> format_;
-  std::shared_ptr<std::vector<void*>> buffers_;
+  std::shared_ptr<void> buffers_;
+  size_t count_;
 };
 
 }  // namespace SoundFeatureExtraction

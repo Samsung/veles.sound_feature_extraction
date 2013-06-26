@@ -11,54 +11,40 @@
  */
 
 
-#include <gtest/gtest.h>
 #include "src/transforms/unpack_rdft.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::UnpackRDFT;
 
-class UnpackRDFTTest : public UnpackRDFT, public testing::Test {
+class UnpackRDFTTest : public TransformTest<UnpackRDFT> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<WindowF> Output;
   int Size;
-
-  UnpackRDFTTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   void Initialize(int size) {
     Size = size;
-    Input.Initialize(1, Size);
+    SetUpTransform(1, Size, 16000);
     for (int i = 0; i < Size; i++) {
-      Input[0][i] = i;
+      (*Input)[0][i] = i;
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 2000 / 16000, 16000);
-    format->SetSize(Size);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
     UnpackRDFT::Initialize();
   }
 };
 
 TEST_F(UnpackRDFTTest, DoReal) {
   Initialize(257);
-  Do(Input[0], &Output[0]);
+  Do((*Input)[0], (*Output)[0]);
   for (int i = Size; i < (Size - 1) * 2; i++) {
-    ASSERT_EQ(2 * (Size - 1) - i, Output[0][i]);
+    ASSERT_EQ(2 * (Size - 1) - i, (*Output)[0][i]);
   }
 }
 
 TEST_F(UnpackRDFTTest, DoComplex) {
   Initialize(258);
-  Do(Input[0], &Output[0]);
+  Do((*Input)[0], (*Output)[0]);
   for (int i = Size; i < (Size - 2) * 2; i += 2) {
-    ASSERT_EQ(2 * (Size - 2) - i, Output[0][i]);
-    ASSERT_EQ(2 * (Size - 2) - i + 1, Output[0][i + 1]);
+    ASSERT_EQ(2 * (Size - 2) - i, (*Output)[0][i]);
+    ASSERT_EQ(2 * (Size - 2) - i + 1, (*Output)[0][i + 1]);
   }
 }
-
-#include "tests/google/src/gtest_main.cc"

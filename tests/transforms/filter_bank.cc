@@ -12,35 +12,23 @@
 
 
 
-#include <gtest/gtest.h>
 #include "src/transforms/filter_bank.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::FilterBank;
 
-class FilterBankTest : public FilterBank, public testing::Test {
+class FilterBankTest : public TransformTest<FilterBank> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<WindowF> Output;
   int Size;
-
-  FilterBankTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 378;
-    Input.Initialize(1, Size);
+    SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; i++) {
-      Input[0][i] = 100;
+      (*Input)[0][i] = 100;
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
-    Initialize();
   }
 };
 
@@ -49,10 +37,8 @@ class FilterBankTest : public FilterBank, public testing::Test {
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(FilterBankTest, Do) {
-  Do(Input[0], &Output[0]);
+  Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size; i++) {
-    ASSERT_EQF(100 * filterBank_.get()[i], Output[0][i]);
+    ASSERT_EQF(100 * filterBank_.get()[i], (*Output)[0][i]);
   }
 }
-
-#include "tests/google/src/gtest_main.cc"

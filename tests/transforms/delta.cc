@@ -11,46 +11,32 @@
  */
 
 
-#include <gtest/gtest.h>
 #include "src/transforms/delta.h"
+#include "tests/transforms/transform_test.h"
 #include <fftf/api.h>
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::Delta;
 
-class DeltaTest
-    : public Delta, public testing::Test {
+class DeltaTest : public TransformTest<Delta> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<WindowF> Output;
   int Size;
-
-  DeltaTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 486;
-    Input.Initialize(2, Size);
+    SetUpTransform(2, Size, 18000);
     for (int i = 0; i < Size; i++) {
-      Input[0][i] = i;
-      Input[1][i] = i + 1;
+      (*Input)[0][i] = i;
+      (*Input)[1][i] = i + 1;
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
 TEST_F(DeltaTest, Do) {
-  ASSERT_EQ(2, Output.Size());
-  Do(Input, &Output);
+  ASSERT_EQ(2, (*Output).Count());
+  Do((*Input), &(*Output));
   for (int i = 0; i < Size; i++) {
-    ASSERT_NEAR(Output[0][i], 1, 0.00001f);
+    ASSERT_NEAR((*Output)[0][i], 1, 0.00001f);
   }
 }
-
-#include "tests/google/src/gtest_main.cc"

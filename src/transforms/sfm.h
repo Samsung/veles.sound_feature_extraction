@@ -29,11 +29,6 @@ class SFM
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::FixedArray<MEAN_TYPE_COUNT>>& in,
-      BuffersBase<float>* buffers)
-  const noexcept;
-
   virtual void Do(const Formats::FixedArray<MEAN_TYPE_COUNT>& in,
                   float* out) const noexcept override;
 };

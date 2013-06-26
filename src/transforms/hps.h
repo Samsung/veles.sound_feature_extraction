@@ -14,16 +14,15 @@
 #define SRC_TRANSFORMS_HPS_H_
 
 #include <string>
-#include "src/formats/window_format.h"
 #include "src/formats/single_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 /// @brief Harmonic Product Spectrum calculation.
 class Hps
-    : public OmpTransformBase<Formats::WindowFormatF, Formats::SingleFormatF>,
+    : public OmpTransformBase<Formats::RawFormatF, Formats::SingleFormatF>,
       public TransformLogger<Hps> {
  public:
   TRANSFORM_INTRO("HPS", "Extracting fundamental frequency with Harmonic "
@@ -32,11 +31,7 @@ class Hps
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<float>* buffers) const noexcept override;
-
-  virtual void Do(const Formats::WindowF& in,
+  virtual void Do(const float* in,
                   float* out) const noexcept override;
  private:
   static const int kCoefficientsNumber;

@@ -11,39 +11,27 @@
  */
 
 
-#include <gtest/gtest.h>
 #include "src/transforms/frequency_bands.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::FrequencyBands;
 
-class FrequencyBandsTest : public FrequencyBands, public testing::Test {
+class FrequencyBandsTest : public TransformTest<FrequencyBands> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<WindowF> Output;
   int Size;
-
-  FrequencyBandsTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 512;
     SetParameter("number", "4");
-    Input.Initialize(4, Size);
+    SetUpTransform(4, Size, 16000);
     for (int i = 0; i < Size; i++) {
-      Input[0][i] = i;
-      Input[1][i] = i;
-      Input[2][i] = i;
-      Input[3][i] = i;
+      (*Input)[0][i] = i;
+      (*Input)[1][i] = i;
+      (*Input)[2][i] = i;
+      (*Input)[3][i] = i;
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
-    SetInputFormat(format);
-    Initialize();
-    InitializeBuffers(Input, &Output);
   }
 };
 
@@ -52,90 +40,90 @@ class FrequencyBandsTest : public FrequencyBands, public testing::Test {
 TEST_F(FrequencyBandsTest, Do) {
   ASSERT_EQ(Size, inputFormat_->Size());
   ASSERT_EQ(Size, outputFormat_->Size());
-  Do(Input, &Output);
+  Do((*Input), &(*Output));
   for (int i = 0; i < Size / 4; i++) {
-    ASSERT_EQ(i, Output[0][i]);
-    ASSERT_EQ(0, Output[1][i]);
-    ASSERT_EQ(0, Output[2][i]);
-    ASSERT_EQ(0, Output[3][i]);
+    ASSERT_EQ(i, (*Output)[0][i]);
+    ASSERT_EQ(0, (*Output)[1][i]);
+    ASSERT_EQ(0, (*Output)[2][i]);
+    ASSERT_EQ(0, (*Output)[3][i]);
   }
   for (int i = Size / 4; i < 2 * Size / 4; i++) {
-    ASSERT_EQ(0, Output[0][i]);
-    ASSERT_EQ(i, Output[1][i]);
-    ASSERT_EQ(0, Output[2][i]);
-    ASSERT_EQ(0, Output[3][i]);
+    ASSERT_EQ(0, (*Output)[0][i]);
+    ASSERT_EQ(i, (*Output)[1][i]);
+    ASSERT_EQ(0, (*Output)[2][i]);
+    ASSERT_EQ(0, (*Output)[3][i]);
   }
   for (int i = 2 * Size / 4; i < 3 * Size / 4; i++) {
-    ASSERT_EQ(0, Output[0][i]);
-    ASSERT_EQ(0, Output[1][i]);
-    ASSERT_EQ(i, Output[2][i]);
-    ASSERT_EQ(0, Output[3][i]);
+    ASSERT_EQ(0, (*Output)[0][i]);
+    ASSERT_EQ(0, (*Output)[1][i]);
+    ASSERT_EQ(i, (*Output)[2][i]);
+    ASSERT_EQ(0, (*Output)[3][i]);
   }
   for (int i = 3 * Size / 4; i < Size; i++) {
-    ASSERT_EQ(0, Output[0][i]);
-    ASSERT_EQ(0, Output[1][i]);
-    ASSERT_EQ(0, Output[2][i]);
-    ASSERT_EQ(i, Output[3][i]);
+    ASSERT_EQ(0, (*Output)[0][i]);
+    ASSERT_EQ(0, (*Output)[1][i]);
+    ASSERT_EQ(0, (*Output)[2][i]);
+    ASSERT_EQ(i, (*Output)[3][i]);
   }
 }
 
 TEST_F(FrequencyBandsTest, DoWithBands) {
   SetParameter("bands", "2000 3000 5000 8000");
   Initialize();
-  Do(Input, &Output);
+  Do((*Input), &(*Output));
   for (int i = 0; i < Size / 4; i++) {
-    ASSERT_EQ(i, Output[0][i]);
-    ASSERT_EQ(0, Output[1][i]);
-    ASSERT_EQ(0, Output[2][i]);
-    ASSERT_EQ(0, Output[3][i]);
+    ASSERT_EQ(i, (*Output)[0][i]);
+    ASSERT_EQ(0, (*Output)[1][i]);
+    ASSERT_EQ(0, (*Output)[2][i]);
+    ASSERT_EQ(0, (*Output)[3][i]);
   }
   for (int i = Size / 4; i < 3 * Size / 8; i++) {
-    ASSERT_EQ(0, Output[0][i]);
-    ASSERT_EQ(i, Output[1][i]);
-    ASSERT_EQ(0, Output[2][i]);
-    ASSERT_EQ(0, Output[3][i]);
+    ASSERT_EQ(0, (*Output)[0][i]);
+    ASSERT_EQ(i, (*Output)[1][i]);
+    ASSERT_EQ(0, (*Output)[2][i]);
+    ASSERT_EQ(0, (*Output)[3][i]);
   }
   for (int i = 3 * Size / 8; i < 5 * Size / 8; i++) {
-    ASSERT_EQ(0, Output[0][i]);
-    ASSERT_EQ(0, Output[1][i]);
-    ASSERT_EQ(i, Output[2][i]);
-    ASSERT_EQ(0, Output[3][i]);
+    ASSERT_EQ(0, (*Output)[0][i]);
+    ASSERT_EQ(0, (*Output)[1][i]);
+    ASSERT_EQ(i, (*Output)[2][i]);
+    ASSERT_EQ(0, (*Output)[3][i]);
   }
   for (int i = 5 * Size / 8; i < Size; i++) {
-    ASSERT_EQ(0, Output[0][i]);
-    ASSERT_EQ(0, Output[1][i]);
-    ASSERT_EQ(0, Output[2][i]);
-    ASSERT_EQ(i, Output[3][i]);
+    ASSERT_EQ(0, (*Output)[0][i]);
+    ASSERT_EQ(0, (*Output)[1][i]);
+    ASSERT_EQ(0, (*Output)[2][i]);
+    ASSERT_EQ(i, (*Output)[3][i]);
   }
 }
 
 TEST_F(FrequencyBandsTest, TooBigBands) {
   SetParameter("bands", "2000 3000 5000 18000");
   Initialize();
-  Do(Input, &Output);
+  Do((*Input), &(*Output));
   for (int i = 0; i < Size / 4; i++) {
-    ASSERT_EQ(i, Output[0][i]);
-    ASSERT_EQ(0, Output[1][i]);
-    ASSERT_EQ(0, Output[2][i]);
-    ASSERT_EQ(0, Output[3][i]);
+    ASSERT_EQ(i, (*Output)[0][i]);
+    ASSERT_EQ(0, (*Output)[1][i]);
+    ASSERT_EQ(0, (*Output)[2][i]);
+    ASSERT_EQ(0, (*Output)[3][i]);
   }
   for (int i = Size / 4; i < 3 * Size / 8; i++) {
-    ASSERT_EQ(0, Output[0][i]);
-    ASSERT_EQ(i, Output[1][i]);
-    ASSERT_EQ(0, Output[2][i]);
-    ASSERT_EQ(0, Output[3][i]);
+    ASSERT_EQ(0, (*Output)[0][i]);
+    ASSERT_EQ(i, (*Output)[1][i]);
+    ASSERT_EQ(0, (*Output)[2][i]);
+    ASSERT_EQ(0, (*Output)[3][i]);
   }
   for (int i = 3 * Size / 8; i < 5 * Size / 8; i++) {
-    ASSERT_EQ(0, Output[0][i]);
-    ASSERT_EQ(0, Output[1][i]);
-    ASSERT_EQ(i, Output[2][i]);
-    ASSERT_EQ(0, Output[3][i]);
+    ASSERT_EQ(0, (*Output)[0][i]);
+    ASSERT_EQ(0, (*Output)[1][i]);
+    ASSERT_EQ(i, (*Output)[2][i]);
+    ASSERT_EQ(0, (*Output)[3][i]);
   }
   for (int i = 5 * Size / 8; i < Size; i++) {
-    ASSERT_EQ(0, Output[0][i]);
-    ASSERT_EQ(0, Output[1][i]);
-    ASSERT_EQ(0, Output[2][i]);
-    ASSERT_EQ(i, Output[3][i]);
+    ASSERT_EQ(0, (*Output)[0][i]);
+    ASSERT_EQ(0, (*Output)[1][i]);
+    ASSERT_EQ(0, (*Output)[2][i]);
+    ASSERT_EQ(i, (*Output)[3][i]);
   }
 }
 
@@ -144,5 +132,3 @@ TEST_F(FrequencyBandsTest, InvalidBands) {
     SetParameter("bands", "2000 3000 15000 8000");
   }, SoundFeatureExtraction::InvalidParameterValueException);
 }
-
-#include "tests/google/src/gtest_main.cc"

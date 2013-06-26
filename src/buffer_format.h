@@ -43,41 +43,41 @@ class Buffers;
 class BufferFormat {
  public:
   explicit BufferFormat(const std::string& id) noexcept;
-  BufferFormat(const BufferFormat& other) noexcept;
-  BufferFormat& operator=(const BufferFormat& other) noexcept;
 
-  virtual const std::string& Id() const noexcept;
+  BufferFormat(const std::string& id, int samplingRate) noexcept;
 
   bool operator==(const BufferFormat& other) const noexcept;
   bool operator!=(const BufferFormat& other) const noexcept;
 
-  virtual std::function<void(void*)> Destructor() const noexcept = 0;  // NOLINT(*)
+  size_t SizeInBytes() const noexcept;
 
-  virtual bool MustReallocate(const BufferFormat& other) const noexcept = 0;
+  int SamplingRate() const noexcept;
+  void SetSamplingRate(int value);
+  void CopySourceDetailsFrom(const BufferFormat& format) noexcept;
 
-  virtual size_t PayloadSizeInBytes() const noexcept = 0;
-
-  virtual const void* PayloadPointer(const void* buffer) const noexcept = 0;
-
-  virtual int SamplingRate() const noexcept = 0;
-
-  virtual void SetSamplingRate(int value) = 0;
+  virtual const std::string& Id() const noexcept;
 
   virtual void Validate(const Buffers& buffers) const = 0;
 
   virtual std::string Dump(const Buffers& buffers) const = 0;
 
-  virtual void DeriveFrom(const BufferFormat& format) noexcept;
+  static void ValidateSamplingRate(int value);
 
+  template <typename T>
+  static T Aligned(T value) noexcept {
+    return (value & (0x80 - 1)) == 0? value : (value & ~(0x80 - 1)) + 0x80;
+  }
+
+ protected:
+  virtual size_t UnalignedSizeInBytes() const noexcept = 0;
+
+ private:
   static const int MIN_SAMPLING_RATE = 2000;
   static const int MAX_SAMPLING_RATE = 48000;
 
- private:
   std::string id_;
+  int samplingRate_;
 };
-
-#define CAST_FORMAT(other, sibling, var) \
-    const sibling& var = reinterpret_cast<const sibling&>(other)
 
 }  // namespace SoundFeatureExtraction
 #endif  // SRC_BUFFER_FORMAT_H_

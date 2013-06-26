@@ -17,16 +17,10 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void Energy::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<float>* buffers) const noexcept {
-  buffers->Initialize(in.Size());
-}
-
-void Energy::Do(const Formats::WindowF& in,
+void Energy::Do(const float* in,
                 float* out) const noexcept {
   int length = inputFormat_->Size();
-  *out = calculate_energy(UseSimd(), in.Data.get(), length);
+  *out = calculate_energy(UseSimd(), in, length);
 }
 
 REGISTER_TRANSFORM(Energy);

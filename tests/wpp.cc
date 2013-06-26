@@ -17,7 +17,6 @@
 #include "tests/speech_sample.inc"
 
 using SoundFeatureExtraction::TransformTree;
-using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::BuffersBase;
 
 TEST(Features, WPP) {
@@ -28,8 +27,8 @@ TEST(Features, WPP) {
   tt.AddFeature("WPP", { { "Window", "length=512, type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "DWPT", "order=4, tree=1 2 3 3" } });
-  Raw16 buffers(48000, 0);
-  memcpy(buffers.Data.get(), data, sizeof(data));
+  int16_t* buffers = new int16_t[48000];
+  memcpy(buffers, data, sizeof(data));
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   ASSERT_EQ(1, res.size());

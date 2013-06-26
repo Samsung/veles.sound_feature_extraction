@@ -21,13 +21,7 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void ZeroCrossingsWindow::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<int32_t>* buffers) const noexcept {
-  buffers->Initialize(in.Size());
-}
-
-int ZeroCrossingsWindow::DoInternal(bool simd, const float* input,
+int ZeroCrossingsF::DoInternal(bool simd, const float* input,
                                     size_t length) const noexcept {
   int ilength = length;
   if (simd) {
@@ -109,13 +103,7 @@ int ZeroCrossingsWindow::DoInternal(bool simd, const float* input,
   }
 }
 
-void ZeroCrossingsRaw::InitializeBuffers(
-    const BuffersBase<Formats::Raw16>& in,
-    BuffersBase<int32_t>* buffers) const noexcept {
-  buffers->Initialize(in.Size());
-}
-
-int ZeroCrossingsRaw::DoInternal(bool simd, const int16_t* input,
+int ZeroCrossings16::DoInternal(bool simd, const int16_t* input,
                                  size_t length) const noexcept {
   int ilength = length;
   if (simd) {
@@ -204,8 +192,8 @@ int ZeroCrossingsRaw::DoInternal(bool simd, const int16_t* input,
   }
 }
 
-REGISTER_TRANSFORM(ZeroCrossingsWindow);
-REGISTER_TRANSFORM(ZeroCrossingsRaw);
+REGISTER_TRANSFORM(ZeroCrossingsF);
+REGISTER_TRANSFORM(ZeroCrossings16);
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction

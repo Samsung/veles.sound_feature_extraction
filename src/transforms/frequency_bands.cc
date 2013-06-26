@@ -12,8 +12,8 @@
 
 #include "src/transforms/frequency_bands.h"
 #include <boost/regex.hpp>
-#include "src/transforms/fork.h"
 #include <simd/memory.h>
+#include "src/transforms/fork.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -89,36 +89,30 @@ void FrequencyBands::Initialize() const noexcept {
   }
 }
 
-void FrequencyBands::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_->Size());
-}
-
 void FrequencyBands::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* out) const noexcept {
+    const BuffersBase<float*>& in,
+    BuffersBase<float*>* out) const noexcept {
 
-  if (in.Size() % bands_.size() != 0) {
+  if (in.Count() % bands_.size() != 0) {
     WRN("Warning: the number of windows (%zu) is not a multiple "
         "of bands number (%zu). The remainder is left untouched.",
-        in.Size(), bands_.size());
+        in.Count(), bands_.size());
   }
 
-  for (size_t i = 0; i < in.Size(); i += bands_.size()) {
+  for (size_t i = 0; i < in.Count(); i += bands_.size()) {
     for (int j = 0; j < (int)bands_.size(); j++) {
       if (j > 0) {
-        memsetf((*out)[i + j].Data.get(),
+        memsetf((*out)[i + j],
                 bands_[j - 1], 0.f);
       }
       if (j < (int)bands_.size() - 1) {
-        memsetf((*out)[i + j].Data.get() + bands_[j],
+        memsetf((*out)[i + j] + bands_[j],
                 inputFormat_->Size() - bands_[j], 0.f);
       }
-      if ((*out)[i + j].Data.get() != in[i + j].Data.get()) {
+      if ((*out)[i + j] != in[i + j]) {
         int offset = j > 0? bands_[j - 1] : 0;
-        memcpy((*out)[i + j].Data.get() + offset,
-               in[i + j].Data.get() + offset,
+        memcpy((*out)[i + j] + offset,
+               in[i + j] + offset,
                (bands_[j] - offset) * sizeof(float));
       }
     }

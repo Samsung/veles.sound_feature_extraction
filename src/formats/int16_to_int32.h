@@ -15,8 +15,6 @@
 
 #include "src/formats/raw_format.h"
 #include "src/formats/raw_format_converter_base.h"
-#include "src/formats/window_format.h"
-#include "src/formats/window_format_converter_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Formats {
@@ -24,15 +22,8 @@ namespace Formats {
 class Int16ToInt32Raw
     : public RawFormatConverterBase<RawFormat16, RawFormat32> {
  protected:
-  virtual void Do(const Raw16& in,
-                  Raw32 *out) const noexcept override;
-};
-
-class Int16ToInt32Window
-    : public WindowFormatConverterBase<WindowFormat16, WindowFormat32> {
- protected:
-  virtual void Do(const Window16& in,
-                  Window32 *out) const noexcept override;
+  virtual void Do(const int16_t* in,
+                  int32_t* out) const noexcept override;
 };
 
 }  // namespace Formats

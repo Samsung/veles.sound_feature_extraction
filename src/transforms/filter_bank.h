@@ -13,14 +13,13 @@
 #ifndef SRC_TRANSFORMS_FILTER_BANK_H_
 #define SRC_TRANSFORMS_FILTER_BANK_H_
 
-#include "src/formats/window_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class FilterBank
-    : public OmpUniformFormatTransform<Formats::WindowFormatF, true> {
+    : public OmpUniformFormatTransform<Formats::RawFormatF> {
  public:
   FilterBank();
 
@@ -54,13 +53,8 @@ class FilterBank
   static const int kDefaultMinFrequency;
   static const int kDefaultMaxFrequency;
 
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers)
-  const noexcept;
-
-  virtual void Do(const Formats::WindowF& in,
-                  Formats::WindowF* out) const noexcept override;
+  virtual void Do(const float* in,
+                  float* out) const noexcept override;
 
 
   static float LinearToScale(ScaleType type, float freq);

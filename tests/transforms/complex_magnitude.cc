@@ -11,35 +11,24 @@
  */
 
 
-#include <gtest/gtest.h>
 #include <math.h>
 #include "src/transforms/complex_magnitude.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::ComplexMagnitude;
 
-class ComplexMagnitudeTest : public ComplexMagnitude, public testing::Test {
+class ComplexMagnitudeTest : public TransformTest<ComplexMagnitude> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<WindowF> Output;
   int Size;
-
-  ComplexMagnitudeTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 378;
-    Input.Initialize(1, Size);
+    SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; i++) {
-      Input[0][i] = i;
+      (*Input)[0][i] = i;
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
@@ -48,9 +37,9 @@ class ComplexMagnitudeTest : public ComplexMagnitude, public testing::Test {
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(ComplexMagnitudeTest, Do) {
-  Do(Input[0], &Output[0]);
+  Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size / 2; i++) {
-    float m = Output[0][i];
+    float m = (*Output)[0][i];
     float re = i * 2;
     float im = i * 2 + 1;
     ASSERT_EQF(sqrtf(re * re + im * im), m);
@@ -59,5 +48,3 @@ TEST_F(ComplexMagnitudeTest, Do) {
 
 #define CLASS_NAME ComplexMagnitudeTest
 #include "tests/transforms/benchmark.inc"
-
-#include "tests/google/src/gtest_main.cc"

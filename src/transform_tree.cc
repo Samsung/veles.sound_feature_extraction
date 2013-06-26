@@ -17,6 +17,8 @@
 #include <iomanip>
 #include <string>
 #include <utility>
+//#include "src/allocators/sliding_blocks_allocator.h"
+#include "src/allocators/worst_allocator.h"
 #include "src/formats/raw_format.h"
 #include "src/format_converter.h"
 #include "src/transform_registry.h"
@@ -34,53 +36,58 @@ class RootTransform : public Transform {
       : format_(format) {
   }
 
-  virtual const std::string& Name() const noexcept {
+  virtual const std::string& Name() const noexcept override {
     static const std::string name("!Root");
     return name;
   }
 
-  virtual const std::string& Description() const noexcept {
+  virtual const std::string& Description() const noexcept override {
      static const std::string desc("The root for all other transforms.");
      return desc;
     }
 
-  virtual const std::shared_ptr<BufferFormat> InputFormat() const noexcept {
+  virtual const std::shared_ptr<BufferFormat> InputFormat()
+      const noexcept override {
     return format_;
   }
 
-  virtual void SetInputFormat(const std::shared_ptr<BufferFormat>& format) {
+  virtual BuffersCountChange SetInputFormat(
+      const std::shared_ptr<BufferFormat>& format) override {
     format_ = std::static_pointer_cast<Formats::RawFormat16>(format);
+    return BuffersCountChange::Identity;
   }
 
-  virtual const std::shared_ptr<BufferFormat> OutputFormat() const noexcept {
+  virtual const std::shared_ptr<BufferFormat> OutputFormat()
+      const noexcept override {
     return format_;
   }
 
   virtual const std::unordered_map<std::string, ParameterTraits>&
-  SupportedParameters() const noexcept {
+  SupportedParameters() const noexcept override {
     static const std::unordered_map<std::string, ParameterTraits> p;
     return p;
   }
 
   virtual const std::unordered_map<std::string, std::string>&
-  GetParameters() const noexcept {
+  GetParameters() const noexcept override {
     static const std::unordered_map<std::string, std::string> p;
     return p;
   }
 
   virtual void SetParameters(
-      const std::unordered_map<std::string, std::string>&) {
+      const std::unordered_map<std::string, std::string>&) override {
   }
 
-  virtual void Initialize() const noexcept {
+  virtual void Initialize() const noexcept override {
   }
 
-  virtual std::shared_ptr<Buffers> CreateOutputBuffers(const Buffers&)
-      const noexcept {
-    return nullptr;
+  virtual std::shared_ptr<Buffers> CreateOutputBuffers(
+      size_t count, void* reusedMemory = nullptr) const noexcept override {
+    return std::make_shared<BuffersBase<int16_t*>>(
+        format_, count, reusedMemory);
   }
 
-  virtual void Do(const Buffers& in, Buffers *out) const noexcept {
+  virtual void Do(const Buffers& in, Buffers *out) const noexcept override {
     *out = in;
   }
 
@@ -96,6 +103,7 @@ TransformTree::Node::Node(Node* parent,
       Parent(parent),
       BoundTransform(boundTransform),
       BoundBuffers(nullptr),
+      Next(nullptr),
       Host(host == nullptr? parent == nullptr? nullptr : parent->Host : host) {
 }
 
@@ -158,32 +166,42 @@ TransformTree::Node::FindIdenticalChildTransform(
   return nullptr;
 }
 
-void TransformTree::Node::AllocateBuffers(size_t visitedChildrenCount) noexcept {
-  if (Parent != nullptr && BoundBuffers == nullptr) {
-    if (!BoundTransform->OutputFormat()->MustReallocate(
-            *BoundTransform->InputFormat()) &&
-        Parent->Children.size() == visitedChildrenCount + 1) {
-      // Recycle the parent's buffers
-      BoundBuffers = std::make_shared<Buffers>(*Parent->BoundBuffers,
-                                               BoundTransform->OutputFormat());
-    } else {
-      // Honestly allocate the buffers
-      DBG("Allocating new %s buffers",
-          BoundTransform->OutputFormat()->Id().c_str());
-      BoundBuffers = BoundTransform->CreateOutputBuffers(
-          *Parent->BoundBuffers);
+void TransformTree::Node::BuildAllocationTree(
+    size_t buffersCount, MemoryAllocation::Node* node) const noexcept {
+  node->Children.reserve(ChildrenCount());
+  for (auto subnodes : Children) {
+    for (auto inode : subnodes.second) {
+      size_t newBuffersCount =
+          inode->BoundTransform->CalculateBuffersCountChange()(buffersCount);
+      MemoryAllocation::Node child(
+          newBuffersCount *
+              inode->BoundTransform->OutputFormat()->SizeInBytes(),
+          node,
+          inode.get());
+      node->Children.push_back(child);
+      inode->BuildAllocationTree(newBuffersCount, &node->Children.back());
     }
-  } else {
-    // I am the root and can have only one raw buffer
-    auto buffers = std::make_shared<BuffersBase<Formats::Raw16>>(
-        Host->RootFormat());
-    buffers->Initialize(1, nullptr);
-    BoundBuffers = buffers;
   }
-  size_t childrenIndex = 0;
-  ActionOnEachImmediateChild([&](Node& node) {
-    node.AllocateBuffers(childrenIndex++);
-  });
+}
+
+void TransformTree::Node::ApplyAllocationTree(
+    size_t buffersCount, const MemoryAllocation::Node& node,
+    void* allocatedMemory) noexcept {
+  size_t newBuffersCount =
+      BoundTransform->CalculateBuffersCountChange()(buffersCount);
+  BoundBuffers = BoundTransform->CreateOutputBuffers(
+      newBuffersCount,
+      reinterpret_cast<char*>(allocatedMemory) + node.Address);
+  if (node.Next != nullptr) {
+    Next = reinterpret_cast<TransformTree::Node*>(node.Next->Item);
+  }
+
+  for (size_t i = 0; i < node.Children.size(); i++) {
+    TransformTree::Node* child = reinterpret_cast<TransformTree::Node*>(
+        node.Children[i].Item);
+    child->ApplyAllocationTree(newBuffersCount, node.Children[i],
+                               allocatedMemory);
+  }
 }
 
 void TransformTree::Node::Execute() {
@@ -201,7 +219,8 @@ void TransformTree::Node::Execute() {
       }
       catch(const InvalidBuffersException& e) {
 #ifdef DEBUG
-        DBG("----Buffers before----\n%s\n\n----Buffers after----\n%s\n",
+        DBG("Validation failed.\n----Buffers before----\n%s\n\n"
+            "----Buffers after----\n%s\n",
             Parent->BoundBuffers->Dump().c_str(), BoundBuffers->Dump().c_str());
 #endif
         throw TransformResultedInInvalidBuffersException(BoundTransform->Name(),
@@ -216,9 +235,9 @@ void TransformTree::Node::Execute() {
       INF("%s", BoundBuffers->Dump().c_str());
     }
   }
-  ActionOnEachImmediateChild([&](Node& node) {
-    node.Execute();
-  });
+  if (Next) {
+    Next->Execute();
+  }
 }
 
 size_t TransformTree::Node::ChildrenCount() const noexcept {
@@ -310,14 +329,14 @@ void TransformTree::AddTransform(const std::string& name,
   } else {
     auto reusedTransform = FindIdenticalTransform(*t);
     if (reusedTransform != nullptr) {
-      DBG("Reusing the already existing transform");
+      DBG("Reusing an already existing transform");
       t = reusedTransform;
     } else {
-      // Set the input format
-      t->SetInputFormat((*currentNode)->BoundTransform->OutputFormat());
+      // Set the new input format
+      t->UpdateInputFormat((*currentNode)->BoundTransform->OutputFormat());
     }
     // Append the newly created transform
-    auto newNode = std::make_shared<Node>(currentNode->get(), t);
+    auto newNode = std::make_shared<Node>(currentNode->get(), t, this);
     (*currentNode)->Children[name].push_back(newNode);
     *currentNode = newNode;
   }
@@ -356,15 +375,39 @@ void TransformTree::PrepareForExecution() {
   if (treeIsPrepared_) {
     throw TreeAlreadyPreparedException();
   }
+  // Run Initialize() on all transforms
   root_->ActionOnEachTransformInSubtree([](const Transform& t) {
     t.Initialize();
   });
-  root_->AllocateBuffers(0);
+  // Solve the allocation problem
+  MemoryAllocation::Node allocationTreeRoot(0, nullptr, root_.get());
+  root_->BuildAllocationTree(1, &allocationTreeRoot);
+  //MemoryAllocation::SlidingBlocksAllocator allocator;
+  MemoryAllocation::WorstAllocator allocator;
+  size_t neededMemory = allocator.Solve(&allocationTreeRoot);
+#if DEBUG
+  allocationTreeRoot.Dump("/tmp/last_allocation.dot");
+  assert(allocator.Validate(allocationTreeRoot));
+#endif
+  // Allocate the buffers
+  allocatedMemory_ = std::shared_ptr<void>(malloc_aligned(neededMemory),
+                                           [](void* ptr) {
+                                             free(ptr);
+                                           });
+  if (allocatedMemory_.get() == nullptr) {
+    throw FailedToAllocateBuffersException(std::string("Failed to allocate ") +
+                                           std::to_string(neededMemory) +
+                                           " bytes.");
+  }
+  INF("Allocated %zu bytes", neededMemory);
+  // Finally, apply the memory mapping, creating the actual buffers
+  // We will overwrite root's BoundBuffers on executio&\(\*Output\)\)&\(\*Output\)\)&\(\*Output\)\)&\(\*Output\)\)n stage
+  root_->ApplyAllocationTree(1, allocationTreeRoot, allocatedMemory_.get());
   treeIsPrepared_ = true;
 }
 
 std::unordered_map<std::string, std::shared_ptr<Buffers>>
-TransformTree::Execute(const Formats::Raw16& in) {
+TransformTree::Execute(const int16_t* in) {
   DBG("Entered");
   if (!treeIsPrepared_) {
     throw TreeIsNotPreparedException();
@@ -373,11 +416,10 @@ TransformTree::Execute(const Formats::Raw16& in) {
     throw TreeIsEmptyException();
   }
 
-  // Initialize input
-  auto buffers = std::make_shared<BuffersBase<Formats::Raw16>>(
-      rootFormat_);
-  buffers->Initialize(1, in);
-  root_->BoundBuffers = buffers;
+  // Initialize input. We have to const_cast here, but "in" is not going
+  // to be overwritten anyway.
+  root_->BoundBuffers = root_->BoundTransform->CreateOutputBuffers(
+      1, const_cast<int16_t*>(in));
   if (ValidateAfterEachTransform()) {
     try {
       root_->BoundBuffers->Validate();
@@ -500,8 +542,7 @@ void TransformTree::Dump(const std::string& dotFileName) const {
     if (includeTime) {
       fw << "<b>"
           << std::to_string(static_cast<int>(
-              (roundf((node.ElapsedTime.count() * 100.f *
-                  BUGGY_SYSTEM_CLOCK_FIX ) / allTime))))
+              (roundf(ConvertDuration(node.ElapsedTime) * 100.f / allTime))))
           << "% ("
           << std::to_string(static_cast<int>(roundf(
               timeReport[t->Name()] * 100.f)))

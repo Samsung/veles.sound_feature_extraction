@@ -32,15 +32,9 @@ void TemplateTransform::Initialize() const noexcept {
 }
 
 
-void TemplateTransform::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_->Size());
-}
-
 void TemplateTransform::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* out) const noexcept {
+    const BuffersBase<float*>& in,
+    BuffersBase<float*>* out) const noexcept {
 }
 
 REGISTER_TRANSFORM(TemplateTransform);

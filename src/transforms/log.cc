@@ -46,7 +46,7 @@ std::string LogTransformBase::LogBaseToString(LogBase lb) noexcept {
   return "";
 }
 
-void LogWindow::Do(bool simd, const float* input, int length,
+void LogRaw::Do(bool simd, const float* input, int length,
                    float* output) const noexcept {
   switch (base_) {
     case LOG_BASE_E: {
@@ -94,26 +94,16 @@ void LogWindow::Do(bool simd, const float* input, int length,
   }
 }
 
-void LogWindow::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), this->inputFormat_->Size());
+void LogRaw::Do(const float* in, float* out) const noexcept {
+  Do(UseSimd(), in, this->inputFormat_->Size(), out);
 }
 
-void LogWindow::Do(const Formats::WindowF& in,
-                  Formats::WindowF* out) const noexcept {
-  assert(!this->IsInverse() && "Not implemented yet");
-  Do(UseSimd(), in.Data.get(), this->inputFormat_->Size(),
-     out->Data.get());
+void LogRaw::DoInverse(const float* in UNUSED, float* out UNUSED)
+    const noexcept {
+  assert("Not implemented yet");
 }
 
-void LogSingle::InitializeBuffers(const BuffersBase<float>& in,
-                                  BuffersBase<float>* buffers) const noexcept {
-    buffers->Initialize(in.Size());
-  }
-
-void LogSingle::Do(const float& in,
-                   float* out) const noexcept {
+void LogSingle::Do(const float& in, float* out) const noexcept {
   switch (base_) {
     case LOG_BASE_E:
       *out = logf(in);
@@ -127,7 +117,12 @@ void LogSingle::Do(const float& in,
   }
 }
 
-REGISTER_TRANSFORM(LogWindow);
+void LogSingle::DoInverse(const float& in UNUSED, float* out UNUSED)
+    const noexcept {
+  assert("Not implemented yet");
+}
+
+REGISTER_TRANSFORM(LogRaw);
 REGISTER_TRANSFORM(LogSingle);
 
 }  // namespace Transforms

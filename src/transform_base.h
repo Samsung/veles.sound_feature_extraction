@@ -18,51 +18,85 @@
 #include "src/buffers_base.h"
 #include "src/logger.h"
 #include "src/parameters_base.h"
-#include "src/simd_transform.h"
+#include "src/simd_aware.h"
 #include "src/transform_registry.h"
 
 namespace SoundFeatureExtraction {
 
-template <typename FIN, typename FOUT, bool SupportsInversion = false>
-class TransformBase;
-
-template <typename FIN, typename FOUT>
-class TransformBaseCommon : public virtual Transform,
-                            public virtual ParameterizableBase,
-                            public virtual InverseParameterAware,
-                            public virtual SimdTransform {
-  friend class TransformBase<FIN, FOUT, true>;
+template <class INBUFFERS, class OUTBUFFERS, bool SupportsInversion = false>
+class DoInverseConditionalDeclarator {
  public:
-  TransformBaseCommon() noexcept
+  virtual ~DoInverseConditionalDeclarator() {}
+
+ protected:
+  void DoInverse(const OUTBUFFERS&, INBUFFERS*)
+      const noexcept {
+    std::unexpected();
+  }
+};
+
+template <class INBUFFERS, class OUTBUFFERS>
+class DoInverseConditionalDeclarator<INBUFFERS, OUTBUFFERS, true> {
+ public:
+  virtual ~DoInverseConditionalDeclarator() {}
+
+ protected:
+  virtual void DoInverse(const OUTBUFFERS& in, INBUFFERS* out)
+      const noexcept = 0;
+};
+
+template <typename FIN, typename FOUT, bool SupportsInversion = false>
+class TransformBase : public virtual Transform,
+                      public virtual SimdAware,
+                      public virtual InverseParameterAware,
+                      public virtual ParameterizableBase,
+                      public virtual DoInverseConditionalDeclarator<
+                          BuffersBase<typename FIN::BufferType>,
+                          BuffersBase<typename FOUT::BufferType>,
+                          SupportsInversion> {
+ public:
+  typedef FIN InFormat;
+  typedef FOUT OutFormat;
+
+  TransformBase() noexcept
       : inputFormat_(std::make_shared<FIN>()),
         outputFormat_(std::make_shared<FOUT>()) {
+    if (SupportsInversion) {
+      RegisterSetter(kInverseParameterName, [&](const std::string& value) {
+        if (value != "true" && value != "false") {
+          return false;
+        }
+        return true;
+      });
+    }
   }
 
   virtual const std::shared_ptr<BufferFormat> InputFormat()
       const noexcept override final {
-    if (!IsInverse() || *inputFormat_ == *outputFormat_) {
+    if (!IsInverse() || std::is_same<FIN, FOUT>::value) {
       return std::static_pointer_cast<BufferFormat>(inputFormat_);
     } else {
       return std::static_pointer_cast<BufferFormat>(outputFormat_);
     }
   }
 
-  virtual void SetInputFormat(const std::shared_ptr<BufferFormat>& format)
+  virtual BuffersCountChange SetInputFormat(
+      const std::shared_ptr<BufferFormat>& format)
       override {
-    if (!IsInverse() || *inputFormat_ == *outputFormat_) {
+    if (!IsInverse() || std::is_same<FIN, FOUT>::value) {
       inputFormat_ = std::static_pointer_cast<FIN>(format);
-      outputFormat_->DeriveFrom(*inputFormat_);
-      OnInputFormatChanged();
+      outputFormat_->CopySourceDetailsFrom(*inputFormat_);
+      return OnInputFormatChanged();
     } else {
       outputFormat_ = std::static_pointer_cast<FOUT>(format);
-      inputFormat_->DeriveFrom(*outputFormat_);
-      OnOutputFormatChanged();
+      inputFormat_->CopySourceDetailsFrom(*outputFormat_);
+      return OnOutputFormatChanged();
     }
   }
 
   virtual const std::shared_ptr<BufferFormat> OutputFormat()
       const noexcept override final {
-    if (!IsInverse() || *inputFormat_ == *outputFormat_) {
+    if (!IsInverse() || std::is_same<FIN, FOUT>::value) {
       return std::static_pointer_cast<BufferFormat>(outputFormat_);
     } else {
       return std::static_pointer_cast<BufferFormat>(inputFormat_);
@@ -72,43 +106,27 @@ class TransformBaseCommon : public virtual Transform,
   virtual void Initialize() const noexcept override {
   }
 
-  virtual std::shared_ptr<Buffers> CreateOutputBuffers(
-      const Buffers& in) const noexcept override final {
-    assert(&in != nullptr);
-    assert(in.Format() != nullptr);
-    if (!IsInverse() || *inputFormat_ == *outputFormat_) {
-      assert(*in.Format() == *inputFormat_);
-      auto buffers = std::make_shared<OutBuffers>(
-          std::static_pointer_cast<BufferFormatBase<typename FOUT::BufferType>>(
-              outputFormat_));
-      InitializeBuffers(reinterpret_cast<const InBuffers&>(in),
-                        buffers.get());
-      return buffers;
-    }
-    assert(*in.Format() == *outputFormat_);
-    auto buffers = std::make_shared<InBuffers>(
-        std::static_pointer_cast<BufferFormatBase<typename FIN::BufferType>>(
-            inputFormat_));
-    InitializeBuffersInverse(reinterpret_cast<const OutBuffers&>(in),
-                             buffers.get());
-    return buffers;
-  }
-
   virtual void Do(const Buffers& in, Buffers* out)
       const noexcept override final {
     assert(&in != nullptr);
     assert(out != nullptr);
-    if (!IsInverse() || *inputFormat_ == *outputFormat_) {
+    if (!IsInverse()) {
       assert(*in.Format() == *inputFormat_);
       assert(*out->Format() == *outputFormat_);
-      Do(reinterpret_cast<const InBuffers&>(in),
+      this->Do(reinterpret_cast<const InBuffers&>(in),
          reinterpret_cast<OutBuffers*>(out));
     } else {
       assert(*in.Format() == *outputFormat_);
       assert(*out->Format() == *inputFormat_);
-      DoInverse(reinterpret_cast<const OutBuffers&>(in),
+      this->DoInverse(reinterpret_cast<const OutBuffers&>(in),
                 reinterpret_cast<InBuffers*>(out));
     }
+  }
+
+  virtual std::shared_ptr<Buffers> CreateOutputBuffers(
+      size_t count, void* reusedMemory = nullptr)
+      const noexcept override final {
+    return std::make_shared<OutBuffers>(outputFormat_, count, reusedMemory);
   }
 
   bool IsInverse() const noexcept {
@@ -119,23 +137,26 @@ class TransformBaseCommon : public virtual Transform,
     return ip->second == "true";
   }
 
-  virtual bool HasInverse() const noexcept = 0;
+  static constexpr bool HasInverseTransform() noexcept {
+    return SupportsInversion;
+  }
 
  protected:
   std::shared_ptr<FIN> inputFormat_;
   std::shared_ptr<FOUT> outputFormat_;
 
-  typedef BuffersBase<typename FIN::BufferType> InBuffers;
-  typedef BuffersBase<typename FOUT::BufferType> OutBuffers;
+  typedef typename FIN::BufferType InElement;
+  typedef typename FOUT::BufferType OutElement;
+  typedef BuffersBase<InElement> InBuffers;
+  typedef BuffersBase<OutElement> OutBuffers;
 
-  virtual void OnInputFormatChanged() {
+  virtual BuffersCountChange OnInputFormatChanged() {
+    return BuffersCountChange::Identity;
   }
 
-  virtual void OnOutputFormatChanged() {
+  virtual BuffersCountChange OnOutputFormatChanged() {
+    return BuffersCountChange::Identity;
   }
-
-  virtual void InitializeBuffers(const InBuffers& in, OutBuffers* out)
-      const noexcept = 0;
 
   virtual void Do(const InBuffers& in, OutBuffers* out)
       const noexcept = 0;
@@ -143,129 +164,25 @@ class TransformBaseCommon : public virtual Transform,
   virtual std::string HostName() const noexcept {
     return std::string("transform ") + Name();
   }
-
- private:
-  virtual void InitializeBuffersInverse(const OutBuffers& in, InBuffers* out)
-      const noexcept = 0;
-
-  virtual void DoInverse(const OutBuffers& in, InBuffers* out)
-      const noexcept = 0;
-
-  void RegisterInverseParameter() noexcept {
-    RegisterSetter(kInverseParameterName, [&](const std::string& value) {
-      if (value != "true" && value != "false") {
-        return false;
-      }
-      return true;
-    });
-  }
-};
-
-template <typename FIN, typename FOUT>
-class TransformBase<FIN, FOUT, false> : public TransformBaseCommon<FIN, FOUT> {
- public:
-  virtual bool HasInverse() const noexcept override final {
-    return false;
-  }
-
- private:
-  virtual void InitializeBuffersInverse(
-      const typename TransformBaseCommon<FIN, FOUT>::OutBuffers& in UNUSED,
-      typename TransformBaseCommon<FIN, FOUT>::InBuffers* out UNUSED)
-      const noexcept override final {
-    std::unexpected();
-  }
-
-  virtual void DoInverse(
-      const typename TransformBaseCommon<FIN, FOUT>::OutBuffers& in UNUSED,
-      typename TransformBaseCommon<FIN, FOUT>::InBuffers* out UNUSED)
-      const noexcept override final {
-    std::unexpected();
-  }
-};
-
-template <typename FIN, typename FOUT>
-class TransformBase<FIN, FOUT, true> : public TransformBaseCommon<FIN, FOUT> {
- public:
-  TransformBase() {
-    this->RegisterInverseParameter();
-  }
-
-  virtual bool HasInverse() const noexcept override final {
-    return true;
-  }
-
- protected:
-  virtual void InitializeBuffers(
-      const typename TransformBaseCommon<FIN, FOUT>::OutBuffers& in,
-      typename TransformBaseCommon<FIN, FOUT>::InBuffers* out)
-       const noexcept = 0;
-
-  virtual void Do(
-      const typename TransformBaseCommon<FIN, FOUT>::OutBuffers& in,
-      typename TransformBaseCommon<FIN, FOUT>::InBuffers* out)
-      const noexcept = 0;
-
- private:
-  virtual void InitializeBuffersInverse(
-      const typename TransformBaseCommon<FIN, FOUT>::OutBuffers& in,
-      typename TransformBaseCommon<FIN, FOUT>::InBuffers* out)
-      const noexcept override final {
-    InitializeBuffers(in, out);
-  }
-
-  virtual void DoInverse(
-      const typename TransformBaseCommon<FIN, FOUT>::OutBuffers& in,
-      typename TransformBaseCommon<FIN, FOUT>::InBuffers* out)
-      const noexcept override final {
-    Do(in, out);
-  }
-};
-
-/// @brief FIN = FOUT case. DO() and InitializeBuffers() overloads become
-/// the same then.
-template <typename F>
-class TransformBase<F, F, true> : public TransformBaseCommon<F, F> {
- public:
-  TransformBase() {
-    this->RegisterInverseParameter();
-  }
-
-  virtual bool HasInverse() const noexcept override final {
-    return true;
-  }
-
- private:
-  virtual void InitializeBuffersInverse(
-      const typename TransformBaseCommon<F, F>::OutBuffers& in,
-      typename TransformBaseCommon<F, F>::InBuffers* out)
-      const noexcept override final {
-    this->InitializeBuffers(in, out);
-  }
-
-  virtual void DoInverse(
-      const typename TransformBaseCommon<F, F>::OutBuffers& in,
-      typename TransformBaseCommon<F, F>::InBuffers* out)
-      const noexcept override final {
-    this->Do(in, out);
-  }
 };
 
 /// @brief Common base of transforms which do not change the buffer format.
 template <typename F, bool SupportsInversion = false>
-class UniformFormatTransform : public TransformBase<F, F, SupportsInversion> {
+class UniformFormatTransform
+    : public virtual TransformBase<F, F, SupportsInversion> {
  protected:
-  virtual void OnInputFormatChanged() override final {
+  virtual BuffersCountChange OnInputFormatChanged() override final {
     this->outputFormat_ = std::make_shared<F>(*this->inputFormat_);
-    OnFormatChanged();
+    return OnFormatChanged();
   }
 
-  virtual void OnOutputFormatChanged() override final {
+  virtual BuffersCountChange OnOutputFormatChanged() override final {
     this->inputFormat_ = std::make_shared<F>(*this->outputFormat_);
-    OnFormatChanged();
+    return OnFormatChanged();
   }
 
-  virtual void OnFormatChanged() {
+  virtual BuffersCountChange OnFormatChanged() {
+    return BuffersCountChange::Identity;
   }
 };
 
@@ -298,14 +215,14 @@ virtual const std::string& Description() const noexcept override final { \
     virtual const std::unordered_map<std::string, ParameterTraits>& \
         SupportedParameters() const noexcept override final { \
       static const std::unordered_map<std::string, ParameterTraits> sp = \
-          this->HasInverse()? std::unordered_map<std::string, ParameterTraits> { \
-            TP(this->kInverseParameterName, \
-               "Value indicating whether this transform is inverse.", \
-               "false") \
-            init \
-          } : std::unordered_map<std::string, ParameterTraits> { \
-              init \
-          }; \
+          this->HasInverseTransform()? \
+              std::unordered_map<std::string, ParameterTraits> { \
+                TP(this->kInverseParameterName, \
+                  "Value indicating whether this transform is inverse.", \
+                  "false") \
+                init \
+              } \
+          : std::unordered_map<std::string, ParameterTraits> { init };\
       return sp; \
     }
 

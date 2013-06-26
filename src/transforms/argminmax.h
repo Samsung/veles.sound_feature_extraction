@@ -14,9 +14,8 @@
 #define SRC_TRANSFORMS_ARGMINMAX
 
 #include <set>
-#include "src/formats/window_format.h"
 #include "src/formats/single_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -24,7 +23,7 @@ namespace Transforms {
 typedef std::tuple<int, float> ArgMinMaxResult;
 
 class ArgMinMax
-    : public OmpTransformBase<Formats::WindowFormatF,
+    : public OmpTransformBase<Formats::RawFormatF,
                               Formats::SingleFormat<ArgMinMaxResult>> {
  public:
   ArgMinMax();
@@ -37,14 +36,8 @@ class ArgMinMax
   )
 
  protected:
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<ArgMinMaxResult>* buffers)
-  const noexcept override;
-
-  virtual void Do(const Formats::WindowF& in,
-                  ArgMinMaxResult *out)
-  const noexcept override;
+  virtual void Do(const float* in, ArgMinMaxResult *out)
+      const noexcept override;
 
   static ArgMinMaxResult Do(bool simd, const float* input, size_t length,
                             bool min) noexcept;

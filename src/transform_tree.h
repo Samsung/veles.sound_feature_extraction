@@ -14,10 +14,12 @@
 #define SRC_TRANSFORM_TREE_H_
 
 #include <chrono>
+#include <vector>
 #include "src/formats/raw_format.h"
 #include "src/exceptions.h"
 #include "src/logger.h"
 #include "src/transform.h"
+#include "src/allocators/buffers_allocator.h"
 
 namespace SoundFeatureExtraction {
 
@@ -110,6 +112,22 @@ class InvalidInputBuffersException : public ExceptionBase {
   }
 };
 
+class FailedToAllocateBuffersException : public std::bad_alloc {
+ public:
+  explicit FailedToAllocateBuffersException(const char* message) noexcept
+  : message_(message) {}
+
+  explicit FailedToAllocateBuffersException(const std::string& message) noexcept
+  : message_(message) {}
+
+  virtual const char* what() const noexcept {
+    return message_.c_str();
+  }
+
+ private:
+  std::string message_;
+};
+
 class TransformTree : public Logger {
  public:
   explicit TransformTree(Formats::RawFormat16&& rootFormat) noexcept;
@@ -126,7 +144,7 @@ class TransformTree : public Logger {
   void PrepareForExecution();
 
   std::unordered_map<std::string, std::shared_ptr<Buffers>> Execute(
-      const Formats::Raw16& in);
+      const int16_t* in);
 
   std::unordered_map<std::string, float> ExecutionTimeReport() const noexcept;
   void Dump(const std::string& dotFileName) const;
@@ -141,7 +159,7 @@ class TransformTree : public Logger {
   class Node : public Logger {
    public:
     Node(Node* parent, const std::shared_ptr<Transform>& boundTransform,
-         TransformTree* host = nullptr) noexcept;
+         TransformTree* host) noexcept;
 
     std::shared_ptr<Node> FindIdenticalChildTransform(const Transform& base)
         const noexcept;
@@ -157,7 +175,12 @@ class TransformTree : public Logger {
     void ActionOnEachParent(
         const std::function<void(const Node&)> action) const;
 
-    void AllocateBuffers(size_t visitedChildrenCount) noexcept;
+    void BuildAllocationTree(size_t buffersCount,
+                             MemoryAllocation::Node* node) const noexcept;
+
+    void ApplyAllocationTree(size_t buffersCount,
+                             const MemoryAllocation::Node& node,
+                             void* allocatedMemory) noexcept;
 
     void Execute();
 
@@ -168,6 +191,7 @@ class TransformTree : public Logger {
     std::shared_ptr<Buffers> BoundBuffers;
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<Node>>> Children;
+    Node* Next;
     TransformTree* Host;
     std::chrono::high_resolution_clock::duration ElapsedTime;
     std::vector<std::string> RelatedFeatures;
@@ -196,6 +220,7 @@ class TransformTree : public Logger {
   std::unordered_map<std::string, TransformCacheItem> transformsCache_;
   bool validateAfterEachTransform_;
   bool dumpBuffersAfterEachTransform_;
+  std::shared_ptr<void> allocatedMemory_;
 };
 
 }  // namespace SoundFeatureExtraction

@@ -14,9 +14,8 @@
 #define SRC_TRANSFORMS_MEAN_H_
 
 #include <set>
-#include "src/formats/window_format.h"
 #include "src/formats/single_format.h"
-#include "src/omp_transform_base.h"
+#include "src/transforms/common.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -28,7 +27,7 @@ enum MeanTypes {
 };
 
 class Mean
-    : public OmpTransformBase<Formats::WindowFormatF,
+    : public OmpTransformBase<Formats::RawFormatF,
                               Formats::SingleFormat<
                                   Formats::FixedArray<MEAN_TYPE_COUNT>>> {
  public:
@@ -44,14 +43,9 @@ class Mean
  protected:
   static const std::unordered_map<std::string, MeanTypes> kMeanTypesMap;
 
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::FixedArray<MEAN_TYPE_COUNT>>* buffers)
-  const noexcept;
-
-  virtual void Do(const Formats::WindowF& in,
+  virtual void Do(const float* in,
                   Formats::FixedArray<MEAN_TYPE_COUNT>* out)
-  const noexcept;
+      const noexcept override;
 
   static float Do(bool simd, const float* input, size_t length,
                   MeanTypes type) noexcept;

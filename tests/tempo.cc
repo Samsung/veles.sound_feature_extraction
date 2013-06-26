@@ -11,21 +11,31 @@
  */
 
 #include <gtest/gtest.h>
+#include <fstream>
 #include "src/transform_tree.h"
 #include "src/transform_registry.h"
 #include "src/formats/raw_format.h"
 #include "tests/speech_sample.inc"
 
 using SoundFeatureExtraction::TransformTree;
-using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::BuffersBase;
 
 TEST(Features, Tempo) {
-  size_t test_size = 661504;
+  size_t test_size;
+ /* std::string file_name = "/home/markhor/Development/SoundFeatureExtraction/fail.raw";
+  std::ifstream input(file_name);
+  input.seekg(0, std::ios::end);
+  test_size = input.tellg() / 2;
+  input.seekg(0, std::ios::beg);
+  std::vector<char> fdata(test_size * 2);
+  input.read(&fdata[0], test_size * 2);
+*/
+  test_size = 661504;
   TransformTree tt( { test_size, 22050 } );  // NOLINT(*)
-  //tt.SetValidateAfterEachTransform(true);
+  tt.SetValidateAfterEachTransform(true);
   tt.AddFeature("Tempo", {
-      { "Window", "length=512" },
+      { "Window", "type=rectangular,length=512,step=205" },
+      { "Window", "type=hamming" },
       { "Fork", "factor=6" },
       { "RDFT", "" },
       { "FrequencyBands", "bands=200 400 800 1600 3200" },
@@ -35,14 +45,14 @@ TEST(Features, Tempo) {
       { "Convolve", "window = half-hanning-right, length=12800" },
       { "Diffrect", "" },
       { "Beat", "" } });
-  Raw16 buffers(test_size, 0);
+  int16_t* buffers = new int16_t[test_size];
   size_t i;
-  memset(buffers.Data.get(), 0, 2 * test_size);
   for (i = 0; i < test_size - sizeof(data) / 2 + 1;
       i += sizeof(data) / 2) {
-    memcpy(buffers.Data.get() + i, data, sizeof(data));
+    memcpy(buffers + i, data, sizeof(data));
   }
-  memcpy(buffers.Data.get() + i, data, (test_size - i) * 2);
+  memcpy(buffers + i, data, (test_size - i) * 2);
+  //memcpy(buffers, &fdata[0], test_size * 2);
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   ASSERT_EQ(1, res.size());

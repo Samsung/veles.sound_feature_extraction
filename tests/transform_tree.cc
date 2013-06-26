@@ -22,20 +22,17 @@ struct ParentChunk {
 
 class ParentTestFormat : public BufferFormatBase<ParentChunk> {
  public:
-  virtual bool MustReallocate(const BufferFormatBase<ParentChunk>&)
-      const noexcept {
-    return true;
+  virtual void Validate(const BuffersBase<ParentChunk>&) const override {
   }
 
-  virtual const void* PayloadPointer(const ParentChunk&) const noexcept {
-    return nullptr;
-  }
-
-  virtual void Validate(const BuffersBase<ParentChunk>&) const {
-  }
-
-  virtual std::string Dump(const BuffersBase<ParentChunk>&) const noexcept {
+  virtual std::string Dump(const BuffersBase<ParentChunk>&)
+      const noexcept override {
     return "";
+  }
+
+ protected:
+  virtual size_t UnalignedSizeInBytes() const noexcept override {
+    return 10;
   }
 };
 
@@ -55,12 +52,12 @@ class ParentTestTransform
 
  protected:
 
-  virtual void InitializeBuffers(const BuffersBase<Raw16>&,
+  virtual void InitializeBuffers(const BuffersBase<int16_t*>&,
                                  BuffersBase<ParentChunk>*)
   const noexcept {
   }
 
-  virtual void Do(const BuffersBase<Raw16>&, BuffersBase<ParentChunk> *)
+  virtual void Do(const BuffersBase<int16_t*>&, BuffersBase<ParentChunk> *)
   const noexcept {
   }
 };
@@ -70,20 +67,17 @@ struct ChildChunk {
 
 class ChildTestFormat : public BufferFormatBase<ChildChunk> {
  public:
-  virtual bool MustReallocate(const BufferFormatBase<ChildChunk>&)
-      const noexcept {
-    return true;
+  virtual void Validate(const BuffersBase<ChildChunk>&) const override {
   }
 
-  virtual const void* PayloadPointer(const ChildChunk&) const noexcept {
-    return nullptr;
-  }
-
-  virtual void Validate(const BuffersBase<ChildChunk>&) const {
-  }
-
-  virtual std::string Dump(const BuffersBase<ChildChunk>&) const noexcept {
+  virtual std::string Dump(const BuffersBase<ChildChunk>&)
+      const noexcept override {
     return "";
+  }
+
+ protected:
+  virtual size_t UnalignedSizeInBytes() const noexcept override {
+    return 10;
   }
 };
 

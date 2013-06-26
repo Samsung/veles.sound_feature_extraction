@@ -13,14 +13,14 @@
 #ifndef SRC_TRANSFORMS_FORK_H_
 #define SRC_TRANSFORMS_FORK_H_
 
-#include "src/formats/window_format.h"
+#include "src/formats/raw_format.h"
 #include "src/transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Fork
-    : public UniformFormatTransform<Formats::WindowFormatF> {
+    : public UniformFormatTransform<Formats::RawFormatF> {
   friend class FrequencyBands;
  public:
   Fork();
@@ -38,14 +38,10 @@ class Fork
  protected:
   static const int kDefaultFactor;
 
-  virtual void OnFormatChanged() override;
+  virtual BuffersCountChange OnFormatChanged() override;
 
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
-
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::WindowF>* out) const noexcept override;
+  virtual void Do(const BuffersBase<float*>& in,
+                  BuffersBase<float*>* out) const noexcept override;
 
  private:
   int factor_;

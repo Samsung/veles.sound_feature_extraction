@@ -10,44 +10,30 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <gtest/gtest.h>
 #include "src/transforms/zero_padding.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::ZeroPadding;
 
-class ZeroPaddingTest : public ZeroPadding, public testing::Test {
+class ZeroPaddingTest : public TransformTest<ZeroPadding> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<WindowF> Output;
   int Size;
-
-  ZeroPaddingTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 501;
-    Input.Initialize(1, Size * 2);
+    SetUpTransform(1, Size, 16000);
     for (int i = 0; i < Size; i++) {
-      Input[0][i] = (i - Size / 2.0f) / Size;
+      (*Input)[0][i] = (i - Size / 2.0f) / Size;
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 16000, 16000);
-    format->SetAllocatedSize(Size * 2);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
 TEST_F(ZeroPaddingTest, Do) {
   ASSERT_EQ(512, outputFormat_->Size());
-  Do(Input[0], &Output[0]);
+  Do((*Input)[0], (*Output)[0]);
   for (int i = Size; i < 512; i++) {
-    ASSERT_EQ(0.f, Output[0][i]);
+    ASSERT_EQ(0.f, (*Output)[0][i]);
   }
 }
-
-#include "tests/google/src/gtest_main.cc"

@@ -17,19 +17,13 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void Flux::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<float>* buffers) const noexcept {
-  buffers->Initialize(in.Size());
-}
-
 void Flux::Do(
-    const BuffersBase<Formats::WindowF>& in,
+    const BuffersBase<float*>& in,
     BuffersBase<float> *out) const noexcept {
   (*out)[0] = 0.f;
-  for (size_t i = 1; i < in.Size(); i++) {
-    (*out)[i] = Do(UseSimd(), in[i].Data.get(), inputFormat_->Size(),
-                    in[i - 1].Data.get());
+  for (size_t i = 1; i < in.Count(); i++) {
+    (*out)[i] = Do(UseSimd(), in[i], inputFormat_->Size(),
+                    in[i - 1]);
   }
 }
 

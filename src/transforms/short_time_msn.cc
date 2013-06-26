@@ -28,18 +28,12 @@ ShortTimeMeanScaleNormalization::ShortTimeMeanScaleNormalization()
   });
 }
 
-void ShortTimeMeanScaleNormalization::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), inputFormat_->Size());
-}
-
 void ShortTimeMeanScaleNormalization::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* out) const noexcept {
+    const BuffersBase<float*>& in,
+    BuffersBase<float*>* out) const noexcept {
   int back = length_ / 2;
   int front = length_ - back;
-  for (size_t i = 0; i < in.Size(); i++) {
+  for (size_t i = 0; i < in.Count(); i++) {
     for (int j = 0; j < (int)inputFormat_->Size(); j++) {
       int len = length_;
       int backind = i - back;
@@ -48,9 +42,9 @@ void ShortTimeMeanScaleNormalization::Do(
         backind = 0;
       }
       int frontind = i + front;
-      if (frontind > (int)in.Size()) {
-        len += in.Size() - frontind;
-        frontind = (int)in.Size();
+      if (frontind > (int)in.Count()) {
+        len += in.Count() - frontind;
+        frontind = (int)in.Count();
       }
       float sum = 0.f;
       float thisval = in[i][j];

@@ -13,14 +13,15 @@
 #ifndef SRC_TRANSFORMS_TEMPLATE_TRANSFORM_H_
 #define SRC_TRANSFORMS_TEMPLATE_TRANSFORM_H_
 
-#include "src/formats/window_format.h"
+#include <vector>
+#include "src/formats/raw_format.h"
 #include "src/transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class FrequencyBands
-    : public UniformFormatTransform<Formats::WindowFormatF>,
+    : public UniformFormatTransform<Formats::RawFormatF>,
       public TransformLogger<FrequencyBands> {
  public:
   FrequencyBands();
@@ -42,12 +43,8 @@ class FrequencyBands
   static const int kDefaultBandsNumber;
   static const std::string kDefaultBandsConfig;
 
-  virtual void InitializeBuffers(
-      const BuffersBase<Formats::WindowF>& in,
-      BuffersBase<Formats::WindowF>* buffers) const noexcept override;
-
-  virtual void Do(const BuffersBase<Formats::WindowF>& in,
-                  BuffersBase<Formats::WindowF>* out) const noexcept override;
+  virtual void Do(const BuffersBase<float*>& in,
+                  BuffersBase<float*>* out) const noexcept override;
 
  private:
   int bandsNumber_;

@@ -34,15 +34,9 @@ Rolloff::Rolloff() : ratio_(kDefaultRatio) {
   });
 }
 
-void Rolloff::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<float>* buffers) const noexcept {
-  buffers->Initialize(in.Size());
-}
-
-void Rolloff::Do(const Formats::WindowF& in,
+void Rolloff::Do(const float* in,
                  float* out) const noexcept {
-  *out = Do(UseSimd(), in.Data.get(), inputFormat_->Size(), ratio_) /
+  *out = Do(UseSimd(), in, inputFormat_->Size(), ratio_) /
       inputFormat_->Duration();
 }
 

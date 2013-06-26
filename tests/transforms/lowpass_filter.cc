@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <gtest/gtest.h>
 #include "src/transforms/lowpass_filter.h"
+#include "tests/transforms/transform_test.h"
 #include "src/primitives/window.h"
 
 #define EPSILON 0.0001f
@@ -20,7 +20,7 @@
 
 using SoundFeatureExtraction::Transforms::LowpassFilter;
 
-class LowpassFilterTest : public LowpassFilter, public testing::Test {
+class LowpassFilterTest : public TransformTest<LowpassFilter> {
  public:
   virtual void SetUp() {
     SetParameter("frequency", "600");
@@ -52,5 +52,3 @@ TEST_F(LowpassFilterTest, CalculateLowpassFilter) {
   ASSERT_EQF(0.0401f, filter[3]);
   ASSERT_EQF(0.0058f, filter[4]);
 }
-
-#include "tests/google/src/gtest_main.cc"

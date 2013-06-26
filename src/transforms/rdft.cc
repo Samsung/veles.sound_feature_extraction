@@ -18,48 +18,63 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void RDFT::OnFormatChanged() {
+BuffersCountChange RDFT::OnFormatChanged() {
   if (!IsInverse()) {
     outputFormat_->SetSize(inputFormat_->Size() + 2);
   } else {
     outputFormat_->SetSize(inputFormat_->Size() - 2);
   }
-}
-
-void RDFT::InitializeBuffers(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* buffers) const noexcept {
-  buffers->Initialize(in.Size(), outputFormat_->Size());
+  return BuffersCountChange::Identity;
 }
 
 void RDFT::Do(
-    const BuffersBase<Formats::WindowF>& in,
-    BuffersBase<Formats::WindowF>* out) const noexcept {
-  int length = outputFormat_->Size();
-  if (!IsInverse()) {
-    length -= 2;
-  }
-  std::vector<float*> inputs(in.Size()), outputs(in.Size());
-  for (size_t i = 0; i < in.Size(); i++) {
-    inputs[i] = in[i].Data.get();
-    outputs[i] = (*out)[i].Data.get();
+    const BuffersBase<float*>& in,
+    BuffersBase<float*>* out) const noexcept {
+  int length = inputFormat_->Size();
+  std::vector<const float*> inputs(in.Count());
+  std::vector<float*> outputs(in.Count());
+  for (size_t i = 0; i < in.Count(); i++) {
+    inputs[i] = in[i];
+    outputs[i] = (*out)[i];
   }
   auto fftPlan = std::unique_ptr<FFTFInstance, void (*)(FFTFInstance *)>(
       fftf_init_batch(
           FFTF_TYPE_REAL,
-          IsInverse()? FFTF_DIRECTION_BACKWARD : FFTF_DIRECTION_FORWARD,
+          FFTF_DIRECTION_FORWARD,
           FFTF_DIMENSION_1D,
           &length,
           FFTF_NO_OPTIONS,
-          in.Size(),
+          in.Count(),
           &inputs[0], &outputs[0]),
       fftf_destroy);
 
   fftf_calc(fftPlan.get());
-  if (IsInverse()) {
-    for (size_t i = 0; i < in.Size(); i++) {
-      real_multiply_scalar(outputs[i], length, 1.0f / length, outputs[i]);
-    }
+}
+
+void RDFT::DoInverse(
+    const BuffersBase<float*>& in,
+    BuffersBase<float*>* out) const noexcept {
+  int length = outputFormat_->Size();
+  std::vector<const float*> inputs(in.Count());
+  std::vector<float*> outputs(in.Count());
+  for (size_t i = 0; i < in.Count(); i++) {
+    inputs[i] = in[i];
+    outputs[i] = (*out)[i];
+  }
+  auto fftPlan = std::unique_ptr<FFTFInstance, void (*)(FFTFInstance *)>(
+      fftf_init_batch(
+          FFTF_TYPE_REAL,
+          FFTF_DIRECTION_BACKWARD,
+          FFTF_DIMENSION_1D,
+          &length,
+          FFTF_NO_OPTIONS,
+          in.Count(),
+          &inputs[0], &outputs[0]),
+      fftf_destroy);
+
+  fftf_calc(fftPlan.get());
+  for (size_t i = 0; i < in.Count(); i++) {
+    real_multiply_scalar(outputs[i], length, 1.0f / length, outputs[i]);
   }
 }
 

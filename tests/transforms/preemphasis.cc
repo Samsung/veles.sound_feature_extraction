@@ -10,44 +10,33 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <gtest/gtest.h>
 #include <math.h>
 #include "src/transforms/preemphasis.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::Raw16;
 using SoundFeatureExtraction::Formats::RawFormat16;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::Preemphasis;
 
-class PreemphasisTest : public Preemphasis, public testing::Test {
+class PreemphasisTest : public TransformTest<Preemphasis> {
  public:
-  BuffersBase<Raw16> Input;
-  BuffersBase<Raw16> Output;
   int Size;
-
-  PreemphasisTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 1024;
-    Input.Initialize(1, Size, 2);
+    SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; i++) {
-      Input[0][i] = i + 1;
+      (*Input)[0][i] = i + 1;
     }
-    auto format = std::make_shared<RawFormat16>(Size, 18000);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
 TEST_F(PreemphasisTest, Do) {
-  Do(Input[0], &Output[0]);
-  ASSERT_EQ(1, Output[0][0]);
+  Do((*Input)[0], (*Output)[0]);
+  ASSERT_EQ(1, (*Output)[0][0]);
   for (int i = 1; i < Size; i++) {
     ASSERT_NEAR(int16_t((1 - kDefaultK) * (i + 1) + kDefaultK),
-                Output[0][i], 1.f);
+                (*Output)[0][i], 1.f);
   }
 }
 
@@ -58,5 +47,3 @@ TEST_F(PreemphasisTest, Do) {
 #define PARAM_REORDER
 #define EXTRA_PARAM 0.5f
 #include "tests/transforms/benchmark.inc"
-
-#include "tests/google/src/gtest_main.cc"

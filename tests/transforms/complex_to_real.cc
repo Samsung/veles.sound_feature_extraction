@@ -11,49 +11,34 @@
  */
 
 
-#include <gtest/gtest.h>
 #include "src/transforms/complex_to_real.h"
+#include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::WindowF;
-using SoundFeatureExtraction::Formats::WindowFormatF;
+using SoundFeatureExtraction::Formats::RawFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::ComplexToReal;
 
-class ComplexToRealTest
-    : public ComplexToReal, public testing::Test {
+class ComplexToRealTest : public TransformTest<ComplexToReal> {
  public:
-  BuffersBase<WindowF> Input;
-  BuffersBase<WindowF> Output;
   int Size;
-
-  ComplexToRealTest()
-      : Input(inputFormat_),
-        Output(outputFormat_) {
-  }
 
   virtual void SetUp() {
     Size = 486;
-    Input.Initialize(1, 2 * Size);
+    SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; i++) {
-      Input[0][i] = i;
+      (*Input)[0][i] = i;
     }
-    auto format = std::make_shared<WindowFormatF>(Size * 1000 / 18000, 18000);
-    format->SetAllocatedSize(2 * Size);
-    SetInputFormat(format);
-    InitializeBuffers(Input, &Output);
   }
 };
 
 TEST_F(ComplexToRealTest, Do) {
-  Do(Input[0], &Output[0]);
+  Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size / 2; i++) {
     int result = 2 * i;
-    ASSERT_EQ(result, Output[0][i]);
+    ASSERT_EQ(result, (*Output)[0][i]);
   }
 }
 
 #define CLASS_NAME ComplexToRealTest
 #define ITER_COUNT 800000
 #include "tests/transforms/benchmark.inc"
-
-#include "tests/google/src/gtest_main.cc"
