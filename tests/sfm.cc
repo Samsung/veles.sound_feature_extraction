@@ -23,8 +23,8 @@ TEST(Features, SFM) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
   tt.SetValidateAfterEachTransform(true);
   tt.AddFeature("SFM", { { "Window", "length=512" }, { "RDFT", "" },
-      { "ComplexMagnitude", "" }, { "Mean", "types=arithmetic geometric" },
-      { "SFM", "" } });
+      { "Selector", "length=256" }, { "ComplexMagnitude", "" },
+      { "Mean", "types=arithmetic geometric" }, { "SFM", "" } });
   int16_t* buffers = new int16_t[48000];
   memcpy(buffers, data, sizeof(data));
   tt.PrepareForExecution();

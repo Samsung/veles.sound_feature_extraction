@@ -23,16 +23,19 @@ void SFM::Do(const FixedArray<MEAN_TYPE_COUNT>& in,
   float gMean = in[MEAN_TYPE_GEOMETRIC];
   float aMean = in[MEAN_TYPE_ARITHMETIC];
   if (gMean == 0) {
-    WRN("Warning: buffer has geometric mean equal to 0.");
+    ERR("Buffer has geometric mean equal to 0.");
+    *out = 0;
+    return;
   }
   if (aMean == 0) {
-    CRT("Error: buffer has arithmetic mean equal to 0.");
-    assert(aMean != 0);
+    ERR("Buffer has arithmetic mean equal to 0.");
+    *out = 0;
+    return;
   }
   if (gMean / aMean < 0) {
-    CRT("Error: buffer has geometric and arithmetic means "
-        "of different sign.");
-    assert(gMean / aMean >= 0);
+    ERR("Buffer has geometric and arithmetic means of different sign.");
+    *out = 0;
+    return;
   }
   *out = logf(gMean / aMean);
 }
