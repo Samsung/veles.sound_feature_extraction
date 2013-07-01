@@ -31,6 +31,7 @@ TEST(Features, SBC) {
   memcpy(buffers, data, sizeof(data));
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
+  delete[] buffers;
   ASSERT_EQ(1, res.size());
   res["SBC"]->Validate();
   tt.Dump("/tmp/sbc.dot");

@@ -29,6 +29,7 @@ TEST(Features, SFM) {
   memcpy(buffers, data, sizeof(data));
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
+  delete[] buffers;
   ASSERT_EQ(1, res.size());
   res["SFM"]->Validate();
   tt.Dump("/tmp/sfm.dot");

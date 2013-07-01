@@ -118,6 +118,7 @@ TEST(Features, All) {
   memcpy(buffers, data, sizeof(data));
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
+  delete[] buffers;
   ASSERT_EQ(17, res.size());
   printf("Validating Energy\n");
   res["Energy"]->Validate();

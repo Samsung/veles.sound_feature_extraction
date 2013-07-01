@@ -55,6 +55,7 @@ TEST(Features, Tempo) {
   //memcpy(buffers, &fdata[0], test_size * 2);
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
+  delete[] buffers;
   ASSERT_EQ(1, res.size());
   res["Tempo"]->Validate();
   tt.Dump("/tmp/tempo.dot");

@@ -32,6 +32,7 @@ TEST(Features, MFCC) {
   memcpy(buffers, data, sizeof(data));
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
+  delete[] buffers;
   ASSERT_EQ(1, res.size());
   res["MFCC"]->Validate();
   tt.Dump("/tmp/mfcc.dot");
@@ -57,6 +58,7 @@ TEST(Features, MFCCTrivial) {
   }
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
+  delete[] buffers;
   ASSERT_EQ(1, res.size());
   res["MFCC"]->Validate();
 }

@@ -32,6 +32,7 @@ TEST(Features, VAD) {
   memcpy(buffers, data, sizeof(data));
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
+  delete[] buffers;
   ASSERT_EQ(3, res.size());
   res["SFM"]->Validate();
   res["Energy"]->Validate();
