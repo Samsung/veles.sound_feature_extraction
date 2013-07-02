@@ -60,6 +60,6 @@ TEST_F(SquareFTest, Do) {
   }
 }
 
-#define CLASS_NAME SquareWindowTest
+#define CLASS_NAME SquareFTest
 #define ITER_COUNT 300000
 #include "tests/transforms/benchmark.inc"
