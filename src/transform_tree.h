@@ -32,7 +32,7 @@ class ChainNameAlreadyExistsException : public ExceptionBase {
 
 class ChainAlreadyExistsException : public ExceptionBase {
  public:
-  explicit ChainAlreadyExistsException(const std::string& nameOld,
+  ChainAlreadyExistsException(const std::string& nameOld,
                               const std::string& nameNew)
   : ExceptionBase("Chain \"" + nameNew + "\" is identical to previously "
                   "added \"" + nameOld + "\".") {
@@ -159,10 +159,7 @@ class TransformTree : public Logger {
   class Node : public Logger {
    public:
     Node(Node* parent, const std::shared_ptr<Transform>& boundTransform,
-         TransformTree* host) noexcept;
-
-    std::shared_ptr<Node> FindIdenticalChildTransform(const Transform& base)
-        const noexcept;
+         size_t buffersCount, TransformTree* host) noexcept;
 
     void ActionOnEachTransformInSubtree(
         const std::function<void(const Transform&)> action) const;
@@ -175,11 +172,12 @@ class TransformTree : public Logger {
     void ActionOnEachParent(
         const std::function<void(const Node&)> action) const;
 
-    void BuildAllocationTree(size_t buffersCount,
-                             MemoryAllocation::Node* node) const noexcept;
+    std::shared_ptr<Node> FindIdenticalChildTransform(const Transform& base)
+        const noexcept;
 
-    void ApplyAllocationTree(size_t buffersCount,
-                             const MemoryAllocation::Node& node,
+    void BuildAllocationTree(MemoryAllocation::Node* node) const noexcept;
+
+    void ApplyAllocationTree(const MemoryAllocation::Node& node,
                              void* allocatedMemory) noexcept;
 
     void Execute();
@@ -189,6 +187,7 @@ class TransformTree : public Logger {
     Node* Parent;
     const std::shared_ptr<Transform> BoundTransform;
     std::shared_ptr<Buffers> BoundBuffers;
+    size_t BuffersCount;
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<Node>>> Children;
     Node* Next;
@@ -206,9 +205,6 @@ class TransformTree : public Logger {
                     const std::string& parameters,
                     const std::string& relatedFeature,
                     std::shared_ptr<Node>* currentNode);
-  std::shared_ptr<Transform> FindIdenticalTransform(
-      const Transform& base) noexcept;
-  void SaveTransformToCache(const std::shared_ptr<Transform>& t) noexcept;
 
   static float ConvertDuration(
       const std::chrono::high_resolution_clock::duration& d) noexcept;

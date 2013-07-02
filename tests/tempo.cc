@@ -30,7 +30,7 @@ TEST(Features, Tempo) {
   std::vector<char> fdata(test_size * 2);
   input.read(&fdata[0], test_size * 2);
 */
-  test_size = 661504;
+  test_size = 100000;  // 661504;
   TransformTree tt( { test_size, 22050 } );  // NOLINT(*)
   tt.SetValidateAfterEachTransform(true);
   tt.AddFeature("Tempo", {

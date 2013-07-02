@@ -18,10 +18,7 @@
 #include "src/formats/raw_format.h"
 #include "tests/speech_sample.inc"
 
-using SoundFeatureExtraction::Formats::RawFormatF;
-using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::Window;
-using SoundFeatureExtraction::TransformTree;
 
 class WindowTest : public TransformTest<Window> {
  public:
@@ -50,23 +47,4 @@ TEST_F(WindowTest, DoPreDft) {
   SetParameter("predft", "true");
   Initialize();
   Do((*Input)[0], (*Output)[0]);
-}
-
-TEST(RawWindow, Inverse) {
-  int16_t* buffers = new int16_t[48000];
-  TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
-  tt.SetValidateAfterEachTransform(true);
-  // We have to apply FilterBank twice since Energy results in
-  // squared magnitude
-  tt.AddFeature("WindowInverseTest", { { "Window", "length=512" },
-      { "IWindow", "length=512" } });
-  memcpy(buffers, data, sizeof(data));
-  tt.PrepareForExecution();
-  auto res = tt.Execute(buffers);
-  ASSERT_EQ(1, res.size());
-  res["WindowInverseTest"]->Validate();
-  auto report = tt.ExecutionTimeReport();
-  for (auto r : report) {
-    printf("%s:\t%f\n", r.first.c_str(), r.second);
-  }
 }

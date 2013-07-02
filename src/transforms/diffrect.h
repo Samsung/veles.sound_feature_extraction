@@ -25,7 +25,7 @@ class Diffrect : public OmpUniformFormatTransform<Formats::RawFormatF> {
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual BuffersCountChange OnFormatChanged() override;
+  virtual size_t OnFormatChanged(size_t buffersCount) override;
 
   virtual void Do(const float* in, float* out) const noexcept override;
 

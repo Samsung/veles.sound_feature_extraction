@@ -50,10 +50,11 @@ class RootTransform : public Transform {
     return format_;
   }
 
-  virtual BuffersCountChange SetInputFormat(
-      const std::shared_ptr<BufferFormat>& format) override {
+  virtual size_t SetInputFormat(
+      const std::shared_ptr<BufferFormat>& format,
+      size_t buffersCount) override {
     format_ = std::static_pointer_cast<Formats::RawFormat16>(format);
-    return BuffersCountChange::Identity;
+    return buffersCount;
   }
 
   virtual const std::shared_ptr<BufferFormat> OutputFormat()
@@ -96,12 +97,13 @@ class RootTransform : public Transform {
 
 TransformTree::Node::Node(Node* parent,
                           const std::shared_ptr<Transform>& boundTransform,
-                          TransformTree* host) noexcept
+                          size_t buffersCount, TransformTree* host) noexcept
     : Logger(std::string("Node (") + boundTransform->Name() + ")",
              EINA_COLOR_GREEN),
       Parent(parent),
       BoundTransform(boundTransform),
       BoundBuffers(nullptr),
+      BuffersCount(buffersCount),
       Next(nullptr),
       Host(host == nullptr? parent == nullptr? nullptr : parent->Host : host) {
 }
@@ -109,8 +111,8 @@ TransformTree::Node::Node(Node* parent,
 void TransformTree::Node::ActionOnEachTransformInSubtree(
     const std::function<void(const Transform&)> action) const {
   action(*BoundTransform);
-  for (auto subnodes : Children) {
-    for (auto inode : subnodes.second) {
+  for (auto& subnodes : Children) {
+    for (auto& inode : subnodes.second) {
       inode->ActionOnEachTransformInSubtree(action);
     }
   }
@@ -119,8 +121,8 @@ void TransformTree::Node::ActionOnEachTransformInSubtree(
 void TransformTree::Node::ActionOnSubtree(
     const std::function<void(const Node&)> action) const {
   action(*this);
-  for (auto subnodes : Children) {
-    for (auto inode : subnodes.second) {
+  for (auto& subnodes : Children) {
+    for (auto& inode : subnodes.second) {
       inode->ActionOnSubtree(action);
     }
   }
@@ -128,8 +130,8 @@ void TransformTree::Node::ActionOnSubtree(
 
 void TransformTree::Node::ActionOnEachImmediateChild(
     const std::function<void(Node&)> action) {
-  for (auto subnodes : Children) {
-    for (auto inode : subnodes.second) {
+  for (auto& subnodes : Children) {
+    for (auto& inode : subnodes.second) {
       action(*inode);
     }
   }
@@ -137,8 +139,8 @@ void TransformTree::Node::ActionOnEachImmediateChild(
 
 void TransformTree::Node::ActionOnEachImmediateChild(
     const std::function<void(const Node&)> action) const {
-  for (auto subnodes : Children) {
-    for (auto inode : subnodes.second) {
+  for (auto& subnodes : Children) {
+    for (auto& inode : subnodes.second) {
       action(*inode);
     }
   }
@@ -166,30 +168,26 @@ TransformTree::Node::FindIdenticalChildTransform(
 }
 
 void TransformTree::Node::BuildAllocationTree(
-    size_t buffersCount, MemoryAllocation::Node* node) const noexcept {
+    MemoryAllocation::Node* node) const noexcept {
   node->Children.reserve(ChildrenCount());
-  for (auto subnodes : Children) {
-    for (auto inode : subnodes.second) {
-      size_t newBuffersCount =
-          inode->BoundTransform->CalculateBuffersCountChange()(buffersCount);
+  for (auto& subnodes : Children) {
+    for (auto& inode : subnodes.second) {
       MemoryAllocation::Node child(
-          newBuffersCount *
+          inode->BuffersCount *
               inode->BoundTransform->OutputFormat()->SizeInBytes(),
           node,
           inode.get());
       node->Children.push_back(child);
-      inode->BuildAllocationTree(newBuffersCount, &node->Children.back());
+      inode->BuildAllocationTree(&node->Children.back());
     }
   }
 }
 
 void TransformTree::Node::ApplyAllocationTree(
-    size_t buffersCount, const MemoryAllocation::Node& node,
+    const MemoryAllocation::Node& node,
     void* allocatedMemory) noexcept {
-  size_t newBuffersCount =
-      BoundTransform->CalculateBuffersCountChange()(buffersCount);
   BoundBuffers = BoundTransform->CreateOutputBuffers(
-      newBuffersCount,
+      BuffersCount,
       reinterpret_cast<char*>(allocatedMemory) + node.Address);
   if (node.Next != nullptr) {
     Next = reinterpret_cast<TransformTree::Node*>(node.Next->Item);
@@ -198,8 +196,7 @@ void TransformTree::Node::ApplyAllocationTree(
   for (size_t i = 0; i < node.Children.size(); i++) {
     TransformTree::Node* child = reinterpret_cast<TransformTree::Node*>(
         node.Children[i].Item);
-    child->ApplyAllocationTree(newBuffersCount, node.Children[i],
-                               allocatedMemory);
+    child->ApplyAllocationTree(node.Children[i], allocatedMemory);
   }
 }
 
@@ -241,7 +238,7 @@ void TransformTree::Node::Execute() {
 
 size_t TransformTree::Node::ChildrenCount() const noexcept {
   size_t size = 0;
-  for (auto child : Children) {
+  for (auto& child : Children) {
     size += child.second.size();
   }
   return size;
@@ -251,7 +248,7 @@ TransformTree::TransformTree(Formats::RawFormat16&& rootFormat) noexcept
     : Logger("TransformTree", EINA_COLOR_ORANGE),
       root_(std::make_shared<Node>(
         nullptr, std::make_shared<RootTransform>(
-            std::make_shared<Formats::RawFormat16>(rootFormat)), this)),
+            std::make_shared<Formats::RawFormat16>(rootFormat)), 1, this)),
       rootFormat_(std::make_shared<Formats::RawFormat16>(rootFormat)),
       treeIsPrepared_(false),
       validateAfterEachTransform_(false),
@@ -262,7 +259,7 @@ TransformTree::TransformTree(
     const std::shared_ptr<Formats::RawFormat16>& rootFormat) noexcept
     : Logger("TransformTree", EINA_COLOR_ORANGE),
       root_(std::make_shared<Node>(
-        nullptr, std::make_shared<RootTransform>(rootFormat), this)),
+        nullptr, std::make_shared<RootTransform>(rootFormat), 1, this)),
       rootFormat_(rootFormat),
       treeIsPrepared_(false),
       validateAfterEachTransform_(false),
@@ -290,7 +287,7 @@ void TransformTree::AddTransform(const std::string& name,
     DBG("Formats mismatch, iterating input formats (%zu)",
         tfit->second.size());
     // No matching format found, try to add the format converter first
-    for (auto ctoritfmt : tfit->second) {
+    for (auto& ctoritfmt : tfit->second) {
       auto t = ctoritfmt.second();
       DBG("Probing %s -> %s",
           (*currentNode)->BoundTransform->OutputFormat()->Id().c_str(),
@@ -310,8 +307,8 @@ void TransformTree::AddTransform(const std::string& name,
     ctor = ctorit->second;
   }
   if (ctor == nullptr) {
-    throw IncompatibleTransformFormatException(*(*currentNode)->BoundTransform,
-                                               name);
+    throw IncompatibleTransformFormatException(
+        *(*currentNode)->BoundTransform, name);
   }
 
   // Create the transform "name"
@@ -320,26 +317,20 @@ void TransformTree::AddTransform(const std::string& name,
     auto tparams = Transform::Parse(parameters);
     t->SetParameters(tparams);
   }
-
-  // Try to reuse the already existing transform
   auto reusedNode = (*currentNode)->FindIdenticalChildTransform(*t);
   if (reusedNode != nullptr) {
     *currentNode = reusedNode;
   } else {
-    auto reusedTransform = FindIdenticalTransform(*t);
-    if (reusedTransform != nullptr) {
-      DBG("Reusing an already existing transform");
-      t = reusedTransform;
-    } else {
-      // Set the new input format
-      t->UpdateInputFormat((*currentNode)->BoundTransform->OutputFormat());
-    }
+    // Set the new input format
+    size_t buffersCount = t->SetInputFormat(
+        (*currentNode)->BoundTransform->OutputFormat(),
+        (*currentNode)->BuffersCount);
     // Append the newly created transform
-    auto newNode = std::make_shared<Node>(currentNode->get(), t, this);
+    auto newNode = std::make_shared<Node>(
+        currentNode->get(), t, buffersCount, this);
     (*currentNode)->Children[name].push_back(newNode);
     *currentNode = newNode;
   }
-
   (*currentNode)->RelatedFeatures.push_back(relatedFeature);
 }
 
@@ -361,7 +352,7 @@ void TransformTree::AddFeature(
 
   auto currentNode = root_;
   root_->RelatedFeatures.push_back(name);
-  for (auto tpair : transforms) {
+  for (auto& tpair : transforms) {
     auto tname = tpair.first;
     AddTransform(tpair.first, tpair.second, name, &currentNode);
   }
@@ -380,7 +371,7 @@ void TransformTree::PrepareForExecution() {
   });
   // Solve the allocation problem
   MemoryAllocation::Node allocationTreeRoot(0, nullptr, root_.get());
-  root_->BuildAllocationTree(1, &allocationTreeRoot);
+  root_->BuildAllocationTree(&allocationTreeRoot);
   MemoryAllocation::SlidingBlocksAllocator allocator;
   size_t neededMemory = allocator.Solve(&allocationTreeRoot);
 #if DEBUG
@@ -399,8 +390,8 @@ void TransformTree::PrepareForExecution() {
   }
   INF("Allocated %zu bytes", neededMemory);
   // Finally, apply the memory mapping, creating the actual buffers
-  // We will overwrite root's BoundBuffers on executio&\(\*Output\)\)&\(\*Output\)\)&\(\*Output\)\)&\(\*Output\)\)n stage
-  root_->ApplyAllocationTree(1, allocationTreeRoot, allocatedMemory_.get());
+  // We will overwrite root's BoundBuffers on execution stage
+  root_->ApplyAllocationTree(allocationTreeRoot, allocatedMemory_.get());
   treeIsPrepared_ = true;
 }
 
@@ -434,7 +425,7 @@ TransformTree::Execute(const int16_t* in) {
   auto allDuration = checkPointFinish - checkPointStart;
   INF("Finished. Execution took %f s", ConvertDuration(allDuration));
   auto otherDuration = allDuration;
-  for (auto cit : transformsCache_) {
+  for (auto& cit : transformsCache_) {
     otherDuration -= cit.second.ElapsedTime;
   }
   transformsCache_["All"].ElapsedTime = allDuration;
@@ -442,41 +433,10 @@ TransformTree::Execute(const int16_t* in) {
 
   // Populate the results
   std::unordered_map<std::string, std::shared_ptr<Buffers>> results;
-  for (auto feature : features_) {
+  for (auto& feature : features_) {
     results[feature.first] = feature.second->BoundBuffers;
   }
   return std::move(results);
-}
-
-std::shared_ptr<Transform> TransformTree::FindIdenticalTransform(
-    const Transform& base) noexcept {
-  std::string id = base.Name();
-  for (auto pp : base.GetParameters()) {
-    id += pp.first;
-    id += pp.second;
-  }
-  auto iti = transformsCache_.find(id);
-  if (iti != transformsCache_.end()) {
-    return iti->second.BoundTransform;
-  }
-  return nullptr;
-}
-
-void TransformTree::SaveTransformToCache(
-    const std::shared_ptr<Transform>& transform) noexcept {
-  std::string id = transform->Name();
-  for (auto pp : transform->GetParameters()) {
-    id += pp.first;
-    id += pp.second;
-  }
-  transformsCache_.insert(
-      std::make_pair(id,
-                     TransformCacheItem {
-                       transform,
-                       std::chrono::high_resolution_clock::duration(0)
-                     }
-      )
-  );
 }
 
 std::unordered_map<std::string, float>
@@ -487,7 +447,7 @@ TransformTree::ExecutionTimeReport() const noexcept {
     return ret;
   }
   auto allTime = allIt->second.ElapsedTime;
-  for (auto cit : transformsCache_) {
+  for (auto& cit : transformsCache_) {
     if (cit.first != "All") {
       ret.insert(std::make_pair(
           cit.first, (cit.second.ElapsedTime.count() + 0.f) / allTime.count()));
@@ -508,7 +468,7 @@ void TransformTree::Dump(const std::string& dotFileName) const {
   bool includeTime = timeReport.size() > 0;
   float maxTimeRatio = 0.0f;
   if (includeTime) {
-    for (auto tr : timeReport) {
+    for (auto& tr : timeReport) {
       if (tr.second > maxTimeRatio && tr.first != "All") {
         maxTimeRatio = tr.second;
       }
@@ -548,7 +508,7 @@ void TransformTree::Dump(const std::string& dotFileName) const {
     }
     if (t->GetParameters().size() > 0) {
       fw << "<br /> <br />";
-      for (auto p : t->GetParameters()) {
+      for (auto& p : t->GetParameters()) {
         auto isDefault = false;
         isDefault = p.second ==
             t->SupportedParameters().find(p.first)->second.DefaultValue;

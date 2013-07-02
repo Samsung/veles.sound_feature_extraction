@@ -60,9 +60,9 @@ void FirFilterBase::Initialize() const noexcept {
   }
 }
 
-BuffersCountChange FirFilterBase::OnFormatChanged() {
+size_t FirFilterBase::OnFormatChanged(size_t buffersCount) {
   outputFormat_->SetSize(inputFormat_->Size() + length_ - 1);
-  return BuffersCountChange::Identity;
+  return buffersCount;
 }
 
 void FirFilterBase::Do(const float* in,

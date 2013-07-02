@@ -38,7 +38,7 @@ class Fork
  protected:
   static const int kDefaultFactor;
 
-  virtual BuffersCountChange OnFormatChanged() override;
+  virtual size_t OnFormatChanged(size_t buffersCount) override;
 
   virtual void Do(const BuffersBase<float*>& in,
                   BuffersBase<float*>* out) const noexcept override;

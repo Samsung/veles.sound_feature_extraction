@@ -20,11 +20,11 @@ namespace SoundFeatureExtraction {
 template <typename FIN, typename FOUT>
 class RawFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
  protected:
-  virtual BuffersCountChange OnInputFormatChanged() override final {
-    auto outputFormat = FormatConverterBase<FIN, FOUT>::outputFormat_;
-    auto inputFormat = FormatConverterBase<FIN, FOUT>::inputFormat_;
+  virtual size_t OnInputFormatChanged(size_t buffersCount) override final {
+    auto& outputFormat = FormatConverterBase<FIN, FOUT>::outputFormat_;
+    auto& inputFormat = FormatConverterBase<FIN, FOUT>::inputFormat_;
     outputFormat->SetSize(inputFormat->Size());
-    return BuffersCountChange::Identity;
+    return buffersCount;
   }
 };
 

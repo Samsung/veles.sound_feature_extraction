@@ -16,10 +16,10 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-BuffersCountChange SquareRaw::OnInputFormatChanged() {
+size_t SquareRaw::OnInputFormatChanged(size_t buffersCount) {
   outputFormat_->SetSize(inputFormat_->Size());
   outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
-  return BuffersCountChange::Identity;
+  return buffersCount;
 }
 
 void SquareRaw::Do(const int16_t* in,

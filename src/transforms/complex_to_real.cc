@@ -21,9 +21,9 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-BuffersCountChange ComplexToReal::OnFormatChanged() {
+size_t ComplexToReal::OnFormatChanged(size_t buffersCount) {
   outputFormat_->SetSize(inputFormat_->Size() / 2);
-  return BuffersCountChange::Identity;
+  return buffersCount;
 }
 
 void ComplexToReal::Do(const float* in,

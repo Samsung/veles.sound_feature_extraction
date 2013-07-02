@@ -16,14 +16,14 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-BuffersCountChange ZeroPadding::OnFormatChanged() {
+size_t ZeroPadding::OnFormatChanged(size_t buffersCount) {
   int length = inputFormat_->Size();
   if ((length & (length - 1)) == 0) {
     outputFormat_->SetSize(length);
   } else {
     outputFormat_->SetSize(next_highest_power_of_2(length));
   }
-  return BuffersCountChange::Identity;
+  return buffersCount;
 }
 
 void ZeroPadding::Do(const float* in,

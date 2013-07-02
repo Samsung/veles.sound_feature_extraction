@@ -34,9 +34,9 @@ void Autocorrelation::Initialize() const noexcept {
   }
 }
 
-BuffersCountChange Autocorrelation::OnFormatChanged() {
+size_t Autocorrelation::OnFormatChanged(size_t buffersCount) {
   outputFormat_->SetSize(inputFormat_->Size() * 2 - 1);
-  return BuffersCountChange::Identity;
+  return buffersCount;
 }
 
 void Autocorrelation::Do(const float* in, float* out)

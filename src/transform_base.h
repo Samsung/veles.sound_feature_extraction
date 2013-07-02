@@ -80,17 +80,17 @@ class TransformBase : public virtual Transform,
     }
   }
 
-  virtual BuffersCountChange SetInputFormat(
-      const std::shared_ptr<BufferFormat>& format)
-      override {
+  virtual size_t SetInputFormat(
+      const std::shared_ptr<BufferFormat>& format,
+      size_t buffersCount) override {
     if (!IsInverse() || std::is_same<FIN, FOUT>::value) {
       inputFormat_ = std::static_pointer_cast<FIN>(format);
       outputFormat_->CopySourceDetailsFrom(*inputFormat_);
-      return OnInputFormatChanged();
+      return OnInputFormatChanged(buffersCount);
     } else {
       outputFormat_ = std::static_pointer_cast<FOUT>(format);
       inputFormat_->CopySourceDetailsFrom(*outputFormat_);
-      return OnOutputFormatChanged();
+      return OnOutputFormatChanged(buffersCount);
     }
   }
 
@@ -150,12 +150,12 @@ class TransformBase : public virtual Transform,
   typedef BuffersBase<InElement> InBuffers;
   typedef BuffersBase<OutElement> OutBuffers;
 
-  virtual BuffersCountChange OnInputFormatChanged() {
-    return BuffersCountChange::Identity;
+  virtual size_t OnInputFormatChanged(size_t buffersCount) {
+    return buffersCount;
   }
 
-  virtual BuffersCountChange OnOutputFormatChanged() {
-    return BuffersCountChange::Identity;
+  virtual size_t OnOutputFormatChanged(size_t buffersCount) {
+    return buffersCount;
   }
 
   virtual void Do(const InBuffers& in, OutBuffers* out)
@@ -171,18 +171,18 @@ template <typename F, bool SupportsInversion = false>
 class UniformFormatTransform
     : public virtual TransformBase<F, F, SupportsInversion> {
  protected:
-  virtual BuffersCountChange OnInputFormatChanged() override final {
+  virtual size_t OnInputFormatChanged(size_t buffersCount) override final {
     this->outputFormat_ = std::make_shared<F>(*this->inputFormat_);
-    return OnFormatChanged();
+    return OnFormatChanged(buffersCount);
   }
 
-  virtual BuffersCountChange OnOutputFormatChanged() override final {
+  virtual size_t OnOutputFormatChanged(size_t buffersCount) override final {
     this->inputFormat_ = std::make_shared<F>(*this->outputFormat_);
-    return OnFormatChanged();
+    return OnFormatChanged(buffersCount);
   }
 
-  virtual BuffersCountChange OnFormatChanged() {
-    return BuffersCountChange::Identity;
+  virtual size_t OnFormatChanged(size_t buffersCount) {
+    return buffersCount;
   }
 };
 

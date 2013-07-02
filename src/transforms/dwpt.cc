@@ -47,10 +47,10 @@ DWPT::DWPT()
   });
 }
 
-BuffersCountChange DWPT::OnFormatChanged() {
+size_t DWPT::OnFormatChanged(size_t buffersCount) {
   WaveletFilterBank::ValidateLength(treeFingerprint_,
                                     inputFormat_->Size());
-  return BuffersCountChange::Identity;
+  return buffersCount;
 }
 
 void DWPT::Initialize() const noexcept {

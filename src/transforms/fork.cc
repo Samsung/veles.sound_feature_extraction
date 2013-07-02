@@ -29,8 +29,8 @@ Fork::Fork() : factor_(kDefaultFactor) {
   });
 }
 
-BuffersCountChange Fork::OnFormatChanged() {
-  return BuffersCountChange(factor_, 1);
+size_t Fork::OnFormatChanged(size_t buffersCount) {
+  return factor_ * buffersCount;
 }
 
 void Fork::Do(

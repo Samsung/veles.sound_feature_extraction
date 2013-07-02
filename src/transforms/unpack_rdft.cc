@@ -15,13 +15,13 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-BuffersCountChange UnpackRDFT::OnFormatChanged() {
+size_t UnpackRDFT::OnFormatChanged(size_t buffersCount) {
   if (inputFormat_->Size() % 2 == 1) {
     outputFormat_->SetSize((inputFormat_->Size() - 1) * 2);
   } else {
     outputFormat_->SetSize((inputFormat_->Size() - 2) * 2);
   }
-  return BuffersCountChange::Identity;
+  return buffersCount;
 }
 
 void UnpackRDFT::Initialize() const noexcept {

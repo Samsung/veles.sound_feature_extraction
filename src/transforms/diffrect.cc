@@ -21,9 +21,9 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-BuffersCountChange Diffrect::OnFormatChanged() {
+size_t Diffrect::OnFormatChanged(size_t buffersCount) {
   outputFormat_->SetSize(inputFormat_->Size() - 1);
-  return BuffersCountChange::Identity;
+  return buffersCount;
 }
 
 void Diffrect::Do(const float* in, float* out) const noexcept {

@@ -14,6 +14,7 @@
 #define TESTS_TRANSFORMS_TRANSFORM_TEST_H_
 
 #include <gtest/gtest.h>
+#include <memory>
 
 template <class T>
 class TransformTest
@@ -25,7 +26,8 @@ class TransformTest
 
   template <typename... Args>
   void SetUpTransform(size_t buffersCount, Args... args) {
-    this->UpdateInputFormat(std::make_shared<typename T::InFormat>(args...));
+    this->SetInputFormat(std::make_shared<typename T::InFormat>(args...),
+                         buffersCount);
     Input = std::make_shared<typename T::InBuffers>(
         this->inputFormat_, buffersCount);
     RecreateOutputBuffers();
@@ -33,10 +35,9 @@ class TransformTest
   }
 
   void RecreateOutputBuffers() {
-    this->UpdateInputFormat(this->inputFormat_);
+    size_t count = this->SetInputFormat(this->inputFormat_, Input->Count());
     Output = std::static_pointer_cast<typename T::OutBuffers>(
-        this->CreateOutputBuffers(
-            this->CalculateBuffersCountChange()(Input->Count())));
+        this->CreateOutputBuffers(count));
   }
 };
 

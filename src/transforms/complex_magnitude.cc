@@ -21,13 +21,13 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-BuffersCountChange ComplexMagnitude::OnFormatChanged() {
+size_t ComplexMagnitude::OnFormatChanged(size_t buffersCount) {
   if (inputFormat_->Size() % 2 == 1) {
     WRN("Input buffer size is odd (%zu), truncated.\n",
         inputFormat_->Size());
   }
   outputFormat_->SetSize(inputFormat_->Size() / 2);
-  return BuffersCountChange::Identity;
+  return buffersCount;
 }
 
 void ComplexMagnitude::Do(const float* in,

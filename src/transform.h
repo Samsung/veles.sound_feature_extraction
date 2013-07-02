@@ -20,26 +20,6 @@
 
 namespace SoundFeatureExtraction {
 
-class BuffersCountChange {
- public:
-  BuffersCountChange() noexcept;
-
-  BuffersCountChange(int constant) noexcept;
-
-  BuffersCountChange(int num, int den) noexcept;
-
-  BuffersCountChange(const std::function<size_t(size_t)>& calc) noexcept;
-
-  bool operator==(const BuffersCountChange& other) const noexcept;
-
-  size_t operator()(size_t count) const noexcept;
-
-  static const BuffersCountChange Identity;
-
- private:
-  std::function<size_t(size_t)> calc_;
-};
-
 /// @brief Transform abstract class.
 class Transform : public virtual Parameterizable {
  public:
@@ -54,6 +34,9 @@ class Transform : public virtual Parameterizable {
 
   virtual const std::shared_ptr<BufferFormat> InputFormat() const noexcept = 0;
 
+  virtual size_t SetInputFormat(const std::shared_ptr<BufferFormat>& format,
+                                size_t buffersCount) = 0;
+
   virtual const std::shared_ptr<BufferFormat> OutputFormat()
       const noexcept = 0;
 
@@ -67,10 +50,6 @@ class Transform : public virtual Parameterizable {
 
   /// @defgroup NonVirt Non-virtual methods
   /// @{
-  void UpdateInputFormat(const std::shared_ptr<BufferFormat>& format);
-
-  BuffersCountChange CalculateBuffersCountChange() const noexcept;
-
   std::shared_ptr<Transform> Clone() const noexcept;
 
   std::string SafeName() const noexcept;
@@ -79,13 +58,6 @@ class Transform : public virtual Parameterizable {
 
   bool operator==(const Transform& other) const noexcept;
   /// @}
-
-protected:
-  virtual BuffersCountChange SetInputFormat(
-      const std::shared_ptr<BufferFormat>& format) = 0;
-
- private:
-  BuffersCountChange buffersCountChange_;
 };
 
 }  // namespace SoundFeatureExtraction

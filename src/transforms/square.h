@@ -28,7 +28,7 @@ class SquareRaw
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual BuffersCountChange OnInputFormatChanged() override;
+  virtual size_t OnInputFormatChanged(size_t buffersCount) override;
 
   virtual void Do(const int16_t* in,
                   int32_t* out) const noexcept override;

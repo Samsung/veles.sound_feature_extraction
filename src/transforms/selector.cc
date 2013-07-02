@@ -42,9 +42,9 @@ Selector::Selector()
   });
 }
 
-BuffersCountChange Selector::OnFormatChanged() {
+size_t Selector::OnFormatChanged(size_t buffersCount) {
   outputFormat_->SetSize(std::min(length_, inputFormat_->Size()));
-  return BuffersCountChange::Identity;
+  return buffersCount;
 }
 
 void Selector::Do(const float* in,

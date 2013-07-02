@@ -72,17 +72,14 @@ Stats::Stats()
   });
 }
 
-BuffersCountChange Stats::OnInputFormatChanged() {
+size_t Stats::OnInputFormatChanged(size_t buffersCount) {
   if (interval_ != 0) {
-    auto interval = interval_;
-    return BuffersCountChange([=](size_t inSize) {
-      if (inSize % interval == 0) {
-        return inSize / interval;
+    if (buffersCount % interval_ == 0) {
+        return buffersCount / interval_;
       }
-      return inSize / interval + 1;
-    });
+      return buffersCount / interval_ + 1;
   } else {
-    return BuffersCountChange(1);
+    return 1;
   }
 }
 
@@ -98,9 +95,9 @@ void Stats::Do(const BuffersBase<float>& in,
       CalculateRawMoments(in, i, interval_, rawMoments);
       Calculate(rawMoments, i / interval_, out);
     }
-    if (i % interval_ != 0) {
+    if (in.Count() % interval_ != 0) {
       CalculateRawMoments(in, i, in.Count() - i, rawMoments);
-      Calculate(rawMoments, i / interval_ + 1, out);
+      Calculate(rawMoments, i / interval_, out);
     }
   }
 }

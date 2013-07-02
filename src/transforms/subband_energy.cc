@@ -40,11 +40,11 @@ SubbandEnergy::SubbandEnergy()
   });
 }
 
-BuffersCountChange SubbandEnergy::OnFormatChanged() {
+size_t SubbandEnergy::OnFormatChanged(size_t buffersCount) {
   WaveletFilterBank::ValidateLength(treeFingerprint_,
                                     inputFormat_->Size());
   outputFormat_->SetSize(treeFingerprint_.size());
-  return BuffersCountChange::Identity;
+  return buffersCount;
 }
 
 void SubbandEnergy::Initialize() const noexcept {

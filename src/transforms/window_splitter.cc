@@ -52,13 +52,26 @@ const noexcept {
 void WindowSplitterF::Do(const BuffersBase<float*>& in,
                          BuffersBase<float*> *out)
 const noexcept {
+#ifdef __AVX__
+  float intbuf[outputFormat_->Size()] __attribute__ ((aligned (32)));  // NOLINT(*)
+#endif
   for (size_t i = 0; i < in.Count(); i++) {
     for (int j = 0; j < windowsCount_; j++) {
       auto input = in[i] + j * step_;
       auto output = (*out)[i * windowsCount_ + j];
       if (type_ != WINDOW_TYPE_RECTANGULAR) {
+#ifdef __AVX__
+        if (align_complement_f32(input) != 0) {
+          memcpy(intbuf, input, outputFormat_->Size() * sizeof(float));
+          Window::ApplyWindow(UseSimd(), window_.get(), outputFormat_->Size(),
+                              intbuf, output);
+        } else {
+#endif
         Window::ApplyWindow(UseSimd(), window_.get(), outputFormat_->Size(),
                             input, output);
+#ifdef __AVX__
+        }
+#endif
       } else {
         memcpy(output, input, outputFormat_->Size() * sizeof(input[0]));
       }

@@ -31,7 +31,8 @@ class WindowSplitterTemplate
         step_(kDefaultStep),
         type_(WINDOW_TYPE_HAMMING),
         windowsCount_(0),
-        inverseCount_(kDefaultInverseCount) {
+        inverseCount_(kDefaultInverseCount),
+        interleaved_(true) {
     this->RegisterSetter("length", [&](const std::string& value) {
       int pv = this->template Parse<int>("length", value);
       if (pv < Formats::RawFormatF::MIN_SAMPLES ||
@@ -65,6 +66,10 @@ class WindowSplitterTemplate
       inverseCount_ = pv;
       return true;
     });
+    this->RegisterSetter("inverse_interleaved", [&](const std::string& value) {
+      interleaved_ = this->template Parse<bool>("inverse_interleaved", value);
+      return true;
+    });
   }
 
   TRANSFORM_INTRO("Window", "Splits the raw input signal into numerous "
@@ -72,7 +77,8 @@ class WindowSplitterTemplate
                             "\"length\" ms of type \"type\".")
 
   TRANSFORM_PARAMETERS(
-      TP("length", "Window size in samples.", std::to_string(kDefaultLength))
+      TP("length", "Window size in samples. Ignored in inverse mode.",
+         std::to_string(kDefaultLength))
       TP("step", "Distance between sequential windows in samples.",
          std::to_string(kDefaultStep))
       TP("type", "Type of the window. E.g. \"rectangular\" "
@@ -80,6 +86,8 @@ class WindowSplitterTemplate
          "hamming")
       TP("inverse_count", "The resulting count of buffers in inverse mode.",
          std::to_string(kDefaultInverseCount))
+      TP("inverse_interleaved", "Treat windows as interleaved in inverse mode.",
+         std::to_string(kDefaultInterleaved))
   )
 
   virtual void Initialize() const noexcept {
@@ -99,46 +107,45 @@ class WindowSplitterTemplate
   }
 
  protected:
-  virtual BuffersCountChange OnFormatChanged() override final {
+  virtual size_t OnFormatChanged(size_t buffersCount) override final {
     if (!this->IsInverse()) {
       this->outputFormat_->SetSize(length_);
+      int realSize = this->inputFormat_->Size() - this->outputFormat_->Size();
+      windowsCount_ = realSize / step_ + 1;
+      return windowsCount_ * buffersCount;
     } else {
-      this->inputFormat_->SetSize(this->outputFormat_->Size() / inverseCount_);
-    }
-    int realSize = this->inputFormat_->Size() - this->outputFormat_->Size();
-    windowsCount_ = realSize / step_ + 1;
-    if (!this->IsInverse()) {
-      return BuffersCountChange(windowsCount_, 1);
-    } else {
-      return BuffersCountChange(inverseCount_);
+      windowsCount_ = buffersCount / inverseCount_;
+      this->outputFormat_->SetSize(this->inputFormat_->Size() +
+          (windowsCount_ - 1) * step_);
+      return inverseCount_;
     }
   }
 
   virtual void DoInverse(const BuffersBase<T*>& in, BuffersBase<T*>* out)
       const noexcept override {
-    int windowLength = this->outputFormat_->Size();
+    int windowLength = this->inputFormat_->Size();
     int offset = (windowLength - step_) / 2;
-    int rawIndex = 0;
-    size_t skippedEndingSize = this->inputFormat_->Size() -
-        step_ * (windowsCount_ - 1) - this->outputFormat_->Size();
     for (size_t i = 0; i < in.Count(); i++) {
-      int windowIndex = i % windowsCount_;
+      int outIndex, windowIndex;
+      if (interleaved_) {
+        outIndex = i % inverseCount_;
+        windowIndex = (i / inverseCount_) % windowsCount_;
+      } else {
+        outIndex = i / windowsCount_;
+        windowIndex = i % windowsCount_;
+      }
       if (windowIndex == 0) {
-        memcpy((*out)[rawIndex], in[i],
+        memcpy((*out)[outIndex], in[i],
                (windowLength - offset) * sizeof(T));
       } else if (windowIndex < windowsCount_ - 1) {
-        memcpy((*out)[rawIndex] +
+        memcpy((*out)[outIndex] +
                    windowLength - offset + step_ * (windowIndex - 1),
                in[i] + offset, step_ * sizeof(T));
       } else {
-        memcpy((*out)[rawIndex] +
+        memcpy((*out)[outIndex] +
                    windowLength - offset + step_ * (windowIndex - 1),
                in[i] + offset,
                (windowLength - offset) * sizeof(T));
-        memset((*out)[rawIndex] +
-                   this->inputFormat_->Size() - skippedEndingSize,
-               0, skippedEndingSize * sizeof(T));
-        rawIndex++;
       }
     }
   }
@@ -149,12 +156,14 @@ class WindowSplitterTemplate
   WindowType type_;
   mutable int windowsCount_;
   int inverseCount_;
+  bool interleaved_;
 
- private:
+ protected:
   static const int kDefaultLength = 512;
   static const int kDefaultStep = 205;
   static const int kMaxWindowSamples = 8096;
   static const int kDefaultInverseCount = 1;
+  static const bool kDefaultInterleaved = true;
 };
 
 class WindowSplitter16 : public WindowSplitterTemplate<int16_t> {

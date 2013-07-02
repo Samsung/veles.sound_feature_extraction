@@ -18,13 +18,13 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-BuffersCountChange RDFT::OnFormatChanged() {
+size_t RDFT::OnFormatChanged(size_t buffersCount) {
   if (!IsInverse()) {
     outputFormat_->SetSize(inputFormat_->Size() + 2);
   } else {
     outputFormat_->SetSize(inputFormat_->Size() - 2);
   }
-  return BuffersCountChange::Identity;
+  return buffersCount;
 }
 
 void RDFT::Do(

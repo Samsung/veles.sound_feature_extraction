@@ -361,7 +361,7 @@ class OmpTransformBase
 
 /// @brief OpenMP aware transform base class with the same input and output
 /// formats.
-/// @note Another diamond problem solving here. We take OnFormatChanged()
+/// @note Another diamond problem solving here. We take OnFormatChanged(size_t buffersCount)
 /// interface simplification from UniformFormatTransform.
 template <typename F, bool SupportsInversion = false>
 class OmpUniformFormatTransform
