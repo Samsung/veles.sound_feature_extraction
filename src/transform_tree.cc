@@ -17,8 +17,7 @@
 #include <iomanip>
 #include <string>
 #include <utility>
-//#include "src/allocators/sliding_blocks_allocator.h"
-#include "src/allocators/worst_allocator.h"
+#include "src/allocators/sliding_blocks_allocator.h"
 #include "src/formats/raw_format.h"
 #include "src/format_converter.h"
 #include "src/transform_registry.h"
@@ -382,8 +381,7 @@ void TransformTree::PrepareForExecution() {
   // Solve the allocation problem
   MemoryAllocation::Node allocationTreeRoot(0, nullptr, root_.get());
   root_->BuildAllocationTree(1, &allocationTreeRoot);
-  //MemoryAllocation::SlidingBlocksAllocator allocator;
-  MemoryAllocation::WorstAllocator allocator;
+  MemoryAllocation::SlidingBlocksAllocator allocator;
   size_t neededMemory = allocator.Solve(&allocationTreeRoot);
 #if DEBUG
   allocationTreeRoot.Dump("/tmp/last_allocation.dot");

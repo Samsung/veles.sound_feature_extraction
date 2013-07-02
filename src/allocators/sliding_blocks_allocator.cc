@@ -11,12 +11,17 @@
  */
 
 #include "src/allocators/sliding_blocks_allocator.h"
+#include "src/allocators/sliding_blocks_impl.h"
 
 namespace SoundFeatureExtraction {
 namespace MemoryAllocation {
 
-size_t  SlidingBlocksAllocator::Solve(Node* root) const noexcept {
+SlidingBlocksAllocator::SlidingBlocksAllocator() noexcept
+    : impl_(new SlidingBlocksImpl()){
+}
 
+size_t  SlidingBlocksAllocator::Solve(Node* root) const noexcept {
+  return impl_->Solve(root);
 }
 
 }  // namespace MemoryAllocation

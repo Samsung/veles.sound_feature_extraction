@@ -13,14 +13,22 @@
 #ifndef SRC_ALLOCATORS_SLIDING_BLOCKS_ALLOCATOR_H_
 #define SRC_ALLOCATORS_SLIDING_BLOCKS_ALLOCATOR_H_
 
+#include <memory>
 #include "src/allocators/buffers_allocator.h"
 
 namespace SoundFeatureExtraction {
 namespace MemoryAllocation {
 
+class SlidingBlocksImpl;
+
 class SlidingBlocksAllocator : public BuffersAllocator {
  public:
+  SlidingBlocksAllocator() noexcept;
+
   virtual size_t Solve(Node* root) const noexcept override;
+
+ private:
+  std::shared_ptr<SlidingBlocksImpl> impl_;
 };
 
 }  // namespace MemoryAllocation
