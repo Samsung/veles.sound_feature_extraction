@@ -24,7 +24,7 @@ class SimdAware {
     return useSimd_;
   }
 
- private:
+ protected:
   static void SetUseSimd(bool value) noexcept {
     useSimd_ = value;
   }
