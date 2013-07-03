@@ -108,6 +108,11 @@ float Mean::Do(bool simd, const float* input, size_t length,
             tmp = mulvec;
           }
         }
+        for (int i = 0; i < 8; i++) {
+          if (ElementAt(tmp, i) == 0) {
+            return 0;
+          }
+        }
         tmp = pow256_ps(tmp, powvec);
         res = _mm256_mul_ps(res, tmp);
         float sctmp = 1.f;

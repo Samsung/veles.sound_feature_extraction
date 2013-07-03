@@ -14,6 +14,7 @@
 #define SRC_BUFFERS_BASE_H_
 
 #include <assert.h>
+#include <limits>
 #include "src/config.h"
 #include "src/buffer_format.h"
 #include "src/buffers.h"
@@ -92,8 +93,8 @@ namespace Validation {
   template <>
   struct Validator<float> {
     static bool Validate(float value) noexcept {
-      return value == value && value != __builtin_inff() &&
-        value != -__builtin_inff();
+      return value == value && value != std::numeric_limits<float>::infinity() &&
+        value != -std::numeric_limits<float>::infinity();
     }
   };
 }  // namespace Validation
