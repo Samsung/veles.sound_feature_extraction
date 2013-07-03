@@ -23,12 +23,12 @@ void SFM::Do(const FixedArray<MEAN_TYPE_COUNT>& in,
   float gMean = in[MEAN_TYPE_GEOMETRIC];
   float aMean = in[MEAN_TYPE_ARITHMETIC];
   if (gMean == 0) {
-    ERR("Buffer has geometric mean equal to 0.");
+    WRN("Buffer has geometric mean equal to 0.");
     *out = 0;
     return;
   }
   if (aMean == 0) {
-    ERR("Buffer has arithmetic mean equal to 0.");
+    WRN("Buffer has arithmetic mean equal to 0.");
     *out = 0;
     return;
   }

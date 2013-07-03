@@ -40,7 +40,7 @@ void Hps::Do(const float* in,
     auto result = (fundamental_frequency * sampling_rate) /
         (2 * (length - 1));
 #ifdef DEBUG
-    if (result <= 0 || result >= sampling_rate / 2) {
+    if (result < 0 || result >= sampling_rate / 2) {
       ERR("Result is out of the allowed range (%f). "
           "Dump of the input data of length %i:",
           result, length);
@@ -50,8 +50,9 @@ void Hps::Do(const float* in,
       }
       ERR("%s", dump.c_str());
     }
+#else
+    assert(result >= 0 && result < sampling_rate / 2);
 #endif
-    assert(result > 0 && result < sampling_rate / 2);
     *out = result;
 }
 

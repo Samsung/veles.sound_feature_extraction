@@ -56,7 +56,10 @@ float Centroid::Do(bool simd, const float* input, size_t length)
       lowerSum += val;
       upperSum += i * val;
     }
-    return upperSum / lowerSum;
+    if (lowerSum != 0) {
+      return upperSum / lowerSum;
+    }
+    return 0;
   } else {
 #elif defined(__ARM_NEON__)
     float32x4_t upperSums = vdupq_n_f32(0.f), lowerSums = vdupq_n_f32(0.f);
@@ -87,7 +90,10 @@ float Centroid::Do(bool simd, const float* input, size_t length)
       lowerSum += val;
       upperSum += i * val;
     }
-    return upperSum / lowerSum;
+    if (lowerSum != 0) {
+      return upperSum / lowerSum;
+    }
+    return 0;
   } else {
 #else
   } {
@@ -98,7 +104,10 @@ float Centroid::Do(bool simd, const float* input, size_t length)
       lowerSum += val;
       upperSum += i * val;
     }
-    return upperSum / lowerSum;
+    if (lowerSum != 0) {
+      return upperSum / lowerSum;
+    }
+    return 0;
   }
 }
 
