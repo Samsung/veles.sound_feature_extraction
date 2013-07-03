@@ -106,6 +106,10 @@ class Library(object):
                     [c_int]
                 self._handle.set_omp_transforms_max_threads_num.restype = \
                     None
+                self._handle.get_use_simd.argtypes = None
+                self._handle.get_use_simd.restype = c_int
+                self._handle.set_use_simd.argtypes = [c_int]
+                self._handle.set_use_simd.restype = None
             except:
                 raise LoadingLibraryFailedException()
             logging.debug("Finished loading functions")
