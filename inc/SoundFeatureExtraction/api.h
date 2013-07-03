@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef INC_SPFEXTR_API_H_
-#define INC_SPFEXTR_API_H_
+#ifndef INC_SOUNDFEATUREEXTRACTION_API_H_
+#define INC_SOUNDFEATUREEXTRACTION_API_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -25,8 +25,12 @@ extern "C" {
 /* malloc() function attribute */
 #define MALLOC __attribute__ ((__malloc__))
 
+#ifndef SOUNDFEATUREEXTRACTION_API_IMPLEMENTATION
 /* Mark pointer parameters which must not be NULL */
 #define NOTNULL(...) __attribute__ ((__nonnull__ (__VA_ARGS__)))
+#else
+#define NOTNULL(...)
+#endif
 
 /* warn about unused result function attribute */
 #define WARN_UNUSED_RESULT __attribute__ ((__warn_unused_result__))
@@ -98,7 +102,7 @@ void report_extraction_graph(const FeaturesConfiguration *fc,
 void destroy_features_configuration(FeaturesConfiguration *fc) NOTNULL(1);
 
 void free_results(int featuresCount, char **featureNames,
-                  void **results, int *resultLengths) NOTNULL(2, 3, 4);
+                  void **results, int *resultLengths);
 
 int get_omp_transforms_max_threads_num();
 
@@ -116,4 +120,4 @@ void set_use_simd(int value);
 }
 #endif
 
-#endif  // INC_SPFEXTR_API_H_
+#endif  // INC_SOUNDFEATUREEXTRACTION_API_H_

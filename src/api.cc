@@ -10,7 +10,9 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
+#define SOUNDFEATUREEXTRACTION_API_IMPLEMENTATION
 #include <SoundFeatureExtraction/api.h>
+#undef NOTNULL
 #include <assert.h>
 #include <stddef.h>
 #include <fftf/api.h>
