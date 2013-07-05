@@ -30,7 +30,9 @@ noinst_PROGRAMS = $(TESTS)
 
 .PHONY: tests
 
-REALLOG=$(top_builddir)/$(TESTLOG)
+export TESTLOG ?= tests.log
+
+REALLOG = $(top_builddir)/$(TESTLOG)
 
 DEFAULT_TIMEOUT=10
 
