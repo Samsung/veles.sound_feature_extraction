@@ -54,6 +54,7 @@ AC_ARG_WITH([built-in-simd],
     AS_HELP_STRING([--with-built-in-simd], [use bundled libSimd]), [
     SIMD_LIBS="\$(top_builddir)/simd/src/libSimd.la"
     SIMD_DIR=simd
+    mkdir -p simd
     echo "../fftf" > simd/built-in-fftf
     AC_CONFIG_SUBDIRS([simd])
     AS_IF([test "x$with_built_in_fftf" == xyes], [
