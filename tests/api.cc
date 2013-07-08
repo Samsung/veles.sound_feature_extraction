@@ -156,7 +156,9 @@ TEST(API, report_extraction_time) {
   for (int i = 0; i < length; i++) {
     ASSERT_NE(nullptr, transformNames[i]);
     ASSERT_GT(values[i], 0.f);
-    ASSERT_LT(values[i], 1.0f);
+    if (strcmp(transformNames[i], "All")) {
+      ASSERT_LT(values[i], 1.f);
+    }
   }
   destroy_extraction_time_report(transformNames, values, length);
   destroy_features_configuration(config);
