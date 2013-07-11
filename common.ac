@@ -207,6 +207,9 @@ CPPFLAGS="$CPPFLAGS -I\$(top_srcdir) -I\$(top_srcdir)/inc -I\$(top_builddir)"
 CFLAGS="$CFLAGS $DEBUG_FLAGS"
 CXXFLAGS="$CXXFLAGS $DEBUG_FLAGS"
 
+# Use fast math
+CPPFLAGS="$CPPFLAGS -ffast-math"
+
 # Use OpenMP
 CPPFLAGS="$CPPFLAGS -fopenmp"
 
