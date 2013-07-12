@@ -25,7 +25,7 @@
 
 TEST(Energy, calculate_energy) {
   const int length = 510;
-  float array[length] __attribute__((aligned(32)));
+  float array[length] __attribute__((aligned(64)));
   for (int i = 0; i < length; i++) {
     array[i] = i + 1;
   }
