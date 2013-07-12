@@ -48,7 +48,7 @@ class Mean
       const noexcept override;
 
   static float Do(bool simd, const float* input, size_t length,
-                  MeanTypes type) noexcept;
+                  MeanTypes type) noexcept __attribute__((optimize(2)));
 
 private:
   static const std::set<MeanTypes> kDefaultMeanTypes;

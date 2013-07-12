@@ -100,7 +100,7 @@ float Mean::Do(bool simd, const float* input, size_t length,
           // Using 2 hadd and 2 comparisons
           cmpvec = _mm256_hadd_ps(cmpvec, cmpvec);
           cmpvec = _mm256_hadd_ps(cmpvec, cmpvec);
-          if (ElementAt(cmpvec, 0) != 0 || ElementAt(cmpvec, 1) != 0) {
+          if (ElementAt(cmpvec, 0) != 0 || ElementAt(cmpvec, 4) != 0) {
             tmp = pow256_ps(tmp, powvec);
             res = _mm256_mul_ps(res, tmp);
             tmp = vec;
@@ -116,7 +116,7 @@ float Mean::Do(bool simd, const float* input, size_t length,
         tmp = pow256_ps(tmp, powvec);
         res = _mm256_mul_ps(res, tmp);
         float sctmp = 1.f;
-        for (int j = ((ilength >> 3) << 3); j < ilength; j++) {
+        for (int j = (ilength & ~0x7); j < ilength; j++) {
           sctmp *= input[j];
         }
         float scres = powf(sctmp, power);
@@ -146,7 +146,7 @@ float Mean::Do(bool simd, const float* input, size_t length,
         tmp = pow_ps(tmp, powvec);
         res = vmulq_f32(res, tmp);
         float sctmp = 1.f;
-        for (int j = ((ilength >> 2) << 2); j < ilength; j += 2) {
+        for (int j = (ilength & ~0x3); j < ilength; j += 2) {
           sctmp *= input[j];
         }
         float scres = powf(sctmp, power);

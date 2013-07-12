@@ -39,9 +39,10 @@ class MeanTest : public TransformTest<Mean> {
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(MeanTest, Do) {
+  SetUseSimd(false);
   Do((*Input)[0], &(*Output)[0]);
 
-  float amean =0.f;
+  float amean = 0.f;
   float gmean = 1.f, tmp = 1.f;
   for (int j = 0; j < Size; j++) {
     float val = (*Input)[0][j];
@@ -68,6 +69,36 @@ TEST_F(MeanTest, Do) {
                 SoundFeatureExtraction::Transforms::MEAN_TYPE_GEOMETRIC));
 }
 
+TEST_F(MeanTest, DoSimd) {
+  SetUseSimd(true);
+  Do((*Input)[0], &(*Output)[0]);
+
+  float amean = 0.f;
+  float gmean = 1.f, tmp = 1.f;
+  for (int j = 0; j < Size; j++) {
+    float val = (*Input)[0][j];
+    amean += val;
+    float multmp = tmp * val;
+    if (multmp == std::numeric_limits<float>::infinity()) {
+      gmean *= powf(tmp, 1.f / Size);
+      tmp = val;
+    } else {
+      tmp = multmp;
+    }
+  }
+  amean /= Size;
+  gmean *= powf(tmp, 1.f / Size);
+  ASSERT_EQF(amean, ((*Output)[0])
+      [SoundFeatureExtraction::Transforms::MEAN_TYPE_ARITHMETIC]);
+  ASSERT_EQF(gmean, ((*Output)[0])
+      [SoundFeatureExtraction::Transforms::MEAN_TYPE_GEOMETRIC]);
+  ASSERT_EQF(amean,
+             Do(false, (*Input)[0], Size,
+                SoundFeatureExtraction::Transforms::MEAN_TYPE_ARITHMETIC));
+  ASSERT_EQF(gmean,
+             Do(false, (*Input)[0], Size,
+                SoundFeatureExtraction::Transforms::MEAN_TYPE_GEOMETRIC));
+}
 
 TEST_F(MeanTest, DoCase1) {
   float data[] {
