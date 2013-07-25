@@ -99,7 +99,7 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures) {
       throw ParseFeaturesException(index);
     }
   }
-  return std::move(ret);
+  return ret;
 }
 
 }  // namespace Features

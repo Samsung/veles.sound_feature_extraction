@@ -25,9 +25,6 @@ class Transform : public virtual Parameterizable {
  public:
   virtual ~Transform() {
  }
-
-  /// @defgroup PureVirt Pure virtual interface methods
-  /// @{
   virtual const std::string& Name() const noexcept = 0;
 
   virtual const std::string& Description() const noexcept = 0;
@@ -46,10 +43,7 @@ class Transform : public virtual Parameterizable {
 
   virtual std::shared_ptr<Buffers> CreateOutputBuffers(
       size_t count, void* reusedMemory = nullptr) const noexcept = 0;
-  /// @}
 
-  /// @defgroup NonVirt Non-virtual methods
-  /// @{
   std::shared_ptr<Transform> Clone() const noexcept;
 
   std::string SafeName() const noexcept;
@@ -57,7 +51,6 @@ class Transform : public virtual Parameterizable {
   std::string HtmlEscapedName() const noexcept;
 
   bool operator==(const Transform& other) const noexcept;
-  /// @}
 };
 
 }  // namespace SoundFeatureExtraction

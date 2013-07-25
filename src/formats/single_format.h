@@ -62,7 +62,7 @@ namespace std {
     }
     res = res.substr(0, res.size() - 2);
     res += "]";
-    return std::move(res);
+    return res;
   }
 
   template<size_t index, typename... Args>
@@ -83,7 +83,7 @@ namespace std {
       to_string<0>(0, __val, &res);
       res = res.substr(0, res.size() - 2);
       res += "]";
-      return std::move(res);
+      return res;
     }
     return "[]";
   }

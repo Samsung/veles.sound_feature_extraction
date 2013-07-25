@@ -115,7 +115,7 @@ class RawFormat
       }
       ret += "\n";
     }
-    return std::move(ret);
+    return ret;
   }
 
   virtual size_t UnalignedSizeInBytes() const noexcept override {

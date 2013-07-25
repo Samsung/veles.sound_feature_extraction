@@ -56,6 +56,7 @@ typedef enum {
 
 typedef struct FeaturesConfiguration FeaturesConfiguration;
 
+/// @brief Allocates and fills the array of transform names.
 void query_transforms_list(char ***names, int *listSize) NOTNULL(1, 2);
 
 void destroy_transforms_list(char **names, int listSize) NOTNULL(1);

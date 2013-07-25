@@ -129,7 +129,7 @@ std::vector<int> WaveletFilterBank::ParseDescription(const std::string& str) {
     throw WaveletTreeDescriptionParseException(str);
   }
   ValidateDescription(res);
-  return std::move(res);
+  return res;
 }
 
 std::string WaveletFilterBank::DescriptionToString(
@@ -141,7 +141,7 @@ std::string WaveletFilterBank::DescriptionToString(
   if (str != "") {
     str.resize(str.size() - 1);
   }
-  return std::move(str);
+  return str;
 }
 
 void WaveletFilterBank::ValidateLength(

@@ -21,7 +21,7 @@ std::string demangle(const char* name) {
   if (status == 0) {
     std::string sret(dres);
     free(dres);
-    return std::move(sret);
+    return sret;
   }
   return std::string(name);
 }

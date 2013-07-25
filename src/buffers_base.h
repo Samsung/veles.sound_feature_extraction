@@ -65,7 +65,7 @@ class BufferFormatBase : public BufferFormat {
     ret += std::to_string(buffers.Count());
     ret += "\n";
     ret += Dump(reinterpret_cast<const BuffersBase<T>&>(buffers));
-    return std::move(ret);
+    return ret;
   }
 
  protected:

@@ -436,7 +436,7 @@ TransformTree::Execute(const int16_t* in) {
   for (auto& feature : features_) {
     results[feature.first] = feature.second->BoundBuffers;
   }
-  return std::move(results);
+  return results;
 }
 
 std::unordered_map<std::string, float>
@@ -456,7 +456,7 @@ TransformTree::ExecutionTimeReport() const noexcept {
           cit.first, ConvertDuration(allTime)));
     }
   }
-  return std::move(ret);
+  return ret;
 }
 
 void TransformTree::Dump(const std::string& dotFileName) const {

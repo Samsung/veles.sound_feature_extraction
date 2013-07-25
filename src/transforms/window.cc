@@ -53,7 +53,7 @@ Window::WindowContentsPtr Window::InitializeWindow(size_t length,
     windowContents[i] = WindowElement(type, length, i);
   }
 
-  return std::move(window);
+  return window;
 }
 
 void Window::ApplyWindow(bool simd, const float* window, int length,

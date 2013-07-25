@@ -34,7 +34,7 @@ std::unordered_map<std::string, std::string> Parameterizable::Parse(
     parameters.insert(std::make_pair(pname, pvalue));
     index += s.size() + 1;
   }
-  return std::move(parameters);
+  return parameters;
 }
 
 }  // namespace SoundFeatureExtraction
