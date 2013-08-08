@@ -80,10 +80,7 @@ class RegisterTransform : InverseParameterAware {
     T t;
     // Insert the constructor functor
     map[t.Name()].insert(std::make_pair(
-        t.InputFormat()->Id(), []() {
-      auto ptr = std::make_shared<T>();
-      return ptr;
-    }));
+        t.InputFormat()->Id(), std::make_shared<T>));
     // Insert the inverse constructor functor, if needed
     if (HasInverseTransform(t)) {
       map[std::string("I") + t.Name()].insert(std::make_pair(
