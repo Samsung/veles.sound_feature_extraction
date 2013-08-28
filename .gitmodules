@@ -4,4 +4,5 @@
 	url = ssh://alserver.rnd.samsung.ru:29418/FFTF.git
 [submodule "simd"]
 	path = simd
+	branch = master
 	url = ssh://alserver.rnd.samsung.ru:29418/Simd.git
