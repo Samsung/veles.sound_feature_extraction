@@ -11,7 +11,10 @@
  */
 
 #include "src/transforms/stats.h"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <boost/regex.hpp>
+#pragma GCC diagnostic pop
 #include <math.h>
 
 namespace SoundFeatureExtraction {

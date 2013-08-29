@@ -42,9 +42,9 @@ class Buffers;
 
 class BufferFormat {
  public:
-  explicit BufferFormat(const std::string& id) noexcept;
-
-  BufferFormat(const std::string& id, int samplingRate) noexcept;
+  explicit BufferFormat(const std::string& id);
+  BufferFormat(const std::string& id, int samplingRate);
+  virtual ~BufferFormat() = default;
 
   bool operator==(const BufferFormat& other) const noexcept;
   bool operator!=(const BufferFormat& other) const noexcept;

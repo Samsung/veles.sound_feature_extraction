@@ -136,7 +136,7 @@ TEST_F(BuffersAllocatorTest, ValidateDuplicateItem) {
 }
 
 TEST_F(BuffersAllocatorTest, ValidateIncomplete) {
-  ASSERT_EQ(10, NodesCount(*Root));
+  ASSERT_EQ(10U, NodesCount(*Root));
   auto backup = Root->Children[1].Next;
   Root->Children[1].Children[1].Next = nullptr;
   ASSERT_FALSE(Validate(*Root));

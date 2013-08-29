@@ -11,7 +11,10 @@
  */
 
 #include "src/parameterizable.h"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <boost/algorithm/string/trim.hpp>
+#pragma GCC diagnostic pop
 #include <sstream>
 
 namespace SoundFeatureExtraction {

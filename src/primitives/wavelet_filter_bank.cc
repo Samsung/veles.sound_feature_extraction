@@ -17,7 +17,10 @@
 #include <list>
 #include <memory>
 #include <string>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <boost/regex.hpp>  // NOLINT(build/include_order)
+#pragma GCC diagnostic pop
 #include <simd/wavelet.h>
 
 namespace SoundFeatureExtraction {

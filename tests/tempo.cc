@@ -56,7 +56,7 @@ TEST(Features, Tempo) {
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   delete[] buffers;
-  ASSERT_EQ(1, res.size());
+  ASSERT_EQ(1U, res.size());
   res["Tempo"]->Validate();
   tt.Dump("/tmp/tempo.dot");
   auto report = tt.ExecutionTimeReport();

@@ -11,7 +11,10 @@
  */
 
 #include "src/transforms/frequency_bands.h"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <boost/regex.hpp>
+#pragma GCC diagnostic pop
 #include <simd/memory.h>
 #include "src/transforms/fork.h"
 
@@ -83,7 +86,7 @@ void FrequencyBands::Initialize() const noexcept {
       bands_.push_back((freq * 2 * inputFormat_->Size()) /
                       inputFormat_->SamplingRate());
     }
-    if ((size_t)bands_.back() < inputFormat_->Size()) {
+    if (static_cast<size_t>(bands_.back()) < inputFormat_->Size()) {
       bands_.push_back(inputFormat_->Size());
     }
   }
@@ -100,12 +103,12 @@ void FrequencyBands::Do(
   }
 
   for (size_t i = 0; i < in.Count(); i += bands_.size()) {
-    for (int j = 0; j < (int)bands_.size(); j++) {
+    for (int j = 0; j < static_cast<int>(bands_.size()); j++) {
       if (j > 0) {
         memsetf((*out)[i + j],
                 bands_[j - 1], 0.f);
       }
-      if (j < (int)bands_.size() - 1) {
+      if (j < static_cast<int>(bands_.size() - 1)) {
         memsetf((*out)[i + j] + bands_[j],
                 inputFormat_->Size() - bands_[j], 0.f);
       }

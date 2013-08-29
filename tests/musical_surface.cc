@@ -58,7 +58,7 @@ TEST(Features, MusicalSurface) {
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   delete[] buffers;
-  ASSERT_EQ(5, res.size());
+  ASSERT_EQ(5U, res.size());
   res["Energy"]->Validate();
   res["Centroid"]->Validate();
   res["Rolloff"]->Validate();

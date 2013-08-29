@@ -18,13 +18,13 @@ using SoundFeatureExtraction::ParseParametersException;
 
 TEST(Parameters, EmptyParse) {
   auto pp = Parameterizable::Parse("");
-  ASSERT_EQ(0, pp.size());
+  ASSERT_EQ(0U, pp.size());
 }
 
 TEST(Parameters, Parse) {
   auto pp = Parameterizable::Parse(
       "one=56, two = some extra , \t three with spaces= xxx ");
-  ASSERT_EQ(3, pp.size());
+  ASSERT_EQ(3U, pp.size());
   int size = 0;
   for (auto ppr : pp) {
     if (ppr.first == "one") {

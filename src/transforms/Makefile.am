@@ -10,5 +10,3 @@ zero_padding.cc selector.cc hps.cc fork.cc complex_to_real.cc rectify.cc \
 frequency_bands.cc diffrect.cc mean.cc sfm.cc argminmax.cc energy.cc \
 centroid.cc zerocrossings.cc rolloff.cc flux.cc beat.cc autocorrelation.cc \
 delta.cc short_time_msn.cc preemphasis.cc stats.cc window_splitter.cc common.cc
-
-lib_transforms_la_CPPFLAGS =

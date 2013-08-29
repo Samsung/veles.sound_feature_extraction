@@ -33,7 +33,7 @@ TEST(Features, VAD) {
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   delete[] buffers;
-  ASSERT_EQ(3, res.size());
+  ASSERT_EQ(3U, res.size());
   res["SFM"]->Validate();
   res["Energy"]->Validate();
   res["DominantFrequency"]->Validate();

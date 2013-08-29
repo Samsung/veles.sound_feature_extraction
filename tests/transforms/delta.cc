@@ -34,7 +34,7 @@ class DeltaTest : public TransformTest<Delta> {
 };
 
 TEST_F(DeltaTest, Do) {
-  ASSERT_EQ(2, (*Output).Count());
+  ASSERT_EQ(2U, (*Output).Count());
   Do((*Input), &(*Output));
   for (int i = 0; i < Size; i++) {
     ASSERT_NEAR((*Output)[0][i], 1, 0.00001f);

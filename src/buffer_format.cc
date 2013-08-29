@@ -15,14 +15,13 @@
 
 namespace SoundFeatureExtraction {
 
-BufferFormat::BufferFormat(const std::string& id,
-                           int samplingRate) noexcept
+BufferFormat::BufferFormat(const std::string& id, int samplingRate)
     : id_(id),
       samplingRate_(samplingRate) {
   ValidateSamplingRate(samplingRate_);
 }
 
-BufferFormat::BufferFormat(const std::string& id) noexcept
+BufferFormat::BufferFormat(const std::string& id)
     : id_(id),
       samplingRate_(0) {
 }

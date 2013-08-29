@@ -33,7 +33,7 @@ TEST(Features, MFCC) {
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   delete[] buffers;
-  ASSERT_EQ(1, res.size());
+  ASSERT_EQ(1U, res.size());
   res["MFCC"]->Validate();
   tt.Dump("/tmp/mfcc.dot");
   auto report = tt.ExecutionTimeReport();
@@ -59,7 +59,7 @@ TEST(Features, MFCCTrivial) {
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   delete[] buffers;
-  ASSERT_EQ(1, res.size());
+  ASSERT_EQ(1U, res.size());
   res["MFCC"]->Validate();
 }
 

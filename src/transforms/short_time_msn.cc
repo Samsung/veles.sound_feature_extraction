@@ -34,7 +34,7 @@ void ShortTimeMeanScaleNormalization::Do(
   int back = length_ / 2;
   int front = length_ - back;
   for (size_t i = 0; i < in.Count(); i++) {
-    for (int j = 0; j < (int)inputFormat_->Size(); j++) {
+    for (int j = 0; j < static_cast<int>(inputFormat_->Size()); j++) {
       int len = length_;
       int backind = i - back;
       if (backind < 0) {
@@ -42,9 +42,9 @@ void ShortTimeMeanScaleNormalization::Do(
         backind = 0;
       }
       int frontind = i + front;
-      if (frontind > (int)in.Count()) {
+      if (frontind > static_cast<int>(in.Count())) {
         len += in.Count() - frontind;
-        frontind = (int)in.Count();
+        frontind = static_cast<int>(in.Count());
       }
       float sum = 0.f;
       float thisval = in[i][j];

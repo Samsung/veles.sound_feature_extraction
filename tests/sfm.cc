@@ -30,7 +30,7 @@ TEST(Features, SFM) {
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   delete[] buffers;
-  ASSERT_EQ(1, res.size());
+  ASSERT_EQ(1U, res.size());
   res["SFM"]->Validate();
   tt.Dump("/tmp/sfm.dot");
   auto report = tt.ExecutionTimeReport();

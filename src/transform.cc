@@ -12,7 +12,10 @@
 
 #include "src/transform.h"
 #include <assert.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <boost/algorithm/string/replace.hpp>
+#pragma GCC diagnostic pop
 #include "src/transform_registry.h"
 
 using boost::algorithm::replace_all_copy;

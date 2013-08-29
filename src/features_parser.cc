@@ -11,7 +11,10 @@
  */
 
 #include "src/features_parser.h"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <boost/regex.hpp>
+#pragma GCC diagnostic pop
 
 namespace SoundFeatureExtraction {
 

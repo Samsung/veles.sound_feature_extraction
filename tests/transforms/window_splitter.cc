@@ -33,7 +33,7 @@ class WindowSplitterTest : public TransformTest<WindowSplitterF> {
 TEST_F(WindowSplitterTest, Do) {
   Do(*Input, Output.get());
   ASSERT_EQ(Input->Count() * 2, Output->Count());
-  ASSERT_EQ(512, outputFormat_->Size());
+  ASSERT_EQ(512U, outputFormat_->Size());
 }
 
 TEST_F(WindowSplitterTest, DoInverseInterleaved) {
@@ -42,7 +42,7 @@ TEST_F(WindowSplitterTest, DoInverseInterleaved) {
   SetParameter("step", "309");
   SetParameter("inverse_count", "2");
   RecreateOutputBuffers();
-  ASSERT_EQ(2, Output->Count());
-  ASSERT_EQ(1953, outputFormat_->Size());
+  ASSERT_EQ(2U, Output->Count());
+  ASSERT_EQ(1953U, outputFormat_->Size());
   DoInverse(*Input, Output.get());
 }

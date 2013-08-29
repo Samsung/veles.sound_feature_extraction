@@ -28,10 +28,10 @@ TEST(Features, Parse) {
           "SubbandEnergy, Log, DWPT(order=4, tree=1 2 3 3)]"
   };
   auto result = Parse(lines);
-  ASSERT_EQ(result.size(), 4);
+  ASSERT_EQ(4U, result.size());
   auto it = result.find("PLP");
   EXPECT_NE(result.end(), it);
-  EXPECT_EQ(5, it->second.size());
+  EXPECT_EQ(5U, it->second.size());
   auto tit = it->second.begin();
   EXPECT_STREQ("Window", tit->first.c_str());
   EXPECT_STREQ("length=25, step=10", tit++->second.c_str());
@@ -45,7 +45,7 @@ TEST(Features, Parse) {
   EXPECT_STREQ("", tit++->second.c_str());
   it = result.find("MFCC");
   EXPECT_NE(result.end(), it);
-  EXPECT_EQ(5, it->second.size());
+  EXPECT_EQ(5U, it->second.size());
   tit = it->second.begin();
   EXPECT_STREQ("Window", tit->first.c_str());
   EXPECT_STREQ("length=25, step=10", tit++->second.c_str());
@@ -59,7 +59,7 @@ TEST(Features, Parse) {
   EXPECT_STREQ("engine=Kiss", tit++->second.c_str());
   it = result.find("WPP");
   EXPECT_NE(result.end(), it);
-  EXPECT_EQ(5, it->second.size());
+  EXPECT_EQ(5U, it->second.size());
   tit = it->second.begin();
   EXPECT_STREQ("Window", tit->first.c_str());
   EXPECT_STREQ("length=512, type=rectangular", tit++->second.c_str());

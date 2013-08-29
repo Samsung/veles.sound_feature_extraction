@@ -16,7 +16,10 @@
 #elif defined(__ARM_NEON__)
 #include <simd/neon_mathfun.h>
 #endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <boost/regex.hpp>
+#pragma GCC diagnostic pop
 #include <limits>
 #include <simd/arithmetic-inl.h>
 

@@ -38,8 +38,8 @@ class FrequencyBandsTest : public TransformTest<FrequencyBands> {
 #define EPSILON 0.000075f
 
 TEST_F(FrequencyBandsTest, Do) {
-  ASSERT_EQ(Size, inputFormat_->Size());
-  ASSERT_EQ(Size, outputFormat_->Size());
+  ASSERT_EQ(static_cast<size_t>(Size), inputFormat_->Size());
+  ASSERT_EQ(static_cast<size_t>(Size), outputFormat_->Size());
   Do((*Input), &(*Output));
   for (int i = 0; i < Size / 4; i++) {
     ASSERT_EQ(i, (*Output)[0][i]);

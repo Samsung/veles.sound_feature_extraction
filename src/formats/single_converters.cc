@@ -17,12 +17,12 @@ namespace Formats {
 
 void Int32ToFloatConverter::Do(const int32_t& in,
                                float *out) const noexcept {
-  *out = (float)in;
+  *out = static_cast<float>(in);
 };
 
 void FloatToInt32Converter::Do(const float& in,
                                int32_t *out) const noexcept {
-  *out = (int32_t)in;
+  *out = static_cast<int32_t>(in);
 };
 
 REGISTER_TRANSFORM(Int32ToFloatConverter);

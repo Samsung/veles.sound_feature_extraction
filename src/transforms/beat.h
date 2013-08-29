@@ -52,7 +52,7 @@ class Beat : public OmpTransformBase<F, Formats::SingleFormatF> {
         float curEnergy = 0;
         int pulses = 3;
         int period = floorf(kCoefficient * kMaxFrequency / beatPerMinute) + 1;
-        for (int i = 0; i < (int)length; ++i) {
+        for (int i = 0; i < static_cast<int>(length); ++i) {
           X[i] = input[i] + (i >= period ? X[i - period] : 0) -
               (i >= period * pulses ? input[i - period * pulses] : 0);
         }

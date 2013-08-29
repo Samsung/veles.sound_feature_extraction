@@ -34,7 +34,7 @@ class RawFormat
  public:
   typedef T BufferElementType;
 
-  RawFormat() noexcept
+  RawFormat()
       : size_(0) {
   }
 
@@ -43,9 +43,12 @@ class RawFormat
         size_(size) {
   }
 
-  RawFormat(const RawFormat& other) noexcept
+  RawFormat(const RawFormat& other)
       : BufferFormatBase<T*>(other),
         size_(other.size_) {
+  }
+
+  virtual ~RawFormat() noexcept {
   }
 
   BufferFormat& operator=(const BufferFormat& other) {
@@ -134,7 +137,6 @@ class RawFormat
 
  private:
   size_t size_;
-  size_t parentRawSize_;
 
   static void ValidateDuration(size_t value) {
     if (value < MIN_DURATION() || value > MAX_DURATION()) {

@@ -40,7 +40,7 @@ class BufferFormatBase : public BufferFormat {
  public:
   typedef T BufferType;
 
-  BufferFormatBase() noexcept
+  BufferFormatBase()
       : BufferFormat(CutNamespaces(std::demangle(typeid(T).name()))) {
   }
 
@@ -165,8 +165,7 @@ private:
 template<class T>
 class FormatLogger : public Logger {
  public:
-  FormatLogger() noexcept : Logger(std::demangle(typeid(T).name()),
-                                   EINA_COLOR_ORANGE) {
+  FormatLogger() : Logger(std::demangle(typeid(T).name()), EINA_COLOR_ORANGE) {
   }
 };
 
