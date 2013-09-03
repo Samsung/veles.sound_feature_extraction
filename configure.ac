@@ -2,6 +2,9 @@
 
 AC_INIT(SoundFeatureExtraction, 1.0)
 m4_include([common.ac])
+AC_SUBST(INTERFACE_VERSION, [0])
+AC_SUBST(REVISION_NUMBER, [$(git rev-list HEAD --count)])
+AC_SUBST(AGE_NUMBER, [0])
 
 # Check whether to conduct test benchmarks
 AC_ARG_ENABLE([benchmarks],

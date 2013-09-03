@@ -39,9 +39,8 @@ transforms/stats.cc transforms/window_splitter.cc transforms/common.cc
 # Used libraries
 libSoundFeatureExtraction_la_LIBADD = @SIMD_LIBS@ @FFTF_LIBS@ -lboost_regex \
 	@EINA_LIBS@
-# libSoundFeatureExtraction_la_LIBADD = transforms/lib_transforms.la \
-# formats/lib_formats.la primitives/lib_primitives.la allocators/lib_allocators.la \
-# @SIMD_LIBS@ @FFTF_LIBS@ -lboost_regex @EINA_LIBS@
+	
+libSoundFeatureExtraction_la_LDFLAGS = $(AM_LDFLAGS) \
+	-version-info $(INTERFACE_VERSION):$(REVISION_NUMBER):$(AGE_NUMBER)
 
-#PARALLEL_SUBDIRS = $(BOOST_DIR) formats transforms primitives allocators
 PARALLEL_SUBDIRS = $(BOOST_DIR)
