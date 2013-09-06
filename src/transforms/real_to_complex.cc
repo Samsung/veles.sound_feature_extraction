@@ -40,8 +40,11 @@ void RealToComplex::Do(bool simd, const float* input, int length,
       __m256 vec = _mm256_load_ps(input + i);
       __m256 low = _mm256_unpacklo_ps(vec, _mm256_setzero_ps());
       __m256 high = _mm256_unpackhi_ps(vec, _mm256_setzero_ps());
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
       __m256 reslow = _mm256_permute2f128_ps(low, high, 32);
       __m256 reshigh = _mm256_permute2f128_ps(low, high, 49);
+#pragma GCC diagnostic pop
       _mm256_store_ps(output + 2 * i, reslow);
       _mm256_store_ps(output + 2 * i + 8, reshigh);
     }

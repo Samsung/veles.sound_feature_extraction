@@ -57,11 +57,14 @@ ArgMinMaxResult ArgMinMax::Do(bool simd, const float* input, size_t length,
       for (int j = 8; j < ilength - 7; j += 8) {
         __m256 vec = _mm256_load_ps(input + j);
         __m256 cmpres;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
         if (min) {
           cmpres = _mm256_cmp_ps(vec, values, _CMP_GT_OQ);
         } else {
           cmpres = _mm256_cmp_ps(vec, values, _CMP_LT_OQ);
         }
+#pragma GCC diagnostic pop
         curindexes = _mm256_add_ps(curindexes, indexesStep);
         values = _mm256_blendv_ps(vec, values, cmpres);
         indexes = _mm256_blendv_ps(curindexes, indexes, cmpres);

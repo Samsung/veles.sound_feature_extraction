@@ -38,11 +38,14 @@ void Diffrect::Do(bool simd, const float* input, int length,
     for (int i = 0; i < length - 15; i += 8) {
       __m256 vec1 = _mm256_load_ps(input + i);
       __m256 vec2 = _mm256_load_ps(input + i + 8);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
       vec2 = _mm256_blend_ps(vec1, vec2, 1);
       vec1 = _mm256_shuffle_ps(vec1, vec1, 1 << 0 | 2 << 4 | 1 << 6);
       vec2 = _mm256_shuffle_ps(vec2, vec2, 3 << 0 | 2 << 2 | 3 << 6);
       __m256 vec3 = _mm256_permute2f128_ps(vec2, vec2, 1);
       vec2 = _mm256_blend_ps(vec2, vec3, 68);
+#pragma GCC diagnostic pop
       __m256 result = _mm256_hsub_ps(vec1, vec2);
       result = _mm256_max_ps(result, _mm256_setzero_ps());
       _mm256_store_ps(output + i, result);

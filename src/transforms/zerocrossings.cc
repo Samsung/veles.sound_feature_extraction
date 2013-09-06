@@ -31,10 +31,13 @@ int ZeroCrossingsF::DoInternal(bool simd, const float* input,
     const __m256 ones = _mm256_set1_ps(1.f);
     for (int i = 0; i < ilength - 8; i += 8) {
       __m256 vecpre = _mm256_load_ps(input + i);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
       __m256 zerocheck =  _mm256_cmp_ps(vecpre, zeros, _CMP_EQ_OQ);
       __m256 vec = _mm256_loadu_ps(input + i + 1);
       __m256 tmp = _mm256_mul_ps(vecpre, vec);
       tmp = _mm256_cmp_ps(tmp, zeros, _CMP_LT_OQ);
+#pragma GCC diagnostic pop
       tmp = _mm256_or_ps(tmp, zerocheck);
       tmp = _mm256_blendv_ps(zeros, ones, tmp);
       crossings = _mm256_add_ps(crossings, tmp);
@@ -130,7 +133,10 @@ int ZeroCrossings16::DoInternal(bool simd, const int16_t* input,
       crossings = _mm_add_epi32(crossings, tmphi);
     }
     crossings = _mm_hadd_epi32(crossings, crossings);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
     int res = _mm_extract_epi32(crossings, 0) + _mm_extract_epi32(crossings, 2);
+#pragma GCC diagnostic pop
     int startIndex = ((ilength - 1) >> 3) << 3;
     int16_t valpre = input[startIndex];
     for (int i = startIndex + 1; i < ilength; i++) {

@@ -38,10 +38,13 @@ void ComplexToReal::Do(bool simd, const float* input, int length,
     for (int i = 0; i < length - 15; i += 16) {
       __m256 vec1 = _mm256_load_ps(input + i);
       __m256 vec2 = _mm256_load_ps(input + i + 8);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
       __m256 vec2even = _mm256_shuffle_ps(vec2, vec2, 160);
       __m256 low = _mm256_permute2f128_ps(vec1, vec2even, 32);
       __m256 high = _mm256_permute2f128_ps(vec1, vec2even, 49);
       __m256 result = _mm256_shuffle_ps(low, high, 136);
+#pragma GCC diagnostic pop
       _mm256_store_ps(output + i / 2, result);
     }
     for (int i = ((length >> 4) << 4); i < length; i += 2) {

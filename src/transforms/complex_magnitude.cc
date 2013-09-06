@@ -44,8 +44,11 @@ void ComplexMagnitude::Do(bool simd, const float* input, int length,
       __m256 vec2 = _mm256_load_ps(input + i + 8);
       vec1 = _mm256_mul_ps(vec1, vec1);
       vec2 = _mm256_mul_ps(vec2, vec2);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
       __m256 r1 = _mm256_permute2f128_ps(vec1, vec2, 0x20);
       __m256 r2 = _mm256_permute2f128_ps(vec1, vec2, 0x31);
+#pragma GCC diagnostic pop
       __m256 res = _mm256_hadd_ps(r1, r2);
       res = _mm256_sqrt_ps(res);
       _mm256_store_ps(output + i / 2, res);
