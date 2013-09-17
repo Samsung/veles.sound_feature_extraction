@@ -88,3 +88,18 @@ AC_CONFIG_FILES(src/boost/Makefile
                 )
 
 AC_OUTPUT
+
+
+AC_DEFUN([LIB_SOUND_FEATURE_EXTRACTION_PRINT_STATUS], [
+echo
+echo -e "${COLOR_WHITE}Sound feature extraction library options:${COLOR_RESET}"
+echo "  benchmarks.........: ${enable_benchmarks:-no}"
+echo "  eina_logging.......: ${enable_eina_logging:-no}"
+echo "  built_in_simd......: ${with_built_in_simd:-no}"
+echo "  built_in_boost.....: ${with_built_in_boost:-no}"
+echo "  built_in_fftf......: ${with_built_in_fftf:-no}"
+echo
+])
+
+COMMON_PRINT_STATUS
+LIB_SOUND_FEATURE_EXTRACTION_PRINT_STATUS
