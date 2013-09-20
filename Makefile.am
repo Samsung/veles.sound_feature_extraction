@@ -1,5 +1,5 @@
 SUBDIRS=$(FFTF_DIR) $(SIMD_DIR) inc src $(TESTS_DIR) $(DOCS_DIR)
-DIST_SUBDIRS=inc src tests docs
+DIST_SUBDIRS=$(FFTF_DIR) $(SIMD_DIR) inc src $(TESTS_DIR) $(DOCS_DIR)
 DISTCHECK_CONFIGURE_FLAGS = --disable-doxygen
 
 pkgconfigdir = $(libdir)/pkgconfig
