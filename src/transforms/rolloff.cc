@@ -46,7 +46,7 @@ int Rolloff::Do(bool simd, const float* input, size_t length,
   float threshold;
   if (simd) {
 #if defined(__AVX__) || defined(__ARM_NEON__)
-    threshold = sum(input, length) * ratio;
+    threshold = sum_elements(input, length) * ratio;
 #ifdef __AVX__
     int j;
     float psum = 0.f;
@@ -100,7 +100,7 @@ int Rolloff::Do(bool simd, const float* input, size_t length,
 #else
   } {
 #endif
-    threshold = sum_na(input, length) * ratio;
+    threshold = sum_elements_na(input, length) * ratio;
     float psum = 0.f;
     int i;
     for (i = 0; i < ilength && psum < threshold; i++) {

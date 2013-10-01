@@ -78,12 +78,12 @@ float Mean::Do(bool simd, const float* input, size_t length,
       float res;
       if (simd) {
 #if defined(__AVX__) || defined(__ARM_NEON__)
-        res = sum(input, length);
+        res = sum_elements(input, length);
       } else {
 #else
       } {
 #endif
-        res = sum_na(input, length);
+        res = sum_elements_na(input, length);
       }
       res /= length;
       return res;
