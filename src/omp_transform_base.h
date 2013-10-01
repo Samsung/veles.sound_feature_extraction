@@ -353,11 +353,9 @@ class OmpTransformBaseBufferTypeProxy<FIN, FOUT, FINELEMENT*, FOUTELEMENT*,
 
 /// @brief So this is what the previous 300+ lines were intended for...
 template <typename FIN, typename FOUT, bool SupportsInversion = false>
-class OmpTransformBase
-    : public virtual OmpTransformBaseBufferTypeProxy<
+using OmpTransformBase = OmpTransformBaseBufferTypeProxy<
           FIN, FOUT, typename FIN::BufferType, typename FOUT::BufferType,
-          SupportsInversion> {
-};
+          SupportsInversion>;
 
 /// @brief OpenMP aware transform base class with the same input and output
 /// formats.

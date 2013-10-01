@@ -18,11 +18,17 @@
 
 namespace SoundFeatureExtraction {
 
-extern template class TransformBase<Formats::RawFormatF, Formats::RawFormatF, true>;
-extern template class TransformBase<Formats::RawFormatF, Formats::RawFormatF, false>;
+extern template class TransformBase<Formats::RawFormatF, Formats::RawFormatF,
+                                    true>;
+extern template class TransformBase<Formats::RawFormatF, Formats::RawFormatF,
+                                    false>;
 extern template class UniformFormatTransform<Formats::RawFormatF, false>;
-extern template class OmpTransformBase<Formats::RawFormatF, Formats::RawFormatF, true>;
-extern template class OmpTransformBase<Formats::RawFormatF, Formats::RawFormatF, false>;
+extern template class OmpTransformBaseBufferTypeProxy<Formats::RawFormatF,
+    Formats::RawFormatF, Formats::RawFormatF::BufferType,
+    Formats::RawFormatF::BufferType, true>;
+extern template class OmpTransformBaseBufferTypeProxy<Formats::RawFormatF,
+    Formats::RawFormatF, Formats::RawFormatF::BufferType,
+    Formats::RawFormatF::BufferType, false>;
 extern template class OmpUniformFormatTransform<Formats::RawFormatF, false>;
 
 }  // namespace SoundFeatureExtraction

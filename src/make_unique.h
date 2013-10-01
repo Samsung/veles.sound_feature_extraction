@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_MAKE_UNIQUE_H_
-#define SRC_MAKE_UNIQUE_H_
+#ifndef INC_VELES_MAKE_UNIQUE_H_
+#define INC_VELES_MAKE_UNIQUE_H_
 
 #include <memory>
 
@@ -34,4 +34,4 @@ std::unique_ptr<T, D*> uniquify(T* ptr, D* destructor) {
 
 }  // namespace std
 
-#endif  // SRC_MAKE_UNIQUE_H_
+#endif  // INC_VELES_MAKE_UNIQUE_H_

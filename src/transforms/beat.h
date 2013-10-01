@@ -13,79 +13,33 @@
 #ifndef SRC_TRANSFORMS_BEAT_H_
 #define SRC_TRANSFORMS_BEAT_H_
 
-#include <string>
 #include "src/formats/single_format.h"
 #include "src/transforms/common.h"
-#include "src/primitives/energy.h"
-#include <math.h>
-#include <string>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-template <class F>
-class Beat : public OmpTransformBase<F, Formats::SingleFormatF> {
+class Beat
+    : public OmpTransformBase<Formats::RawFormatF, Formats::SingleFormatF> {
  public:
+  Beat();
+
   TRANSFORM_INTRO("Beat", "Find the tempo of a musical signal.")
 
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void Do(const typename F::BufferElementType* in,
-                  float* out) const noexcept override {
-    Do(in, this->inputFormat_->Size(), out);
-  }
+  virtual void Initialize() const noexcept override;
 
-  static void Do(const typename F::BufferElementType* input,
-                 int length, float* output) noexcept {
-    auto result = 150.f;
-    float step, maxEnergy = 0;
-    float minBeatPerMinute, maxBeatPerMinute;
-    float *X = mallocf(length * sizeof(float));
-    for (int j = 0; j < 4; ++j) {
-      minBeatPerMinute = result - kDifference[j];
-      maxBeatPerMinute = result + kDifference[j];
-      step = kStep[j];
-      maxEnergy = 0;
-      float beatPerMinute = minBeatPerMinute;
-      while (beatPerMinute < maxBeatPerMinute) {
-        float curEnergy = 0;
-        int pulses = 3;
-        int period = floorf(kCoefficient * kMaxFrequency / beatPerMinute) + 1;
-        for (int i = 0; i < static_cast<int>(length); ++i) {
-          X[i] = input[i] + (i >= period ? X[i - period] : 0) -
-              (i >= period * pulses ? input[i - period * pulses] : 0);
-        }
-        curEnergy = calculate_energy(Beat::UseSimd(), X, length);
-        if (curEnergy > maxEnergy) {
-          maxEnergy = curEnergy;
-          result = beatPerMinute;
-        }
-        beatPerMinute += step;
-      }
-    }
-    free(X);
-    *output = result;
-  }
+  virtual void Do(const float* in, float* out) const noexcept override;
 
  private:
   static const float kDifference[4];
   static const float kStep[4];
   static const int kMaxFrequency;
   static const float kCoefficient;
+  mutable std::unique_ptr<float, decltype(&std::free)> buffer_;
 };
-
-template <class F>
-const float Beat<F> :: kDifference[4] = { 90.f, 2.f, 0.5f, 0.1f };
-
-template <class F>
-const float Beat<F> :: kStep[4] = { 1.f, 0.5f, 0.1f, 0.01f };
-
-template <class F>
-const int Beat<F> :: kMaxFrequency = 4096;
-
-template <class F>
-const float Beat<F> :: kCoefficient = 120.0f;
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction

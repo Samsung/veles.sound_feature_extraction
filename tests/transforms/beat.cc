@@ -15,11 +15,9 @@
 #include "tests/transforms/transform_test.h"
 #include "tests/transforms/beat_test.inc"
 
-using SoundFeatureExtraction::Formats::RawFormatF;
-using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::Beat;
 
-class BeatTest : public TransformTest<Beat<RawFormatF>> {
+class BeatTest : public TransformTest<Beat> {
  public:
   int Size;
 
@@ -34,8 +32,5 @@ class BeatTest : public TransformTest<Beat<RawFormatF>> {
 
 TEST_F(BeatTest, Do) {
   Do((*Input)[0], &(*Output)[0]);
-  float delta = 122.85f - (*Output)[0];
-  if (delta * delta > 1E-1) {
-    ASSERT_EQ(-1, (*Output)[0]);
-  }
+  ASSERT_NEAR(122.85f, (*Output)[0], 1.f);
 }
