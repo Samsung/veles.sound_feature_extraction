@@ -3,7 +3,7 @@
 AC_INIT(SoundFeatureExtraction, 1.0)
 m4_include([common.ac])
 AC_SUBST(INTERFACE_VERSION, [0])
-AC_SUBST(REVISION_NUMBER, [$(git rev-list HEAD --count)])
+AC_SUBST(REVISION_NUMBER, [$(cd $srcdir && git rev-list HEAD --count)])
 AC_SUBST(AGE_NUMBER, [0])
 
 # Check whether to conduct test benchmarks
@@ -93,11 +93,11 @@ AC_OUTPUT
 AC_DEFUN([LIB_SOUND_FEATURE_EXTRACTION_PRINT_STATUS], [
 echo
 echo -e "${COLOR_WHITE}Sound feature extraction library options:${COLOR_RESET}"
-echo "  benchmarks.........: ${enable_benchmarks:-no}"
-echo "  eina_logging.......: ${enable_eina_logging:-no}"
-echo "  built_in_simd......: ${with_built_in_simd:-no}"
-echo "  built_in_boost.....: ${with_built_in_boost:-no}"
-echo "  built_in_fftf......: ${with_built_in_fftf:-no}"
+echo -e "  benchmarks.........: $(color_yes_no ${enable_benchmarks:-no})"
+echo -e "  eina_logging.......: $(color_yes_no ${enable_eina_logging:-no})"
+echo -e "  built_in_simd......: $(color_yes_no ${with_built_in_simd:-no})"
+echo -e "  built_in_boost.....: $(color_yes_no ${with_built_in_boost:-no})"
+echo -e "  built_in_fftf......: $(color_yes_no ${with_built_in_fftf:-no})"
 echo
 ])
 
