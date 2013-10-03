@@ -20,25 +20,32 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Beat
-    : public OmpTransformBase<Formats::RawFormatF, Formats::SingleFormatF> {
+    : public TransformBase<Formats::RawFormatF, Formats::SingleFormatF> {
  public:
   Beat();
 
   TRANSFORM_INTRO("Beat", "Find the tempo of a musical signal.")
 
-  OMP_TRANSFORM_PARAMETERS()
+  TRANSFORM_PARAMETERS(
+      TP("bands", "The number of bands to sum.", "1"))
 
  protected:
+  virtual size_t OnInputFormatChanged(size_t buffersCount) override;
+
   virtual void Initialize() const noexcept override;
 
-  virtual void Do(const float* in, float* out) const noexcept override;
+  virtual void Do(const BuffersBase<float*>& in,
+                  BuffersBase<float>* out) const noexcept override;
 
  private:
+  static const float kInitialBeatsValue;
   static const float kDifference[4];
   static const float kStep[4];
   static const int kMaxFrequency;
   static const float kCoefficient;
+  static const int kPulses;
   mutable std::unique_ptr<float, decltype(&std::free)> buffer_;
+  int bands_;
 };
 
 }  // namespace Transforms

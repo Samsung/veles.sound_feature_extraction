@@ -31,6 +31,6 @@ class BeatTest : public TransformTest<Beat> {
 };
 
 TEST_F(BeatTest, Do) {
-  Do((*Input)[0], &(*Output)[0]);
+  Do((*Input), &(*Output));
   ASSERT_NEAR(122.85f, (*Output)[0], 1.f);
 }

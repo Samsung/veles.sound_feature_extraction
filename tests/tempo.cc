@@ -42,9 +42,9 @@ TEST(Features, Tempo) {
       { "IRDFT", "" },
       { "IWindow", "length=512" },
       { "Rectify", "" },
-      { "Convolve", "window = half-hanning-right, length=12800" },
-      { "Diffrect", "" },
-      { "Beat", "" } });
+      { "Convolve", "window=half-hanning-right, length=12800" },
+      { "Diff", "rectify=true" },
+      { "Beat", "bands=6" } });
   int16_t* buffers = new int16_t[test_size];
   size_t i;
   for (i = 0; i < test_size - sizeof(data) / 2 + 1;

@@ -19,12 +19,26 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-const float Beat:: kDifference[4] = { 90.f, 2.f, 0.5f, 0.1f };
-const float Beat:: kStep[4] = { 1.f, 0.5f, 0.1f, 0.01f };
-const int Beat:: kMaxFrequency = 4096;
-const float Beat:: kCoefficient = 120.0f;
+const float Beat::kInitialBeatsValue = 150.f;
+const float Beat::kDifference[4] = { 90.f, 2.f, 0.5f, 0.1f };
+const float Beat::kStep[4] = { 1.f, 0.5f, 0.1f, 0.01f };
+const int Beat::kMaxFrequency = 4096;
+const float Beat::kCoefficient = 120.0f;
+const int Beat::kPulses = 3;
 
-Beat::Beat() : buffer_(nullptr, std::free) {
+Beat::Beat() : buffer_(nullptr, std::free), bands_(1) {
+  RegisterSetter("bands", [&](const std::string& value) {
+    int iv = Parse<int>("bands", value);
+    if (iv < 1) {
+      return false;
+    }
+    bands_ = iv;
+    return true;
+  });
+}
+
+size_t Beat::OnInputFormatChanged(size_t buffersCount) {
+  return buffersCount / bands_;
 }
 
 void Beat::Initialize() const noexcept {
@@ -32,40 +46,48 @@ void Beat::Initialize() const noexcept {
                           std::free);
 }
 
-void Beat::Do(const float* in, float* out) const noexcept {
-  auto result = 150.f;
-  auto size = this->inputFormat_->Size();
-  auto buffer = buffer_.get();
-  float step, maxEnergy = 0;
-  float minBeatsPerMinute, maxBeatsPerMinute;
-  for (int j = 0; j < 4; ++j) {
-    minBeatsPerMinute = result - kDifference[j];
-    if (minBeatsPerMinute < 1) {
-      minBeatsPerMinute = 1;
-    }
-    maxBeatsPerMinute = result + kDifference[j];
-    step = kStep[j];
-    maxEnergy = 0;
-    float beatsPerMinute = minBeatsPerMinute;
-    while (beatsPerMinute < maxBeatsPerMinute) {
-      float curEnergy = 0;
-      int pulses = 3;
-      int period = floorf(kCoefficient * kMaxFrequency / beatsPerMinute) + 1;
-      auto pulse_offset = period * pulses;
-      memcpy(buffer, in, pulse_offset * sizeof(float));
-      matrix_sub(true, in + pulse_offset, in, size - pulse_offset, 1,
-                 buffer + pulse_offset);
-      matrix_add(true, buffer + period, buffer, size - period, 1,
-                 buffer + period);
-      curEnergy = calculate_energy(Beat::UseSimd(), buffer, size);
-      if (curEnergy > maxEnergy) {
-        maxEnergy = curEnergy;
-        result = beatsPerMinute;
+void Beat::Do(const BuffersBase<float*>& in,
+              BuffersBase<float>* out) const noexcept {
+  for (size_t ini = 0; ini < in.Count(); ini += bands_) {
+    auto result = kInitialBeatsValue;
+    auto size = this->inputFormat_->Size();
+    auto buffer = buffer_.get();
+    float step, max_energy = 0;
+    float min_beats_per_minute, max_beats_per_minute;
+    for (int j = 0;
+         j < static_cast<int>(sizeof(kDifference) / sizeof(kDifference[0]));
+         j++) {
+      min_beats_per_minute = result - kDifference[j];
+      if (min_beats_per_minute < 1) {
+        min_beats_per_minute = 1;
       }
-      beatsPerMinute += step;
+      max_beats_per_minute = result + kDifference[j];
+      step = kStep[j];
+      max_energy = 0;
+      float beats_per_minute = min_beats_per_minute;
+      while (beats_per_minute < max_beats_per_minute) {
+        float current_energy = 0;
+        int period = floorf(kCoefficient * kMaxFrequency / beats_per_minute)+1;
+        auto pulse_offset = period * kPulses;
+        for (size_t in_index = ini;
+             in_index < ini + bands_ && in_index < in.Count();
+             in_index++) {
+          memcpy(buffer, in[in_index], pulse_offset * sizeof(float));
+          matrix_sub(true, in[in_index] + pulse_offset, in[in_index],
+                     size - pulse_offset, 1, buffer + pulse_offset);
+          matrix_add(true, buffer + period, buffer, size - period, 1,
+                     buffer + period);
+          current_energy += calculate_energy(Beat::UseSimd(), buffer, size);
+        }
+        if (current_energy > max_energy) {
+          max_energy = current_energy;
+          result = beats_per_minute;
+        }
+        beats_per_minute += step;
+      }
     }
+    (*out)[ini / bands_] = result;
   }
-  *out = result;
 }
 
 REGISTER_TRANSFORM(Beat);
