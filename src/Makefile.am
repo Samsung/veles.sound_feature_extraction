@@ -34,7 +34,8 @@ transforms/sfm.cc transforms/argminmax.cc transforms/energy.cc \
 transforms/centroid.cc transforms/zerocrossings.cc transforms/rolloff.cc \
 transforms/flux.cc transforms/beat.cc transforms/autocorrelation.cc \
 transforms/delta.cc transforms/short_time_msn.cc transforms/preemphasis.cc \
-transforms/stats.cc transforms/window_splitter.cc transforms/common.cc
+transforms/stats.cc transforms/window_splitter.cc transforms/common.cc \
+transforms/single_to_raw.cc
 
 # Used libraries
 libSoundFeatureExtraction_la_LIBADD = @SIMD_LIBS@ @FFTF_LIBS@ -lboost_regex \

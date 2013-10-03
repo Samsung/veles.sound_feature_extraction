@@ -27,6 +27,7 @@ TEST(Features, MusicalSurface) {
       { "RDFT", "" },
       { "ComplexMagnitude", "" },
       { "Centroid", "" },
+      { "Merge", "" },
       { "Stats", "" }
   });
   tt.AddFeature("Rolloff", {
@@ -34,6 +35,7 @@ TEST(Features, MusicalSurface) {
       { "RDFT", "" },
       { "ComplexMagnitude", "" },
       { "Rolloff", "" },
+      { "Merge", "" },
       { "Stats", "" }
   });
   tt.AddFeature("Flux", {
@@ -41,16 +43,19 @@ TEST(Features, MusicalSurface) {
       { "RDFT", "" },
       { "ComplexMagnitude", "" },
       { "Flux", "" },
+      { "Merge", "" },
       { "Stats", "" }
   });
   tt.AddFeature("Energy", {
       { "Window", "length=512,step=205" },
       { "Energy", "" },
+      { "Merge", "" },
       { "Stats", "" }
   });
   tt.AddFeature("ZeroCrossings", {
       { "Window", "type=rectangular,length=512,step=205" },
       { "ZeroCrossings", "" },
+      { "Merge", "" },
       { "Stats", "" }
   });
   int16_t* buffers = new int16_t[48000];

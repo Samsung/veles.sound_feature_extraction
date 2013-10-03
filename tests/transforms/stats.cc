@@ -22,12 +22,14 @@ using SoundFeatureExtraction::Transforms::Stats;
 class StatsTest : public TransformTest<Stats> {
  public:
   virtual void SetUp() {
-    SetUpTransform(50000, 16000);
+    SetUpTransform(1, 50000, 16000);
     std::random_device rd;
     std::mt19937 gen(rd());
     std::normal_distribution<float> d(1, 2);
     for (size_t i = 0; i < (*Input).Count(); i++) {
-      (*Input)[i] = d(gen);
+      for (size_t j = 0; j < inputFormat_->Size(); j++) {
+        (*Input)[i][j] = d(gen);
+      }
     }
   }
 };
@@ -37,21 +39,21 @@ class StatsTest : public TransformTest<Stats> {
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(StatsTest, DoAll) {
-  Do((*Input), &(*Output));
-  ASSERT_EQF(1, (*Output)[0][0]);
-  ASSERT_EQF(2 * 2, (*Output)[0][1]);
-  ASSERT_EQF(0, (*Output)[0][2]);
-  ASSERT_EQF(0, (*Output)[0][3]);
+  Do((*Input)[0], (*Output)[0]);
+  ASSERT_EQF(1, (*Output)[0][0][0]);
+  ASSERT_EQF(2 * 2, (*Output)[0][0][1]);
+  ASSERT_EQF(0, (*Output)[0][0][2]);
+  ASSERT_EQF(0, (*Output)[0][0][3]);
 }
 
 TEST_F(StatsTest, DoInterval) {
   SetParameter("interval", "25000");
   RecreateOutputBuffers();
-  Do((*Input), &(*Output));
+  Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < 2; i++) {
-    ASSERT_EQF(1, (*Output)[i][0]);
-    ASSERT_EQF(2 * 2, (*Output)[i][1]);
-    ASSERT_EQF(0, (*Output)[i][2]);
-    ASSERT_EQF(0, (*Output)[i][3]);
+    ASSERT_EQF(1, (*Output)[0][i][0]);
+    ASSERT_EQF(2 * 2, (*Output)[0][i][1]);
+    ASSERT_EQF(0, (*Output)[0][i][2]);
+    ASSERT_EQF(0, (*Output)[0][i][3]);
   }
 }

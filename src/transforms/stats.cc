@@ -16,6 +16,11 @@
 #include <boost/regex.hpp>
 #pragma GCC diagnostic pop
 #include <math.h>
+#ifdef __AVX__
+#include <simd/avx_extra.h>
+#elif defined(__ARM_NEON__)
+#include <arm_neon.h>
+#endif
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -77,56 +82,151 @@ Stats::Stats()
 
 size_t Stats::OnInputFormatChanged(size_t buffersCount) {
   if (interval_ != 0) {
-    if (buffersCount % interval_ == 0) {
-        return buffersCount / interval_;
-      }
-      return buffersCount / interval_ + 1;
+    auto ratio = inputFormat_->Size() / interval_;
+    if ((inputFormat_->Size() % interval_) == 0) {
+      outputFormat_->SetSize(ratio);
+      return buffersCount * ratio;
+    }
+    outputFormat_->SetSize(ratio + 1);
+    return buffersCount * (ratio + 1);
   } else {
-    return 1;
+    outputFormat_->SetSize(1);
+    return buffersCount;
   }
 }
 
-void Stats::Do(const BuffersBase<float>& in,
-               BuffersBase<StatsArray>* out) const noexcept {
+void Stats::Do(const float* in, StatsArray* out) const noexcept {
   float rawMoments[4];
   if (interval_ == 0) {
-    CalculateRawMoments(in, 0, in.Count(), rawMoments);
+    CalculateRawMoments(true, in, 0, inputFormat_->Size(), rawMoments);
     Calculate(rawMoments, 0, out);
   } else {
     size_t i;
-    for (i = 0; i < in.Count() - interval_ + 1; i+= interval_) {
-      CalculateRawMoments(in, i, interval_, rawMoments);
+    for (i = 0; i < inputFormat_->Size() - interval_ + 1; i+= interval_) {
+      CalculateRawMoments(true, in, i, interval_, rawMoments);
       Calculate(rawMoments, i / interval_, out);
     }
-    if (in.Count() % interval_ != 0) {
-      CalculateRawMoments(in, i, in.Count() - i, rawMoments);
+    if (inputFormat_->Size() % interval_ != 0) {
+      CalculateRawMoments(true, in, i, inputFormat_->Size() - i, rawMoments);
       Calculate(rawMoments, i / interval_, out);
     }
   }
 }
 
 void Stats::Calculate(const float* rawMoments, int index,
-                      BuffersBase<StatsArray>* out) const noexcept {
+                      StatsArray* out) const noexcept {
   for (auto stat : types_) {
     int sind = 0;
     int istat = stat;
     while (istat >>= 1) {
       sind++;
     }
-    (*out)[index][sind] = kStatsFuncs.find(stat)->second(rawMoments);
+    out[index][sind] = kStatsFuncs.find(stat)->second(rawMoments);
   }
 }
 
-void Stats::CalculateRawMoments(const BuffersBase<float>& in,
-                                int startIndex, int length,
-                                float* rawMoments) noexcept {
-  double avg1 = 0, avg2 = 0, avg3 = 0, avg4 = 0;
-  for (int i = startIndex; i < startIndex + length; i++) {
-    double v = in[i];
-    avg1 += v;
-    avg2 += v * v;
-    avg3 += v * v * v;
-    avg4 += v * v * v * v;
+void Stats::CalculateRawMoments(bool simd, const float* in, int startIndex,
+                                int length, float* rawMoments) noexcept {
+  float avg1 = 0, avg2 = 0, avg3 = 0, avg4 = 0;
+  auto end_index = startIndex + length;
+  if (simd) {
+#ifdef __AVX__
+    __m256 avg1vec = _mm256_set1_ps(0);
+    __m256 avg2vec = _mm256_set1_ps(0);
+    __m256 avg3vec = _mm256_set1_ps(0);
+    __m256 avg4vec = _mm256_set1_ps(0);
+    for (int i = startIndex; i < end_index - 7; i+=8) {
+      __m256 val = _mm256_loadu_ps(in + i);
+      avg1vec = _mm256_add_ps(avg1vec, val);
+      __m256 val2 = _mm256_mul_ps(val, val);
+      avg2vec = _mm256_add_ps(avg2vec, val2);
+      val = _mm256_mul_ps(val2, val);
+      avg3vec = _mm256_add_ps(avg3vec, val);
+      val2 = _mm256_mul_ps(val2, val2);
+      avg4vec = _mm256_add_ps(avg4vec, val2);
+    }
+    avg1vec = _mm256_hadd_ps(avg1vec, avg1vec);
+    avg1vec = _mm256_hadd_ps(avg1vec, avg1vec);
+    avg1 += ElementAt(avg1vec, 0);
+    avg1 += ElementAt(avg1vec, 4);
+    avg2vec = _mm256_hadd_ps(avg2vec, avg2vec);
+    avg2vec = _mm256_hadd_ps(avg2vec, avg2vec);
+    avg2 += ElementAt(avg2vec, 0);
+    avg2 += ElementAt(avg2vec, 4);
+    avg3vec = _mm256_hadd_ps(avg3vec, avg3vec);
+    avg3vec = _mm256_hadd_ps(avg3vec, avg3vec);
+    avg3 += ElementAt(avg3vec, 0);
+    avg3 += ElementAt(avg3vec, 4);
+    avg4vec = _mm256_hadd_ps(avg4vec, avg4vec);
+    avg4vec = _mm256_hadd_ps(avg4vec, avg4vec);
+    avg4 += ElementAt(avg4vec, 0);
+    avg4 += ElementAt(avg4vec, 4);
+    for (int i = ((end_index) & ~0x7); i < end_index; i++) {
+      float v = in[i];
+      avg1 += v;
+      float v2 = v * v;
+      avg2 += v2;
+      v *= v2;
+      avg3 += v;
+      v2 *= v2;
+      avg4 += v2;
+    }
+  } else {
+#elif defined(__ARM_NEON__)
+    float32x4_t avg1vec = vdupq_f32(0);
+    float32x4_t avg2vec = vdupq_f32(0);
+    float32x4_t avg3vec = vdupq_f32(0);
+    float32x4_t avg4vec = vdupq_f32(0);
+    for (int i = startIndex; i < end_index - 3; i+=4) {
+      float32x4_t val = vld1q_f32(in + i);
+      avg1vec = vaddq_f32(avg1vec, val);
+      float32x4_t val2 = vmulq_f32(val, val);
+      avg2vec = vaddq_f32(avg2vec, val2);
+      val = vmulq_f32(val2, val);
+      avg3vec = vaddq_f32(avg3vec, val);
+      val2 = vmulq_f32(val2, val2);
+      avg4vec = vaddq_f32(avg4vec, val2);
+    }
+    avg1 += vgetq_lane_f32(avg1vec, 0);
+    avg1 += vgetq_lane_f32(avg1vec, 1);
+    avg1 += vgetq_lane_f32(avg1vec, 2);
+    avg1 += vgetq_lane_f32(avg1vec, 3);
+    avg2 += vgetq_lane_f32(avg2vec, 0);
+    avg2 += vgetq_lane_f32(avg2vec, 1);
+    avg2 += vgetq_lane_f32(avg2vec, 2);
+    avg2 += vgetq_lane_f32(avg2vec, 3);
+    avg3 += vgetq_lane_f32(avg3vec, 0);
+    avg3 += vgetq_lane_f32(avg3vec, 1);
+    avg3 += vgetq_lane_f32(avg3vec, 2);
+    avg3 += vgetq_lane_f32(avg3vec, 3);
+    avg4 += vgetq_lane_f32(avg4vec, 0);
+    avg4 += vgetq_lane_f32(avg4vec, 1);
+    avg4 += vgetq_lane_f32(avg4vec, 2);
+    avg4 += vgetq_lane_f32(avg4vec, 3);
+    for (int i = ((end_index) & ~0x3); i < end_index; i++) {
+      float v = in[i];
+      avg1 += v;
+      float v2 = v * v;
+      avg2 += v2;
+      v *= v2;
+      avg3 += v;
+      v2 *= v2;
+      avg4 += v2;
+    }
+  } else {
+#else
+  } {
+#endif
+    for (int i = startIndex; i < end_index; i++) {
+      float v = in[i];
+      avg1 += v;
+      float v2 = v * v;
+      avg2 += v2;
+      v *= v2;
+      avg3 += v;
+      v2 *= v2;
+      avg4 += v2;
+    }
   }
   avg1 /= length;
   avg2 /= length;

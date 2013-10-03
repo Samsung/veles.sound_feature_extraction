@@ -13,58 +13,11 @@
 #ifndef SRC_FORMATS_SINGLE_FORMAT_H_
 #define SRC_FORMATS_SINGLE_FORMAT_H_
 
-#include <stdexcept>
 #include <tuple>
+#include "src/formats/fixed_array.h"
 #include "src/buffers_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Formats {
-
-template<uint8_t L, typename F = float>
-struct FixedArray {
-  static_assert(std::is_arithmetic<F>(), "F must be an arithmetic type");
-  F Data[L];
-
-  F& operator[](int index) {
-    if (index < 0 || index > L - 1) {
-      throw std::out_of_range("index");
-    }
-    return Data[index];
-  }
-
-  const F& operator[](int index) const {
-    if (index < 0 || index > L - 1) {
-      throw std::out_of_range("index");
-    }
-    return Data[index];
-  }
-
-  bool Validate() const noexcept {
-    for (int i = 0; i < L; i++) {
-      if (!Validation::Validator<F>::Validate(this->Data[i])) {
-        return false;
-      }
-    }
-    return true;
-  }
-};
-
-}  // namespace Formats
-}  // namespace SoundFeatureExtraction
-
 namespace std {
-  template<uint8_t L, typename F>
-  inline string to_string(
-      const SoundFeatureExtraction::Formats::FixedArray<L, F>& __val) {
-    std::string res("[");
-    for (int i = 0; i < L; i++) {
-      res += std::to_string(__val[i]) + ",\t";
-    }
-    res = res.substr(0, res.size() - 2);
-    res += "]";
-    return res;
-  }
-
   template<size_t index, typename... Args>
   inline void to_string(int realIndex,
                         const std::tuple<Args...>& __val,
@@ -149,7 +102,6 @@ class SingleFormat : public BufferFormatBase<T> {
     }
   }
 
-
   template<std::size_t I, typename... TP>
   static typename std::enable_if<I == sizeof...(TP), bool>::type
   ValidateTupleElement(const std::tuple<TP...>&) noexcept {
@@ -201,7 +153,5 @@ typedef SingleFormat<int32_t> SingleFormat32;
 
 }  // namespace Formats
 }  // namespace SoundFeatureExtraction
-
-
 
 #endif  // SRC_FORMATS_SINGLE_FORMAT_H_

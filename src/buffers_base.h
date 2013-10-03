@@ -13,7 +13,7 @@
 #ifndef SRC_BUFFERS_BASE_H_
 #define SRC_BUFFERS_BASE_H_
 
-#include <assert.h>
+#include <cassert>
 #include <limits>
 #include "src/config.h"
 #include "src/buffer_format.h"

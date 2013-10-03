@@ -14,6 +14,8 @@
 #define SRC_TRANSFORMS_STATS_H_
 
 #include <set>
+#include "src/formats/fixed_array.h"
+#include "src/formats/raw_format.h"
 #include "src/formats/single_format.h"
 #include "src/omp_transform_base.h"
 
@@ -29,9 +31,9 @@ enum StatsType {
 };
 
 class Stats
-    : public TransformBase<Formats::SingleFormatF,
-                           Formats::SingleFormat<
-                               Formats::FixedArray<STATS_TYPE_COUNT>>> {
+    : public OmpTransformBase<Formats::RawFormatF,
+                              Formats::RawFormat<
+                                  Formats::FixedArray<STATS_TYPE_COUNT>>> {
  public:
   typedef Formats::FixedArray<STATS_TYPE_COUNT> StatsArray;
 
@@ -40,7 +42,7 @@ class Stats
   TRANSFORM_INTRO("Stats", "Calculate statistical measures, such as skew "
                            "or kurtosis.")
 
-  TRANSFORM_PARAMETERS(
+  OMP_TRANSFORM_PARAMETERS(
       TP("types", "Stats types to calculate (names separated with spaces, "
                   "\"all\" for all).",
          "all")
@@ -57,15 +59,12 @@ class Stats
 
   virtual size_t OnInputFormatChanged(size_t buffersCount) override;
 
-  virtual void Do(const BuffersBase<float>& in,
-                  BuffersBase<StatsArray>* out)
-  const noexcept;
+  virtual void Do(const float* in, StatsArray* out) const noexcept override;
 
   void Calculate(const float* rawMoments, int index,
-                 BuffersBase<StatsArray>* out) const noexcept;
-  static void CalculateRawMoments(const BuffersBase<float>& in,
-                                  int startIndex, int length,
-                                  float* rawMoments) noexcept;
+                 StatsArray* out) const noexcept;
+  static void CalculateRawMoments(bool simd, const float* in, int startIndex,
+                                  int length, float* rawMoments) noexcept;
   static float CalculateAverage(const float* rawMoments) noexcept;
   static float CalculateDispersion(const float* rawMoments) noexcept;
   static float CalculateSkew(const float* rawMoments) noexcept;

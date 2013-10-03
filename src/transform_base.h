@@ -108,18 +108,18 @@ class TransformBase : public virtual Transform,
 
   virtual void Do(const Buffers& in, Buffers* out)
       const noexcept override final {
-    assert(&in != nullptr);
+    assert(&in != nullptr);  // yes, this may happen with shared_ptr-s
     assert(out != nullptr);
     if (!IsInverse()) {
       assert(*in.Format() == *inputFormat_);
       assert(*out->Format() == *outputFormat_);
       this->Do(reinterpret_cast<const InBuffers&>(in),
-         reinterpret_cast<OutBuffers*>(out));
+               reinterpret_cast<OutBuffers*>(out));
     } else {
       assert(*in.Format() == *outputFormat_);
       assert(*out->Format() == *inputFormat_);
       this->DoInverse(reinterpret_cast<const OutBuffers&>(in),
-                reinterpret_cast<InBuffers*>(out));
+                      reinterpret_cast<InBuffers*>(out));
     }
   }
 

@@ -81,10 +81,6 @@ AM_COND_IF([TESTS], [
 # Link with Makefile.am in additional source directories
 AC_CONFIG_FILES(src/boost/Makefile
                 src/boost/user-config.jam
-                src/formats/Makefile
-                src/transforms/Makefile
-                src/primitives/Makefile
-                src/allocators/Makefile
                 )
 
 AC_OUTPUT
