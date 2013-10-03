@@ -173,10 +173,10 @@ void Stats::CalculateRawMoments(bool simd, const float* in, int startIndex,
     }
   } else {
 #elif defined(__ARM_NEON__)
-    float32x4_t avg1vec = vdupq_f32(0);
-    float32x4_t avg2vec = vdupq_f32(0);
-    float32x4_t avg3vec = vdupq_f32(0);
-    float32x4_t avg4vec = vdupq_f32(0);
+    float32x4_t avg1vec = vdupq_n_f32(0);
+    float32x4_t avg2vec = vdupq_n_f32(0);
+    float32x4_t avg3vec = vdupq_n_f32(0);
+    float32x4_t avg4vec = vdupq_n_f32(0);
     for (int i = startIndex; i < end_index - 3; i+=4) {
       float32x4_t val = vld1q_f32(in + i);
       avg1vec = vaddq_f32(avg1vec, val);
