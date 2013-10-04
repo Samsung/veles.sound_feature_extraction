@@ -45,9 +45,8 @@ void TransformFactory::PrintRegisteredTransforms() const {
   }
 }
 
-const std::string InverseParameterAware::kInverseParameterName = "inverse";
-
-bool InverseParameterAware::HasInverseTransform(const Transform& transform) noexcept {
+bool InverseParameterAware::HasInverseTransform(
+    const Transform& transform) noexcept {
   auto ip = transform.GetParameters().find(kInverseParameterName);
   return ip != transform.GetParameters().end();
 }

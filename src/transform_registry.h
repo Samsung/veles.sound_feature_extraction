@@ -51,10 +51,14 @@ class TransformFactory {
   FactoryMap map_;
 };
 
+/// @brief The name of the parameter which indicates whether the transform is
+/// is inverse or not.
+/// @details Unable to use static const member of InverseParameterAware
+/// due to static constructors invocation order uncertainty.
+#define kInverseParameterName "inverse"
+
 class InverseParameterAware {
  public:
-  static const std::string kInverseParameterName;
-
   /// @brief Checks for the support of doing an inverse transform.
   /// @details This function tests the transform's parameters for
   /// the existence of INVERSE_PARAMETER.

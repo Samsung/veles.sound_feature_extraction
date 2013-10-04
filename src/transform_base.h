@@ -130,6 +130,9 @@ class TransformBase : public virtual Transform,
   }
 
   bool IsInverse() const noexcept {
+    if (!SupportsInversion) {
+      return false;
+    }
     auto ip = GetParameters().find(kInverseParameterName);
     if (ip == GetParameters().end()) {
       return false;
@@ -217,7 +220,7 @@ virtual const std::string& Description() const noexcept override final { \
       static const std::unordered_map<std::string, ParameterTraits> sp = \
           this->HasInverseTransform()? \
               std::unordered_map<std::string, ParameterTraits> { \
-                TP(this->kInverseParameterName, \
+                TP(kInverseParameterName, \
                   "Value indicating whether this transform is inverse.", \
                   "false") \
                 init \

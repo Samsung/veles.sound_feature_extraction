@@ -106,10 +106,6 @@ class Logger {
   void set_color(const std::string &value) noexcept;
 
  private:
-  static const int kUnintializedLogDomain_ = -1;
-  static const std::string kCommonDomain;
-  static const std::string kDefaultLoggerColor;
-
   int log_domain_;
   std::string domain_str_;
   std::string color_;
