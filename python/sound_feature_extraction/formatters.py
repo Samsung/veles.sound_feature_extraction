@@ -33,7 +33,7 @@ class Formatters(object):
             comma_pos = format_name.find(",")
             length = int(format_name[length_pos + 1:comma_pos])
             atype = format_name[comma_pos + 2:
-                                len(format_name) - 1]
+                                len(format_name) - 2]
             res = Formatters.reinterpret_cast(array, atype)
             if res.size % length != 0:
                 logging.error("Format size mismatch: real " + res.size +
