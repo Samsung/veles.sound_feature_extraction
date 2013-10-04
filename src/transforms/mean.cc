@@ -94,25 +94,30 @@ float Mean::Do(bool simd, const float* input, size_t length,
 #ifdef __AVX__
         __m256 res = _mm256_set1_ps(1.f), tmp = _mm256_set1_ps(1.f);
         const __m256 powvec = _mm256_set1_ps(power);
-        const __m256 infvec = _mm256_set1_ps(std::numeric_limits<float>::infinity());
+        const __m256 infvec = _mm256_set1_ps(
+            std::numeric_limits<float>::infinity());
         for (int j = 0; j < ilength - 7; j += 8) {
           __m256 vec = _mm256_load_ps(input + j);
           __m256 mulvec = _mm256_mul_ps(tmp, vec);
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
           __m256 cmpvec = _mm256_cmp_ps(mulvec, infvec, _CMP_EQ_UQ);
-#pragma GCC diagnostic pop
           // I do not know how to check fast if at least one element is inf;
           // Using 2 hadd and 2 comparisons
           cmpvec = _mm256_hadd_ps(cmpvec, cmpvec);
           cmpvec = _mm256_hadd_ps(cmpvec, cmpvec);
           if (ElementAt(cmpvec, 0) != 0 || ElementAt(cmpvec, 4) != 0) {
+            // Taking a power from 0 can lead to unexpected results...
+            // Apply the mask to workaround zeros in tmp
+            cmpvec = _mm256_cmp_ps(tmp, _mm256_set1_ps(0.f), _CMP_EQ_UQ);
             tmp = pow256_ps(tmp, powvec);
+            tmp = _mm256_blendv_ps(tmp, _mm256_set1_ps(0.f), cmpvec);
             res = _mm256_mul_ps(res, tmp);
             tmp = vec;
           } else {
             tmp = mulvec;
           }
+#pragma GCC diagnostic pop
         }
         for (int i = 0; i < 8; i++) {
           if (ElementAt(tmp, i) == 0) {
