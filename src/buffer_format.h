@@ -50,6 +50,7 @@ class BufferFormat {
   bool operator!=(const BufferFormat& other) const noexcept;
 
   size_t SizeInBytes() const noexcept;
+  virtual size_t UnalignedSizeInBytes() const noexcept = 0;
 
   int SamplingRate() const noexcept;
   void SetSamplingRate(int value);
@@ -67,9 +68,6 @@ class BufferFormat {
   static T Aligned(T value) noexcept {
     return (value & (0x80 - 1)) == 0? value : (value & ~(0x80 - 1)) + 0x80;
   }
-
- protected:
-  virtual size_t UnalignedSizeInBytes() const noexcept = 0;
 
  private:
   static const int MIN_SAMPLING_RATE = 2000;

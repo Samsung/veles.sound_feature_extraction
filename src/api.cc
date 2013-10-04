@@ -315,7 +315,7 @@ FeatureExtractionResult extract_speech_features(
   int i = 0;
   for (auto res : retmap) {
     copy_string(res.first, *featureNames + i);
-    size_t sizeEach = res.second->Format()->SizeInBytes();
+    size_t sizeEach = res.second->Format()->UnalignedSizeInBytes();
     assert(sizeEach > 0);
     size_t size = sizeEach * res.second->Count();
     (*resultLengths)[i] = size;
