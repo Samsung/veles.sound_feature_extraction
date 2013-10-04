@@ -202,7 +202,7 @@ void TransformTree::Node::ApplyAllocationTree(
 
 void TransformTree::Node::Execute() {
   if (Parent != nullptr) {
-    DBG("Executing");
+    DBG("Executing %s...", BoundTransform->Name().c_str());
     auto checkPointStart = std::chrono::high_resolution_clock::now();
     BoundTransform->Do(*Parent->BoundBuffers, BoundBuffers.get());
     auto checkPointFinish = std::chrono::high_resolution_clock::now();
