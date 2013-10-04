@@ -78,14 +78,12 @@ void Diff::DoRectify(bool simd, const float* input, int length,
                      float* output) noexcept {
   if (simd) {
 #ifdef __AVX__
-    for (int i = 0; i < length - 15; i += 8) {
-      for (int i = 1; i < length - 7; i += 8) {
-        __m256 vec1 = _mm256_loadu_ps(input + i);
-        __m256 vec2 = _mm256_load_ps(input + i - 1);
-        __m256 result = _mm256_sub_ps(vec1, vec2);
-        result = _mm256_max_ps(result, _mm256_setzero_ps());
-        _mm256_store_ps(output + i - 1, result);
-      }
+    for (int i = 1; i < length - 7; i += 8) {
+      __m256 vec1 = _mm256_loadu_ps(input + i);
+      __m256 vec2 = _mm256_load_ps(input + i - 1);
+      __m256 result = _mm256_sub_ps(vec1, vec2);
+      result = _mm256_max_ps(result, _mm256_setzero_ps());
+      _mm256_store_ps(output + i - 1, result);
     }
     for (int i = (length & ~0x7); i < length - 1; i++) {
       output[i] = input[i + 1] - input[i];
