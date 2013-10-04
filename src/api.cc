@@ -11,7 +11,7 @@
  */
 
 #define SOUNDFEATUREEXTRACTION_API_IMPLEMENTATION
-#include <SoundFeatureExtraction/api.h>
+#include <sound_feature_extraction/api.h>
 #undef NOTNULL
 #include <assert.h>
 #include <stddef.h>
