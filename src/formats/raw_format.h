@@ -106,12 +106,17 @@ class RawFormat
       ret += "----" + std::to_string(i) + "----\n";
       for (size_t j = 0; j < size_; j++) {
         auto strval = std::to_string(buffers[i][j]);
-        size_t sizeLimit = 24;
+        int size_limit = 24;
         if (strval[0] != '-') {
           ret += ' ';
-          sizeLimit--;
+          size_limit--;
         }
-        ret += strval + std::string(sizeLimit - strval.size(), ' ');
+        int skip_size = size_limit - strval.size();
+        if (skip_size > 0) {
+          ret += strval + std::string(skip_size, ' ');
+        } else {
+          ret += strval;
+        }
         if (((j + 1) % 10) == 0) {
           ret += "\n";
         }
