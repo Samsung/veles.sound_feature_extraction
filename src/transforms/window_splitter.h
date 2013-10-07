@@ -35,8 +35,8 @@ class WindowSplitterTemplate
         interleaved_(true) {
     this->RegisterSetter("length", [&](const std::string& value) {
       int pv = this->template Parse<int>("length", value);
-      if (pv < Formats::RawFormatF::MIN_SAMPLES ||
-          pv > kMaxWindowSamples) {
+      if (pv < Formats::RawFormatF::kMinSamplesCount ||
+          pv > Formats::RawFormatF::kMaxSamplesCount) {
         return false;
       }
       length_ = pv;
@@ -58,16 +58,16 @@ class WindowSplitterTemplate
       type_ = wti->second;
       return true;
     });
+    this->RegisterSetter("interleaved", [&](const std::string& value) {
+      interleaved_ = this->template Parse<bool>("interleaved", value);
+      return true;
+    });
     this->RegisterSetter("inverse_count", [&](const std::string& value) {
       int pv = this->template Parse<int>("inverse_count", value);
       if (pv < 1) {
         return false;
       }
       inverseCount_ = pv;
-      return true;
-    });
-    this->RegisterSetter("inverse_interleaved", [&](const std::string& value) {
-      interleaved_ = this->template Parse<bool>("inverse_interleaved", value);
       return true;
     });
   }
@@ -84,10 +84,11 @@ class WindowSplitterTemplate
       TP("type", "Type of the window. E.g. \"rectangular\" "
                  "or \"hamming\".",
          "hamming")
+      TP("interleaved", "Interleave windows from sequential input buffers. "
+                        "In inverse mode, treat the windows as interleaved.",
+         std::to_string(kDefaultInterleaved))
       TP("inverse_count", "The resulting count of buffers in inverse mode.",
          std::to_string(kDefaultInverseCount))
-      TP("inverse_interleaved", "Treat windows as interleaved in inverse mode.",
-         std::to_string(kDefaultInterleaved))
   )
 
   virtual void Initialize() const noexcept {
@@ -161,9 +162,8 @@ class WindowSplitterTemplate
  protected:
   static const int kDefaultLength = 512;
   static const int kDefaultStep = 205;
-  static const int kMaxWindowSamples = 8096;
   static const int kDefaultInverseCount = 1;
-  static const bool kDefaultInterleaved = true;
+  static const bool kDefaultInterleaved = false;
 };
 
 class WindowSplitter16 : public WindowSplitterTemplate<int16_t> {

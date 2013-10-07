@@ -38,7 +38,7 @@ TEST_F(WindowSplitterTest, Do) {
 
 TEST_F(WindowSplitterTest, DoInverseInterleaved) {
   SetParameter("inverse", "true");
-  SetParameter("inverse_interleaved", "true");
+  SetParameter("interleaved", "true");
   SetParameter("step", "309");
   SetParameter("inverse_count", "2");
   RecreateOutputBuffers();

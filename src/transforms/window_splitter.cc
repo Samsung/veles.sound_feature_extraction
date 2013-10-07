@@ -28,7 +28,8 @@ const noexcept {
   for (size_t i = 0; i < in.Count(); i++) {
     for (int j = 0; j < windowsCount_; j++) {
       auto input = in[i] + j * step_;
-      auto output = (*out)[i * windowsCount_ + j];
+      auto output = interleaved_? (*out)[i * windowsCount_ + j] :
+                                  (*out)[j * in.Count() + i];
       if (type_ != WINDOW_TYPE_RECTANGULAR) {
 #ifdef __AVX__
         if (align_complement_i16(input) != 0) {
