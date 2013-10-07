@@ -118,3 +118,10 @@ class Extractor(object):
         self.free_results(results)
         del(results[Extractor.RAW_KEY_NAME])
         return results
+
+    def report(self, file_name):
+        '''
+        Save the extraction report graph.
+        '''
+        Library().report_extraction_graph(self._config,
+                                          c_char_p(file_name.encode()))
