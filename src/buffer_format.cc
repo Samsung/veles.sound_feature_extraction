@@ -57,7 +57,7 @@ void BufferFormat::SetSamplingRate(int value) {
 }
 
 void BufferFormat::ValidateSamplingRate(int value) {
-  if (value < MIN_SAMPLING_RATE || value > MAX_SAMPLING_RATE) {
+  if (value < kMinSamplingRate || value > kMaxSamplingRate) {
     throw Formats::InvalidSamplingRateException(value);
   }
 }

@@ -38,6 +38,7 @@ class Buffers {
   void Validate() const;
 
   std::string Dump() const noexcept;
+  std::string Dump(size_t index) const noexcept;
 
  protected:
   void* Data() noexcept;

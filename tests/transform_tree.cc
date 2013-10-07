@@ -25,9 +25,13 @@ class ParentTestFormat : public BufferFormatBase<ParentChunk> {
   virtual void Validate(const BuffersBase<ParentChunk>&) const override {
   }
 
-  virtual std::string Dump(const BuffersBase<ParentChunk>&)
+  virtual std::string Dump(const BuffersBase<ParentChunk>&, size_t)
       const noexcept override {
     return "";
+  }
+
+  virtual std::string ToString() const noexcept override {
+    return Id();
   }
 
  protected:
@@ -51,7 +55,6 @@ class ParentTestTransform
                           "1"))
 
  protected:
-
   virtual void InitializeBuffers(const BuffersBase<int16_t*>&,
                                  BuffersBase<ParentChunk>*)
   const noexcept {
@@ -70,9 +73,13 @@ class ChildTestFormat : public BufferFormatBase<ChildChunk> {
   virtual void Validate(const BuffersBase<ChildChunk>&) const override {
   }
 
-  virtual std::string Dump(const BuffersBase<ChildChunk>&)
+  virtual std::string Dump(const BuffersBase<ChildChunk>&, size_t)
       const noexcept override {
     return "";
+  }
+
+  virtual std::string ToString() const noexcept override {
+    return Id();
   }
 
  protected:

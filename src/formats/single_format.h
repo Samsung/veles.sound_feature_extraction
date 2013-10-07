@@ -134,16 +134,17 @@ class SingleFormat : public BufferFormatBase<T> {
     SpecializedValidate(buffers, this->Id());
   }
 
-  virtual std::string Dump(const BuffersBase<T>& buffers)
+  virtual std::string Dump(const BuffersBase<T>& buffers, size_t index)
       const noexcept override {
-    std::string ret;
-    for (size_t i = 0; i < buffers.Count(); i++) {
-      auto indexStr = std::to_string(i);
-      indexStr += ":";
-      indexStr += std::string(7 - indexStr.size(), ' ');
-      ret += indexStr + std::to_string(buffers[i]) + "\n";
-    }
+    auto indexStr = std::to_string(index);
+    indexStr += ":";
+    indexStr += std::string(7 - indexStr.size(), ' ');
+    std::string ret = indexStr + std::to_string(buffers[index]) + "\n";
     return ret;
+  }
+
+  virtual std::string ToString() const noexcept override {
+    return this->Id();
   }
 };
 

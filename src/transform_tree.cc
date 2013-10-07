@@ -202,7 +202,9 @@ void TransformTree::Node::ApplyAllocationTree(
 
 void TransformTree::Node::Execute() {
   if (Parent != nullptr) {
-    DBG("Executing %s...", BoundTransform->Name().c_str());
+    DBG("Executing %s on %zu buffers -> %zu...",
+        BoundTransform->Name().c_str(),
+        Parent->BoundBuffers->Count(), BoundBuffers->Count());
     auto checkPointStart = std::chrono::high_resolution_clock::now();
     BoundTransform->Do(*Parent->BoundBuffers, BoundBuffers.get());
     auto checkPointFinish = std::chrono::high_resolution_clock::now();
@@ -215,9 +217,18 @@ void TransformTree::Node::Execute() {
       }
       catch(const InvalidBuffersException& e) {
 #ifdef DEBUG
-        DBG("Validation failed.\n----Buffers before----\n%s\n\n"
-            "----Buffers after----\n%s\n",
-            Parent->BoundBuffers->Dump().c_str(), BoundBuffers->Dump().c_str());
+        if (BoundBuffers->Count() == Parent->BoundBuffers->Count()) {
+          DBG("Validation failed on index %zu.\n----before----\n%s\n\n"
+              "----after----\n%s\n",
+              e.index(),
+              Parent->BoundBuffers->Dump(e.index()).c_str(),
+              BoundBuffers->Dump(e.index()).c_str());
+        } else {
+          DBG("Validation failed.\n----Buffers before----\n%s\n\n"
+              "----Buffers after----\n%s\n",
+              Parent->BoundBuffers->Dump().c_str(),
+              BoundBuffers->Dump().c_str());
+        }
 #endif
         throw TransformResultedInInvalidBuffersException(BoundTransform->Name(),
                                                          e.what());

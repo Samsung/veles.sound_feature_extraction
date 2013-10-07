@@ -60,7 +60,8 @@ class BufferFormat {
 
   virtual void Validate(const Buffers& buffers) const = 0;
 
-  virtual std::string Dump(const Buffers& buffers) const = 0;
+  virtual std::string Dump(const Buffers& buffers, size_t index) const = 0;
+  virtual std::string ToString() const noexcept = 0;
 
   static void ValidateSamplingRate(int value);
 
@@ -70,8 +71,8 @@ class BufferFormat {
   }
 
  private:
-  static const int MIN_SAMPLING_RATE = 2000;
-  static const int MAX_SAMPLING_RATE = 48000;
+  static const int kMinSamplingRate = 2000;
+  static const int kMaxSamplingRate = 48000;
 
   std::string id_;
   int samplingRate_;

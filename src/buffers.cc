@@ -80,7 +80,24 @@ void Buffers::Validate() const {
 }
 
 std::string Buffers::Dump() const noexcept {
-  return format_->Dump(*this);
+  std::string ret("====Dump of ");
+  ret += std::to_string(Count());
+  ret += " buffers (format ";
+  ret += format_->ToString();
+  ret += ")====\n";
+  for (size_t i = 0; i < Count(); i++) {
+    ret += format_->Dump(*this, i);
+  }
+  return ret;
+}
+
+std::string Buffers::Dump(size_t index) const noexcept {
+  std::string ret("====Dump of [");
+  ret += std::to_string(index);
+  ret += "] (format ";
+  ret += format_->ToString();
+  ret += ")====\n";
+  return ret + format_->Dump(*this, index);
 }
 
 } /* namespace SoundFeatureExtraction */

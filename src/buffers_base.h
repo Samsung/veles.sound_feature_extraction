@@ -29,7 +29,16 @@ class InvalidBuffersException : public ExceptionBase {
                           size_t index, const std::string& value)
   : ExceptionBase("Buffers[" + std::to_string(index) +
                   "] is invalid (" + value + "). Format is " +
-                  format + ".") {}
+                  format + "."),
+    index_(index) {
+  }
+
+  size_t index() const noexcept {
+    return index_;
+  }
+
+ private:
+  size_t index_;
 };
 
 template <typename T>
@@ -56,16 +65,12 @@ class BufferFormatBase : public BufferFormat {
     Validate(reinterpret_cast<const BuffersBase<T>&>(buffers));
   }
 
-  virtual std::string Dump(const Buffers& buffers)
+  virtual std::string Dump(const Buffers& buffers, size_t index)
       const noexcept override final {
     if (*this != *buffers.Format()) {
       throw InvalidFormatException(Id(), buffers.Format()->Id());
     }
-    std::string ret("Buffers count: ");
-    ret += std::to_string(buffers.Count());
-    ret += "\n";
-    ret += Dump(reinterpret_cast<const BuffersBase<T>&>(buffers));
-    return ret;
+    return Dump(reinterpret_cast<const BuffersBase<T>&>(buffers), index);
   }
 
  protected:
@@ -75,7 +80,8 @@ class BufferFormatBase : public BufferFormat {
 
   virtual void Validate(const BuffersBase<T>& buffers) const = 0;
 
-  virtual std::string Dump(const BuffersBase<T>& buffers) const noexcept = 0;
+  virtual std::string Dump(const BuffersBase<T>& buffers, size_t index)
+      const noexcept = 0;
 };
 
 namespace Validation {

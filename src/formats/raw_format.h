@@ -77,8 +77,8 @@ class RawFormat
     size_ = value;
   }
 
-  static const int MIN_SAMPLES = 32;
-  static const int MAX_SAMPLES = (1 << 30);
+  static const int kMinSamplesCount = 32;
+  static const int kMaxSamplesCount = (1 << 30);
 
  protected:
   virtual void Validate(const BuffersBase<T*>& buffers) const {
@@ -99,31 +99,32 @@ class RawFormat
     }
   }
 
-  virtual std::string Dump(const BuffersBase<T*>& buffers) const noexcept {
-    std::string ret("Length each: ");
-    ret += std::to_string(size_) + "\n";
-    for (size_t i = 0; i < buffers.Count(); i++) {
-      ret += "----" + std::to_string(i) + "----\n";
-      for (size_t j = 0; j < size_; j++) {
-        auto strval = std::to_string(buffers[i][j]);
-        int size_limit = 24;
-        if (strval[0] != '-') {
-          ret += ' ';
-          size_limit--;
-        }
-        int skip_size = size_limit - strval.size();
-        if (skip_size > 0) {
-          ret += strval + std::string(skip_size, ' ');
-        } else {
-          ret += strval;
-        }
-        if (((j + 1) % 10) == 0) {
-          ret += "\n";
-        }
+  virtual std::string Dump(const BuffersBase<T*>& buffers, size_t index)
+      const noexcept override {
+    std::string ret;
+    for (size_t j = 0; j < size_; j++) {
+      auto strval = std::to_string(buffers[index][j]);
+      int size_limit = 24;
+      if (strval[0] != '-') {
+        ret += ' ';
+        size_limit--;
       }
-      ret += "\n";
+      int skip_size = size_limit - strval.size();
+      if (skip_size > 0) {
+        ret += strval + std::string(skip_size, ' ');
+      } else {
+        ret += strval;
+      }
+      if (((j + 1) % 10) == 0) {
+        ret += "\n";
+      }
     }
+    ret += "----------------\n";
     return ret;
+  }
+
+  virtual std::string ToString() const noexcept override {
+    return this->Id() + " of size " + std::to_string(Size());
   }
 
   virtual size_t UnalignedSizeInBytes() const noexcept override {
@@ -131,12 +132,12 @@ class RawFormat
   }
 
   static constexpr size_t MIN_DURATION() {
-    return 1 + MIN_SAMPLES * 1000 /
+    return 1 + kMinSamplesCount * 1000 /
         BufferFormatBase<T*>::MAX_SAMPLING_RATE;
   }
 
   static constexpr size_t MAX_DURATION() {
-    return MAX_SAMPLES * 1000 /
+    return kMaxSamplesCount * 1000 /
         BufferFormatBase<T*>::MIN_SAMPLING_RATE;
   }
 
