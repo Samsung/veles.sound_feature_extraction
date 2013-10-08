@@ -18,7 +18,7 @@
 #include "src/formats/raw_format.h"
 #include "src/primitives/window.h"
 
-struct ConvoluteHandle;
+struct ConvolutionHandle;
 
 namespace std {
   class mutex;
@@ -56,7 +56,7 @@ class FirFilterBase
 
  private:
   struct SyncHandle {
-    std::shared_ptr<ConvoluteHandle> handle;
+    std::shared_ptr<ConvolutionHandle> handle;
     std::shared_ptr<std::mutex> mutex;
   };
 

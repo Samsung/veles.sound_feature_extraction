@@ -16,7 +16,7 @@
 #include <vector>
 #include "src/transforms/common.h"
 
-typedef struct ConvoluteHandle CrossCorrelateHandle;
+typedef struct ConvolutionHandle CrossCorrelationHandle;
 
 namespace std {
   class mutex;
@@ -43,7 +43,7 @@ class Autocorrelation
 
  private:
   struct SyncHandle {
-    std::shared_ptr<CrossCorrelateHandle> handle;
+    std::shared_ptr<CrossCorrelationHandle> handle;
     std::shared_ptr<std::mutex> mutex;
   };
 

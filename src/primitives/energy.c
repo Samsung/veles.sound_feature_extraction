@@ -32,9 +32,11 @@ float calculate_energy(int simd, const float *signal, size_t length) {
 
     for (int j = startIndex; j < ilength - 7; j += 8) {
       __m256 vec = _mm256_load_ps(signal + j);
-      vec = _mm256_dp_ps(vec, vec, 0xFF);
+      vec = _mm256_mul_ps(vec, vec);
       accum = _mm256_add_ps(accum, vec);
     }
+    accum = _mm256_hadd_ps(accum, accum);
+    accum = _mm256_hadd_ps(accum, accum);
     energy += accum[0] + accum[4];
 
     for (int j = startIndex + (((ilength - startIndex) >> 3) << 3);

@@ -11,7 +11,6 @@
  */
 
 #include "src/transforms/beat.h"
-#include <simd/matrix.h>
 #include "src/make_unique.h"
 #include "src/primitives/energy.h"
 #include <cmath>
@@ -19,14 +18,10 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-const float Beat::kInitialBeatsValue = 150.f;
-const float Beat::kDifference[4] = { 90.f, 2.f, 0.5f, 0.1f };
-const float Beat::kStep[4] = { 1.f, 0.5f, 0.1f, 0.01f };
-const int Beat::kMaxFrequency = 4096;
-const float Beat::kCoefficient = 120.0f;
-const int Beat::kPulses = 3;
+constexpr float Beat::kDifference[Beat::kStepsCount];
+constexpr float Beat::kStep[Beat::kStepsCount];
 
-Beat::Beat() : buffer_(nullptr, std::free), bands_(1) {
+Beat::Beat() : buffer_(nullptr, std::free), bands_(1), pulses_(kDefaultPulses) {
   RegisterSetter("bands", [&](const std::string& value) {
     int iv = Parse<int>("bands", value);
     if (iv < 1) {
@@ -35,6 +30,23 @@ Beat::Beat() : buffer_(nullptr, std::free), bands_(1) {
     bands_ = iv;
     return true;
   });
+  RegisterSetter("pulses", [&](const std::string& value) {
+    int iv = Parse<int>("pulses", value);
+    if (iv < 1) {
+      return false;
+    }
+    pulses_ = iv;
+    return true;
+  });
+}
+
+constexpr float Beat::MinBeatsPerMinuteValue() {
+  return kInitialBeatsValue - kDifference[0] - kDifference[1] -
+      kDifference[2] - kDifference[3];
+}
+
+size_t Beat::PulsesLength(int pulses_count, int period) noexcept {
+  return (pulses_count - 1) * period + 1;
 }
 
 size_t Beat::OnInputFormatChanged(size_t buffersCount) {
@@ -42,8 +54,40 @@ size_t Beat::OnInputFormatChanged(size_t buffersCount) {
 }
 
 void Beat::Initialize() const noexcept {
-  buffer_ = std::uniquify(mallocf(this->inputFormat_->Size() * sizeof(float)),
-                          std::free);
+  float max_period = floorf(60 * inputFormat_->SamplingRate() /
+                            MinBeatsPerMinuteValue());
+  size_t max_pulses_length = PulsesLength(pulses_, max_period);
+  buffer_ = std::uniquify(mallocf(
+      (this->inputFormat_->Size() + max_pulses_length - 1) * sizeof(float)),
+      std::free);
+}
+
+void Beat::CombConvolve(const float* in, size_t size, int pulses,
+                        int period, float* out) noexcept {
+  int pp = PulsesLength(pulses, period);
+  for (int i = 0; i < pp - 1; i++) {
+    float res = 0;
+    for (int j = 0; j <= i; j += period) {
+      res += in[i - j];
+    }
+    out[i] = res;
+  }
+
+  for (int i = pp - 1; i < static_cast<int>(size); i++) {
+    float res = 0;
+    for (int j = 0; j < pp; j += period) {
+      res += in[i - j];
+    }
+    out[i] = res;
+  }
+
+  for (int i = size; i < static_cast<int>(size + pp - 1); i++) {
+    float res = 0;
+    for (int j = ((i - size) / period + 1) * period; j < pp; j += period) {
+      res += in[i - j];
+    }
+    out[i] = res;
+  }
 }
 
 void Beat::Do(const BuffersBase<float*>& in,
@@ -54,9 +98,7 @@ void Beat::Do(const BuffersBase<float*>& in,
     auto buffer = buffer_.get();
     float step, max_energy = 0;
     float min_beats_per_minute, max_beats_per_minute;
-    for (int j = 0;
-         j < static_cast<int>(sizeof(kDifference) / sizeof(kDifference[0]));
-         j++) {
+    for (int j = 0; j < static_cast<int>(kStepsCount); j++) {
       min_beats_per_minute = result - kDifference[j];
       if (min_beats_per_minute < 1) {
         min_beats_per_minute = 1;
@@ -66,18 +108,15 @@ void Beat::Do(const BuffersBase<float*>& in,
       max_energy = 0;
       float beats_per_minute = min_beats_per_minute;
       while (beats_per_minute < max_beats_per_minute) {
+        // 60 is the number of seconds in one minute
+        int period = floorf(60 * inputFormat_->SamplingRate() /
+                            beats_per_minute);
         float current_energy = 0;
-        int period = floorf(kCoefficient * kMaxFrequency / beats_per_minute)+1;
-        auto pulse_offset = period * kPulses;
-        for (size_t in_index = ini;
-             in_index < ini + bands_ && in_index < in.Count();
-             in_index++) {
-          memcpy(buffer, in[in_index], pulse_offset * sizeof(float));
-          matrix_sub(true, in[in_index] + pulse_offset, in[in_index],
-                     size - pulse_offset, 1, buffer + pulse_offset);
-          matrix_add(true, buffer + period, buffer, size - period, 1,
-                     buffer + period);
-          current_energy += calculate_energy(Beat::UseSimd(), buffer, size);
+        size_t conv_length = size + PulsesLength(pulses_, period) - 1;
+        for (size_t i = ini; i < ini + bands_ && i < in.Count(); i++) {
+          CombConvolve(in[i], size, pulses_, period, buffer);
+          current_energy += calculate_energy(Beat::UseSimd(), buffer,
+                                             conv_length) * conv_length;
         }
         if (current_energy > max_energy) {
           max_energy = current_energy;

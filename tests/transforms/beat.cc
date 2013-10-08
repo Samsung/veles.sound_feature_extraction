@@ -22,15 +22,22 @@ class BeatTest : public TransformTest<Beat> {
   int Size;
 
   virtual void SetUp() {
-    Size = data[0];
-    SetUpTransform(1, Size, 18000);
-    for (int i = 0; i < data[0]; ++i) {
-      (*Input)[0][i] = data[i + 1];
-    }
+    Size = sizeof(data_test) / sizeof(data_test[0]);
+    SetUpTransform(1, Size, 3000);
+    memcpy((*Input)[0], data_test, Size * sizeof(float));
   }
 };
 
 TEST_F(BeatTest, Do) {
   Do((*Input), &(*Output));
-  ASSERT_NEAR(122.85f, (*Output)[0], 1.f);
+  ASSERT_NEAR(180.f, (*Output)[0], 0.2f);
+}
+
+TEST_F(BeatTest, CombConvolve) {
+  auto data_size = sizeof(data_conv) / sizeof(data_conv[0]);
+  float out[data_size + 2001 - 1];
+  CombConvolve(data_conv, data_size, 3, 1000, out);
+  for (int i = 0; i < static_cast<int>(data_size) + 2000; i++) {
+    ASSERT_NEAR(out[i], data_conv_result[i], 0.0001f) << "i = " << i;
+  }
 }

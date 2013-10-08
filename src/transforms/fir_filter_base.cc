@@ -12,7 +12,7 @@
 
 #include "src/transforms/fir_filter_base.h"
 #include <simd/arithmetic-inl.h>
-#include <simd/convolute.h>
+#include <simd/convolve.h>
 #include <mutex>
 
 namespace SoundFeatureExtraction {
@@ -48,11 +48,11 @@ void FirFilterBase::Initialize() const noexcept {
 
   convolutionHandles_.resize(MaxThreadsNumber());
   for (int i = 0; i < MaxThreadsNumber(); i++) {
-    convolutionHandles_[i].handle = std::shared_ptr<ConvoluteHandle>(
-        new ConvoluteHandle(convolute_initialize(inputFormat_->Size(),
-                                                 filter_.size())),
-        [](ConvoluteHandle* ptr) {
-          convolute_finalize(*ptr);
+    convolutionHandles_[i].handle = std::shared_ptr<ConvolutionHandle>(
+        new ConvolutionHandle(convolve_initialize(inputFormat_->Size(),
+                                                  filter_.size())),
+        [](ConvolutionHandle* ptr) {
+          convolve_finalize(*ptr);
           delete ptr;
         }
     );
@@ -70,7 +70,7 @@ void FirFilterBase::Do(const float* in,
 const noexcept {
   for (auto hp : convolutionHandles_) {
     if (hp.mutex->try_lock()) {
-      convolute(*hp.handle, in, &filter_[0], out);
+      convolve(*hp.handle, in, &filter_[0], out);
       hp.mutex->unlock();
       break;
     }

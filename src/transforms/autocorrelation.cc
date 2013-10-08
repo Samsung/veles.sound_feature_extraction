@@ -22,10 +22,10 @@ namespace Transforms {
 void Autocorrelation::Initialize() const noexcept {
   correlationHandles_.resize(MaxThreadsNumber());
   for (int i = 0; i < MaxThreadsNumber(); i++) {
-    correlationHandles_[i].handle = std::shared_ptr<CrossCorrelateHandle>(
-        new CrossCorrelateHandle(cross_correlate_initialize(
+    correlationHandles_[i].handle = std::shared_ptr<CrossCorrelationHandle>(
+        new CrossCorrelationHandle(cross_correlate_initialize(
             inputFormat_->Size(), inputFormat_->Size())),
-        [](CrossCorrelateHandle *ptr) {
+        [](CrossCorrelationHandle *ptr) {
           cross_correlate_finalize(*ptr);
           delete ptr;
         }
