@@ -25,30 +25,37 @@ class FrequencyBands
  public:
   FrequencyBands();
 
-  TRANSFORM_INTRO("FrequencyBands", "Cut the frequency bands from sequential windows.")
+  TRANSFORM_INTRO("FrequencyBands",
+                  "Cut the frequency bands from sequential windows.")
 
   TRANSFORM_PARAMETERS(
       TP("number", "The number of bands. It should be the same as the cloning "
                    "factor of Fork. You may set the bands configuration by hand "
-                   "with \"bands\" parameter, \"number\" will be discarded then.",
+                   "with \"bands\" parameter, \"number\" will be ignored then.",
          std::to_string(kDefaultBandsNumber))
-      TP("bands", "Bands configuration. Overrides \"number\".",
-         kDefaultBandsConfig)
+      TP("bands", "Bands configuration. Overrides \"number\".", "")
+      TP("filter", "IIR filter type to apply.", kDefaultFilterType)
+      TP("lengths", "IIR filter orders. \"auto\" for automatic selection.",
+         "auto")
   )
 
   virtual void Initialize() const noexcept override;
 
  protected:
+  static constexpr const char* kDefaultFilterType = "chebyshevII";
   static const int kDefaultBandsNumber;
-  static const std::string kDefaultBandsConfig;
 
   virtual void Do(const BuffersBase<float*>& in,
                   BuffersBase<float*>* out) const noexcept override;
+  void SetupFilter(size_t index, int frequency, IIRFilterBase* filter) const;
 
  private:
-  int bandsNumber_;
-  std::string bandsConfig_;
+  mutable int bands_number_;
+  mutable std::string bands_config_;
+  std::string lengths_config_;
+  mutable std::vector<int> lengths_;
   mutable std::vector<std::shared_ptr<IIRFilterBase>> filters_;
+  std::string filter_type_;
 };
 
 }  // namespace Transforms

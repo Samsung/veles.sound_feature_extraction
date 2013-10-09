@@ -44,6 +44,8 @@ class IIRFilterBase : public FilterBase<IIRFilter> {
   float ripple() const;
   float rolloff() const;
 
+  static const std::unordered_map<std::string, IIRFilterType> kFilterTypeMap;
+
  protected:
   template <class F>
   void Execute(const std::shared_ptr<F>& exec, const float* in, float* out) const {
@@ -54,7 +56,6 @@ class IIRFilterBase : public FilterBase<IIRFilter> {
   }
 
   static const IIRFilterType kDefaultIIRFilterType = kIIRFilterTypeButterworth;
-  static const std::unordered_map<std::string, IIRFilterType> kFilterTypeMap;
   static constexpr float kDefaultIIRFilterRipple = 1;
   static constexpr float kDefaultIIRFilterRolloff = 0;
 

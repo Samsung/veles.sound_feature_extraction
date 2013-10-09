@@ -25,17 +25,18 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 const int FrequencyBands::kDefaultBandsNumber = Fork::kDefaultFactor;
-const std::string FrequencyBands::kDefaultBandsConfig = "";
+constexpr const char* FrequencyBands::kDefaultFilterType;
 
 FrequencyBands::FrequencyBands()
-    : bandsNumber_(kDefaultBandsNumber),
-      bandsConfig_(kDefaultBandsConfig) {
+    : bands_number_(kDefaultBandsNumber),
+      lengths_config_("auto"),
+      filter_type_(kDefaultFilterType) {
   RegisterSetter("number", [&](const std::string& value) {
     int pv = Parse<int>("number", value);
     if (pv < 1 || pv > 8000) {
       return false;
     }
-    bandsNumber_ = pv;
+    bands_number_ = pv;
     return true;
   });
   RegisterSetter("bands", [&](const std::string& value) {
@@ -57,71 +58,106 @@ FrequencyBands::FrequencyBands()
       }
       oldFreq = freq;
     }
-    bandsConfig_ = value;
+    bands_config_ = value;
+    return true;
+  });
+  RegisterSetter("filter", [&](const std::string& value) {
+    auto fti = IIRFilterBase::kFilterTypeMap.find(value);
+    if (fti == IIRFilterBase::kFilterTypeMap.end()) {
+      return false;
+    }
+    filter_type_ = value;
+    return true;
+  });
+  RegisterSetter("lengths", [&](const std::string& value) {
+    if (value == "auto") {
+      return true;
+    }
+    static const boost::regex allRegex("^\\s*(\\d+\\s*(\\s|$))+");
+    boost::smatch match;
+    if (!boost::regex_match(value, match, allRegex)) {
+      return false;
+    }
+    lengths_config_ = value;
     return true;
   });
 }
 
 void FrequencyBands::Initialize() const noexcept {
   filters_.clear();
-  if (bandsConfig_ == "") {
-    /*for (int i = 0; i < bandsNumber_; i++) {
-      bands_.push_back(inputFormat_->Size() * (i + 1) / bandsNumber_);
-    }*/
-  } else {
-    int last_freq = 0;
-    static const boost::regex bandsRegex("\\s*(\\d+)\\s*");
-    static const boost::sregex_token_iterator empty;
-    boost::sregex_token_iterator bandsIterator(
-          bandsConfig_.begin(), bandsConfig_.end(), bandsRegex, 1);
-    assert(bandsIterator != empty);
-    while (bandsIterator != empty) {
-      int freq = std::stoi(*bandsIterator++);
-      if (freq > inputFormat_->SamplingRate() / 2) {
-        WRN("Warning: the bands after %i (defined by sampling "
-            "rate %i) will be discarded (first greater band was "
-            "%i).\n",
-            inputFormat_->SamplingRate() / 2,
-            inputFormat_->SamplingRate(),
-            freq);
-        last_freq = freq;
-        break;
-      }
-      if (last_freq == 0) {
-        auto filter = std::make_shared<LowpassFilter>();
-        filter->set_frequency(freq);
-        filters_.push_back(filter);
-      } else {
-        auto filter = std::make_shared<BandpassFilter>();
-        filter->set_frequency_low(last_freq);
-        filter->set_frequency_high(freq);
-        auto ratio = last_freq / inputFormat_->SamplingRate() * 2;
-        if (ratio > 0.1f) {
-          if (ratio < 0.3f) {
-            filter->set_length(128);
-          }
-          filter->SetParameter("type", "chebyshevII");
-        }
-        filters_.push_back(filter);
-      }
-      last_freq = freq;
+  if (bands_config_ == "") {
+    for (int i = 1; i < bands_number_; i++) {
+      bands_config_ += std::to_string(static_cast<int>(
+          inputFormat_->SamplingRate() / (2.f * bands_number_) * i)) + " ";
     }
-    // Append high-pass filter
-    auto filter = std::make_shared<HighpassFilter>();
-    filter->set_frequency(last_freq);
-    auto ratio = last_freq / inputFormat_->SamplingRate() * 2;
-    if (ratio > 0.1f) {
-      if (ratio < 0.3f) {
-        filter->set_length(128);
-      }
-      filter->SetParameter("type", "chebyshevII");
-    }
-    filters_.push_back(filter);
   }
+
+  int last_freq = 0, index = 0;
+  static const boost::regex numbersRegex("\\s*(\\d+)\\s*");
+  static const boost::sregex_token_iterator empty;
+  if (lengths_config_ != "auto") {
+    boost::sregex_token_iterator lengthsIterator(
+          lengths_config_.begin(), lengths_config_.end(), numbersRegex, 1);
+    assert(lengthsIterator != empty);
+    while (lengthsIterator != empty) {
+      lengths_.push_back(std::stoi(*lengthsIterator++));
+    }
+  }
+  boost::sregex_token_iterator bandsIterator(
+        bands_config_.begin(), bands_config_.end(), numbersRegex, 1);
+  assert(bandsIterator != empty);
+  while (bandsIterator != empty) {
+    int freq = std::stoi(*bandsIterator++);
+    if (freq > inputFormat_->SamplingRate() / 2) {
+      WRN("Warning: the bands after %i (defined by sampling "
+          "rate %i) will be discarded (first greater band was "
+          "%i).\n",
+          inputFormat_->SamplingRate() / 2,
+          inputFormat_->SamplingRate(),
+          freq);
+      last_freq = freq;
+      break;
+    }
+    std::shared_ptr<IIRFilterBase> filter;
+    if (last_freq == 0) {
+      auto f = std::make_shared<LowpassFilter>();
+      f->set_frequency(freq);
+      filter = f;
+    } else {
+      auto f = std::make_shared<BandpassFilter>();
+      f->set_frequency_low(last_freq);
+      f->set_frequency_high(freq);
+      filter = f;
+    }
+    SetupFilter(index++, freq, filter.get());
+    filters_.push_back(filter);
+    last_freq = freq;
+  }
+  // Append high-pass filter
+  auto filter = std::make_shared<HighpassFilter>();
+  filter->set_frequency(last_freq);
+  SetupFilter(index, last_freq, filter.get());
+  filters_.push_back(filter);
+  bands_number_ = filters_.size();
 
   for (const auto& filter : filters_) {
     filter->SetInputFormat(inputFormat_, 1);
     filter->Initialize();
+  }
+}
+
+void FrequencyBands::SetupFilter(size_t index, int frequency,
+                                 IIRFilterBase* filter) const {
+  filter->SetParameter("type", filter_type_);
+  auto ratio = frequency / inputFormat_->SamplingRate() * 2;
+  if (lengths_.size() > index) {
+    filter->set_length(lengths_[index]);
+  } else {
+    if (ratio < 0.1f) {
+      filter->set_length(64);
+    } else if (ratio < 0.3f) {
+      filter->set_length(128);
+    }
   }
 }
 
