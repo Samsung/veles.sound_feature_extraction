@@ -11,7 +11,7 @@
  */
 
 #include "src/transform.h"
-#include <assert.h>
+#include <cassert>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <boost/algorithm/string/replace.hpp>

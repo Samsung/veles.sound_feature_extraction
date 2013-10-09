@@ -11,7 +11,7 @@
  */
 
 #include "src/buffer_format.h"
-#include <assert.h>
+#include <cassert>
 
 namespace SoundFeatureExtraction {
 

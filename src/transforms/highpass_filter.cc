@@ -16,29 +16,98 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-HighpassFilter::HighpassFilter() noexcept
-    : frequency_(DEFAULT_FILTER_HIGH_FREQUENCY) {
-  RegisterSetter("frequency", [&](const std::string& value) {
-    int pv = Parse<int>("frequency", value);
-    if (pv < MIN_FILTER_FREQUENCY || pv > MAX_FILTER_FREQUENCY) {
-      return false;
+std::shared_ptr<IIRFilter> HighpassFilter::CreateExecutor() const noexcept {
+  switch (type()) {
+    case kIIRFilterTypeBessel: {
+      auto ret = std::make_shared<Dsp::SimpleFilter<
+          Dsp::Bessel::HighPass<kMaxFilterLength>, 1>>();
+      ret->setup(length(), inputFormat_->SamplingRate(), frequency());
+      return std::static_pointer_cast<IIRFilter>(ret);
     }
-    frequency_ = pv;
-    return true;
-  });
+    case kIIRFilterTypeButterworth: {
+      auto ret = std::make_shared<Dsp::SimpleFilter<
+          Dsp::Butterworth::HighPass<kMaxFilterLength>, 1>>();
+      ret->setup(length(), inputFormat_->SamplingRate(), frequency());
+      return std::static_pointer_cast<IIRFilter>(ret);
+    }
+    case kIIRFilterTypeChebyshevI: {
+      auto ret = std::make_shared<Dsp::SimpleFilter<
+          Dsp::ChebyshevI::HighPass<kMaxFilterLength>, 1>>();
+      ret->setup(length(), inputFormat_->SamplingRate(), frequency(), ripple());
+      return std::static_pointer_cast<IIRFilter>(ret);
+    }
+    case kIIRFilterTypeChebyshevII: {
+      auto ret = std::make_shared<Dsp::SimpleFilter<
+          Dsp::ChebyshevII::HighPass<kMaxFilterLength>, 1>>();
+      ret->setup(length(), inputFormat_->SamplingRate(), frequency(), ripple());
+      return std::static_pointer_cast<IIRFilter>(ret);
+    }
+    case kIIRFilterTypeElliptic: {
+      auto ret = std::make_shared<Dsp::SimpleFilter<
+          Dsp::Elliptic::HighPass<kMaxFilterLength>, 1>>();
+      ret->setup(length(), inputFormat_->SamplingRate(), frequency(), ripple(),
+                 rolloff());
+      return std::static_pointer_cast<IIRFilter>(ret);
+    }
+    case kIIRFilterTypeLegendre: {
+      auto ret = std::make_shared<Dsp::SimpleFilter<
+          Dsp::Legendre::HighPass<kMaxFilterLength>, 1>>();
+      ret->setup(length(), inputFormat_->SamplingRate(), frequency());
+      return std::static_pointer_cast<IIRFilter>(ret);
+    }
+  }
+  return nullptr;
 }
 
-void HighpassFilter::CalculateFilter(float* filter) const noexcept {
-  const float wOffset = (length_ - 1) / 2.0f;
-  int samplingRate = inputFormat_->SamplingRate();
-  for (int n = 0; n < length_; n++) {
-    float h;
-    if (n - wOffset != 0) {
-      h = 1.0f - 2.0f * frequency_ / samplingRate;
-    } else {
-      h = - 2.0f * frequency_ / samplingRate;
-    }
-    filter[n] *= h;
+void HighpassFilter::Execute(const std::shared_ptr<IIRFilter>& exec,
+                             const float* in,
+                             float* out) const {
+  std::shared_ptr<IIRFilter> ptr = exec;
+  switch (type()) {
+    case kIIRFilterTypeBessel:
+      IIRFilterBase::Execute(
+          std::static_pointer_cast<
+              Dsp::SimpleFilter<Dsp::Bessel::HighPass<kMaxFilterLength>, 1>
+          >(ptr),
+          in, out);
+      break;
+    case kIIRFilterTypeButterworth:
+      IIRFilterBase::Execute(
+          std::static_pointer_cast<
+              Dsp::SimpleFilter<Dsp::Butterworth::HighPass<kMaxFilterLength>, 1>
+          >(ptr),
+          in, out);
+      break;
+    case kIIRFilterTypeChebyshevI:
+      IIRFilterBase::Execute(
+          std::static_pointer_cast<
+              Dsp::SimpleFilter<Dsp::ChebyshevI::HighPass<kMaxFilterLength>, 1>
+          >(ptr),
+          in, out);
+      break;
+    case kIIRFilterTypeChebyshevII:
+      IIRFilterBase::Execute(
+          std::static_pointer_cast<
+              Dsp::SimpleFilter<Dsp::ChebyshevII::HighPass<kMaxFilterLength>, 1>
+          >(ptr),
+          in, out);
+      break;
+    case kIIRFilterTypeElliptic:
+      IIRFilterBase::Execute(
+          std::static_pointer_cast<
+              Dsp::SimpleFilter<Dsp::Elliptic::HighPass<kMaxFilterLength>, 1>
+          >(ptr),
+          in, out);
+      break;
+    case kIIRFilterTypeLegendre:
+      IIRFilterBase::Execute(
+          std::static_pointer_cast<
+              Dsp::SimpleFilter< Dsp::Legendre::HighPass<kMaxFilterLength>, 1>
+          >(ptr),
+          in, out);
+      break;
+    default:
+      break;
   }
 }
 

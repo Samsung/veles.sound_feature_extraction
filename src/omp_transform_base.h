@@ -126,13 +126,10 @@ class OmpTransformBaseBufferTypeDispatcher
 };
 
 template <typename FIN, typename FOUT, bool SupportsInversion = false>
-class OmpTransformBaseCommon
-    : public virtual OmpTransformBaseBufferTypeDispatcher<
-          typename FIN::BufferType, typename FOUT::BufferType,
-          SupportsInversion>,
-      public virtual TransformBase<FIN, FOUT, SupportsInversion> {
+class OmpAwareTransform
+    : public virtual TransformBase<FIN, FOUT, SupportsInversion> {
  public:
-  OmpTransformBaseCommon() noexcept
+  OmpAwareTransform() noexcept
     : max_number_of_threads_(get_omp_transforms_max_threads_num()) {
     this->RegisterSetter(MaxThreadsNumberParameterName(),
                          [&](const std::string& value) {
@@ -157,6 +154,20 @@ class OmpTransformBaseCommon
 
  private:
   int max_number_of_threads_;
+};
+
+template <typename F, bool SupportsInversion = false>
+class UniformFormatOmpAwareTransform
+    : public virtual OmpAwareTransform<F, F, SupportsInversion>,
+      public virtual UniformFormatTransform<F, SupportsInversion> {
+};
+
+template <typename FIN, typename FOUT, bool SupportsInversion = false>
+class OmpTransformBaseCommon
+    : public virtual OmpTransformBaseBufferTypeDispatcher<
+          typename FIN::BufferType, typename FOUT::BufferType,
+          SupportsInversion>,
+      public virtual OmpAwareTransform<FIN, FOUT, SupportsInversion> {
 };
 
 template <typename FIN, typename FOUT,

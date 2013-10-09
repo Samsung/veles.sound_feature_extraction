@@ -11,7 +11,7 @@
  */
 
 #include "sliding_blocks_impl.h"
-#include <assert.h>
+#include <cassert>
 #include <algorithm>
 #include <map>
 #include "src/safe_omp.h"

@@ -13,13 +13,14 @@
 #ifndef SRC_TRANSFORMS_BANDPASS_FILTER_H_
 #define SRC_TRANSFORMS_BANDPASS_FILTER_H_
 
-#include "src/transforms/fir_filter_base.h"
+#include "src/transforms/iir_filter_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 /// @brief Discards the frequencies which are lower than the threshold.
-class BandpassFilter : public FirFilterBase {
+class BandpassFilter : public IIRFilterBase,
+                       public TransformLogger<BandpassFilter> {
  public:
   BandpassFilter() noexcept;
 
@@ -27,19 +28,31 @@ class BandpassFilter : public FirFilterBase {
                               "than \"frequency_high\" and lower than "
                               "\"frequency_low\".")
 
-  FIR_FILTER_PARAMETERS(
-      TP("frequency_high", "All frequencies higher will be cut",
-         std::to_string(DEFAULT_FILTER_HIGH_FREQUENCY))
-      TP("frequency_low", "All frequencies lower will be cut",
-         std::to_string(DEFAULT_FILTER_LOW_FREQUENCY))
+  IIR_FILTER_PARAMETERS(
+      TP(kHighFrequencyParameterName, "All frequencies higher will be cut",
+         std::to_string(kMaxFilterFrequency))
+      TP(kLowFrequencyParameterName, "All frequencies lower will be cut",
+         std::to_string(kMinFilterFrequency))
   )
 
+  int frequency_high() const;
+  int frequency_low() const;
+  void set_frequency_high(int value);
+  void set_frequency_low(int value);
+
+  virtual void Initialize() const noexcept override;
+
+  static constexpr const char* kHighFrequencyParameterName = "frequency_high";
+  static constexpr const char* kLowFrequencyParameterName = "frequency_low";
+
  protected:
-  virtual void CalculateFilter(float *filter) const noexcept;
+  virtual std::shared_ptr<IIRFilter> CreateExecutor() const noexcept override;
+  virtual void Execute(const std::shared_ptr<IIRFilter>& exec, const float* in,
+                       float* out) const override;
 
  private:
-  int frequencyHigh_;
-  int frequencyLow_;
+  int frequency_high_;
+  int frequency_low_;
 };
 
 }  // namespace Transforms

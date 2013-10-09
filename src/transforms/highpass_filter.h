@@ -13,29 +13,27 @@
 #ifndef SRC_TRANSFORMS_HIGHPASS_FILTER_H_
 #define SRC_TRANSFORMS_HIGHPASS_FILTER_H_
 
-#include "src/transforms/fir_filter_base.h"
+#include "src/transforms/iir_filter_base.h"
+#include "src/transforms/single_frequency_filter.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 /// @brief Discards the frequencies which are lower than the threshold.
-class HighpassFilter : public FirFilterBase {
+class HighpassFilter : public SingleFrequencyFilter<IIRFilterBase> {
  public:
-  HighpassFilter() noexcept;
-
   TRANSFORM_INTRO("Highpass", "Highpass filter. All frequences lower than "
                               "\"frequency\" shall not pass.")
 
-  FIR_FILTER_PARAMETERS(
-      TP("frequency", "Cutoff frequency",
-         std::to_string(DEFAULT_FILTER_LOW_FREQUENCY))
+  IIR_FILTER_PARAMETERS(
+      TP("frequency", "Suppress frequencies lower than this value.",
+         std::to_string(kMaxFilterFrequency))
   )
 
  protected:
-  virtual void CalculateFilter(float *filter) const noexcept;
-
- private:
-  int frequency_;
+  virtual std::shared_ptr<IIRFilter> CreateExecutor() const noexcept override;
+  virtual void Execute(const std::shared_ptr<IIRFilter>& exec, const float* in,
+                       float* out) const override;
 };
 
 }  // namespace Transforms

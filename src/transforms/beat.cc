@@ -21,7 +21,11 @@ namespace Transforms {
 constexpr float Beat::kDifference[Beat::kStepsCount];
 constexpr float Beat::kStep[Beat::kStepsCount];
 
-Beat::Beat() : buffer_(nullptr, std::free), bands_(1), pulses_(kDefaultPulses) {
+Beat::Beat()
+    : buffer_(nullptr, std::free),
+      bands_(1),
+      pulses_(kDefaultPulses),
+      debug_(false) {
   RegisterSetter("bands", [&](const std::string& value) {
     int iv = Parse<int>("bands", value);
     if (iv < 1) {
@@ -36,6 +40,10 @@ Beat::Beat() : buffer_(nullptr, std::free), bands_(1), pulses_(kDefaultPulses) {
       return false;
     }
     pulses_ = iv;
+    return true;
+  });
+  RegisterSetter("debug", [&](const std::string& value) {
+    debug_ = Parse<bool>("debug", value);
     return true;
   });
 }
@@ -96,21 +104,17 @@ void Beat::Do(const BuffersBase<float*>& in,
     auto result = kInitialBeatsValue;
     auto size = this->inputFormat_->Size();
     auto buffer = buffer_.get();
-    float step, max_energy = 0;
-    float min_beats_per_minute, max_beats_per_minute;
     for (int j = 0; j < static_cast<int>(kStepsCount); j++) {
-      min_beats_per_minute = result - kDifference[j];
-      if (min_beats_per_minute < 1) {
-        min_beats_per_minute = 1;
-      }
-      max_beats_per_minute = result + kDifference[j];
-      step = kStep[j];
-      max_energy = 0;
-      float beats_per_minute = min_beats_per_minute;
-      while (beats_per_minute < max_beats_per_minute) {
+      float min_bpm = result - kDifference[j];
+      float max_bpm = result + kDifference[j];
+      float step = kStep[j];
+      float max_energy = 0;
+      int search_size = floorf((max_bpm - min_bpm) / step);
+      float energies[search_size];
+      for (int i = 0; i < search_size; i++) {
+        float bpm = min_bpm + step * i;
         // 60 is the number of seconds in one minute
-        int period = floorf(60 * inputFormat_->SamplingRate() /
-                            beats_per_minute);
+        int period = floorf(60 * inputFormat_->SamplingRate() / bpm);
         float current_energy = 0;
         size_t conv_length = size + PulsesLength(pulses_, period) - 1;
         for (size_t i = ini; i < ini + bands_ && i < in.Count(); i++) {
@@ -118,11 +122,22 @@ void Beat::Do(const BuffersBase<float*>& in,
           current_energy += calculate_energy(Beat::UseSimd(), buffer,
                                              conv_length) * conv_length;
         }
+        energies[i] = current_energy;
         if (current_energy > max_energy) {
           max_energy = current_energy;
-          result = beats_per_minute;
+          result = bpm;
         }
-        beats_per_minute += step;
+      }
+      if (debug_) {
+        std::string dump("----");
+        dump += std::to_string(j + 1) + "----\n";
+        for (int i = 0; i < search_size; i++) {
+          dump += std::to_string(energies[i]) + "    ";
+          if (i % 10 == 0 && i > 0) {
+            dump += '\n';
+          }
+        }
+        INF("%s\n----\n", dump.c_str());
       }
     }
     (*out)[ini / bands_] = result;

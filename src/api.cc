@@ -13,7 +13,7 @@
 #define SOUNDFEATUREEXTRACTION_API_IMPLEMENTATION
 #include <sound_feature_extraction/api.h>
 #undef NOTNULL
-#include <assert.h>
+#include <cassert>
 #include <stddef.h>
 #include <fftf/api.h>
 #include "src/features_parser.h"

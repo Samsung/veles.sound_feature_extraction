@@ -11,7 +11,7 @@
  */
 
 #include "src/format_converter.h"
-#include <assert.h>
+#include <cassert>
 #include <string>
 
 namespace SoundFeatureExtraction {

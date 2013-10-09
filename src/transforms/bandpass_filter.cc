@@ -16,41 +16,154 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
+constexpr const char* BandpassFilter::kHighFrequencyParameterName;
+constexpr const char* BandpassFilter::kLowFrequencyParameterName;
+
 BandpassFilter::BandpassFilter() noexcept
-    : frequencyHigh_(DEFAULT_FILTER_HIGH_FREQUENCY),
-      frequencyLow_(DEFAULT_FILTER_LOW_FREQUENCY) {
-  RegisterSetter("frequency_high", [&](const std::string& value) {
-    int pv = Parse<int>("frequency_high", value);
-    if (pv < MIN_FILTER_FREQUENCY || pv > MAX_FILTER_FREQUENCY) {
+    : frequency_high_(kMaxFilterFrequency),
+      frequency_low_(kMinFilterFrequency) {
+  RegisterSetter(kHighFrequencyParameterName, [&](const std::string& value) {
+    int pv = Parse<int>(kHighFrequencyParameterName, value);
+    if (pv < kMinFilterFrequency || pv > kMaxFilterFrequency) {
       return false;
     }
-    frequencyHigh_ = pv;
+    frequency_high_ = pv;
     return true;
   });
-  RegisterSetter("frequency_low", [&](const std::string& value) {
-    int pv = Parse<int>("frequency_low", value);
-    if (pv < MIN_FILTER_FREQUENCY || pv > MAX_FILTER_FREQUENCY) {
+  RegisterSetter(kLowFrequencyParameterName, [&](const std::string& value) {
+    int pv = Parse<int>(kLowFrequencyParameterName, value);
+    if (pv < kMinFilterFrequency || pv > kMaxFilterFrequency) {
       return false;
     }
-    frequencyLow_ = pv;
+    frequency_low_ = pv;
     return true;
   });
 }
 
-void BandpassFilter::CalculateFilter(float *filter) const noexcept {
-  const float wOffset = (length_ - 1) / 2.0f;
-  int samplingRate = inputFormat_->SamplingRate();
-  for (int n = 0; n < length_; n++) {
-    float h;
-    if (n - wOffset != 0) {
-      h = sinf(2 * M_PI * (n - wOffset) * frequencyHigh_ / samplingRate) /
-          (M_PI * (n - wOffset)) -
-          sinf(2 * M_PI * (n - wOffset) * frequencyLow_ / samplingRate) /
-          (M_PI * (n - wOffset));
-    } else {
-      h = 2.0f * (frequencyHigh_ - frequencyLow_) / samplingRate;
+
+void BandpassFilter::Initialize() const noexcept {
+  if (frequency_high_ <= frequency_low_) {
+    ERR("Invalid frequencies. High is %d, low is %i.", frequency_high_,
+        frequency_low_);
+  }
+  IIRFilterBase::Initialize();
+}
+
+int BandpassFilter::frequency_high() const {
+  return frequency_high_;
+}
+
+int BandpassFilter::frequency_low() const {
+  return frequency_low_;
+}
+
+void BandpassFilter::set_frequency_high(int value) {
+  SetParameter(kHighFrequencyParameterName, std::to_string(value));
+}
+
+void BandpassFilter::set_frequency_low(int value) {
+  SetParameter(kLowFrequencyParameterName, std::to_string(value));
+}
+
+std::shared_ptr<IIRFilter> BandpassFilter::CreateExecutor() const noexcept {
+  auto center_freq = (frequency_high_ + frequency_low_) / 2;
+  auto width_freq = frequency_high_ - frequency_low_;
+  switch (type()) {
+    case kIIRFilterTypeBessel: {
+      auto ret = std::make_shared<Dsp::SimpleFilter<
+          Dsp::Bessel::BandPass<kMaxFilterLength>, 1>>();
+      ret->setup(length(), inputFormat_->SamplingRate(), center_freq,
+                 width_freq);
+      return std::static_pointer_cast<IIRFilter>(ret);
     }
-    filter[n] *= h;
+    case kIIRFilterTypeButterworth: {
+      auto ret = std::make_shared<Dsp::SimpleFilter<
+          Dsp::Butterworth::BandPass<kMaxFilterLength>, 1>>();
+      ret->setup(length(), inputFormat_->SamplingRate(), center_freq,
+                 width_freq);
+      return std::static_pointer_cast<IIRFilter>(ret);
+    }
+    case kIIRFilterTypeChebyshevI: {
+      auto ret = std::make_shared<Dsp::SimpleFilter<
+          Dsp::ChebyshevI::BandPass<kMaxFilterLength>, 1>>();
+      ret->setup(length(), inputFormat_->SamplingRate(), center_freq,
+                 width_freq, ripple());
+      return std::static_pointer_cast<IIRFilter>(ret);
+    }
+    case kIIRFilterTypeChebyshevII: {
+      auto ret = std::make_shared<Dsp::SimpleFilter<
+          Dsp::ChebyshevII::BandPass<kMaxFilterLength>, 1>>();
+      ret->setup(length(), inputFormat_->SamplingRate(), center_freq,
+                 width_freq, ripple());
+      return std::static_pointer_cast<IIRFilter>(ret);
+    }
+    case kIIRFilterTypeElliptic: {
+      auto ret = std::make_shared<Dsp::SimpleFilter<
+          Dsp::Elliptic::BandPass<kMaxFilterLength>, 1>>();
+      ret->setup(length(), inputFormat_->SamplingRate(), center_freq,
+                 width_freq, ripple(), rolloff());
+      return std::static_pointer_cast<IIRFilter>(ret);
+    }
+    case kIIRFilterTypeLegendre: {
+      auto ret = std::make_shared<Dsp::SimpleFilter<
+          Dsp::Legendre::BandPass<kMaxFilterLength>, 1>>();
+      ret->setup(length(), inputFormat_->SamplingRate(), center_freq,
+                 width_freq);
+      return std::static_pointer_cast<IIRFilter>(ret);
+    }
+  }
+  return nullptr;
+}
+
+void BandpassFilter::Execute(const std::shared_ptr<IIRFilter>& exec,
+                            const float* in,
+                            float* out) const {
+  std::shared_ptr<IIRFilter> ptr = exec;
+  switch (type()) {
+    case kIIRFilterTypeBessel:
+      IIRFilterBase::Execute(
+          std::static_pointer_cast<
+              Dsp::SimpleFilter<Dsp::Bessel::BandPass<kMaxFilterLength>, 1>
+          >(ptr),
+          in, out);
+      break;
+    case kIIRFilterTypeButterworth:
+      IIRFilterBase::Execute(
+          std::static_pointer_cast<
+              Dsp::SimpleFilter<Dsp::Butterworth::BandPass<kMaxFilterLength>, 1>
+          >(ptr),
+          in, out);
+      break;
+    case kIIRFilterTypeChebyshevI:
+      IIRFilterBase::Execute(
+          std::static_pointer_cast<
+              Dsp::SimpleFilter<Dsp::ChebyshevI::BandPass<kMaxFilterLength>, 1>
+          >(ptr),
+          in, out);
+      break;
+    case kIIRFilterTypeChebyshevII:
+      IIRFilterBase::Execute(
+          std::static_pointer_cast<
+              Dsp::SimpleFilter<Dsp::ChebyshevII::BandPass<kMaxFilterLength>, 1>
+          >(ptr),
+          in, out);
+      break;
+    case kIIRFilterTypeElliptic:
+      IIRFilterBase::Execute(
+          std::static_pointer_cast<
+              Dsp::SimpleFilter<Dsp::Elliptic::BandPass<kMaxFilterLength>, 1>
+          >(ptr),
+          in, out);
+      break;
+    case kIIRFilterTypeLegendre:
+      IIRFilterBase::Execute(
+          std::static_pointer_cast<
+              Dsp::SimpleFilter< Dsp::Legendre::BandPass<kMaxFilterLength>, 1>
+          >(ptr),
+          in, out);
+      break;
+    default:
+      break;
   }
 }
 

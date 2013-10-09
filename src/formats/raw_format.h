@@ -77,6 +77,10 @@ class RawFormat
     size_ = value;
   }
 
+  virtual size_t UnalignedSizeInBytes() const noexcept override {
+    return size_ * sizeof(T);
+  }
+
   static const int kMinSamplesCount = 32;
   static const int kMaxSamplesCount = (1 << 30);
 
@@ -119,16 +123,12 @@ class RawFormat
         ret += "\n";
       }
     }
-    ret += "----------------\n";
+    ret += "\n----------------\n";
     return ret;
   }
 
   virtual std::string ToString() const noexcept override {
     return this->Id() + " of size " + std::to_string(Size());
-  }
-
-  virtual size_t UnalignedSizeInBytes() const noexcept override {
-    return size_ * sizeof(T);
   }
 
   static constexpr size_t MIN_DURATION() {

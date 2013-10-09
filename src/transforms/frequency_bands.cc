@@ -15,8 +15,11 @@
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <boost/regex.hpp>
 #pragma GCC diagnostic pop
-#include <simd/memory.h>
+#include "src/safe_omp.h"
 #include "src/transforms/fork.h"
+#include "src/transforms/lowpass_filter.h"
+#include "src/transforms/bandpass_filter.h"
+#include "src/transforms/highpass_filter.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -60,12 +63,13 @@ FrequencyBands::FrequencyBands()
 }
 
 void FrequencyBands::Initialize() const noexcept {
-  bands_.clear();
+  filters_.clear();
   if (bandsConfig_ == "") {
-    for (int i = 0; i < bandsNumber_; i++) {
+    /*for (int i = 0; i < bandsNumber_; i++) {
       bands_.push_back(inputFormat_->Size() * (i + 1) / bandsNumber_);
-    }
+    }*/
   } else {
+    int last_freq = 0;
     static const boost::regex bandsRegex("\\s*(\\d+)\\s*");
     static const boost::sregex_token_iterator empty;
     boost::sregex_token_iterator bandsIterator(
@@ -80,44 +84,62 @@ void FrequencyBands::Initialize() const noexcept {
             inputFormat_->SamplingRate() / 2,
             inputFormat_->SamplingRate(),
             freq);
-        bands_.push_back(inputFormat_->Size());
+        last_freq = freq;
         break;
       }
-      bands_.push_back((freq * 2 * inputFormat_->Size()) /
-                      inputFormat_->SamplingRate());
+      if (last_freq == 0) {
+        auto filter = std::make_shared<LowpassFilter>();
+        filter->set_frequency(freq);
+        filters_.push_back(filter);
+      } else {
+        auto filter = std::make_shared<BandpassFilter>();
+        filter->set_frequency_low(last_freq);
+        filter->set_frequency_high(freq);
+        auto ratio = last_freq / inputFormat_->SamplingRate() * 2;
+        if (ratio > 0.1f) {
+          if (ratio < 0.3f) {
+            filter->set_length(128);
+          }
+          filter->SetParameter("type", "chebyshevII");
+        }
+        filters_.push_back(filter);
+      }
+      last_freq = freq;
     }
-    if (static_cast<size_t>(bands_.back()) < inputFormat_->Size()) {
-      bands_.push_back(inputFormat_->Size());
+    // Append high-pass filter
+    auto filter = std::make_shared<HighpassFilter>();
+    filter->set_frequency(last_freq);
+    auto ratio = last_freq / inputFormat_->SamplingRate() * 2;
+    if (ratio > 0.1f) {
+      if (ratio < 0.3f) {
+        filter->set_length(128);
+      }
+      filter->SetParameter("type", "chebyshevII");
     }
+    filters_.push_back(filter);
+  }
+
+  for (const auto& filter : filters_) {
+    filter->SetInputFormat(inputFormat_, 1);
+    filter->Initialize();
   }
 }
 
-void FrequencyBands::Do(
-    const BuffersBase<float*>& in,
-    BuffersBase<float*>* out) const noexcept {
-
-  if (in.Count() % bands_.size() != 0) {
+void FrequencyBands::Do(const BuffersBase<float*>& in,
+                        BuffersBase<float*>* out) const noexcept {
+  auto rem = in.Count() % filters_.size();
+  if (rem != 0) {
     WRN("Warning: the number of windows (%zu) is not a multiple "
-        "of bands number (%zu). The remainder is left untouched.",
-        in.Count(), bands_.size());
+        "of bands number (%zu). The remainder is discarded.",
+        in.Count(), filters_.size());
   }
 
-  for (size_t i = 0; i < in.Count(); i += bands_.size()) {
-    for (int j = 0; j < static_cast<int>(bands_.size()); j++) {
-      if (j > 0) {
-        memsetf((*out)[i + j],
-                bands_[j - 1], 0.f);
-      }
-      if (j < static_cast<int>(bands_.size() - 1)) {
-        memsetf((*out)[i + j] + bands_[j],
-                inputFormat_->Size() - bands_[j], 0.f);
-      }
-      if ((*out)[i + j] != in[i + j]) {
-        int offset = j > 0? bands_[j - 1] : 0;
-        memcpy((*out)[i + j] + offset,
-               in[i + j] + offset,
-               (bands_[j] - offset) * sizeof(float));
-      }
+#ifdef HAVE_OPENMP
+   #pragma omp parallel for num_threads(this->MaxThreadsNumber())
+#endif
+  for (size_t i = 0; i < in.Count(); i += filters_.size()) {
+    for (int j = 0; j < static_cast<int>(filters_.size()); j++) {
+      filters_[j]->Do(in[i + j], (*out)[i + j]);
     }
   }
 }

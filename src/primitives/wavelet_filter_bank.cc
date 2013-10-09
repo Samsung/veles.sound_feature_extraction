@@ -11,7 +11,7 @@
  */
 
 #include "src/primitives/wavelet_filter_bank.h"
-#include <assert.h>
+#include <cassert>
 #include <string.h>
 #include <algorithm>
 #include <list>

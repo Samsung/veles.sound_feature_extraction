@@ -14,19 +14,29 @@
 #define SRC_TRANSFORMS_CONVOLVE_H_
 
 #include "src/transforms/fir_filter_base.h"
+#include "src/primitives/window.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 /// @brief Convolves a raw signal with a window function.
-class ConvolveFilter : public FirFilterBase {
+class ConvolveFilter : public FIRFilterBase {
  public:
+  ConvolveFilter() noexcept;
+
   TRANSFORM_INTRO("Convolve", "Convolve a raw signal with a window function.")
 
-  FIR_FILTER_PARAMETERS()
+  FILTER_PARAMETERS(
+      TP("window", "Type of the window. E.g. \"rectangular\" "
+                   "or \"hamming\".",
+         "rectangular")
+  )
 
  protected:
   virtual void CalculateFilter(float* filter) const noexcept;
+
+ private:
+  WindowType window_;
 };
 
 }  // namespace Transforms

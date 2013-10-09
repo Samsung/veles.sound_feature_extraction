@@ -11,7 +11,7 @@
  */
 
 #include "src/logger.h"
-#include <assert.h>
+#include <cassert>
 #include <cxxabi.h>
 #include <string.h>
 

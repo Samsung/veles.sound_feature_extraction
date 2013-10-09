@@ -14,14 +14,13 @@
 #define SRC_TRANSFORMS_TEMPLATE_TRANSFORM_H_
 
 #include <vector>
-#include "src/formats/raw_format.h"
-#include "src/transform_base.h"
+#include "src/transforms/iir_filter_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class FrequencyBands
-    : public UniformFormatTransform<Formats::RawFormatF>,
+    : public UniformFormatOmpAwareTransform<Formats::RawFormatF>,
       public TransformLogger<FrequencyBands> {
  public:
   FrequencyBands();
@@ -49,7 +48,7 @@ class FrequencyBands
  private:
   int bandsNumber_;
   std::string bandsConfig_;
-  mutable std::vector<int> bands_;
+  mutable std::vector<std::shared_ptr<IIRFilterBase>> filters_;
 };
 
 }  // namespace Transforms

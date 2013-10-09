@@ -20,7 +20,8 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Beat
-    : public TransformBase<Formats::RawFormatF, Formats::SingleFormatF> {
+    : public TransformBase<Formats::RawFormatF, Formats::SingleFormatF>,
+      public TransformLogger<Beat> {
  public:
   Beat();
 
@@ -30,6 +31,7 @@ class Beat
       TP("bands", "The number of bands to sum.", "1")
       TP("pulses", "The number of pulses in the convolution.",
          std::to_string(kDefaultPulses))
+      TP("debug", "Dump the resulting energy vectors.", "false")
   )
 
  protected:
@@ -48,13 +50,14 @@ class Beat
   static size_t PulsesLength(int pulses_count, int period) noexcept;
 
   static constexpr float kInitialBeatsValue = 150.f;
-  static constexpr size_t kStepsCount = 4;
-  static constexpr float kDifference[kStepsCount] { 90.f, 2.f, 0.5f, 0.1f };
-  static constexpr float kStep[kStepsCount] { 1.f, 0.5f, 0.1f, 0.01f };
+  static constexpr size_t kStepsCount = 3;
+  static constexpr float kDifference[kStepsCount] { 100.f, 2.5f, 0.25f };
+  static constexpr float kStep[kStepsCount] { 2.5f, 0.25f, 0.05f };
   static constexpr int kDefaultPulses = 3;
   mutable std::unique_ptr<float, decltype(&std::free)> buffer_;
   int bands_;
   int pulses_;
+  bool debug_;
 };
 
 }  // namespace Transforms

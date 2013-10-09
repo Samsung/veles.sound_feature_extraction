@@ -13,67 +13,28 @@
 #ifndef SRC_TRANSFORMS_FIR_FILTER_BASE_H_
 #define SRC_TRANSFORMS_FIR_FILTER_BASE_H_
 
-#include <vector>
-#include "src/omp_transform_base.h"
-#include "src/formats/raw_format.h"
-#include "src/primitives/window.h"
+#include "src/transforms/filter_common.h"
 
 struct ConvolutionHandle;
-
-namespace std {
-  class mutex;
-}
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-class FirFilterBase
-    : public OmpUniformFormatTransform<Formats::RawFormatF> {
+class FIRFilterBase : public FilterBase<ConvolutionHandle> {
  public:
-  FirFilterBase() noexcept;
-
   virtual void Initialize() const noexcept override;
 
  protected:
-  int length_;
-
   virtual void CalculateFilter(float* filter) const noexcept = 0;
-
   virtual size_t OnFormatChanged(size_t buffersCount) override;
-
-  virtual void Do(const float* in,
-                  float* out) const noexcept override;
-
-  static const int MIN_FILTER_LENGTH = 16;
-  static const int MAX_FILTER_LENGTH = 100000;
-  static const int DEFAULT_FILTER_LENGTH = 150;
-
-  static const int MIN_FILTER_FREQUENCY = 100;
-  static const int MAX_FILTER_FREQUENCY = 24000;
-
-  static const int DEFAULT_FILTER_HIGH_FREQUENCY = 8000;
-  static const int DEFAULT_FILTER_LOW_FREQUENCY = 50;
+  virtual std::shared_ptr<ConvolutionHandle> CreateExecutor()
+      const noexcept override final;
+  virtual void Execute(const std::shared_ptr<ConvolutionHandle>& exec,
+                       const float* in, float* out) const override final;
 
  private:
-  struct SyncHandle {
-    std::shared_ptr<ConvolutionHandle> handle;
-    std::shared_ptr<std::mutex> mutex;
-  };
-
-  WindowType windowType_;
   mutable std::vector<float> filter_;
-  mutable std::vector<SyncHandle> convolutionHandles_;
 };
-
-#define FIR_FILTER_PARAMETERS(init) OMP_TRANSFORM_PARAMETERS( \
-  FORWARD_MACROS( \
-      TP("length", "Window length in samples", \
-         std::to_string(DEFAULT_FILTER_LENGTH)) \
-      TP("window", "Type of the window. E.g. " \
-         "\"rectangular\" or \"hamming\".", \
-         "hamming") \
-      init) \
-)
 
 }  // namespace Formats
 }  // namespace SoundFeatureExtraction

@@ -12,7 +12,7 @@
 
 #include "src/buffers.h"
 #include <simd/memory.h>
-#include <assert.h>
+#include <cassert>
 #include <string.h>
 
 namespace SoundFeatureExtraction {

@@ -16,7 +16,21 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void ConvolveFilter::CalculateFilter(float*) const noexcept {
+ConvolveFilter::ConvolveFilter() noexcept : window_(WINDOW_TYPE_RECTANGULAR) {
+  RegisterSetter("window", [&](const std::string& value) {
+    auto wti = kWindowTypeMap.find(value);
+    if (wti == kWindowTypeMap.end()) {
+      return false;
+    }
+    window_ = wti->second;
+    return true;
+  });
+}
+
+void ConvolveFilter::CalculateFilter(float* window) const noexcept {
+  for (int i = 0; i < length(); i++) {
+    window[i] = WindowElement(window_, length(), i);
+  }
 }
 
 REGISTER_TRANSFORM(ConvolveFilter);

@@ -1,5 +1,5 @@
-/*! @file lowpass_filter.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::LowpassFilter.
+/*! @file highpass_filter.cc
+ *  @brief Tests for SoundFeatureExtraction::Transforms::HighpassFilter.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -11,7 +11,7 @@
  */
 
 #include <fstream>
-#include "src/transforms/lowpass_filter.h"
+#include "src/transforms/bandpass_filter.h"
 #include "tests/transforms/transform_test.h"
 #include "src/primitives/window.h"
 #include "tests/transforms/pass_signal.inc"
@@ -20,12 +20,13 @@
 
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
-using SoundFeatureExtraction::Transforms::LowpassFilter;
+using SoundFeatureExtraction::Transforms::BandpassFilter;
 
-class LowpassFilterTest : public TransformTest<LowpassFilter> {
+class BandpassFilterTest : public TransformTest<BandpassFilter> {
  public:
   virtual void SetUp() {
-    set_frequency(2000);
+    set_frequency_low(600);
+    set_frequency_high(1200);
     Size = sizeof(data_signal) / sizeof(data_signal[0]);
     SetUpTransform(1, 10 * Size, 5000);
     for (int i = 0; i < 10; i++) {
@@ -36,14 +37,6 @@ class LowpassFilterTest : public TransformTest<LowpassFilter> {
   size_t Size;
 };
 
-TEST_F(LowpassFilterTest, CalculateLowpassFilter) {
+TEST_F(BandpassFilterTest, CalculateHighpassFilter) {
   Do((*Input)[0], (*Output)[0]);
-  /*
-  std::ofstream fs("/tmp/out.txt", std::ios::out);
-  fs << '[';
-  for (int i = 0; i < 10000; i++) {
-    fs << (*Output)[0][i] << ", ";
-  }
-  fs << "]\n";
-  */
 }

@@ -72,11 +72,11 @@ class SingleFormat : public BufferFormatBase<T> {
     return *this;
   }
 
- protected:
   virtual size_t UnalignedSizeInBytes() const noexcept override {
     return sizeof(T);
   }
 
+ protected:
   template <class F>
   static typename std::enable_if<std::is_arithmetic<F>::value>::type
   SpecializedValidate(const BuffersBase<F>& buffers,

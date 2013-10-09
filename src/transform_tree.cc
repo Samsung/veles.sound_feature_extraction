@@ -11,7 +11,7 @@
  */
 
 #include "src/transform_tree.h"
-#include <assert.h>
+#include <cassert>
 #include <math.h>
 #include <fstream>  // NOLINT(*)
 #include <iomanip>
@@ -218,13 +218,13 @@ void TransformTree::Node::Execute() {
       catch(const InvalidBuffersException& e) {
 #ifdef DEBUG
         if (BoundBuffers->Count() == Parent->BoundBuffers->Count()) {
-          DBG("Validation failed on index %zu.\n----before----\n%s\n\n"
+          ERR("Validation failed on index %zu.\n----before----\n%s\n\n"
               "----after----\n%s\n",
               e.index(),
               Parent->BoundBuffers->Dump(e.index()).c_str(),
               BoundBuffers->Dump(e.index()).c_str());
         } else {
-          DBG("Validation failed.\n----Buffers before----\n%s\n\n"
+          ERR("Validation failed.\n----Buffers before----\n%s\n\n"
               "----Buffers after----\n%s\n",
               Parent->BoundBuffers->Dump().c_str(),
               BoundBuffers->Dump().c_str());

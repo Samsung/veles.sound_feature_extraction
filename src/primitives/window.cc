@@ -18,8 +18,8 @@ const std::unordered_map<std::string, WindowType> kWindowTypeMap {
   { "rectangular", WINDOW_TYPE_RECTANGULAR },
   { "hamming", WINDOW_TYPE_HAMMING },
   { "hanning", WINDOW_TYPE_HANNING },
-  { "half-hanning-right", WINDOW_TYPE_HALF_HANNING_RIGHT},
-  { "blackman", WINDOW_TYPE_BLACKMAN}
+  { "half-hanning-right", WINDOW_TYPE_HALF_HANNING_RIGHT },
+  { "blackman", WINDOW_TYPE_BLACKMAN }
 };
 
 /// @brief Calculates the element of Hamming window of length "length"
