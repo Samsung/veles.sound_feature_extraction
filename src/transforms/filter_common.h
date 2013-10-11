@@ -50,7 +50,7 @@ class FilterBase
   virtual void Do(const float* in, float* out) const noexcept override final {
     bool executed = false;
     while (!executed) {
-      for (auto sse : executors_) {
+      for (auto& sse : executors_) {
         if (sse.mutex->try_lock()) {
           Execute(sse.executor, in, out);
           sse.mutex->unlock();

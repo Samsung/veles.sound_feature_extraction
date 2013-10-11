@@ -54,7 +54,7 @@ class Beat
   static constexpr float kDifference[kStepsCount] { 100.f, 2.5f, 0.25f };
   static constexpr float kStep[kStepsCount] { 2.5f, 0.25f, 0.05f };
   static constexpr int kDefaultPulses = 3;
-  mutable std::unique_ptr<float, decltype(&std::free)> buffer_;
+  mutable FloatPtr buffer_;
   int bands_;
   int pulses_;
   bool debug_;

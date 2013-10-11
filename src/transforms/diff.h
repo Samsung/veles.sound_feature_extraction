@@ -14,6 +14,8 @@
 #define SRC_TRANSFORMS_DIFF_H_
 
 #include "src/transforms/common.h"
+#include <mutex>
+#include <vector>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -27,10 +29,28 @@ class Diff : public OmpUniformFormatTransform<Formats::RawFormatF> {
   OMP_TRANSFORM_PARAMETERS(
       TP("rectify", "Perform half-wave rectification (retain only if the "
                     "difference is positive).",
-         "false"))
+         "false")
+      TP("swt", "Smoothly differentiate using Stationary Wavelet Transform "
+                "(db1) of the specified level. The level must be greater than "
+                "or equal to 0. If set to zero, this parameter is ignored.",
+         std::to_string(kNoSWT))
+  )
 
  protected:
-  virtual size_t OnFormatChanged(size_t buffersCount) override;
+  struct SWTBuffers {
+    SWTBuffers() : first(nullptr, std::free), second (nullptr, std::free) {
+    }
+
+    SWTBuffers(const SWTBuffers&)
+        : first(nullptr, std::free), second (nullptr, std::free) {
+    }
+
+    FloatPtr first;
+    FloatPtr second;
+    std::mutex mutex;
+  };
+
+  virtual void Initialize() const noexcept override;
 
   virtual void Do(const float* in, float* out) const noexcept override;
 
@@ -40,8 +60,19 @@ class Diff : public OmpUniformFormatTransform<Formats::RawFormatF> {
   static void DoRectify(bool simd, const float* input, int length,
                         float* output) noexcept;
 
+  static void Rectify(bool simd, const float* input, int length,
+                      float* output) noexcept;
+
+  static void DifferentiateUsingSWT(int level, const float* input, int length,
+                                    SWTBuffers* auxBuffers,
+                                    float* output) noexcept;
+
+  static constexpr int kNoSWT = 0;
+
  private:
   bool rectify_;
+  int swt_;
+  mutable std::vector<SWTBuffers> swt_buffers_;
 };
 
 }  // namespace Transforms

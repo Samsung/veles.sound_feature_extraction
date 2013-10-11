@@ -156,5 +156,8 @@ typedef RawFormat<int32_t> RawFormat32;
 typedef RawFormat<float> RawFormatF;
 
 }  // namespace Formats
+
+typedef std::unique_ptr<float, decltype(&std::free)> FloatPtr;
+
 }  // namespace SoundFeatureExtraction
 #endif  // SRC_FORMATS_RAW_FORMAT_H_

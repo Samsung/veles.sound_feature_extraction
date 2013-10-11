@@ -24,26 +24,73 @@ class DiffTest : public TransformTest<Diff> {
 
   virtual void SetUp() {
     Size = 486;
-    SetParameter("rectify", "true");
     SetUpTransform(1, Size, 18000);
-    (*Input)[0][0] = 0;
-    for (int i = 1; i < Size; i++) {
-      int step = (i - 1) % 3;
-      if ((i - 1) % 2 == 0)
-        step *= -1;
-      (*Input)[0][i] = (*Input)[0][i - 1] + step;
+    for (int i = 0; i < Size; i++) {
+      (*Input)[0][i] = i % 3 - i % 2;
     }
+    SetParameter("swt", "1");
+    Initialize();
   }
 };
 
 TEST_F(DiffTest, Do) {
+  SetParameter("rectify", "true");
+  SetParameter("swt", "0");
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size - 1; i++) {
-    int result = (i % 3);
-    if (i % 2 == 0) {
-      result = 0;
+    int result;
+    switch (i % 6) {
+      case 1:
+      case 3:
+        result = 2;
+        break;
+      default:
+        result = 0;
+        break;
     }
-    ASSERT_EQ(result, (*Output)[0][i]);
+    ASSERT_FLOAT_EQ(result, (*Output)[0][i]) << i;
+  }
+  ASSERT_FLOAT_EQ(0, (*Output)[0][Size - 1]);
+}
+
+TEST_F(DiffTest, DoNoRectify) {
+  SetParameter("rectify", "false");
+  SetParameter("swt", "0");
+  Do((*Input)[0], (*Output)[0]);
+  for (int i = 0; i < Size - 1; i++) {
+    int result;
+    switch (i % 6) {
+      case 1:
+      case 3:
+        result = 2;
+        break;
+      case 2:
+        result = -3;
+        break;
+      case 5:
+        result = -1;
+        break;
+      default:
+        result = 0;
+        break;
+    }
+    ASSERT_FLOAT_EQ(result, (*Output)[0][i]) << i;
+  }
+  ASSERT_FLOAT_EQ(-1, (*Output)[0][Size - 1]);
+}
+
+TEST_F(DiffTest, DoSWT) {
+  SetParameter("rectify", "true");
+  SetParameter("swt", "1");
+  Do((*Input)[0], (*Output)[0]);
+  for (int i = 0; i < Size; i++) {
+    ASSERT_GE((*Output)[0][i], 0);
+  }
+  SetParameter("swt", "2");
+  SetParameter("rectify", "false");
+  Do((*Input)[0], (*Output)[0]);
+  for (int i = 0; i < Size; i++) {
+    ASSERT_EQ((*Output)[0][i], (*Output)[0][i]);
   }
 }
 
