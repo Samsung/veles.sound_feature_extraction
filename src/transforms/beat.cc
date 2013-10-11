@@ -105,9 +105,9 @@ void Beat::Do(const BuffersBase<float*>& in,
     auto size = this->inputFormat_->Size();
     auto buffer = buffer_.get();
     for (int j = 0; j < static_cast<int>(kStepsCount); j++) {
-      float min_bpm = result - kDifference[j];
-      float max_bpm = result + kDifference[j];
-      float step = kStep[j];
+      const float min_bpm = result - kDifference[j];
+      const float max_bpm = result + kDifference[j];
+      const float step = kStep[j];
       float max_energy = 0;
       int search_size = floorf((max_bpm - min_bpm) / step);
       float energies[search_size];
@@ -128,9 +128,23 @@ void Beat::Do(const BuffersBase<float*>& in,
           result = bpm;
         }
       }
+      // Fix overestimation error
+      for (int boundary = 1;
+           result > max_bpm - (boundary + 0.5) * step;
+           boundary++) {
+        float max_energy = 0;
+        for (int i = 0; i < search_size - boundary; i++) {
+          float current_energy = energies[i];
+          if (current_energy > max_energy) {
+            max_energy = current_energy;
+            result = min_bpm + step * i;
+          }
+        }
+      }
       if (debug_) {
         std::string dump("----");
-        dump += std::to_string(j + 1) + "----\n";
+        dump += std::to_string(j + 1) + "---- ";
+        dump += std::to_string(result) + '\n';
         for (int i = 0; i < search_size; i++) {
           dump += std::to_string(energies[i]) + "    ";
           if (i % 10 == 0 && i > 0) {
