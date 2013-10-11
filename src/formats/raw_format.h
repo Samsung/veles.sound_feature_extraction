@@ -105,7 +105,8 @@ class RawFormat
 
   virtual std::string Dump(const BuffersBase<T*>& buffers, size_t index)
       const noexcept override {
-    std::string ret;
+    std::string ret("----");
+    ret += std::to_string(index) + "----\n";
     for (size_t j = 0; j < size_; j++) {
       auto strval = std::to_string(buffers[index][j]);
       int size_limit = 24;
