@@ -12,7 +12,8 @@
 
 #include "src/transform_tree.h"
 #include <cassert>
-#include <math.h>
+#include <cmath>
+#include <cstdlib>
 #include <fstream>  // NOLINT(*)
 #include <iomanip>
 #include <string>
@@ -209,7 +210,7 @@ void TransformTree::Node::Execute() {
     BoundTransform->Do(*Parent->BoundBuffers, BoundBuffers.get());
     auto checkPointFinish = std::chrono::high_resolution_clock::now();
     ElapsedTime = checkPointFinish - checkPointStart;
-    Host->transformsCache_[BoundTransform->Name()].ElapsedTime += ElapsedTime;
+    Host->transforms_cache_[BoundTransform->Name()].ElapsedTime += ElapsedTime;
 
     if (Host->ValidateAfterEachTransform()) {
       try {
@@ -235,7 +236,8 @@ void TransformTree::Node::Execute() {
       }
     }
 
-    if (Host->DumpBuffersAfterEachTransform()) {
+    if (Host->transforms_cache_[BoundTransform->Name()].Dump ||
+        Host->DumpBuffersAfterEachTransform()) {
       INF("Buffers after %s", BoundTransform->Name().c_str());
       INF("==============%s",
           std::string(BoundTransform->Name().size(), '=').c_str());
@@ -260,10 +262,10 @@ TransformTree::TransformTree(Formats::RawFormat16&& rootFormat) noexcept
       root_(std::make_shared<Node>(
         nullptr, std::make_shared<RootTransform>(
             std::make_shared<Formats::RawFormat16>(rootFormat)), 1, this)),
-      rootFormat_(std::make_shared<Formats::RawFormat16>(rootFormat)),
-      treeIsPrepared_(false),
-      validateAfterEachTransform_(false),
-      dumpBuffersAfterEachTransform_(false) {
+      root_format_(std::make_shared<Formats::RawFormat16>(rootFormat)),
+      tree_is_prepared_(false),
+      validate_after_each_transform_(false),
+      dump_buffers_after_each_transform_(false) {
 }
 
 TransformTree::TransformTree(
@@ -271,10 +273,10 @@ TransformTree::TransformTree(
     : Logger("TransformTree", EINA_COLOR_ORANGE),
       root_(std::make_shared<Node>(
         nullptr, std::make_shared<RootTransform>(rootFormat), 1, this)),
-      rootFormat_(rootFormat),
-      treeIsPrepared_(false),
-      validateAfterEachTransform_(false),
-      dumpBuffersAfterEachTransform_(false) {
+      root_format_(rootFormat),
+      tree_is_prepared_(false),
+      validate_after_each_transform_(false),
+      dump_buffers_after_each_transform_(false) {
 }
 
 TransformTree::~TransformTree() noexcept {
@@ -343,18 +345,23 @@ void TransformTree::AddTransform(const std::string& name,
     *currentNode = newNode;
   }
   (*currentNode)->RelatedFeatures.push_back(relatedFeature);
+
+  // Search for the environment variable to activate dumps for this transform
+  if (std::getenv((std::string(kDumpEnvPrefix) + name).c_str()) != nullptr) {
+    transforms_cache_[name].Dump = true;
+  }
 }
 
 std::shared_ptr<Formats::RawFormat16> TransformTree::RootFormat()
     const noexcept {
-  return rootFormat_;
+  return root_format_;
 }
 
 void TransformTree::AddFeature(
     const std::string& name,
     const std::vector<std::pair<std::string, std::string>>& transforms) {
   DBG("Adding \"%s\"", name.c_str());
-  if (treeIsPrepared_) {
+  if (tree_is_prepared_) {
     throw TreeIsPreparedException();
   }
   if (features_.find(name) != features_.end()) {
@@ -373,7 +380,7 @@ void TransformTree::AddFeature(
 
 void TransformTree::PrepareForExecution() {
   DBG("Entered");
-  if (treeIsPrepared_) {
+  if (tree_is_prepared_) {
     throw TreeAlreadyPreparedException();
   }
   // Run Initialize() on all transforms
@@ -390,11 +397,11 @@ void TransformTree::PrepareForExecution() {
   assert(allocator.Validate(allocationTreeRoot));
 #endif
   // Allocate the buffers
-  allocatedMemory_ = std::shared_ptr<void>(malloc_aligned(neededMemory),
+  allocated_memory_ = std::shared_ptr<void>(malloc_aligned(neededMemory),
                                            [](void* ptr) {
                                              free(ptr);
                                            });
-  if (allocatedMemory_.get() == nullptr) {
+  if (allocated_memory_.get() == nullptr) {
     throw FailedToAllocateBuffersException(std::string("Failed to allocate ") +
                                            std::to_string(neededMemory) +
                                            " bytes.");
@@ -402,14 +409,14 @@ void TransformTree::PrepareForExecution() {
   INF("Allocated %zu bytes", neededMemory);
   // Finally, apply the memory mapping, creating the actual buffers
   // We will overwrite root's BoundBuffers on execution stage
-  root_->ApplyAllocationTree(allocationTreeRoot, allocatedMemory_.get());
-  treeIsPrepared_ = true;
+  root_->ApplyAllocationTree(allocationTreeRoot, allocated_memory_.get());
+  tree_is_prepared_ = true;
 }
 
 std::unordered_map<std::string, std::shared_ptr<Buffers>>
 TransformTree::Execute(const int16_t* in) {
   DBG("Entered");
-  if (!treeIsPrepared_) {
+  if (!tree_is_prepared_) {
     throw TreeIsNotPreparedException();
   }
   if (features_.size() == 0) {
@@ -436,11 +443,11 @@ TransformTree::Execute(const int16_t* in) {
   auto allDuration = checkPointFinish - checkPointStart;
   INF("Finished. Execution took %f s", ConvertDuration(allDuration));
   auto otherDuration = allDuration;
-  for (auto& cit : transformsCache_) {
+  for (auto& cit : transforms_cache_) {
     otherDuration -= cit.second.ElapsedTime;
   }
-  transformsCache_["All"].ElapsedTime = allDuration;
-  transformsCache_["Other"].ElapsedTime = otherDuration;
+  transforms_cache_["All"].ElapsedTime = allDuration;
+  transforms_cache_["Other"].ElapsedTime = otherDuration;
 
   // Populate the results
   std::unordered_map<std::string, std::shared_ptr<Buffers>> results;
@@ -453,12 +460,12 @@ TransformTree::Execute(const int16_t* in) {
 std::unordered_map<std::string, float>
 TransformTree::ExecutionTimeReport() const noexcept {
   std::unordered_map<std::string, float> ret;
-  auto allIt = transformsCache_.find("All");
-  if (allIt == transformsCache_.end()) {
+  auto allIt = transforms_cache_.find("All");
+  if (allIt == transforms_cache_.end()) {
     return ret;
   }
   auto allTime = allIt->second.ElapsedTime;
-  for (auto& cit : transformsCache_) {
+  for (auto& cit : transforms_cache_) {
     if (cit.first != "All") {
       ret.insert(std::make_pair(
           cit.first, (cit.second.ElapsedTime.count() + 0.f) / allTime.count()));
@@ -591,19 +598,19 @@ void TransformTree::Dump(const std::string& dotFileName) const {
 }
 
 bool TransformTree::ValidateAfterEachTransform() const noexcept {
-  return validateAfterEachTransform_;
+  return validate_after_each_transform_;
 }
 
 void TransformTree::SetValidateAfterEachTransform(bool value) noexcept {
-  validateAfterEachTransform_ = value;
+  validate_after_each_transform_ = value;
 }
 
 bool TransformTree::DumpBuffersAfterEachTransform() const noexcept {
-  return dumpBuffersAfterEachTransform_;
+  return dump_buffers_after_each_transform_;
 }
 
 void TransformTree::SetDumpBuffersAfterEachTransform(bool value) noexcept {
-  dumpBuffersAfterEachTransform_ = value;
+  dump_buffers_after_each_transform_ = value;
 }
 
 float TransformTree::ConvertDuration(

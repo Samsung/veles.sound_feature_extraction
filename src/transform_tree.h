@@ -197,8 +197,12 @@ class TransformTree : public Logger {
   };
 
   struct TransformCacheItem {
+    TransformCacheItem() : Dump(false) {
+    }
+
     std::shared_ptr<Transform> BoundTransform;
     std::chrono::high_resolution_clock::duration ElapsedTime;
+    bool Dump;
   };
 
   void AddTransform(const std::string& name,
@@ -209,14 +213,16 @@ class TransformTree : public Logger {
   static float ConvertDuration(
       const std::chrono::high_resolution_clock::duration& d) noexcept;
 
+  static constexpr const char* kDumpEnvPrefix = "SFE_DUMP_";
+
   std::shared_ptr<Node> root_;
-  std::shared_ptr<Formats::RawFormat16> rootFormat_;
-  bool treeIsPrepared_;
+  std::shared_ptr<Formats::RawFormat16> root_format_;
+  bool tree_is_prepared_;
   std::unordered_map<std::string, std::shared_ptr<Node>> features_;
-  std::unordered_map<std::string, TransformCacheItem> transformsCache_;
-  bool validateAfterEachTransform_;
-  bool dumpBuffersAfterEachTransform_;
-  std::shared_ptr<void> allocatedMemory_;
+  std::unordered_map<std::string, TransformCacheItem> transforms_cache_;
+  bool validate_after_each_transform_;
+  bool dump_buffers_after_each_transform_;
+  std::shared_ptr<void> allocated_memory_;
 };
 
 }  // namespace SoundFeatureExtraction
