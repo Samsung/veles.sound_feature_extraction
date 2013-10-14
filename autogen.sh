@@ -72,7 +72,7 @@ fi
 
 # autogen.sh in submodules
 # note the order: first root autogen.sh, then children
-git submodule foreach ./autogen.sh || true
+git submodule foreach "./autogen.sh || true"
 
 if [ -n "$1" ]; then
 	path=$(pwd)
