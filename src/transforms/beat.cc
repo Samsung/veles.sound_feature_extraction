@@ -128,32 +128,37 @@ void Beat::Do(const BuffersBase<float*>& in,
           result = bpm;
         }
       }
-      // Fix underestimation error
-      for (int boundary = 1;
-           result < min_bpm + (boundary + 0.5) * step;
-           boundary++) {
-        float max_energy = 0;
-        for (int i = boundary; i < search_size; i++) {
-          float current_energy = energies[i];
-          if (current_energy > max_energy) {
-            max_energy = current_energy;
-            result = min_bpm + step * i;
+
+      if (j == 0) {
+        // Fix underestimation and overestimation errors
+        int min_boundary = 1, max_boundary = 1;
+        auto calc_underest = [&]() {
+          return result < min_bpm + (min_boundary + 0.5) * step;
+        };
+        auto calc_overest = [&]() {
+          return result > max_bpm - (max_boundary + 0.5) * step;
+        };
+        bool underest = calc_underest();
+        bool overest = calc_overest();
+        while (underest || overest) {
+          float max_energy = 0;
+          for (int i = min_boundary; i < search_size - max_boundary; i++) {
+            float current_energy = energies[i];
+            if (current_energy > max_energy) {
+              max_energy = current_energy;
+              result = min_bpm + step * i;
+            }
           }
+          if (underest) {
+            min_boundary++;
+          } else {
+            max_boundary++;
+          }
+          underest = calc_underest();
+          overest = calc_overest();
         }
       }
-      // Fix overestimation error
-      for (int boundary = 1;
-           result > max_bpm - (boundary + 0.5) * step;
-           boundary++) {
-        float max_energy = 0;
-        for (int i = 0; i < search_size - boundary; i++) {
-          float current_energy = energies[i];
-          if (current_energy > max_energy) {
-            max_energy = current_energy;
-            result = min_bpm + step * i;
-          }
-        }
-      }
+
       if (debug_) {
         std::string dump("----");
         dump += std::to_string(j + 1) + "---- ";
