@@ -128,6 +128,19 @@ void Beat::Do(const BuffersBase<float*>& in,
           result = bpm;
         }
       }
+      // Fix underestimation error
+      for (int boundary = 1;
+           result < min_bpm + (boundary + 0.5) * step;
+           boundary++) {
+        float max_energy = 0;
+        for (int i = boundary; i < search_size; i++) {
+          float current_energy = energies[i];
+          if (current_energy > max_energy) {
+            max_energy = current_energy;
+            result = min_bpm + step * i;
+          }
+        }
+      }
       // Fix overestimation error
       for (int boundary = 1;
            result > max_bpm - (boundary + 0.5) * step;

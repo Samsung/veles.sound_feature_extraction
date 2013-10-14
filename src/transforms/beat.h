@@ -51,8 +51,8 @@ class Beat
 
   static constexpr float kInitialBeatsValue = 150.f;
   static constexpr size_t kStepsCount = 3;
-  static constexpr float kDifference[kStepsCount] { 100.f, 2.5f, 0.25f };
-  static constexpr float kStep[kStepsCount] { 2.5f, 0.25f, 0.05f };
+  static constexpr float kDifference[kStepsCount] { 100.f, 2.f, 0.25f };
+  static constexpr float kStep[kStepsCount] { 2.f, 0.25f, 0.05f };
   static constexpr int kDefaultPulses = 3;
   mutable FloatPtr buffer_;
   int bands_;
