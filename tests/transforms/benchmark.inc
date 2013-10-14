@@ -61,11 +61,11 @@ TEST(TEST_NAME, BENCH_NAME) {
   const int iter_count = ITER_COUNT;
 
   const int length = LENGTH;
-  INPUT_TYPE *input = (INPUT_TYPE*)malloc_aligned(
-      sizeof(INPUT_TYPE) * length);
+  INPUT_TYPE *input = static_cast<INPUT_TYPE*>(malloc_aligned(
+      sizeof(INPUT_TYPE) * length));
 #ifndef NO_OUTPUT
-  INPUT_TYPE *output = (INPUT_TYPE*)malloc_aligned(
-      sizeof(INPUT_TYPE) * length * 2);
+  INPUT_TYPE *output = static_cast<INPUT_TYPE*>(malloc_aligned(
+      sizeof(INPUT_TYPE) * length * 2));
 #endif
   for (int i = 0; i < length; i++) {
     input[i] = sinf(i) * 10;
