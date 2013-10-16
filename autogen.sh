@@ -36,11 +36,13 @@ check_prog autoconf autoconf
 check_prog libtoolize libtool
 check_prog automake automake
 
-rm -rf autom4te.cache m4
+rm -rf autom4te.cache
 rm -f aclocal.m4 ltmain.sh config.log config.status configure libtool stamp-h1 config.h config.h.in
 find -name Makefile.in -exec rm {} \;
 
-echo "Running aclocal..." ; aclocal $ACLOCAL_FLAGS || exit 1
+mkdir -p m4
+echo "Running aclocal..." ; aclocal $ACLOCAL_FLAGS || (rmdir --ignore-fail-on-non-empty m4; exit 1)
+rmdir --ignore-fail-on-non-empty m4
 echo "Running autoheader..." ; autoheader || exit 1
 echo "Running autoconf..." ; autoconf || exit 1
 echo "Running libtoolize..." ; (libtoolize --copy --automake || glibtoolize --automake) || exit 1
