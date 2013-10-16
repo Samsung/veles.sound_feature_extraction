@@ -83,6 +83,10 @@ FrequencyBands::FrequencyBands()
   });
 }
 
+int FrequencyBands::bands_number() const noexcept {
+  return bands_number_;
+}
+
 void FrequencyBands::Initialize() const noexcept {
   filters_.clear();
   if (bands_config_ == "") {
@@ -115,7 +119,6 @@ void FrequencyBands::Initialize() const noexcept {
           inputFormat_->SamplingRate() / 2,
           inputFormat_->SamplingRate(),
           freq);
-      last_freq = freq;
       break;
     }
     std::shared_ptr<IIRFilterBase> filter;

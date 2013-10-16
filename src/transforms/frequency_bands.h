@@ -49,6 +49,8 @@ class FrequencyBands
                   BuffersBase<float*>* out) const noexcept override;
   void SetupFilter(size_t index, int frequency, IIRFilterBase* filter) const;
 
+  int bands_number() const noexcept;
+
  private:
   mutable int bands_number_;
   mutable std::string bands_config_;
