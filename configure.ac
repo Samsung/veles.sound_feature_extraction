@@ -71,6 +71,7 @@ AC_ARG_WITH([built-in-simd],
 AC_SUBST([SIMD_DIR])
 
 AM_CXXFLAGS="$AM_CXXFLAGS -I\$(top_srcdir)/DSPFilters/shared/DSPFilters/include"
+AM_CXXFLAGS="$AM_CXXFLAGS -Wno-virtual-move-assign"
 
 # Additional tests
 AM_COND_IF([TESTS], [
