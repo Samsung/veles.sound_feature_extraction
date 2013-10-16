@@ -517,13 +517,14 @@ void TransformTree::Dump(const std::string& dotFileName) const {
     fw << "label=<" << t->HtmlEscapedName()
         << "<br /><font point-size=\"10\">";
     if (includeTime) {
-      fw << "<b>"
-          << std::to_string(static_cast<int>(
-              (roundf(ConvertDuration(node.ElapsedTime) * 100.f / allTime))))
-          << "% ("
-          << std::to_string(static_cast<int>(roundf(
-              timeReport[t->Name()] * 100.f)))
-          << "%)</b>";
+      auto cur_percent = static_cast<int>(
+          (roundf(ConvertDuration(node.ElapsedTime) * 100.f / allTime)));
+      assert(cur_percent >=0 && cur_percent <= 100);
+      auto all_percent = static_cast<int>(
+          roundf(timeReport[t->Name()] * 100.f));
+      assert(all_percent >=0 && all_percent <= 100);
+      fw << "<b>" << std::to_string(cur_percent) << "% ("
+          << std::to_string(all_percent) << "%)</b>";
     }
     if (t->GetParameters().size() > 0) {
       fw << "<br /> <br />";
@@ -556,10 +557,10 @@ void TransformTree::Dump(const std::string& dotFileName) const {
         node.ActionOnEachParent([&](const Node& parent) {
           featureTime += parent.ElapsedTime / parent.RelatedFeatures.size();
         });
-        fw << "<b>"
-          << std::to_string(static_cast<int>(
-              (roundf((ConvertDuration(featureTime) * 100.f) / allTime))))
-          << "%</b></font>";
+        auto cur_percent = static_cast<int>(
+            (roundf((ConvertDuration(featureTime) * 100.f) / allTime)));
+        assert(cur_percent >=0 && cur_percent <= 100);
+        fw << "<b>" << std::to_string(cur_percent) << "%</b></font>";
       }
       fw << ">]" << std::endl;
     }
@@ -576,9 +577,10 @@ void TransformTree::Dump(const std::string& dotFileName) const {
   }
   fw << "label=<Other";
   if (includeTime) {
+    auto cur_percent = static_cast<int>(roundf(timeReport["Other"] * 100.f));
+    assert(cur_percent >=0 && cur_percent <= 100);
     fw << "<br /><font point-size=\"10\"><b>"
-        << std::to_string(static_cast<int>(roundf(timeReport["Other"] * 100.f)))
-        << "%</b></font>";
+        << std::to_string(cur_percent) << "%</b></font>";
   }
   fw << ">]" << std::endl << std::endl;
   // Output the node connections

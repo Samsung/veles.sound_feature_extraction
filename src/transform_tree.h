@@ -197,7 +197,7 @@ class TransformTree : public Logger {
   };
 
   struct TransformCacheItem {
-    TransformCacheItem() : Dump(false) {
+    TransformCacheItem() : ElapsedTime(0), Dump(false) {
     }
 
     std::shared_ptr<Transform> BoundTransform;
