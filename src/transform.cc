@@ -14,6 +14,7 @@
 #include <cassert>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 #include <boost/algorithm/string/replace.hpp>
 #pragma GCC diagnostic pop
 #include "src/transform_registry.h"

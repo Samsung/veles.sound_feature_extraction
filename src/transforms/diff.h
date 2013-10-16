@@ -24,7 +24,7 @@ class Diff : public OmpUniformFormatTransform<Formats::RawFormatF> {
  public:
   Diff();
 
-  TRANSFORM_INTRO("Diff", "Find the difference from one sample to the next.")
+  TRANSFORM_INTRO("Diff", "Differentiate the signal.")
 
   OMP_TRANSFORM_PARAMETERS(
       TP("rectify", "Perform half-wave rectification (retain only if the "

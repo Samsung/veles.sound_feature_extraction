@@ -13,6 +13,7 @@
 #include "src/parameterizable.h"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 #include <boost/algorithm/string/trim.hpp>
 #pragma GCC diagnostic pop
 #include <sstream>

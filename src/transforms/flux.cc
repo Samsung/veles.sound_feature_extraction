@@ -17,9 +17,8 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void Flux::Do(
-    const BuffersBase<float*>& in,
-    BuffersBase<float> *out) const noexcept {
+void Flux::Do(const BuffersBase<float*>& in,
+              BuffersBase<float> *out) const noexcept {
   (*out)[0] = 0.f;
   for (size_t i = 1; i < in.Count(); i++) {
     (*out)[i] = Do(UseSimd(), in[i], inputFormat_->Size(),
