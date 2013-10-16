@@ -52,7 +52,7 @@ void SpectralEnergy::Do(bool simd, const float* input, int length,
       __m256 res = _mm256_hadd_ps(r1, r2);
       _mm256_store_ps(output + j / 2, res);
     }
-    for (int j = ((length >> 4) << 4); j < length; j += 2) {
+    for (int j = (length & ~0xF); j < length; j += 2) {
       float re = input[j];
       float im = input[j + 1];
       output[j / 2] = re * re + im * im;

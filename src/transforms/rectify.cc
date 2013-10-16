@@ -38,7 +38,7 @@ void Rectify::Do(bool simd, const float* input, int length,
       _mm256_store_ps(output + i, vecabs1);
       _mm256_store_ps(output + i + 8, vecabs2);
     }
-    for (int i = ((length >> 4) << 4); i < length; i++) {
+    for (int i = (length & ~0xF); i < length; i++) {
       output[i] = abs(input[i]);
     }
   } else {

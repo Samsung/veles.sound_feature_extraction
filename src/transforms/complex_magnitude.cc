@@ -53,7 +53,7 @@ void ComplexMagnitude::Do(bool simd, const float* input, int length,
       res = _mm256_sqrt_ps(res);
       _mm256_store_ps(output + i / 2, res);
     }
-    for (int j = ((length >> 4) << 4); j < length; j += 2) {
+    for (int j = (length & ~0xF); j < length; j += 2) {
       float re = input[j];
       float im = input[j + 1];
       output[j / 2] = sqrtf(re * re + im * im);

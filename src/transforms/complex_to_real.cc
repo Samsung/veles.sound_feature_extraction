@@ -47,7 +47,7 @@ void ComplexToReal::Do(bool simd, const float* input, int length,
 #pragma GCC diagnostic pop
       _mm256_store_ps(output + i / 2, result);
     }
-    for (int i = ((length >> 4) << 4); i < length; i += 2) {
+    for (int i = (length & ~0xF); i < length; i += 2) {
       output[i / 2] = input[i];
     }
   } else {
