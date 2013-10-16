@@ -55,7 +55,7 @@ class IIRFilterBase : public FilterBase<IIRFilter> {
     ptr->process(inputFormat_->Size(), &out);
   }
 
-  static const IIRFilterType kDefaultIIRFilterType = kIIRFilterTypeButterworth;
+  static const IIRFilterType kDefaultIIRFilterType = kIIRFilterTypeChebyshevII;
   static constexpr float kDefaultIIRFilterRipple = 1;
   static constexpr float kDefaultIIRFilterRolloff = 0;
 
