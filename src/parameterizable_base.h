@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_PARAMETERS_BASE_H_
-#define SRC_PARAMETERS_BASE_H_
+#ifndef SRC_PARAMETERIZABLE_BASE_H_
+#define SRC_PARAMETERIZABLE_BASE_H_
 
 #include "src/parameterizable.h"
 
@@ -94,4 +94,4 @@ class ParameterizableBase : public virtual Parameterizable {
 
 }  // namespace SoundFeatureExtraction
 
-#endif  // SRC_PARAMETERS_BASE_H_
+#endif  // SRC_PARAMETERIZABLE_BASE_H_

@@ -131,32 +131,7 @@ void Beat::Do(const BuffersBase<float*>& in,
 
       if (j == 0) {
         // Fix underestimation and overestimation errors
-        int min_boundary = 1, max_boundary = 1;
-        auto calc_underest = [&]() {
-          return result < min_bpm + (min_boundary + 0.5) * step;
-        };
-        auto calc_overest = [&]() {
-          return result > max_bpm - (max_boundary + 0.5) * step;
-        };
-        bool underest = calc_underest();
-        bool overest = calc_overest();
-        while (underest || overest) {
-          float max_energy = 0;
-          for (int i = min_boundary; i < search_size - max_boundary; i++) {
-            float current_energy = energies[i];
-            if (current_energy > max_energy) {
-              max_energy = current_energy;
-              result = min_bpm + step * i;
-            }
-          }
-          if (underest) {
-            min_boundary++;
-          } else {
-            max_boundary++;
-          }
-          underest = calc_underest();
-          overest = calc_overest();
-        }
+        FixBorderErrors(energies, min_bpm, max_bpm, result, step);
       }
 
       if (debug_) {
@@ -174,6 +149,38 @@ void Beat::Do(const BuffersBase<float*>& in,
     }
     (*out)[ini / bands_] = result;
   }
+}
+
+float Beat::FixBorderErrors(const float* energies, float min_bpm, float max_bpm,
+                            float result, float step) noexcept {
+  int search_size = floorf((max_bpm - min_bpm) / step);
+  int min_boundary = 1, max_boundary = 1;
+  auto calc_underest = [&]() {
+    return result < min_bpm + (min_boundary + 0.5) * step;
+  };
+  auto calc_overest = [&]() {
+    return result > max_bpm - (max_boundary + 0.5) * step;
+  };
+  bool underest = calc_underest();
+  bool overest = calc_overest();
+  while (min_boundary != search_size - max_boundary && (underest || overest)) {
+    if (underest) {
+      min_boundary++;
+    } else {
+      max_boundary++;
+    }
+    float max_energy = 0;
+    for (int i = min_boundary; i <= search_size - max_boundary; i++) {
+      float current_energy = energies[i];
+      if (current_energy > max_energy) {
+        max_energy = current_energy;
+        result = min_bpm + step * i;
+      }
+    }
+    underest = calc_underest();
+    overest = calc_overest();
+  }
+  return result;
 }
 
 REGISTER_TRANSFORM(Beat);

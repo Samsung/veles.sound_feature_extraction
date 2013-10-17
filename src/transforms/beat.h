@@ -45,14 +45,18 @@ class Beat
   static void CombConvolve(const float* in, size_t size, int pulses,
                            int period, float* out) noexcept;
 
+  static float FixBorderErrors(const float* energies, float min_bpm,
+                               float max_bpm, float result,
+                               float step) noexcept;
+
  private:
   static constexpr float MinBeatsPerMinuteValue();
   static size_t PulsesLength(int pulses_count, int period) noexcept;
 
   static constexpr float kInitialBeatsValue = 150.f;
   static constexpr size_t kStepsCount = 3;
-  static constexpr float kDifference[kStepsCount] { 100.f, 2.f, 0.25f };
-  static constexpr float kStep[kStepsCount] { 2.f, 0.25f, 0.05f };
+  static constexpr float kDifference[kStepsCount] { 90.f, 20.f, 1.f };
+  static constexpr float kStep[kStepsCount] { 2.0f, 1.f, 0.1f };
   static constexpr int kDefaultPulses = 3;
   mutable FloatPtr buffer_;
   int bands_;
