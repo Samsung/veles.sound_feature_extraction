@@ -99,16 +99,17 @@ void Beat::CombConvolve(const float* in, size_t size, int pulses,
 }
 
 void Beat::Do(const BuffersBase<float*>& in,
-              BuffersBase<float>* out) const noexcept {
+              BuffersBase<Formats::FixedArray<2>>* out) const noexcept {
   for (size_t ini = 0; ini < in.Count(); ini += bands_) {
     auto result = kInitialBeatsValue;
+    float result_energy;
     auto size = this->inputFormat_->Size();
     auto buffer = buffer_.get();
     for (int j = 0; j < static_cast<int>(kStepsCount); j++) {
       const float min_bpm = result - kDifference[j];
       const float max_bpm = result + kDifference[j];
       const float step = kStep[j];
-      float max_energy = 0;
+      result_energy = 0;
       int search_size = floorf((max_bpm - min_bpm) / step);
       float energies[search_size];
       for (int i = 0; i < search_size; i++) {
@@ -123,15 +124,16 @@ void Beat::Do(const BuffersBase<float*>& in,
                                              conv_length) * conv_length;
         }
         energies[i] = current_energy;
-        if (current_energy > max_energy) {
-          max_energy = current_energy;
+        if (current_energy > result_energy) {
+          result_energy = current_energy;
           result = bpm;
         }
       }
 
       if (j == 0) {
         // Fix underestimation and overestimation errors
-        result = FixBorderErrors(energies, min_bpm, max_bpm, result, step);
+        std::tie(result, result_energy) = FixBorderErrors(
+            energies, min_bpm,max_bpm, step, result, result_energy);
       }
 
       if (debug_) {
@@ -147,12 +149,14 @@ void Beat::Do(const BuffersBase<float*>& in,
         INF("%s\n----\n", dump.c_str());
       }
     }
-    (*out)[ini / bands_] = result;
+    (*out)[ini / bands_][0] = result;
+    (*out)[ini / bands_][1] = result_energy;
   }
 }
 
-float Beat::FixBorderErrors(const float* energies, float min_bpm, float max_bpm,
-                            float result, float step) noexcept {
+std::tuple<float, float> Beat::FixBorderErrors(
+    const float* energies, float min_bpm, float max_bpm, float step,
+    float result, float result_energy) noexcept {
   int search_size = floorf((max_bpm - min_bpm) / step);
   int min_boundary = 1, max_boundary = 1;
   auto calc_underest = [&]() {
@@ -169,18 +173,18 @@ float Beat::FixBorderErrors(const float* energies, float min_bpm, float max_bpm,
     } else {
       max_boundary++;
     }
-    float max_energy = 0;
+    result_energy = 0;
     for (int i = min_boundary; i <= search_size - max_boundary; i++) {
       float current_energy = energies[i];
-      if (current_energy > max_energy) {
-        max_energy = current_energy;
+      if (current_energy > result_energy) {
+        result_energy = current_energy;
         result = min_bpm + step * i;
       }
     }
     underest = calc_underest();
     overest = calc_overest();
   }
-  return result;
+  return std::make_tuple(result, result_energy);
 }
 
 REGISTER_TRANSFORM(Beat);

@@ -30,7 +30,7 @@ class BeatTest : public TransformTest<Beat> {
 
 TEST_F(BeatTest, Do) {
   Do((*Input), &(*Output));
-  ASSERT_NEAR(180.f, (*Output)[0], 5.f);
+  ASSERT_NEAR(180.f, (*Output)[0][0], 5.f);
 }
 
 TEST_F(BeatTest, CombConvolve) {
@@ -111,10 +111,13 @@ TEST_F(BeatTest, FixBorderErrors) {
       934524859070816452608.f, 936326228553020473344.f, 938150819720803123200.f,
       939998069624210980864.f, 941896477604636000256.f, 943868280185238323200.f
   };
-  float ret = FixBorderErrors(energies1, 50, 250, 248, 2.0);
+  float ret, ret_energy;
+  std::tie(ret, ret_energy) = FixBorderErrors(energies1, 50, 250, 2.0, 248,
+                                              986349187357852303360.f);
   EXPECT_GT(ret, 90.f);
   EXPECT_LT(ret, 110.f);
-  ret = FixBorderErrors(energies2, 60, 240, 238, 2.0);
+  std::tie(ret, ret_energy) = FixBorderErrors(energies2, 60, 240, 2.0, 238,
+                                              943868280185238323200.f);
   EXPECT_GT(ret, 130.f);
   EXPECT_LT(ret, 150.f);
 }
