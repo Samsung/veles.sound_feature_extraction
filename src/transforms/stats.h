@@ -23,19 +23,19 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 enum StatsType {
-  STATS_TYPE_AVERAGE = 1,
-  STATS_TYPE_DISPERSION = 2,
-  STATS_TYPE_SKEW = 4,
-  STATS_TYPE_KURTOSIS = 8,
-  STATS_TYPE_COUNT = 4
+  kStatsTypeAverage = 1,
+  kStatsTypeStdDeviation = 2,
+  kStatsTypeSkewness = 4,
+  kStatsTypeKurtosis = 8,
+  kStatsTypeCount = 4
 };
 
 class Stats
     : public OmpTransformBase<Formats::RawFormatF,
                               Formats::RawFormat<
-                                  Formats::FixedArray<STATS_TYPE_COUNT>>> {
+                                  Formats::FixedArray<kStatsTypeCount>>> {
  public:
-  typedef Formats::FixedArray<STATS_TYPE_COUNT> StatsArray;
+  typedef Formats::FixedArray<kStatsTypeCount> StatsArray;
 
   Stats();
 
@@ -61,12 +61,11 @@ class Stats
 
   virtual void Do(const float* in, StatsArray* out) const noexcept override;
 
-  void Calculate(const float* rawMoments, int index,
-                 StatsArray* out) const noexcept;
+  void Calculate(const float* rawMoments, StatsArray* out) const noexcept;
   static void CalculateRawMoments(bool simd, const float* in, int startIndex,
                                   int length, float* rawMoments) noexcept;
   static float CalculateAverage(const float* rawMoments) noexcept;
-  static float CalculateDispersion(const float* rawMoments) noexcept;
+  static float CalculateStdDeviation(const float* rawMoments) noexcept;
   static float CalculateSkew(const float* rawMoments) noexcept;
   static float CalculateKurtosis(const float* rawMoments) noexcept;
 

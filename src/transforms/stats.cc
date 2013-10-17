@@ -26,22 +26,22 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 const std::unordered_map<std::string, StatsType> Stats::kStatsTypesMap {
-  { "average", STATS_TYPE_AVERAGE },
-  { "dispersion", STATS_TYPE_DISPERSION },
-  { "skew", STATS_TYPE_SKEW},
-  { "kurtosis", STATS_TYPE_KURTOSIS }
+  { "average", kStatsTypeAverage },
+  { "stddev", kStatsTypeStdDeviation },
+  { "skewness", kStatsTypeSkewness},
+  { "kurtosis", kStatsTypeKurtosis }
 };
 
 const std::unordered_map<int, Stats::CalculateFunc> Stats::kStatsFuncs {
-  { STATS_TYPE_AVERAGE, Stats::CalculateAverage },
-  { STATS_TYPE_DISPERSION, Stats::CalculateDispersion },
-  { STATS_TYPE_SKEW, Stats::CalculateSkew },
-  { STATS_TYPE_KURTOSIS, Stats::CalculateKurtosis }
+  { kStatsTypeAverage, Stats::CalculateAverage },
+  { kStatsTypeStdDeviation, Stats::CalculateStdDeviation },
+  { kStatsTypeSkewness, Stats::CalculateSkew },
+  { kStatsTypeKurtosis, Stats::CalculateKurtosis }
 };
 
 Stats::Stats()
-    : types_({ STATS_TYPE_AVERAGE, STATS_TYPE_DISPERSION,
-               STATS_TYPE_SKEW, STATS_TYPE_KURTOSIS}),
+    : types_({ kStatsTypeAverage, kStatsTypeStdDeviation,
+               kStatsTypeSkewness, kStatsTypeKurtosis}),
       interval_(0) {
   RegisterSetter("types", [&](const std::string& value) {
     static const boost::regex allRegex("^\\s*(\\w+\\s*(\\s|$))+");
@@ -85,43 +85,41 @@ size_t Stats::OnInputFormatChanged(size_t buffersCount) {
     auto ratio = inputFormat_->Size() / interval_;
     if ((inputFormat_->Size() % interval_) == 0) {
       outputFormat_->SetSize(ratio);
-      return buffersCount * ratio;
+    } else {
+      outputFormat_->SetSize(ratio + 1);
     }
-    outputFormat_->SetSize(ratio + 1);
-    return buffersCount * (ratio + 1);
   } else {
     outputFormat_->SetSize(1);
-    return buffersCount;
   }
+  return buffersCount;
 }
 
 void Stats::Do(const float* in, StatsArray* out) const noexcept {
   float rawMoments[4];
   if (interval_ == 0) {
     CalculateRawMoments(true, in, 0, inputFormat_->Size(), rawMoments);
-    Calculate(rawMoments, 0, out);
+    Calculate(rawMoments, out);
   } else {
     size_t i;
     for (i = 0; i < inputFormat_->Size() - interval_ + 1; i+= interval_) {
       CalculateRawMoments(true, in, i, interval_, rawMoments);
-      Calculate(rawMoments, i / interval_, out);
+      Calculate(rawMoments, out + i / interval_);
     }
     if (inputFormat_->Size() % interval_ != 0) {
       CalculateRawMoments(true, in, i, inputFormat_->Size() - i, rawMoments);
-      Calculate(rawMoments, i / interval_, out);
+      Calculate(rawMoments, out + i / interval_);
     }
   }
 }
 
-void Stats::Calculate(const float* rawMoments, int index,
-                      StatsArray* out) const noexcept {
+void Stats::Calculate(const float* rawMoments, StatsArray* out) const noexcept {
   for (auto stat : types_) {
     int sind = 0;
     int istat = stat;
     while (istat >>= 1) {
       sind++;
     }
-    out[index][sind] = kStatsFuncs.find(stat)->second(rawMoments);
+    (*out)[sind] = kStatsFuncs.find(stat)->second(rawMoments);
   }
 }
 
@@ -242,8 +240,13 @@ float Stats::CalculateAverage(const float* rawMoments) noexcept {
   return rawMoments[0];
 }
 
-float Stats::CalculateDispersion(const float* rawMoments) noexcept {
-  return rawMoments[1] - rawMoments[0] * rawMoments[0];
+float Stats::CalculateStdDeviation(const float* rawMoments) noexcept {
+  auto value = rawMoments[1] - rawMoments[0] * rawMoments[0];
+  if (value < 0) {
+    return 0;
+  }
+  value = sqrtf(value);
+  return value;
 }
 
 float Stats::CalculateSkew(const float* rawMoments) noexcept {
@@ -251,11 +254,12 @@ float Stats::CalculateSkew(const float* rawMoments) noexcept {
   float avg2 = rawMoments[1];
   float avg3 = rawMoments[2];
   double u2 = avg2 - avg1 * avg1;
-  if (u2 == 0) {
+  if (u2 <= 0) {
     return 0;
   }
   double u3 = avg3 - 3 * avg2 * avg1 + 2 * avg1 * avg1 * avg1;
-  return u3 / (sqrt(u2) * u2);
+  auto value = u3 / (sqrt(u2) * u2);
+  return value;
 }
 
 float Stats::CalculateKurtosis(const float* rawMoments) noexcept {
@@ -269,7 +273,9 @@ float Stats::CalculateKurtosis(const float* rawMoments) noexcept {
   }
   double u4 = avg4 - 4 * avg3 * avg1 + 6 * avg2 * avg1 * avg1
       - 3 * avg1 * avg1 * avg1 * avg1;
-  return u4 / (u2 * u2) - 3;
+  auto value = u4 / (u2 * u2) - 3;
+  // assert(value >= -2);
+  return value;
 }
 
 REGISTER_TRANSFORM(Stats);
