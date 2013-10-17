@@ -28,13 +28,14 @@ class Transform(object):
     '''
     def __init__(self, name, description="",
                  supported_parameters=None, parameters=None,
-                 input_format="", output_format=""):
+                 input_format="", output_format="", condition=None):
         self.name = name
         self.description_str = description
         self.supported_parameters = supported_parameters
         self.parameters = parameters
         self.input_format = input_format
         self.output_format = output_format
+        self.condition = condition
 
     def __str__(self):
         result = self.name + "\n" + "=" * len(self.name) + "\n\n" + \

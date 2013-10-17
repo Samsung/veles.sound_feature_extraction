@@ -38,13 +38,17 @@ class Feature(object):
         self.name = name
         self.transforms = transforms
 
-    def description(self):
+    def description(self, cond_locals={}):
         '''
         Constructs a string which describes this feature calculation plan
         '''
         result = self.name + " ["
         for transform in self.transforms:
-            result += transform.description() + ", "
+            add = True
+            if transform.condition:
+                add = eval(transform.condition, cond_locals)
+            if add:
+                result += transform.description() + ", "
         result = result[:-2] + "]"
         logging.debug("Constructed feature description: " + result)
         return result
@@ -71,7 +75,8 @@ class Feature(object):
         name = fnm.group().strip()
         transforms = []
         tdescription = re.search("\\[([^\\]]+)\\]", description).group()
-        for tm in re.finditer("\\w+\\s*(\\([^\\)]*\\))?", tdescription):
+        for tm in re.finditer("\\w+\\s*(\\([^\\)]*\\))?\\s*(\\{[^\\}]+\\})?",
+                              tdescription):
             trname = re.match("\\w+", tm.group()).group()
             parameters = {}
             pstrm = re.search("(?<=\\()[^\\)]*(?=\\))", tm.group())
@@ -79,6 +84,8 @@ class Feature(object):
                 for line in pstrm.group().split(","):
                     kv = line.split("=")
                     parameters[kv[0].strip()] = kv[1].strip()
+            trcond = re.search("\\{[^\\}]+\\}$", tm.group())
+            cond = trcond.group()[1:-1] if trcond else None
             regtr = Explorer().transforms.get(trname)
             if not regtr:
                 if len(transforms) > 0:
@@ -91,10 +98,12 @@ class Feature(object):
                                             regtr.supported_parameters,
                                             parameters,
                                             regtr.input_format,
-                                            regtr.output_format))
+                                            regtr.output_format,
+                                            cond))
             else:
                 transforms.append(Transform(trname,
-                                            parameters=parameters))
+                                            parameters=parameters,
+                                            condition=cond))
         if transforms[-1].output_format == "":
             raise FeatureFormatNotRecognizedException(name)
         return Feature(name, transforms)

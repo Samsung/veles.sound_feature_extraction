@@ -32,15 +32,18 @@ class Extractor(object):
     Speech feature extractor.
     '''
 
-    def __init__(self, features, buffer_size, sampling_rate):
+    def __init__(self, features, buffer_size, sampling_rate, channels=1):
         self.features = features
         self.features_dict = {f.name: f for f in self.features}
         self.buffer_size = buffer_size
         self.sampling_rate = sampling_rate
+        self.channels = channels
         flen = len(self.features)
         fstrs = (c_char_p * flen)()
         for i in range(0, flen):
-            fstrs[i] = c_char_p(self.features[i].description().encode())
+            fstrs[i] = c_char_p(self.features[i].description(
+                {"sampling_rate": sampling_rate,
+                 "channels": channels}).encode())
         self._config = Library().setup_features_extraction(
             fstrs, len(self.features), buffer_size, sampling_rate)
         if self._config:

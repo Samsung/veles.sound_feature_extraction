@@ -19,6 +19,8 @@ class FeaturesXml(object):
         ret = node.attrib["name"]
         if "parameters" in node.attrib:
             ret += "(" + node.attrib["parameters"] + ")"
+        if "condition" in node.attrib:
+            ret += "{" + node.attrib["condition"] + "}"
         return ret
 
     @staticmethod
