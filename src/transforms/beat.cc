@@ -131,7 +131,7 @@ void Beat::Do(const BuffersBase<float*>& in,
 
       if (j == 0) {
         // Fix underestimation and overestimation errors
-        FixBorderErrors(energies, min_bpm, max_bpm, result, step);
+        result = FixBorderErrors(energies, min_bpm, max_bpm, result, step);
       }
 
       if (debug_) {
