@@ -315,14 +315,14 @@ FeatureExtractionResult extract_speech_features(
   int i = 0;
   for (auto res : retmap) {
     copy_string(res.first, *featureNames + i);
-    size_t sizeEach = res.second->Format()->UnalignedSizeInBytes();
-    assert(sizeEach > 0);
-    size_t size = sizeEach * res.second->Count();
+    size_t size_each = res.second->Format()->UnalignedSizeInBytes();
+    assert(size_each > 0);
+    size_t size = size_each * res.second->Count();
     (*resultLengths)[i] = size;
     (*results)[i] = new char[size];
     for (size_t j = 0; j < res.second->Count(); j++) {
-      memcpy(reinterpret_cast<char *>((*results)[i]) + j * sizeEach,
-             (*res.second)[j], sizeEach);
+      memcpy(reinterpret_cast<char *>((*results)[i]) + j * size_each,
+             (*res.second)[j], size_each);
     }
     i++;
   }
