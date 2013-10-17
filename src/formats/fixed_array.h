@@ -59,6 +59,20 @@ struct FixedArray {
 };
 
 }  // namespace Formats
+
+namespace Validation {
+  template<std::uint8_t L>
+  struct Validator<Formats::FixedArray<L>> {
+    static bool Validate(const Formats::FixedArray<L>& value) noexcept {
+      return value.Validate();
+    }
+
+    static bool Validate(Formats::FixedArray<L>&& value) noexcept {
+      return value.Validate();
+    }
+  };
+}  // namespace Validation
+
 }  // namespace SoundFeatureExtraction
 
 namespace std {
