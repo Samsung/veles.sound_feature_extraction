@@ -17,7 +17,7 @@
 #include <string>
 #include "src/buffers_base.h"
 #include "src/logger.h"
-#include "src/parameters_base.h"
+#include "src/parameterizable_base.h"
 #include "src/simd_aware.h"
 #include "src/transform_registry.h"
 

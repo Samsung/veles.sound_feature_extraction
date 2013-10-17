@@ -1,4 +1,4 @@
-/*! @file parameters_base.h
+/*! @file parameterizable_base.h
  *  @brief Base class which helps to implement IParameterizable.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0

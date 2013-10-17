@@ -10,7 +10,7 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/parameters_base.h"
+#include "src/parameterizable_base.h"
 
 namespace SoundFeatureExtraction {
 

@@ -8,8 +8,8 @@ noinst_LTLIBRARIES = libDSPFilters.la
 
 libSoundFeatureExtraction_la_SOURCES = api.cc buffers.cc buffer_format.cc \
 features_parser.cc parameterizable.cc transform.cc transform_registry.cc \
-transform_tree.cc format_converter.cc demangle.cc parameters_base.cc logger.cc \
-simd_aware.cc \
+transform_tree.cc format_converter.cc demangle.cc parameterizable_base.cc \
+logger.cc simd_aware.cc \
 \
 allocators/sliding_blocks_allocator.cc allocators/worst_allocator.cc \
 allocators/buffers_allocator.cc allocators/sliding_blocks_impl.cc \
