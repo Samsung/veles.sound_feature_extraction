@@ -30,7 +30,7 @@ class BeatTest : public TransformTest<Beat> {
 
 TEST_F(BeatTest, Do) {
   Do((*Input), &(*Output));
-  ASSERT_NEAR(180.f, (*Output)[0], 2.f);
+  ASSERT_NEAR(180.f, (*Output)[0], 5.f);
 }
 
 TEST_F(BeatTest, CombConvolve) {
