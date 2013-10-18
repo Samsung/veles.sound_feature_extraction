@@ -22,8 +22,8 @@ PeakDetection::PeakDetection()
       type_(kExtremumTypeMaximum),
       min_pos_(0),
       max_pos_(1) {
-  RegisterSetter("peaks", [&](const std::string& value) {
-    int pv = Parse<int>("peaks", value);
+  RegisterSetter("number", [&](const std::string& value) {
+    int pv = Parse<int>("number", value);
     if (pv < 1) {
       return false;
     }
