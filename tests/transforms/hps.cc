@@ -15,7 +15,7 @@
 #include "tests/transforms/transform_test.h"
 #include "tests/transforms/hps_test.inc"
 
-using SoundFeatureExtraction::Formats::RawFormatF;
+using SoundFeatureExtraction::Formats::ArrayFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::Hps;
 

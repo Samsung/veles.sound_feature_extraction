@@ -13,14 +13,14 @@
 #ifndef SRC_FORMATS_FLOAT_TO_INT16_H_
 #define SRC_FORMATS_FLOAT_TO_INT16_H_
 
-#include "src/formats/raw_format.h"
-#include "src/formats/raw_format_converter_base.h"
+#include "src/formats/array_format.h"
+#include "src/formats/array_format_converter_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Formats {
 
 class FloatToInt16Raw
-    : public RawFormatConverterBase<RawFormatF, RawFormat16> {
+    : public ArrayFormatConverterBase<ArrayFormatF, ArrayFormat16> {
  protected:
   virtual void Do(const float* in,
                   int16_t* out) const noexcept override;

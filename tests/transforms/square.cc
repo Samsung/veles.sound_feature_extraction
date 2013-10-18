@@ -13,8 +13,8 @@
 #include "src/transforms/square.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::RawFormat16;
-using SoundFeatureExtraction::Formats::RawFormatF;
+using SoundFeatureExtraction::Formats::ArrayFormat16;
+using SoundFeatureExtraction::Formats::ArrayFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::SquareRaw;
 using SoundFeatureExtraction::Transforms::SquareF;

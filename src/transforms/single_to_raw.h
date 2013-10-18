@@ -15,7 +15,7 @@
 
 #include "src/transform_base.h"
 #include "src/formats/single_format.h"
-#include "src/formats/raw_format.h"
+#include "src/formats/array_format.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -23,7 +23,7 @@ namespace Transforms {
 template <class T>
 class SingleToRaw
     : public TransformBase<Formats::SingleFormat<T>,
-                           Formats::RawFormat<T>>{
+                           Formats::ArrayFormat<T>>{
  public:
   TRANSFORM_INTRO("Merge", "Merge all single-s to one solid array.")
 

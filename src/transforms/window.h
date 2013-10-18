@@ -20,7 +20,7 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 //// @brief Applies a window function to each buffer.
-class Window : public OmpUniformFormatTransform<Formats::RawFormatF> {
+class Window : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
   template <class T> friend class WindowSplitterTemplate;
   friend class WindowSplitter16;
   friend class WindowSplitterF;

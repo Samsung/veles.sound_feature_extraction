@@ -20,7 +20,7 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-class Diff : public OmpUniformFormatTransform<Formats::RawFormatF> {
+class Diff : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
  public:
   Diff();
 

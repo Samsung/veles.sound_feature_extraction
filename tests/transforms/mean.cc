@@ -15,7 +15,7 @@
 #include "src/transforms/mean.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::RawFormatF;
+using SoundFeatureExtraction::Formats::ArrayFormatF;
 using SoundFeatureExtraction::Formats::FixedArray;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::Mean;

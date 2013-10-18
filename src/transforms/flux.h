@@ -13,7 +13,7 @@
 #ifndef SRC_TRANSFORMS_ROLLOFF_H_
 #define SRC_TRANSFORMS_ROLLOFF_H_
 
-#include "src/formats/raw_format.h"
+#include "src/formats/array_format.h"
 #include "src/formats/single_format.h"
 #include "src/transform_base.h"
 
@@ -22,7 +22,7 @@ namespace Transforms {
 
 /// @brief \f$||\overrightarrow{Value(f)}-\overrightarrow{Value_pre(f)}||\f$.
 class Flux
-    : public TransformBase<Formats::RawFormatF, Formats::SingleFormatF> {
+    : public TransformBase<Formats::ArrayFormatF, Formats::SingleFormatF> {
  public:
   TRANSFORM_INTRO("Flux", "Measure of spectral change.")
 

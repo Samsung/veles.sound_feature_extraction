@@ -21,7 +21,7 @@ namespace Transforms {
 
 /// @brief \f$R: \displaystyle\sum_{f=0}^{f=R}{Value[f]} = ratio \times \displaystyle\sum_{f=0}^{f=N}{Value[f]}\f$.
 class Rolloff
-    : public OmpTransformBase<Formats::RawFormatF, Formats::SingleFormatF> {
+    : public OmpTransformBase<Formats::ArrayFormatF, Formats::SingleFormatF> {
  public:
   Rolloff();
 

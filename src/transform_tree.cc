@@ -19,7 +19,7 @@
 #include <string>
 #include <utility>
 #include "src/allocators/sliding_blocks_allocator.h"
-#include "src/formats/raw_format.h"
+#include "src/formats/array_format.h"
 #include "src/format_converter.h"
 #include "src/transform_registry.h"
 
@@ -32,7 +32,7 @@ namespace SoundFeatureExtraction {
 class RootTransform : public Transform {
  public:
   explicit RootTransform(
-      const std::shared_ptr<Formats::RawFormat16>& format) noexcept
+      const std::shared_ptr<Formats::ArrayFormat16>& format) noexcept
       : format_(format) {
   }
 
@@ -54,7 +54,7 @@ class RootTransform : public Transform {
   virtual size_t SetInputFormat(
       const std::shared_ptr<BufferFormat>& format,
       size_t buffersCount) override {
-    format_ = std::static_pointer_cast<Formats::RawFormat16>(format);
+    format_ = std::static_pointer_cast<Formats::ArrayFormat16>(format);
     return buffersCount;
   }
 
@@ -93,7 +93,7 @@ class RootTransform : public Transform {
   }
 
  private:
-  std::shared_ptr<Formats::RawFormat16> format_;
+  std::shared_ptr<Formats::ArrayFormat16> format_;
 };
 
 TransformTree::Node::Node(Node* parent,
@@ -257,19 +257,19 @@ size_t TransformTree::Node::ChildrenCount() const noexcept {
   return size;
 }
 
-TransformTree::TransformTree(Formats::RawFormat16&& rootFormat) noexcept
+TransformTree::TransformTree(Formats::ArrayFormat16&& rootFormat) noexcept
     : Logger("TransformTree", EINA_COLOR_ORANGE),
       root_(std::make_shared<Node>(
         nullptr, std::make_shared<RootTransform>(
-            std::make_shared<Formats::RawFormat16>(rootFormat)), 1, this)),
-      root_format_(std::make_shared<Formats::RawFormat16>(rootFormat)),
+            std::make_shared<Formats::ArrayFormat16>(rootFormat)), 1, this)),
+      root_format_(std::make_shared<Formats::ArrayFormat16>(rootFormat)),
       tree_is_prepared_(false),
       validate_after_each_transform_(false),
       dump_buffers_after_each_transform_(false) {
 }
 
 TransformTree::TransformTree(
-    const std::shared_ptr<Formats::RawFormat16>& rootFormat) noexcept
+    const std::shared_ptr<Formats::ArrayFormat16>& rootFormat) noexcept
     : Logger("TransformTree", EINA_COLOR_ORANGE),
       root_(std::make_shared<Node>(
         nullptr, std::make_shared<RootTransform>(rootFormat), 1, this)),
@@ -353,7 +353,7 @@ void TransformTree::AddTransform(const std::string& name,
   }
 }
 
-std::shared_ptr<Formats::RawFormat16> TransformTree::RootFormat()
+std::shared_ptr<Formats::ArrayFormat16> TransformTree::RootFormat()
     const noexcept {
   return root_format_;
 }

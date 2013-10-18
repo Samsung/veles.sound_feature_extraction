@@ -22,7 +22,7 @@ namespace Transforms {
 /// @brief Calculates \f$\frac{\displaystyle\sum_{f=0}^{SamplingRate / 2}{f
 /// Value[f]}}{\displaystyle\sum_{f=0}^{SamplingRate / 2}{Value[f]}}\f$.
 class Centroid
-    : public OmpTransformBase<Formats::RawFormatF, Formats::SingleFormatF> {
+    : public OmpTransformBase<Formats::ArrayFormatF, Formats::SingleFormatF> {
  public:
   TRANSFORM_INTRO("Centroid", "Window's center of mass in frequency domain "
                               "calculation.")

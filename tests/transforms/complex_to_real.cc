@@ -14,7 +14,7 @@
 #include "src/transforms/complex_to_real.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::RawFormatF;
+using SoundFeatureExtraction::Formats::ArrayFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::ComplexToReal;
 

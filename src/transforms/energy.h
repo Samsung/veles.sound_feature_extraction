@@ -20,7 +20,7 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Energy
-    : public OmpTransformBase<Formats::RawFormatF, Formats::SingleFormatF> {
+    : public OmpTransformBase<Formats::ArrayFormatF, Formats::SingleFormatF> {
  public:
   TRANSFORM_INTRO("Energy", "Sound energy calculation.")
 

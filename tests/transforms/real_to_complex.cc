@@ -13,7 +13,7 @@
 #include "src/transforms/real_to_complex.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::RawFormatF;
+using SoundFeatureExtraction::Formats::ArrayFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::RealToComplex;
 

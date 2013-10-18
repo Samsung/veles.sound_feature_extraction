@@ -19,7 +19,7 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class UnpackRDFT
-    : public OmpUniformFormatTransform<Formats::RawFormatF> {
+    : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("UnpackRDFT", "Unpacks the result after applying RDFT.")
 

@@ -27,7 +27,7 @@ enum MeanTypes {
 };
 
 class Mean
-    : public OmpTransformBase<Formats::RawFormatF,
+    : public OmpTransformBase<Formats::ArrayFormatF,
                               Formats::SingleFormat<
                                   Formats::FixedArray<MEAN_TYPE_COUNT>>> {
  public:

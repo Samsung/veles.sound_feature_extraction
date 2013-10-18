@@ -32,7 +32,7 @@ using SoundFeatureExtraction::IncompatibleTransformFormatException;
 using SoundFeatureExtraction::RawFeaturesMap;
 using SoundFeatureExtraction::Features::ParseFeaturesException;
 using SoundFeatureExtraction::TransformTree;
-using SoundFeatureExtraction::Formats::RawFormat16;
+using SoundFeatureExtraction::Formats::ArrayFormat16;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Buffers;
 using SoundFeatureExtraction::SimdAware;
@@ -258,7 +258,7 @@ FeaturesConfiguration *setup_features_extraction(
     return nullptr;
   }
 
-  auto format = std::make_shared<RawFormat16>(bufferSize, samplingRate);
+  auto format = std::make_shared<ArrayFormat16>(bufferSize, samplingRate);
   auto config = new FeaturesConfiguration();
   config->Tree = std::make_unique<TransformTree>(format);
   for (auto featpair : featmap) {

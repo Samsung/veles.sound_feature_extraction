@@ -13,13 +13,13 @@
 #ifndef SRC_TRANSFORMS_MIX_STEREO_H_
 #define SRC_TRANSFORMS_MIX_STEREO_H_
 
-#include "src/formats/raw_format.h"
+#include "src/formats/array_format.h"
 #include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-class MixStereo : public OmpUniformFormatTransform<Formats::RawFormat16> {
+class MixStereo : public OmpUniformFormatTransform<Formats::ArrayFormat16> {
  public:
   TRANSFORM_INTRO("Mix", "Mix stereo audio channels together.")
 

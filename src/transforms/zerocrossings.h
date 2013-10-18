@@ -13,7 +13,7 @@
 #ifndef SRC_TRANSFORMS_ZEROCROSSINGS_H_
 #define SRC_TRANSFORMS_ZEROCROSSINGS_H_
 
-#include "src/formats/raw_format.h"
+#include "src/formats/array_format.h"
 #include "src/formats/single_format.h"
 #include "src/transforms/common.h"
 
@@ -44,14 +44,14 @@ class ZeroCrossingsTemplate
 };
 
 class ZeroCrossingsF
-    : public ZeroCrossingsTemplate<Formats::RawFormatF> {
+    : public ZeroCrossingsTemplate<Formats::ArrayFormatF> {
  protected:
   virtual int DoInternal(bool simd, const float* input, size_t length)
       const noexcept override;
 };
 
 class ZeroCrossings16
-    : public ZeroCrossingsTemplate<Formats::RawFormat16> {
+    : public ZeroCrossingsTemplate<Formats::ArrayFormat16> {
  protected:
   virtual int DoInternal(bool simd, const int16_t* input, size_t length)
       const noexcept override;

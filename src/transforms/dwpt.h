@@ -47,7 +47,7 @@ namespace Transforms {
 ///             ------ 3
 ///
 class DWPT
-    : public OmpUniformFormatTransform<Formats::RawFormatF, true> {
+    : public OmpUniformFormatTransform<Formats::ArrayFormatF, true> {
  public:
   DWPT();
 

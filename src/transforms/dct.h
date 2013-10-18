@@ -13,14 +13,14 @@
 #ifndef SRC_TRANSFORMS_DCT_H_
 #define SRC_TRANSFORMS_DCT_H_
 
-#include "src/formats/raw_format.h"
+#include "src/formats/array_format.h"
 #include "src/transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class DCT
-    : public UniformFormatTransform<Formats::RawFormatF, true> {
+    : public UniformFormatTransform<Formats::ArrayFormatF, true> {
  public:
   TRANSFORM_INTRO("DCT", "Performs Discrete Cosine Transform "
                          "on the signal.")

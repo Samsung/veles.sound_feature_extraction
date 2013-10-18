@@ -16,7 +16,7 @@
 #include <cassert>
 #include <vector>
 #include <mutex>
-#include "src/formats/raw_format.h"
+#include "src/formats/array_format.h"
 #include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
@@ -24,7 +24,7 @@ namespace Transforms {
 
 template <class E>
 class FilterBase
-    : public OmpUniformFormatTransform<Formats::RawFormatF> {
+    : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
  public:
   FilterBase() noexcept
       : length_(kDefaultFilterLength),

@@ -62,7 +62,7 @@ class Log
   )
 };
 
-class LogRaw : public Log<Formats::RawFormatF> {
+class LogRaw : public Log<Formats::ArrayFormatF> {
  protected:
   virtual void Do(const float* in,
                   float* out) const noexcept override;

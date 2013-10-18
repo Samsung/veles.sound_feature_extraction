@@ -15,7 +15,7 @@
 
 #include <chrono>
 #include <vector>
-#include "src/formats/raw_format.h"
+#include "src/formats/array_format.h"
 #include "src/exceptions.h"
 #include "src/logger.h"
 #include "src/transform.h"
@@ -130,12 +130,12 @@ class FailedToAllocateBuffersException : public std::bad_alloc {
 
 class TransformTree : public Logger {
  public:
-  explicit TransformTree(Formats::RawFormat16&& rootFormat) noexcept;
+  explicit TransformTree(Formats::ArrayFormat16&& rootFormat) noexcept;
   explicit TransformTree(
-      const std::shared_ptr<Formats::RawFormat16>& rootFormat) noexcept;
+      const std::shared_ptr<Formats::ArrayFormat16>& rootFormat) noexcept;
   virtual ~TransformTree() noexcept;
 
-  std::shared_ptr<Formats::RawFormat16> RootFormat() const noexcept;
+  std::shared_ptr<Formats::ArrayFormat16> RootFormat() const noexcept;
 
   void AddFeature(
       const std::string& name,
@@ -216,7 +216,7 @@ class TransformTree : public Logger {
   static constexpr const char* kDumpEnvPrefix = "SFE_DUMP_";
 
   std::shared_ptr<Node> root_;
-  std::shared_ptr<Formats::RawFormat16> root_format_;
+  std::shared_ptr<Formats::ArrayFormat16> root_format_;
   bool tree_is_prepared_;
   std::unordered_map<std::string, std::shared_ptr<Node>> features_;
   std::unordered_map<std::string, TransformCacheItem> transforms_cache_;

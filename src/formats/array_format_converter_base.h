@@ -1,4 +1,4 @@
-/*! @file raw_format_converter_base.h
+/*! @file array_format_converter_base.h
  *  @brief Base class for all raw frames format converters.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -18,7 +18,7 @@
 namespace SoundFeatureExtraction {
 
 template <typename FIN, typename FOUT>
-class RawFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
+class ArrayFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
  protected:
   virtual size_t OnInputFormatChanged(size_t buffersCount) override final {
     auto& outputFormat = FormatConverterBase<FIN, FOUT>::outputFormat_;

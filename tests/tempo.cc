@@ -14,7 +14,7 @@
 #include <fstream>
 #include "src/transform_tree.h"
 #include "src/transform_registry.h"
-#include "src/formats/raw_format.h"
+#include "src/formats/array_format.h"
 #include "tests/speech_sample.inc"
 
 using SoundFeatureExtraction::TransformTree;

@@ -21,7 +21,7 @@ namespace Transforms {
 /// @brief Splits the raw stream into numerous small chunks aka windows.
 template <class T>
 class WindowSplitterTemplate
-    : public UniformFormatTransform<Formats::RawFormat<T>,
+    : public UniformFormatTransform<Formats::ArrayFormat<T>,
                                     true>,
       public TransformLogger<WindowSplitterTemplate<T>> {
  public:
@@ -35,8 +35,8 @@ class WindowSplitterTemplate
         interleaved_(true) {
     this->RegisterSetter("length", [&](const std::string& value) {
       int pv = this->template Parse<int>("length", value);
-      if (pv < Formats::RawFormatF::kMinSamplesCount ||
-          pv > Formats::RawFormatF::kMaxSamplesCount) {
+      if (pv < Formats::ArrayFormatF::kMinSamplesCount ||
+          pv > Formats::ArrayFormatF::kMaxSamplesCount) {
         return false;
       }
       length_ = pv;

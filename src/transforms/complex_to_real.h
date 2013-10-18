@@ -19,7 +19,7 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class ComplexToReal
-    : public OmpUniformFormatTransform<Formats::RawFormatF> {
+    : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("C2R", "Converts each complex number to corresponding "
                          "real numbers.")

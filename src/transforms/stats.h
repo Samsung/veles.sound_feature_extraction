@@ -15,7 +15,7 @@
 
 #include <set>
 #include "src/formats/fixed_array.h"
-#include "src/formats/raw_format.h"
+#include "src/formats/array_format.h"
 #include "src/formats/single_format.h"
 #include "src/omp_transform_base.h"
 
@@ -31,8 +31,8 @@ enum StatsType {
 };
 
 class Stats
-    : public OmpTransformBase<Formats::RawFormatF,
-                              Formats::RawFormat<
+    : public OmpTransformBase<Formats::ArrayFormatF,
+                              Formats::ArrayFormat<
                                   Formats::FixedArray<kStatsTypeCount>>> {
  public:
   typedef Formats::FixedArray<kStatsTypeCount> StatsArray;

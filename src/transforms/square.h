@@ -19,8 +19,8 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class SquareRaw
-    : public OmpTransformBase<Formats::RawFormat16,
-                              Formats::RawFormat32,
+    : public OmpTransformBase<Formats::ArrayFormat16,
+                              Formats::ArrayFormat32,
                               true> {
  public:
   TRANSFORM_INTRO("Square", "Squares the signal (raw format).")
@@ -41,7 +41,7 @@ class SquareRaw
 };
 
 class SquareF
-    : public OmpUniformFormatTransform<Formats::RawFormatF, true> {
+    : public OmpUniformFormatTransform<Formats::ArrayFormatF, true> {
  public:
   TRANSFORM_INTRO("Square", "Squares the signal (window floating point "
                             "format).")

@@ -13,14 +13,14 @@
 #ifndef SRC_FORMATS_INT32_TO_INT16_H_
 #define SRC_FORMATS_INT32_TO_INT16_H_
 
-#include "src/formats/raw_format.h"
-#include "src/formats/raw_format_converter_base.h"
+#include "src/formats/array_format.h"
+#include "src/formats/array_format_converter_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Formats {
 
 class Int32ToInt16Raw
-    : public RawFormatConverterBase<RawFormat32, RawFormat16> {
+    : public ArrayFormatConverterBase<ArrayFormat32, ArrayFormat16> {
  protected:
   virtual void Do(const int32_t* in,
                   int16_t* out) const noexcept override;

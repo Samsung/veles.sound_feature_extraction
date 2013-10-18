@@ -14,15 +14,15 @@
 
 namespace SoundFeatureExtraction {
 
-template class TransformBase<Formats::RawFormatF, Formats::RawFormatF, true>;
-template class TransformBase<Formats::RawFormatF, Formats::RawFormatF, false>;
-template class UniformFormatTransform<Formats::RawFormatF, false>;
-template class OmpTransformBaseBufferTypeProxy<Formats::RawFormatF,
-    Formats::RawFormatF, Formats::RawFormatF::BufferType,
-    Formats::RawFormatF::BufferType, true>;
-template class OmpTransformBaseBufferTypeProxy<Formats::RawFormatF,
-    Formats::RawFormatF, Formats::RawFormatF::BufferType,
-    Formats::RawFormatF::BufferType, false>;
-template class OmpUniformFormatTransform<Formats::RawFormatF, false>;
+template class TransformBase<Formats::ArrayFormatF, Formats::ArrayFormatF, true>;
+template class TransformBase<Formats::ArrayFormatF, Formats::ArrayFormatF, false>;
+template class UniformFormatTransform<Formats::ArrayFormatF, false>;
+template class OmpTransformBaseBufferTypeProxy<Formats::ArrayFormatF,
+    Formats::ArrayFormatF, Formats::ArrayFormatF::BufferType,
+    Formats::ArrayFormatF::BufferType, true>;
+template class OmpTransformBaseBufferTypeProxy<Formats::ArrayFormatF,
+    Formats::ArrayFormatF, Formats::ArrayFormatF::BufferType,
+    Formats::ArrayFormatF::BufferType, false>;
+template class OmpUniformFormatTransform<Formats::ArrayFormatF, false>;
 
 }  // namespace SoundFeatureExtraction

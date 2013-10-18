@@ -19,7 +19,7 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Preemphasis
-    : public OmpUniformFormatTransform<Formats::RawFormat16> {
+    : public OmpUniformFormatTransform<Formats::ArrayFormat16> {
  public:
   Preemphasis();
 

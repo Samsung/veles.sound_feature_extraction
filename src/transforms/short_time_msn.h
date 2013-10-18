@@ -13,14 +13,14 @@
 #ifndef SRC_TRANSFORMS_SHORT_TIME_MSN_H_
 #define SRC_TRANSFORMS_SHORT_TIME_MSN_H_
 
-#include "src/formats/raw_format.h"
+#include "src/formats/array_format.h"
 #include "src/transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class ShortTimeMeanScaleNormalization
-    : public UniformFormatTransform<Formats::RawFormatF> {
+    : public UniformFormatTransform<Formats::ArrayFormatF> {
  public:
   ShortTimeMeanScaleNormalization();
 

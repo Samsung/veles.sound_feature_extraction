@@ -41,7 +41,7 @@ class ParentTestFormat : public BufferFormatBase<ParentChunk> {
 };
 
 class ParentTestTransform
-    : public TransformBase<RawFormat16, ParentTestFormat> {
+    : public TransformBase<ArrayFormat16, ParentTestFormat> {
  public:
   ParentTestTransform() {
     RegisterSetter("AmplifyFactor", [&](const std::string&) {

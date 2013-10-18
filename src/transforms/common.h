@@ -13,23 +13,23 @@
 #ifndef SRC_TRANSFORMS_COMMON_H_
 #define SRC_TRANSFORMS_COMMON_H_
 
-#include "src/formats/raw_format.h"
+#include "src/formats/array_format.h"
 #include "src/omp_transform_base.h"
 
 namespace SoundFeatureExtraction {
 
-extern template class TransformBase<Formats::RawFormatF, Formats::RawFormatF,
+extern template class TransformBase<Formats::ArrayFormatF, Formats::ArrayFormatF,
                                     true>;
-extern template class TransformBase<Formats::RawFormatF, Formats::RawFormatF,
+extern template class TransformBase<Formats::ArrayFormatF, Formats::ArrayFormatF,
                                     false>;
-extern template class UniformFormatTransform<Formats::RawFormatF, false>;
-extern template class OmpTransformBaseBufferTypeProxy<Formats::RawFormatF,
-    Formats::RawFormatF, Formats::RawFormatF::BufferType,
-    Formats::RawFormatF::BufferType, true>;
-extern template class OmpTransformBaseBufferTypeProxy<Formats::RawFormatF,
-    Formats::RawFormatF, Formats::RawFormatF::BufferType,
-    Formats::RawFormatF::BufferType, false>;
-extern template class OmpUniformFormatTransform<Formats::RawFormatF, false>;
+extern template class UniformFormatTransform<Formats::ArrayFormatF, false>;
+extern template class OmpTransformBaseBufferTypeProxy<Formats::ArrayFormatF,
+    Formats::ArrayFormatF, Formats::ArrayFormatF::BufferType,
+    Formats::ArrayFormatF::BufferType, true>;
+extern template class OmpTransformBaseBufferTypeProxy<Formats::ArrayFormatF,
+    Formats::ArrayFormatF, Formats::ArrayFormatF::BufferType,
+    Formats::ArrayFormatF::BufferType, false>;
+extern template class OmpUniformFormatTransform<Formats::ArrayFormatF, false>;
 
 }  // namespace SoundFeatureExtraction
 

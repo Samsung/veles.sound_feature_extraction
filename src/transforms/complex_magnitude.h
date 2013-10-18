@@ -19,7 +19,7 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class ComplexMagnitude
-    : public OmpUniformFormatTransform<Formats::RawFormatF>,
+    : public OmpUniformFormatTransform<Formats::ArrayFormatF>,
       public TransformLogger<ComplexMagnitude> {
  public:
   TRANSFORM_INTRO("ComplexMagnitude",

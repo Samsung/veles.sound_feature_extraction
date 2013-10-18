@@ -19,7 +19,7 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Selector
-    : public OmpUniformFormatTransform<Formats::RawFormatF> {
+    : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
  public:
   Selector();
 

@@ -15,7 +15,7 @@
 #include "tests/transforms/transform_test.h"
 #include <fftf/api.h>
 
-using SoundFeatureExtraction::Formats::RawFormatF;
+using SoundFeatureExtraction::Formats::ArrayFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::ShortTimeMeanScaleNormalization;
 

@@ -15,7 +15,7 @@
 #include "tests/speech_sample.inc"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::RawFormatF;
+using SoundFeatureExtraction::Formats::ArrayFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::RDFT;
 using SoundFeatureExtraction::TransformTree;

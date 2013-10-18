@@ -13,14 +13,14 @@
 #ifndef SRC_TRANSFORMS_FORK_H_
 #define SRC_TRANSFORMS_FORK_H_
 
-#include "src/formats/raw_format.h"
+#include "src/formats/array_format.h"
 #include "src/transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Fork
-    : public UniformFormatTransform<Formats::RawFormatF> {
+    : public UniformFormatTransform<Formats::ArrayFormatF> {
   friend class FrequencyBands;
  public:
   Fork();

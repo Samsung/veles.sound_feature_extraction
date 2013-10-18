@@ -22,7 +22,7 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Beat
-    : public TransformBase<Formats::RawFormatF,
+    : public TransformBase<Formats::ArrayFormatF,
                            Formats::SingleFormat<Formats::FixedArray<2>>>,
       public TransformLogger<Beat> {
  public:

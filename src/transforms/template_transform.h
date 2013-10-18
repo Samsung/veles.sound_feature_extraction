@@ -13,14 +13,14 @@
 #ifndef SRC_TRANSFORMS_TEMPLATE_TRANSFORM_H_
 #define SRC_TRANSFORMS_TEMPLATE_TRANSFORM_H_
 
-#include "src/formats/raw_format.h"
+#include "src/formats/array_format.h"
 #include "src/transform_base.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class TemplateTransform
-    : public UniformFormatTransform<Formats::RawFormatF> {
+    : public UniformFormatTransform<Formats::ArrayFormatF> {
  public:
   TemplateTransform();
 

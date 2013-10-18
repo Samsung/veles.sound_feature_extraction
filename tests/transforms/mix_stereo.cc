@@ -14,7 +14,7 @@
 #include "src/transforms/mix_stereo.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::RawFormat16;
+using SoundFeatureExtraction::Formats::ArrayFormat16;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::MixStereo;
 

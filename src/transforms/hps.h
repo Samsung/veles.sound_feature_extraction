@@ -22,7 +22,7 @@ namespace Transforms {
 
 /// @brief Harmonic Product Spectrum calculation.
 class Hps
-    : public OmpTransformBase<Formats::RawFormatF, Formats::SingleFormatF>,
+    : public OmpTransformBase<Formats::ArrayFormatF, Formats::SingleFormatF>,
       public TransformLogger<Hps> {
  public:
   TRANSFORM_INTRO("HPS", "Extracting fundamental frequency with Harmonic "

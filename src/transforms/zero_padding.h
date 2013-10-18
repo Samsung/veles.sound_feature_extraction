@@ -19,7 +19,7 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class ZeroPadding
-    : public OmpUniformFormatTransform<Formats::RawFormatF> {
+    : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("ZeroPadding", "Pads signal with zeros to make it's length "
                                  "a power of 2.")

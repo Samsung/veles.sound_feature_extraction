@@ -1,4 +1,4 @@
-/*! @file raw_format.h
+/*! @file array_format.h
  *  @brief Raw frames format.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -27,35 +27,34 @@ class InvalidDurationException : public ExceptionBase {
 };
 
 template <class T>
-class RawFormat
-    : public BufferFormatBase<T*>,
-      public FormatLogger<RawFormat<T>>
+class ArrayFormat : public BufferFormatBase<T*>,
+                    public FormatLogger<ArrayFormat<T>>
 {
  public:
   typedef T BufferElementType;
 
-  RawFormat()
+  ArrayFormat()
       : size_(0) {
   }
 
-  RawFormat(size_t size, int samplingRate)
+  ArrayFormat(size_t size, int samplingRate)
       : BufferFormatBase<T*>(samplingRate),
         size_(size) {
   }
 
-  RawFormat(const RawFormat& other)
+  ArrayFormat(const ArrayFormat& other)
       : BufferFormatBase<T*>(other),
         size_(other.size_) {
   }
 
-  virtual ~RawFormat() noexcept {
+  virtual ~ArrayFormat() noexcept {
   }
 
   BufferFormat& operator=(const BufferFormat& other) {
-    if (other.Id() != RawFormat<T>::Id()) {
-      throw InvalidFormatException(RawFormat<T>::Id(), other.Id());
+    if (other.Id() != ArrayFormat<T>::Id()) {
+      throw InvalidFormatException(ArrayFormat<T>::Id(), other.Id());
     }
-    *this = reinterpret_cast<const RawFormat&>(other);
+    *this = reinterpret_cast<const ArrayFormat&>(other);
     return *this;
   }
 
@@ -152,9 +151,9 @@ class RawFormat
   }
 };
 
-typedef RawFormat<int16_t> RawFormat16;
-typedef RawFormat<int32_t> RawFormat32;
-typedef RawFormat<float> RawFormatF;
+typedef ArrayFormat<int16_t> ArrayFormat16;
+typedef ArrayFormat<int32_t> ArrayFormat32;
+typedef ArrayFormat<float> ArrayFormatF;
 
 }  // namespace Formats
 

@@ -27,7 +27,7 @@ namespace Transforms {
 /// each being equal to the corresponding subband energy. Numbers count is the
 /// same as the length of the binary tree fingerprint.
 class SubbandEnergy
-    : public OmpUniformFormatTransform<Formats::RawFormatF> {
+    : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
  public:
   SubbandEnergy();
 

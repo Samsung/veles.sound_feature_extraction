@@ -18,7 +18,7 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-class Rectify : public OmpUniformFormatTransform<Formats::RawFormatF> {
+class Rectify : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("Rectify", "Wave rectification to decrease high-frequency "
                              "content.")

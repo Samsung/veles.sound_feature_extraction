@@ -26,7 +26,7 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 class Autocorrelation
-    : public OmpUniformFormatTransform<Formats::RawFormatF> {
+    : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("AutoCorrelation", "Find the cross-correlation of a signal "
                                      "with itself.")

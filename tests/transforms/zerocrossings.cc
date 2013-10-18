@@ -14,8 +14,8 @@
 #include "src/transforms/zerocrossings.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::RawFormatF;
-using SoundFeatureExtraction::Formats::RawFormat16;
+using SoundFeatureExtraction::Formats::ArrayFormatF;
+using SoundFeatureExtraction::Formats::ArrayFormat16;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::ZeroCrossingsF;
 using SoundFeatureExtraction::Transforms::ZeroCrossings16;

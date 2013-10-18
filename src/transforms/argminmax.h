@@ -23,7 +23,7 @@ namespace Transforms {
 typedef std::tuple<int, float> ArgMinMaxResult;
 
 class ArgMinMax
-    : public OmpTransformBase<Formats::RawFormatF,
+    : public OmpTransformBase<Formats::ArrayFormatF,
                               Formats::SingleFormat<ArgMinMaxResult>> {
  public:
   ArgMinMax();
