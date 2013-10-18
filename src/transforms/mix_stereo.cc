@@ -47,9 +47,9 @@ void MixStereo::Do(const int16_t* in, int16_t* out) const noexcept {
   } else {
 #elif defined(__ARM_NEON__)
     for (int i = 0; i < length - 15; i += 16) {
-      int16x8x2_t vec = vld2q_s16(input + i);
+      int16x8x2_t vec = vld2q_s16(in + i);
       int16x8_t res = vshrq_n_s16(vec.val[0], 1);
-      res = vsraq(res, vec.val[1], 1);
+      res = vsraq_n_s16(res, vec.val[1], 1);
       vst1q_s16(out + i / 2, res);
     }
     for (int i = (length & ~0xF); i < length; i += 2) {
