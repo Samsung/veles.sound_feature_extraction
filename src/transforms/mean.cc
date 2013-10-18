@@ -102,11 +102,8 @@ float Mean::Do(bool simd, const float* input, size_t length,
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
           __m256 cmpvec = _mm256_cmp_ps(mulvec, infvec, _CMP_EQ_UQ);
-          // I do not know how to check fast if at least one element is inf;
-          // Using 2 hadd and 2 comparisons
-          cmpvec = _mm256_hadd_ps(cmpvec, cmpvec);
-          cmpvec = _mm256_hadd_ps(cmpvec, cmpvec);
-          if (ElementAt(cmpvec, 0) != 0 || ElementAt(cmpvec, 4) != 0) {
+          int check = _mm256_movemask_ps(cmpvec);
+          if (check != 0) {
             // Taking a power from 0 can lead to unexpected results...
             // Apply the mask to workaround zeros in tmp
             cmpvec = _mm256_cmp_ps(tmp, _mm256_set1_ps(0.f), _CMP_EQ_UQ);
