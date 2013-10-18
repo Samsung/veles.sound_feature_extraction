@@ -28,7 +28,7 @@ namespace Transforms {
 class Autocorrelation
     : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
  public:
-  TRANSFORM_INTRO("AutoCorrelation", "Find the cross-correlation of a signal "
+  TRANSFORM_INTRO("Autocorrelation", "Find the cross-correlation of a signal "
                                      "with itself.")
 
   OMP_TRANSFORM_PARAMETERS()
