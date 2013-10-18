@@ -19,7 +19,9 @@ namespace Transforms {
 PeakDetection::PeakDetection()
     : peaks_number_(kDefaultPeaksNumber),
       order_(kSortOrderValue),
-      type_(kExtremumTypeMaximum) {
+      type_(kExtremumTypeMaximum),
+      min_pos_(0),
+      max_pos_(1) {
   RegisterSetter("peaks", [&](const std::string& value) {
     int pv = Parse<int>("peaks", value);
     if (pv < 1) {
@@ -50,6 +52,14 @@ PeakDetection::PeakDetection()
     }
     return true;
   });
+  RegisterSetter("min_pos", [&](const std::string& value) {
+    min_pos_ = Parse<float>("min_pos", value);
+    return true;
+  });
+  RegisterSetter("max_pos", [&](const std::string& value) {
+    max_pos_ = Parse<float>("max_pos", value);
+    return true;
+  });
 }
 
 size_t PeakDetection::OnInputFormatChanged(size_t buffersCount) {
@@ -69,11 +79,12 @@ void PeakDetection::Do(const float* in,
               });
   }
   for (int i = 0; i < static_cast<int>(count) && i < peaks_number_; i++) {
-    out[i][0] = results[i].position;
+    out[i][0] = min_pos_ + results[i].position + 0.f / inputFormat_->Size() *
+        (max_pos_ - min_pos_);
     out[i][1] = results[i].value;
   }
   for (int i = count; i < peaks_number_; i++) {
-    out[i][0] = 0;
+    out[i][0] = min_pos_;
     out[i][1] = 0;
   }
 }

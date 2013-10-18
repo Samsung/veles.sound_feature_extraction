@@ -33,9 +33,13 @@ class PeakDetection
       TP("sort", "The order in which to sort peaks (position or value).",
          "value")
       TP("number", "The maximal number of peaks to extract. The rest of the "
-                   "slots will be set to zero.",
+                   "slots will be set to (min_pos, 0).",
          std::to_string(kDefaultPeaksNumber))
       TP("type", "The type of the peaks: max, min or all.", "max")
+      TP("min_pos", "The real minimal value of the position of each peak.",
+         "0")
+      TP("max_pos", "The real maximal value of the position of each peak.",
+         "1")
   )
 
  protected:
@@ -55,6 +59,8 @@ class PeakDetection
   int peaks_number_;
   SortOrder order_;
   ExtremumType type_;
+  float min_pos_;
+  float max_pos_;
 };
 
 }  // namespace Transforms
