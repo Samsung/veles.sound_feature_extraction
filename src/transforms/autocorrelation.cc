@@ -20,9 +20,14 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 void Autocorrelation::Initialize() const {
-  correlationHandles_.resize(MaxThreadsNumber());
+  // Workaround for SIGSEGV in libav FFT with sizes greater than 2^16
+  if (inputFormat_->Size() > 32768) {
+    fftf_set_backend_priority(FFTF_BACKEND_LIBAV, -1000);
+    fftf_set_backend(FFTF_BACKEND_NONE);
+  }
+  correlation_handles_.resize(MaxThreadsNumber());
   for (int i = 0; i < MaxThreadsNumber(); i++) {
-    correlationHandles_[i].handle = std::shared_ptr<CrossCorrelationHandle>(
+    correlation_handles_[i].handle = std::shared_ptr<CrossCorrelationHandle>(
         new CrossCorrelationHandle(cross_correlate_initialize(
             inputFormat_->Size(), inputFormat_->Size())),
         [](CrossCorrelationHandle *ptr) {
@@ -30,7 +35,7 @@ void Autocorrelation::Initialize() const {
           delete ptr;
         }
     );
-    correlationHandles_[i].mutex = std::make_shared<std::mutex>();
+    correlation_handles_[i].mutex = std::make_shared<std::mutex>();
   }
 }
 
@@ -41,7 +46,7 @@ size_t Autocorrelation::OnFormatChanged(size_t buffersCount) {
 
 void Autocorrelation::Do(const float* in, float* out)
 const noexcept {
-  for (auto hp : correlationHandles_) {
+  for (auto hp : correlation_handles_) {
     if (hp.mutex->try_lock()) {
       cross_correlate(*hp.handle, in, in, out);
       hp.mutex->unlock();

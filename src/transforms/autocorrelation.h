@@ -47,7 +47,7 @@ class Autocorrelation
     std::shared_ptr<std::mutex> mutex;
   };
 
-  mutable std::vector<SyncHandle> correlationHandles_;
+  mutable std::vector<SyncHandle> correlation_handles_;
 };
 
 }  // namespace Transforms
