@@ -19,8 +19,7 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-class DCT
-    : public UniformFormatTransform<Formats::ArrayFormatF, true> {
+class DCT : public UniformFormatTransform<Formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("DCT", "Performs Discrete Cosine Transform "
                          "on the signal.")
@@ -30,9 +29,15 @@ class DCT
  protected:
   virtual void Do(const BuffersBase<float*>& in,
                   BuffersBase<float*>* out) const noexcept override;
+};
 
-  virtual void DoInverse(const BuffersBase<float*>& in,
-                         BuffersBase<float*>* out) const noexcept override;
+class DCTInverse : public InverseUniformFormatTransform<DCT> {
+ public:
+  TRANSFORM_PARAMETERS()
+
+ protected:
+  virtual void Do(const BuffersBase<float*>& in,
+                  BuffersBase<float*>* out) const noexcept override;
 };
 
 }  // namespace Transforms

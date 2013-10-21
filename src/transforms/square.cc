@@ -16,66 +16,12 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-size_t SquareRaw::OnInputFormatChanged(size_t buffersCount) {
-  outputFormat_->SetSize(inputFormat_->Size());
-  outputFormat_->SetSamplingRate(inputFormat_->SamplingRate());
-  return buffersCount;
-}
-
-void SquareRaw::Do(const int16_t* in,
-                   int32_t* out) const noexcept {
+void Square::Do(const float* in, float* out) const noexcept {
   Do(UseSimd(), in, outputFormat_->Size(), out);
 }
 
-void SquareRaw::DoInverse(const int32_t* in UNUSED,
-                          int16_t* out UNUSED) const noexcept {
-  assert(false && "Not implemented yet");
-}
-
-void SquareRaw::Do(bool simd, const int16_t* input, int length,
-                   int32_t* output) noexcept {
-  if (simd) {
-#ifdef SIMD
-    int startIndex = 0;
-#ifdef __AVX__
-    startIndex = align_complement_i16(input);
-
-    for (int j = 0; j < startIndex; j++) {
-      output[j] = input[j] * input[j];
-    }
-#endif
-    for (int j = startIndex; j < length - INT16MUL_STEP + 1;
-        j += INT16MUL_STEP) {
-      int16_multiply(input + j, input + j, output + j);
-    }
-
-    for (int j = startIndex + (((length - startIndex)
-            >> INT16MUL_STEP_LOG2) << INT16MUL_STEP_LOG2);
-         j < length; j++) {
-      output[j] = input[j] * input[j];
-    }
-  } else {
-#else
-  } {
-#endif
-    for (int j = 0; j < length; j++) {
-      output[j] = input[j] * input[j];
-    }
-  }
-}
-
-void SquareF::Do(const float* in,
-                      float* out) const noexcept {
-  Do(UseSimd(), in, outputFormat_->Size(), out);
-}
-
-void SquareF::DoInverse(const float* in UNUSED,
-                        float* out UNUSED) const noexcept {
-  assert(false && "Not implemented yet");
-}
-
-void SquareF::Do(bool simd, const float* input, int length,
-                      float* output) noexcept {
+void Square::Do(bool simd, const float* input, int length,
+                float* output) noexcept {
   if (simd) {
 #ifdef SIMD
     for (int j = 0; j < length - FLOAT_STEP + 1; j += FLOAT_STEP) {
@@ -95,8 +41,13 @@ void SquareF::Do(bool simd, const float* input, int length,
   }
 }
 
-REGISTER_TRANSFORM(SquareRaw);
-REGISTER_TRANSFORM(SquareF);
+void SquareInverse::Do(const float* in UNUSED,
+                       float* out UNUSED) const noexcept {
+  assert(false && "Not implemented yet");
+}
+
+REGISTER_TRANSFORM(Square);
+REGISTER_TRANSFORM(SquareInverse);
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction

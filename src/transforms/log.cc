@@ -98,7 +98,7 @@ void LogRaw::Do(const float* in, float* out) const noexcept {
   Do(UseSimd(), in, this->inputFormat_->Size(), out);
 }
 
-void LogRaw::DoInverse(const float* in UNUSED, float* out UNUSED)
+void LogRawInverse::Do(const float* in UNUSED, float* out UNUSED)
     const noexcept {
   assert("Not implemented yet");
 }
@@ -117,13 +117,15 @@ void LogSingle::Do(const float& in, float* out) const noexcept {
   }
 }
 
-void LogSingle::DoInverse(const float& in UNUSED, float* out UNUSED)
+void LogSingleInverse::Do(const float& in UNUSED, float* out UNUSED)
     const noexcept {
   assert("Not implemented yet");
 }
 
 REGISTER_TRANSFORM(LogRaw);
 REGISTER_TRANSFORM(LogSingle);
+REGISTER_TRANSFORM(LogRawInverse);
+REGISTER_TRANSFORM(LogSingleInverse);
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction

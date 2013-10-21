@@ -18,6 +18,7 @@
 using SoundFeatureExtraction::Formats::ArrayFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::RDFT;
+using SoundFeatureExtraction::Transforms::RDFTInverse;
 using SoundFeatureExtraction::TransformTree;
 using SoundFeatureExtraction::BuffersBase;
 
@@ -34,12 +35,24 @@ class RDFTTest : public TransformTest<RDFT> {
   }
 };
 
-TEST_F(RDFTTest, Forward) {
+class RDFTInverseTest : public TransformTest<RDFTInverse> {
+ public:
+  int Size;
+
+  virtual void SetUp() {
+    Size = 512;
+    SetUpTransform(1, Size, 16000);
+    for (int i = 0; i < Size; i++) {
+      (*Input)[0][i] = (i - Size / 2.0f) / Size;
+    }
+  }
+};
+
+TEST_F(RDFTTest, Do) {
   Do((*Input), &(*Output));
 }
 
-TEST_F(RDFTTest, Backward) {
-  SetParameter("inverse", "true");
+TEST_F(RDFTInverseTest, Do) {
   outputFormat_->SetSize(Size);
   Do((*Input), &(*Output));
 }

@@ -18,30 +18,7 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-class SquareRaw
-    : public OmpTransformBase<Formats::ArrayFormat16,
-                              Formats::ArrayFormat32,
-                              true> {
- public:
-  TRANSFORM_INTRO("Square", "Squares the signal (raw format).")
-
-  OMP_TRANSFORM_PARAMETERS()
-
- protected:
-  virtual size_t OnInputFormatChanged(size_t buffersCount) override;
-
-  virtual void Do(const int16_t* in,
-                  int32_t* out) const noexcept override;
-
-  virtual void DoInverse(const int32_t* in,
-                         int16_t* out) const noexcept override;
-
-  static void Do(bool simd, const int16_t* input, int length,
-                 int32_t* output) noexcept;
-};
-
-class SquareF
-    : public OmpUniformFormatTransform<Formats::ArrayFormatF, true> {
+class Square : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("Square", "Squares the signal (window floating point "
                             "format).")
@@ -49,14 +26,17 @@ class SquareF
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void Do(const float* in,
-                  float* out) const noexcept override;
-
-  virtual void DoInverse(const float* in,
-                         float* out) const noexcept override;
+  virtual void Do(const float* in, float* out) const noexcept override;
 
   static void Do(bool simd, const float* input, int length,
                  float* output) noexcept;
+};
+
+class SquareInverse : public OmpInverseUniformFormatTransform<Square> {
+ public:
+  OMP_TRANSFORM_PARAMETERS()
+
+  virtual void Do(const float* in, float* out) const noexcept override;
 };
 
 }  // namespace Transforms

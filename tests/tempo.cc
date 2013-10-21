@@ -40,7 +40,7 @@ TEST(Features, Tempo) {
       { "RDFT", "" },
       { "FrequencyBands", "bands=200 400 800 1600 3200" },
       { "IRDFT", "" },
-      { "IWindow", "length=512,inverse_count=6,interleaved=true" },
+      { "IWindow", "length=512,count=6,interleaved=true" },
       { "Rectify", "" },
       { "Convolve", "window=half-hanning-right, length=12800" },
       { "Diff", "rectify=true" },

@@ -298,6 +298,9 @@
 		<configuration configurationName="DTV ARMv7">
 			<resource resourceType="PROJECT" workspacePath="/SoundFeatureExtraction"/>
 		</configuration>
+		<configuration configurationName="DTV ARMv7 (Release)"/>
+		<configuration configurationName="Host (Debug)"/>
+		<configuration configurationName="Host (Release)"/>
 		<configuration configurationName="Build (GNU)">
 			<resource resourceType="PROJECT" workspacePath="/SoundFeatureExtraction"/>
 		</configuration>

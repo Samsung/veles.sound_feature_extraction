@@ -51,24 +51,10 @@ class TransformFactory {
   FactoryMap map_;
 };
 
-/// @brief The name of the parameter which indicates whether the transform is
-/// is inverse or not.
-/// @details Unable to use static const member of InverseParameterAware
-/// due to static constructors invocation order uncertainty.
-#define kInverseParameterName "inverse"
-
-class InverseParameterAware {
- public:
-  /// @brief Checks for the support of doing an inverse transform.
-  /// @details This function tests the transform's parameters for
-  /// the existence of INVERSE_PARAMETER.
-  static bool HasInverseTransform(const Transform& transform) noexcept;
-};
-
 /// @brief Helper class used to register transforms. Usually, you do not
 /// want to use it explicitly but rather through REGISTER_TRANSFORM macro.
 template<class T>
-class RegisterTransform : InverseParameterAware {
+class RegisterTransform {
  public:
   /// @brief This function is called during the execution of static
   /// constructors of global RegisterTransform class instances in each of the
@@ -80,20 +66,10 @@ class RegisterTransform : InverseParameterAware {
   /// undefined.
   RegisterTransform() {
     TransformFactory::FactoryMap& map = TransformFactory::InstanceRW().MapRW();
-    // Next line instantiates a new instance of the transform "T"
+    // Instantiate a new instance of the transform "T"
     T t;
-    // Insert the constructor functor
-    map[t.Name()].insert(std::make_pair(
-        t.InputFormat()->Id(), std::make_shared<T>));
-    // Insert the inverse constructor functor, if needed
-    if (HasInverseTransform(t)) {
-      map[std::string("I") + t.Name()].insert(std::make_pair(
-          t.OutputFormat()->Id(), []() {
-        auto ptr = std::make_shared<T>();
-        ptr->SetParameter(kInverseParameterName, "true");
-        return ptr;
-      }));
-    }
+    // Insert the constructor function make_shared<T> -> shared_ptr<T>
+    map[t.Name()].insert({t.InputFormat()->Id(), std::make_shared<T>});
   }
 };
 

@@ -1,4 +1,4 @@
-/*! @file rft.h
+/*! @file rdft.h
  *  @brief Discrete Fourier Transform on real input using FFT.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -19,11 +19,10 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-class RDFT
-    : public UniformFormatTransform<Formats::ArrayFormatF, true> {
+class RDFT : public UniformFormatTransform<Formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("RDFT", "Performs Discrete Fourier Transform "
-                         "on the input signal (using real FFT).")
+                          "on the input signal (using real FFT).")
 
   TRANSFORM_PARAMETERS()
 
@@ -32,9 +31,18 @@ class RDFT
 
   virtual void Do(const BuffersBase<float*>& in,
                   BuffersBase<float*>* out) const noexcept override;
+};
 
-  virtual void DoInverse(const BuffersBase<float*>& in,
-                         BuffersBase<float*>* out) const noexcept override;
+class RDFTInverse
+    : public InverseUniformFormatTransform<RDFT> {
+ public:
+  TRANSFORM_PARAMETERS()
+
+ protected:
+  virtual size_t OnFormatChanged(size_t buffersCount) override;
+
+  virtual void Do(const BuffersBase<float*>& in,
+                  BuffersBase<float*>* out) const noexcept override;
 };
 
 }  // namespace Transforms

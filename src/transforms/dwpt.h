@@ -46,8 +46,7 @@ namespace Transforms {
 ///             |
 ///             ------ 3
 ///
-class DWPT
-    : public OmpUniformFormatTransform<Formats::ArrayFormatF, true> {
+class DWPT : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
  public:
   DWPT();
 
@@ -71,9 +70,6 @@ class DWPT
 
   virtual void Do(const float* in,
                   float* out) const noexcept override;
-
-  virtual void DoInverse(const float* in,
-                         float* out) const noexcept override;
 
  private:
   static const std::vector<int> kDefaultTreeFingerprint;

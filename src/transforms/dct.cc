@@ -18,9 +18,8 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void DCT::Do(
-    const BuffersBase<float*>& in,
-    BuffersBase<float*>* out) const noexcept {
+void DCT::Do(const BuffersBase<float*>& in,
+             BuffersBase<float*>* out) const noexcept {
   int length = outputFormat_->Size();
   std::vector<const float*> inputs(in.Count());
   std::vector<float*> outputs(in.Count());
@@ -42,9 +41,8 @@ void DCT::Do(
   fftf_calc(fftPlan.get());
 }
 
-void DCT::DoInverse(
-    const BuffersBase<float*>& in,
-    BuffersBase<float*>* out) const noexcept {
+void DCTInverse::Do(const BuffersBase<float*>& in,
+                    BuffersBase<float*>* out) const noexcept {
   int length = outputFormat_->Size();
   std::vector<const float*> inputs(in.Count());
   std::vector<float*> outputs(in.Count());
@@ -70,6 +68,7 @@ void DCT::DoInverse(
 }
 
 REGISTER_TRANSFORM(DCT);
+REGISTER_TRANSFORM(DCTInverse);
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction

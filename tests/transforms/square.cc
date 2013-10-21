@@ -16,20 +16,9 @@
 using SoundFeatureExtraction::Formats::ArrayFormat16;
 using SoundFeatureExtraction::Formats::ArrayFormatF;
 using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::SquareRaw;
-using SoundFeatureExtraction::Transforms::SquareF;
+using SoundFeatureExtraction::Transforms::Square;
 
-class Square1632Test : public TransformTest<SquareRaw> {
- public:
-  virtual void SetUp() {
-   SetUpTransform(1, 32000, 16000);
-    for (int i = 0; i < 32000; i++) {
-      (*Input)[0][i] = i;
-    }
-  }
-};
-
-class SquareFTest : public TransformTest<SquareF> {
+class SquareTest : public TransformTest<Square> {
  public:
   int Size;
 
@@ -42,24 +31,17 @@ class SquareFTest : public TransformTest<SquareF> {
   }
 };
 
-TEST_F(Square1632Test, Do) {
-  Do((*Input)[0], (*Output)[0]);
-  for (int i = 0; i < 32000; i++) {
-    ASSERT_EQ(i * i, (*Output)[0][i]);
-  }
-}
-
 #define EPSILON 0.01f
 
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
-TEST_F(SquareFTest, Do) {
+TEST_F(SquareTest, Do) {
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size; i++) {
     ASSERT_EQF(i * i, (*Output)[0][i]);
   }
 }
 
-#define CLASS_NAME SquareFTest
+#define CLASS_NAME SquareTest
 #define ITER_COUNT 300000
 #include "tests/transforms/benchmark.inc"

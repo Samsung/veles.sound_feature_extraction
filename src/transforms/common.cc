@@ -14,15 +14,11 @@
 
 namespace SoundFeatureExtraction {
 
-template class TransformBase<Formats::ArrayFormatF, Formats::ArrayFormatF, true>;
-template class TransformBase<Formats::ArrayFormatF, Formats::ArrayFormatF, false>;
-template class UniformFormatTransform<Formats::ArrayFormatF, false>;
+template class TransformBase<Formats::ArrayFormatF, Formats::ArrayFormatF>;
+template class UniformFormatTransform<Formats::ArrayFormatF>;
 template class OmpTransformBaseBufferTypeProxy<Formats::ArrayFormatF,
     Formats::ArrayFormatF, Formats::ArrayFormatF::BufferType,
-    Formats::ArrayFormatF::BufferType, true>;
-template class OmpTransformBaseBufferTypeProxy<Formats::ArrayFormatF,
-    Formats::ArrayFormatF, Formats::ArrayFormatF::BufferType,
-    Formats::ArrayFormatF::BufferType, false>;
-template class OmpUniformFormatTransform<Formats::ArrayFormatF, false>;
+    Formats::ArrayFormatF::BufferType>;
+template class OmpUniformFormatTransform<Formats::ArrayFormatF>;
 
 }  // namespace SoundFeatureExtraction

@@ -26,9 +26,9 @@ const noexcept {
   float* window = window_.get();
 
   for (size_t i = 0; i < in.Count(); i++) {
-    for (int j = 0; j < windowsCount_; j++) {
+    for (int j = 0; j < windows_count_; j++) {
       auto input = in[i] + j * step_;
-      auto output = interleaved_? (*out)[i * windowsCount_ + j] :
+      auto output = interleaved_? (*out)[i * windows_count_ + j] :
                                   (*out)[j * in.Count() + i];
       if (type_ != WINDOW_TYPE_RECTANGULAR) {
 #ifdef __AVX__
@@ -57,9 +57,9 @@ const noexcept {
   float intbuf[outputFormat_->Size()] __attribute__ ((aligned (32)));  // NOLINT(*)
 #endif
   for (size_t i = 0; i < in.Count(); i++) {
-    for (int j = 0; j < windowsCount_; j++) {
+    for (int j = 0; j < windows_count_; j++) {
       auto input = in[i] + j * step_;
-      auto output = (*out)[i * windowsCount_ + j];
+      auto output = (*out)[i * windows_count_ + j];
       if (type_ != WINDOW_TYPE_RECTANGULAR) {
 #ifdef __AVX__
         if (align_complement_f32(input) != 0) {
@@ -82,6 +82,8 @@ const noexcept {
 
 REGISTER_TRANSFORM(WindowSplitter16);
 REGISTER_TRANSFORM(WindowSplitterF);
+REGISTER_TRANSFORM(WindowSplitter16Inverse);
+REGISTER_TRANSFORM(WindowSplitterFInverse);
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction

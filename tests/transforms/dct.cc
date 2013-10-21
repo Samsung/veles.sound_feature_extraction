@@ -16,6 +16,7 @@
 using SoundFeatureExtraction::Formats::ArrayFormatF;
 using SoundFeatureExtraction::BuffersBase;
 using SoundFeatureExtraction::Transforms::DCT;
+using SoundFeatureExtraction::Transforms::DCTInverse;
 
 class DCTTest : public TransformTest<DCT> {
  public:
@@ -30,13 +31,25 @@ class DCTTest : public TransformTest<DCT> {
   }
 };
 
-TEST_F(DCTTest, Forward) {
+class DCTInverseTest : public TransformTest<DCTInverse> {
+ public:
+  int Size;
+
+  virtual void SetUp() {
+    Size = 512;
+    SetUpTransform(1, Size, 16000);
+    for (int i = 0; i < Size; i++) {
+      (*Input)[0][i] = (i - Size / 2.0f) / Size;
+    }
+  }
+};
+
+TEST_F(DCTTest, Do) {
   ASSERT_EQ(inputFormat_->Size(), outputFormat_->Size());
   Do((*Input), &(*Output));
 }
 
-TEST_F(DCTTest, Backward) {
-  SetParameter("inverse", "true");
+TEST_F(DCTInverseTest, Do) {
   ASSERT_EQ(inputFormat_->Size(), outputFormat_->Size());
   Do((*Input), &(*Output));
 }

@@ -64,11 +64,6 @@ void DWPT::Do(const float* in,
   filterBank_->Apply(in, inputFormat_->Size(), out);
 }
 
-void DWPT::DoInverse(const float* in UNUSED,
-                     float* out UNUSED) const noexcept {
-  assert("Not implemented yet");
-}
-
 REGISTER_TRANSFORM(DWPT);
 
 }  // namespace Transforms

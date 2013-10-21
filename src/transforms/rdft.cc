@@ -1,4 +1,4 @@
-/*! @file dft.cc
+/*! @file rdft.cc
  *  @brief Discrete Fourier Transform using FFT.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -19,17 +19,17 @@ namespace SoundFeatureExtraction {
 namespace Transforms {
 
 size_t RDFT::OnFormatChanged(size_t buffersCount) {
-  if (!IsInverse()) {
-    outputFormat_->SetSize(inputFormat_->Size() + 2);
-  } else {
-    outputFormat_->SetSize(inputFormat_->Size() - 2);
-  }
+  outputFormat_->SetSize(inputFormat_->Size() + 2);
   return buffersCount;
 }
 
-void RDFT::Do(
-    const BuffersBase<float*>& in,
-    BuffersBase<float*>* out) const noexcept {
+size_t RDFTInverse::OnFormatChanged(size_t buffersCount) {
+  outputFormat_->SetSize(inputFormat_->Size() - 2);
+  return buffersCount;
+}
+
+void RDFT::Do(const BuffersBase<float*>& in,
+              BuffersBase<float*>* out) const noexcept {
   int length = inputFormat_->Size();
   std::vector<const float*> inputs(in.Count());
   std::vector<float*> outputs(in.Count());
@@ -51,9 +51,8 @@ void RDFT::Do(
   fftf_calc(fftPlan.get());
 }
 
-void RDFT::DoInverse(
-    const BuffersBase<float*>& in,
-    BuffersBase<float*>* out) const noexcept {
+void RDFTInverse::Do( const BuffersBase<float*>& in,
+                      BuffersBase<float*>* out) const noexcept {
   int length = outputFormat_->Size();
   std::vector<const float*> inputs(in.Count());
   std::vector<float*> outputs(in.Count());
@@ -79,6 +78,7 @@ void RDFT::DoInverse(
 }
 
 REGISTER_TRANSFORM(RDFT);
+REGISTER_TRANSFORM(RDFTInverse);
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction

@@ -14,8 +14,24 @@
 #include "src/transforms/window_splitter.h"
 
 using SoundFeatureExtraction::Transforms::WindowSplitterF;
+using SoundFeatureExtraction::Transforms::WindowSplitterFInverse;
 
 class WindowSplitterTest : public TransformTest<WindowSplitterF> {
+ public:
+  int Size;
+
+  virtual void SetUp() {
+    Size = 512 + 205;
+    SetUpTransform(10, Size, 16000);
+    for (int j = 0; j < 10; j++) {
+      for (int i = 0; i < Size; i++) {
+        (*Input)[j][i] = i * (1 - 2 * (i % 2));
+      }
+    }
+  }
+};
+
+class WindowSplitterInverseTest : public TransformTest<WindowSplitterFInverse> {
  public:
   int Size;
 
@@ -36,13 +52,12 @@ TEST_F(WindowSplitterTest, Do) {
   ASSERT_EQ(512U, outputFormat_->Size());
 }
 
-TEST_F(WindowSplitterTest, DoInverseInterleaved) {
-  SetParameter("inverse", "true");
+TEST_F(WindowSplitterInverseTest, DoInterleaved) {
   SetParameter("interleaved", "true");
   SetParameter("step", "309");
-  SetParameter("inverse_count", "2");
+  SetParameter("count", "2");
   RecreateOutputBuffers();
   ASSERT_EQ(2U, Output->Count());
   ASSERT_EQ(1953U, outputFormat_->Size());
-  DoInverse(*Input, Output.get());
+  Do(*Input, Output.get());
 }

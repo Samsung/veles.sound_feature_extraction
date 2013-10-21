@@ -45,10 +45,4 @@ void TransformFactory::PrintRegisteredTransforms() const {
   }
 }
 
-bool InverseParameterAware::HasInverseTransform(
-    const Transform& transform) noexcept {
-  auto ip = transform.GetParameters().find(kInverseParameterName);
-  return ip != transform.GetParameters().end();
-}
-
 }  // namespace SoundFeatureExtraction

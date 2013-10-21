@@ -38,11 +38,10 @@ class LogTransformBase {
 };
 
 template <class F>
-class Log
-    : public OmpUniformFormatTransform<F, true>,
-      public LogTransformBase {
+class LogBase : public virtual OmpUniformFormatTransform<F>,
+                public LogTransformBase {
  public:
-  Log() {
+  LogBase() {
     this->RegisterSetter("base", [&](const std::string& value) {
       auto lbit = kLogBaseMap.find(value);
       if (lbit == kLogBaseMap.end()) {
@@ -53,22 +52,31 @@ class Log
     });
   }
 
-  TRANSFORM_INTRO("Log",
-                  "Takes the logarithm on each real value of the signal.")
-
   OMP_TRANSFORM_PARAMETERS(
       TP("base", "Logarithm base (2, 10 or e).",
          LogBaseToString(kDefaultLogBase))
   )
 };
 
+template <class F>
+class Log : public LogBase<F> {
+ public:
+  TRANSFORM_INTRO("Log",
+                  "Takes the logarithm from each real value of the signal.")
+};
+
 class LogRaw : public Log<Formats::ArrayFormatF> {
  protected:
-  virtual void Do(const float* in,
-                  float* out) const noexcept override;
+  virtual void Do(const float* in, float* out) const noexcept override;
 
-  virtual void DoInverse(const float* in,
-                         float* out) const noexcept override;
+  void Do(bool simd, const float* input, int length,
+          float* output) const noexcept;
+};
+
+class LogRawInverse : public OmpInverseUniformFormatTransform<LogRaw>,
+                      public LogBase<Formats::ArrayFormatF> {
+ protected:
+  virtual void Do(const float* in, float* out) const noexcept override;
 
   void Do(bool simd, const float* input, int length,
           float* output) const noexcept;
@@ -77,8 +85,12 @@ class LogRaw : public Log<Formats::ArrayFormatF> {
 class LogSingle : public Log<Formats::SingleFormatF> {
  protected:
   virtual void Do(const float& in, float* out) const noexcept override;
+};
 
-  virtual void DoInverse(const float& in, float* out) const noexcept override;
+class LogSingleInverse : public OmpInverseUniformFormatTransform<LogSingle>,
+                         public LogBase<Formats::SingleFormatF> {
+ protected:
+  virtual void Do(const float& in, float* out) const noexcept override;
 };
 
 }  // namespace Transforms
