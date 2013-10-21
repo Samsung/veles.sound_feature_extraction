@@ -31,7 +31,7 @@ class TemplateTransform
       TP("other_name", "description", "default value")
   )
 
-  virtual void Initialize() const noexcept override;
+  virtual void Initialize() const override;
 
  protected:
   virtual void Do(const BuffersBase<float*>& in,

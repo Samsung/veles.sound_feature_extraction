@@ -39,7 +39,7 @@ class FilterBase
     });
   }
 
-  virtual void Initialize() const noexcept override {
+  virtual void Initialize() const override {
     executors_.resize(max_executors_);
     for (int i = 0; i < max_executors_; i++) {
       executors_[i].executor = CreateExecutor();

@@ -53,7 +53,7 @@ size_t DWPT::OnFormatChanged(size_t buffersCount) {
   return buffersCount;
 }
 
-void DWPT::Initialize() const noexcept {
+void DWPT::Initialize() const {
   filterBank_ = std::make_unique<WaveletFilterBank>(
       waveletType_, waveletOrder_, treeFingerprint_);
 }

@@ -103,7 +103,7 @@ class TransformBase : public virtual Transform,
     }
   }
 
-  virtual void Initialize() const noexcept override {
+  virtual void Initialize() const override {
   }
 
   virtual void Do(const Buffers& in, Buffers* out)

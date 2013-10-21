@@ -28,7 +28,7 @@ TemplateTransform::TemplateTransform() {
   });
 }
 
-void TemplateTransform::Initialize() const noexcept {
+void TemplateTransform::Initialize() const {
 }
 
 

@@ -40,7 +40,7 @@ class BandpassFilter : public IIRFilterBase,
   void set_frequency_high(int value);
   void set_frequency_low(int value);
 
-  virtual void Initialize() const noexcept override;
+  virtual void Initialize() const override;
 
   static constexpr const char* kHighFrequencyParameterName = "frequency_high";
   static constexpr const char* kLowFrequencyParameterName = "frequency_low";

@@ -87,7 +87,7 @@ int FrequencyBands::bands_number() const noexcept {
   return bands_number_;
 }
 
-void FrequencyBands::Initialize() const noexcept {
+void FrequencyBands::Initialize() const {
   filters_.clear();
   if (bands_config_ == "") {
     for (int i = 1; i < bands_number_; i++) {

@@ -19,7 +19,7 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void Autocorrelation::Initialize() const noexcept {
+void Autocorrelation::Initialize() const {
   correlationHandles_.resize(MaxThreadsNumber());
   for (int i = 0; i < MaxThreadsNumber(); i++) {
     correlationHandles_[i].handle = std::shared_ptr<CrossCorrelationHandle>(

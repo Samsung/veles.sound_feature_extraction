@@ -91,7 +91,7 @@ class WindowSplitterTemplate
          std::to_string(kDefaultInverseCount))
   )
 
-  virtual void Initialize() const noexcept {
+  virtual void Initialize() const {
     if (!this->IsInverse()) {
       int realSize = this->inputFormat_->Size() - this->outputFormat_->Size();
       int excess = realSize % step_;

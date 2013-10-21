@@ -47,7 +47,7 @@ size_t SubbandEnergy::OnFormatChanged(size_t buffersCount) {
   return buffersCount;
 }
 
-void SubbandEnergy::Initialize() const noexcept {
+void SubbandEnergy::Initialize() const {
   offsets_.reserve(treeFingerprint_.size());
   int offset = 0;
   for (auto depth : treeFingerprint_) {

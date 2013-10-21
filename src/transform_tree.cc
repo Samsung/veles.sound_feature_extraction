@@ -79,7 +79,7 @@ class RootTransform : public Transform {
       const std::unordered_map<std::string, std::string>&) override {
   }
 
-  virtual void Initialize() const noexcept override {
+  virtual void Initialize() const override {
   }
 
   virtual std::shared_ptr<Buffers> CreateOutputBuffers(

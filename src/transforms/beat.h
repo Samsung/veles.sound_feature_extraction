@@ -40,7 +40,7 @@ class Beat
  protected:
   virtual size_t OnInputFormatChanged(size_t buffersCount) override;
 
-  virtual void Initialize() const noexcept override;
+  virtual void Initialize() const override;
 
   virtual void Do(const BuffersBase<float*>& in,
                   BuffersBase<Formats::FixedArray<2>>* out)

@@ -39,7 +39,7 @@ class FrequencyBands
          "auto")
   )
 
-  virtual void Initialize() const noexcept override;
+  virtual void Initialize() const override;
 
  protected:
   static constexpr const char* kDefaultFilterType = "chebyshevII";

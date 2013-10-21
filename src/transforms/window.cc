@@ -77,7 +77,7 @@ void Window::ApplyWindow(bool simd, const float* window, int length,
   }
 }
 
-void Window::Initialize() const noexcept {
+void Window::Initialize() const {
   if (!preDft_) {
     window_ = InitializeWindow(inputFormat_->Size(), type_);
   } else {

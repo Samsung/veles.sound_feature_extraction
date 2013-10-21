@@ -61,7 +61,7 @@ size_t Beat::OnInputFormatChanged(size_t buffersCount) {
   return buffersCount / bands_;
 }
 
-void Beat::Initialize() const noexcept {
+void Beat::Initialize() const {
   float max_period = floorf(60 * inputFormat_->SamplingRate() /
                             MinBeatsPerMinuteValue());
   size_t max_pulses_length = PulsesLength(pulses_, max_period);

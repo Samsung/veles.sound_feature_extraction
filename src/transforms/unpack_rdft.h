@@ -25,7 +25,7 @@ class UnpackRDFT
 
   OMP_TRANSFORM_PARAMETERS()
 
-  void Initialize() const noexcept override;
+  void Initialize() const override;
 
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override;

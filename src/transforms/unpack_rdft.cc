@@ -24,7 +24,7 @@ size_t UnpackRDFT::OnFormatChanged(size_t buffersCount) {
   return buffersCount;
 }
 
-void UnpackRDFT::Initialize() const noexcept {
+void UnpackRDFT::Initialize() const {
   realMode_ = inputFormat_->Size() % 2 == 1;
   offset_ = inputFormat_->Size();
   length_ = outputFormat_->Size() - offset_;

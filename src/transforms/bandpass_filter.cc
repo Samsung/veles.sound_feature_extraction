@@ -41,7 +41,7 @@ BandpassFilter::BandpassFilter() noexcept
 }
 
 
-void BandpassFilter::Initialize() const noexcept {
+void BandpassFilter::Initialize() const {
   if (frequency_high_ <= frequency_low_) {
     ERR("Invalid frequencies. High is %d, low is %i.", frequency_high_,
         frequency_low_);

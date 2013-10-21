@@ -43,7 +43,7 @@ class FormatConverterBase
       const std::unordered_map<std::string, std::string>&) override final {
   }
 
-  virtual void Initialize() const noexcept override final {
+  virtual void Initialize() const override final {
   }
 
  protected:

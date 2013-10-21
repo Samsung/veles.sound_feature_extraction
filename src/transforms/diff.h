@@ -50,7 +50,7 @@ class Diff : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
     std::mutex mutex;
   };
 
-  virtual void Initialize() const noexcept override;
+  virtual void Initialize() const override;
 
   virtual void Do(const float* in, float* out) const noexcept override;
 

@@ -38,7 +38,7 @@ class Window : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
          std::to_string(kDefaultPreDft))
   )
 
-  virtual void Initialize() const noexcept override;
+  virtual void Initialize() const override;
 
  protected:
   typedef std::unique_ptr<float, void(*)(void*)> WindowContentsPtr;

@@ -39,7 +39,7 @@ class FilterBank
          std::to_string(kDefaultMaxFrequency))
   )
 
-  virtual void Initialize() const noexcept override;
+  virtual void Initialize() const override;
 
  protected:
   enum ScaleType {

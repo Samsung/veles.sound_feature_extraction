@@ -64,7 +64,7 @@ class DWPT
         std::to_string(kDefaultWaveletOrder))
   )
 
-  virtual void Initialize() const noexcept override;
+  virtual void Initialize() const override;
 
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override;

@@ -37,7 +37,7 @@ class Transform : public virtual Parameterizable {
   virtual const std::shared_ptr<BufferFormat> OutputFormat()
       const noexcept = 0;
 
-  virtual void Initialize() const noexcept = 0;
+  virtual void Initialize() const = 0;
 
   virtual void Do(const Buffers& in, Buffers* out) const noexcept = 0;
 

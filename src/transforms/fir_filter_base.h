@@ -22,7 +22,7 @@ namespace Transforms {
 
 class FIRFilterBase : public FilterBase<ConvolutionHandle> {
  public:
-  virtual void Initialize() const noexcept override;
+  virtual void Initialize() const override;
 
  protected:
   virtual void CalculateFilter(float* filter) const noexcept = 0;

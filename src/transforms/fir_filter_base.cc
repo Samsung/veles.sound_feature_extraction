@@ -16,7 +16,7 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-void FIRFilterBase::Initialize() const noexcept {
+void FIRFilterBase::Initialize() const {
   filter_.resize(length());
   CalculateFilter(filter_.data());
 

@@ -52,7 +52,7 @@ void FormatConverter::SetParameters(
   const std::unordered_map<std::string, std::string>&) {
 }
 
-void FormatConverter::Initialize() const noexcept {
+void FormatConverter::Initialize() const {
 }
 
 }  // namespace SoundFeatureExtraction

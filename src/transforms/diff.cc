@@ -38,7 +38,7 @@ Diff::Diff()
   });
 }
 
-void Diff::Initialize() const noexcept {
+void Diff::Initialize() const {
   if (swt_ != kNoSWT) {
     int count = MaxThreadsNumber();
     swt_buffers_.resize(count);
