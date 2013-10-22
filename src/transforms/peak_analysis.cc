@@ -39,6 +39,7 @@ void PeakAnalysis::Do(const Formats::FixedArray<2>* in, float *out)
     out[i * 2] = in[i][0] / max_pos;
     out[i * 2 + 1] = in[i][1] / sum;
   }
+  out[0] = in[0][0];
 }
 
 REGISTER_TRANSFORM(PeakAnalysis);
