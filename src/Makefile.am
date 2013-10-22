@@ -37,7 +37,7 @@ transforms/delta.cc transforms/short_time_msn.cc transforms/preemphasis.cc \
 transforms/stats.cc transforms/window_splitter.cc transforms/common.cc \
 transforms/single_to_raw.cc transforms/iir_filter_base.cc \
 transforms/mix_stereo.cc transforms/peak_detection.cc \
-transforms/peak_analysis.cc
+transforms/peak_analysis.cc transforms/beat_dynamic_programming.cc
 
 libSoundFeatureExtraction_la_LIBADD = @SIMD_LIBS@ @FFTF_LIBS@ -lboost_regex \
 	@EINA_LIBS@ libDSPFilters.la
