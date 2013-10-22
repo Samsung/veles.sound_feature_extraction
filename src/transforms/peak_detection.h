@@ -30,8 +30,8 @@ class PeakDetection
                   "and/or minimums from the signal.")
 
   OMP_TRANSFORM_PARAMETERS(
-      TP("sort", "The order in which to sort peaks (position or value).",
-         "value")
+      TP("sort", "The order in which to sort peaks (position, value, or both).",
+         "both")
       TP("number", "The maximal number of peaks to extract. The rest of the "
                    "slots will be set to (min_pos, 0).",
          std::to_string(kDefaultPeaksNumber))
@@ -44,13 +44,14 @@ class PeakDetection
 
  protected:
   typedef enum {
-    kSortOrderValue,
-    kSortOrderPosition
+    kSortOrderValue = 1,
+    kSortOrderPosition = 2,
+    kSortOrderBoth = 3
   } SortOrder;
 
   virtual size_t OnInputFormatChanged(size_t buffersCount) override;
 
-  virtual void Do(const float* in, Formats::FixedArray<2> *out)
+  virtual void Do(const float* in, Formats::FixedArray<2>* out)
       const noexcept override;
 
  private:

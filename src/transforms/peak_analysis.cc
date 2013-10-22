@@ -23,14 +23,20 @@ size_t PeakAnalysis::OnInputFormatChanged(size_t buffersCount) {
 
 void PeakAnalysis::Do(const Formats::FixedArray<2>* in, float *out)
     const noexcept {
-  out[0] = in[0][0];
   float sum = in[0][1];
   for (size_t i = 1; i < inputFormat_->Size(); i++) {
     sum += in[i][1];
   }
-  out[1] = in[0][1] / sum;
+  float max_pos = in[0][0];
+  float max_val = in[0][1];
   for (size_t i = 1; i < inputFormat_->Size(); i++) {
-    out[i * 2] = in[i][0] / in[0][0];
+    if (in[i][1] > max_val) {
+      max_val = in[i][1];
+      max_pos = in[i][0];
+    }
+  }
+  for (size_t i = 0; i < inputFormat_->Size(); i++) {
+    out[i * 2] = in[i][0] / max_pos;
     out[i * 2 + 1] = in[i][1] / sum;
   }
 }

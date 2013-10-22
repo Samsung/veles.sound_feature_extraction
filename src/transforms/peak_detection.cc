@@ -18,7 +18,7 @@ namespace Transforms {
 
 PeakDetection::PeakDetection()
     : peaks_number_(kDefaultPeaksNumber),
-      order_(kSortOrderValue),
+      order_(kSortOrderBoth),
       type_(kExtremumTypeMaximum),
       min_pos_(0),
       max_pos_(1) {
@@ -35,6 +35,8 @@ PeakDetection::PeakDetection()
       order_ = kSortOrderValue;
     } else if (value == "position") {
       order_ = kSortOrderPosition;
+    } else if (value == "both") {
+      order_ = kSortOrderBoth;
     } else {
       return false;
     }
@@ -68,17 +70,26 @@ size_t PeakDetection::OnInputFormatChanged(size_t buffersCount) {
 }
 
 void PeakDetection::Do(const float* in,
-                       Formats::FixedArray<2> *out) const noexcept {
+                       Formats::FixedArray<2>* out) const noexcept {
   ExtremumPoint* results;
   size_t count;
   detect_peaks(UseSimd(), in, inputFormat_->Size(), type_, &results, &count);
-  if (order_ == kSortOrderValue && results != nullptr) {
+  if ((order_ & kSortOrderValue) != 0 && results != nullptr) {
+    auto extr_type = type_;
     std::sort(results, results + count,
-              [](const ExtremumPoint& f, const ExtremumPoint& s) {
-                return f.value < s.value;
+              [extr_type](const ExtremumPoint& f, const ExtremumPoint& s) {
+                return (extr_type & kExtremumTypeMinimum) != 0?
+                    f.value < s.value : f.value > s.value;
               });
   }
-  for (int i = 0; i < static_cast<int>(count) && i < peaks_number_; i++) {
+  int rcount = static_cast<int>(count) > peaks_number_? peaks_number_ : count;
+  if ((order_ & kSortOrderPosition) != 0  && results != nullptr) {
+    std::sort(results, results + rcount,
+              [](const ExtremumPoint& f, const ExtremumPoint& s) {
+                return f.position < s.position;
+              });
+  }
+  for (int i = 0; i < rcount; i++) {
     out[i][0] = min_pos_ + results[i].position + 0.f / inputFormat_->Size() *
         (max_pos_ - min_pos_);
     out[i][1] = results[i].value;

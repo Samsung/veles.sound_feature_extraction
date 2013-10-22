@@ -13,7 +13,6 @@
 #ifndef SRC_TRANSFORMS_PEAK_ANALYSIS
 #define SRC_TRANSFORMS_PEAK_ANALYSIS
 
-#include <simd/detect_peaks.h>
 #include "src/formats/fixed_array.h"
 #include "src/transforms/common.h"
 
@@ -24,19 +23,16 @@ class PeakAnalysis
     : public OmpTransformBase<Formats::ArrayFormat<Formats::FixedArray<2>>,
                               Formats::ArrayFormatF> {
  public:
-  TRANSFORM_INTRO("PeakAnalysis", "Peak analysis. Calculates the position of "
-                                  "the first peak, relative value of the first "
-                                  "peak, ratio of the position of the second "
-                                  "peak to the positiion of the first peak "
-                                  "relative value of the second peak and so "
-                                  "on.")
+  TRANSFORM_INTRO("PeakAnalysis", "Peak analysis. This is a modified version "
+                                  "of the algorithm from \"Automatic Musical "
+                                  "Genre Classification Of Audio Signals\".")
 
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
   virtual size_t OnInputFormatChanged(size_t buffersCount) override;
 
-  virtual void Do(const Formats::FixedArray<2>* in, float *out)
+  virtual void Do(const Formats::FixedArray<2>* in, float* out)
       const noexcept override;
 };
 
