@@ -98,6 +98,7 @@ void PeakDetection::Do(const float* in,
     out[i][0] = min_pos_;
     out[i][1] = 0;
   }
+  free(results);
 }
 
 REGISTER_TRANSFORM(PeakDetection);

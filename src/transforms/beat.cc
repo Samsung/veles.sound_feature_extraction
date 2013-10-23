@@ -193,6 +193,7 @@ void Beat::Do(const BuffersBase<float*>& in,
       (*out)[ini / bands_][pind][0] = 0;
       (*out)[ini / bands_][pind][1] = 0;
     }
+    free(results);
   }
 }
 
