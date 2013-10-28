@@ -191,7 +191,7 @@ void WaveletFilterBank::ApplyInternal(float* source, size_t length,
       wavelet_allocate_destination(order_, length), free);
   auto ldestlo = std::unique_ptr<float, void(*)(void*)>(
       wavelet_allocate_destination(order_, length), free);
-  wavelet_apply(type_, order_, source, length,
+  wavelet_apply(type_, order_, EXTENSION_TYPE_PERIODIC, source, length,
                 ldesthi.get(), ldestlo.get());
   float *desthihi, *desthilo, *destlohi, *destlolo;
   wavelet_recycle_source(order_, source, length,
@@ -213,7 +213,7 @@ void WaveletFilterBank::RecursivelyIterate(
     std::vector<int> *tree, std::vector<int>* workingTree, float* source,
     float* desthi, float* destlo, float** result) noexcept {
   if (tree->back() != workingTree->back()) {
-    wavelet_apply(type, order, source, length, desthi, destlo);
+    wavelet_apply(type, order, EXTENSION_TYPE_PERIODIC, source, length, desthi, destlo);
     float *desthihi, *desthilo, *destlohi, *destlolo;
     wavelet_recycle_source(order, source, length,
                            &desthihi, &desthilo,
