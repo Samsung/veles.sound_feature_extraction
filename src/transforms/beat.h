@@ -1,6 +1,6 @@
 /*! @file beat.h
  *  @brief Beat detection.
- *  @author Shapichev Alexey <a.shapichev@samsung.com>
+ *  @author Markovtsev Vadim <v.markovtsev@samsung.com>, Shapichev Alexey <a.shapichev@samsung.com>
  *  @version 1.0
  *
  *  @section Notes

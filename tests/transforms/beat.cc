@@ -1,6 +1,6 @@
 /*! @file beat.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::BEAT.
- *  @author Shapichev Alexey <a.shapichev@samsung.com>
+ *  @brief Tests for SoundFeatureExtraction::Transforms::Beat.
+ *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
  *  @section Notes
