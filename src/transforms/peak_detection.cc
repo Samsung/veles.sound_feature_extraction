@@ -89,10 +89,6 @@ PeakDetection::PeakDetection()
     swt_level_ = pv;
     return true;
   });
-  RegisterSetter("swt_phase_fix", [&](const std::string& value) {
-    swt_phase_fix_ = Parse<bool>("swt_phase_fix", value);
-    return true;
-  });
 }
 
 size_t PeakDetection::OnInputFormatChanged(size_t buffersCount) {
@@ -163,20 +159,6 @@ void PeakDetection::Do(const float* in,
   }
   for (int i = 0; i < rcount; i++) {
     float pos = results[i].position;
-    if (swt_level_ > 0 && swt_phase_fix_) {
-      switch (swt_type_) {
-        case WAVELET_TYPE_DAUBECHIES:
-          if (swt_level_ > 3) {
-            pos += swt_order_ * (1 << (swt_level_ - 3));
-          } else {
-            pos += swt_order_ / (1 << (3 - swt_level_));
-          }
-          break;
-        default:
-          assert(false && "Not implemented");
-          break;
-      }
-    }
     out[i][0] = min_pos_ + pos * (max_pos_ - min_pos_) / inputFormat_->Size();
     float val = results[i].value;
     if (swt_type_ == WAVELET_TYPE_DAUBECHIES) {

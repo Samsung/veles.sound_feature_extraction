@@ -53,8 +53,6 @@ class PeakDetection
       TP("swt_level", "SWT level, that is, the number of smoothing passes."
                       "\"0\" means do not do SWT.",
          "0")
-      TP("swt_phase_fix", "Roughly correct the phase shift due to SWT.",
-         "true")
   )
 
  protected:
@@ -96,7 +94,6 @@ class PeakDetection
   WaveletType swt_type_;
   int swt_order_;
   int swt_level_;
-  bool swt_phase_fix_;
 };
 
 }  // namespace Transforms

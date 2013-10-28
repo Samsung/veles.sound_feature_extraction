@@ -26,13 +26,13 @@ class PeakDetectionTest : public TransformTest<PeakDetection> {
   virtual void SetUp() {
     Size = 608;
     SetParameter("swt_level", "4");
-    SetParameter("swt_order", "6");
+    SetParameter("swt_order", "4");
     SetParameter("number", "3");
-    SetParameter("sort", "position");
+    SetParameter("sort", "both");
     SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; i++) {
-      (*Input)[0][i] = sinf(i * M_PI / 100); //*
-          //(1.f + 0.1 * (0.5f - (rand() + 0.f) / RAND_MAX));
+      (*Input)[0][i] = sinf(i * M_PI / 100) *
+          (1.f + 0.1 * (0.5f - (rand() + 0.f) / RAND_MAX));
     }
   }
 };
@@ -40,8 +40,7 @@ class PeakDetectionTest : public TransformTest<PeakDetection> {
 TEST_F(PeakDetectionTest, Do) {
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < 3; i++) {
-    // 10 is a phase shift
-    ASSERT_NEAR((*Output)[0][i][0] * Size, 50.f + i * 200, 5);
-    ASSERT_NEAR((*Output)[0][i][1], 1, 0.05f) << i;
+    EXPECT_NEAR((*Output)[0][i][0] * Size, 50.f + i * 200 - 10, 5);
+    EXPECT_NEAR((*Output)[0][i][1], 1, 0.05f) << i;
   }
 }
