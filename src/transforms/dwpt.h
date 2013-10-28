@@ -56,7 +56,7 @@ class DWPT : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
     TP("tree", "The wavelet packet binary tree fingerprint.",
        Primitives::WaveletFilterBank::DescriptionToString(
            kDefaultTreeFingerprint))
-    TP("type", "The type of the wavelet to apply. Supported values are "
+    TP("type", "The type of wavelet to apply. Supported values are "
                "daub (Daubechies), coif (Coiflet) and sym (Symlet).",
        kDefaultWaveletType)
     TP("order", "The number of coefficients in the wavelet.",
@@ -77,10 +77,10 @@ class DWPT : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
   static const WaveletType kDefaultWaveletTypeEnum;
   static const int kDefaultWaveletOrder;
 
-  std::vector<int> treeFingerprint_;
-  WaveletType waveletType_;
-  int waveletOrder_;
-  mutable std::unique_ptr<Primitives::WaveletFilterBank> filterBank_;
+  std::vector<int> tree_fingerprint_;
+  WaveletType wavelet_type_;
+  int wavelet_order_;
+  mutable std::unique_ptr<Primitives::WaveletFilterBank> filter_bank_;
 };
 
 }  // namespace Transforms

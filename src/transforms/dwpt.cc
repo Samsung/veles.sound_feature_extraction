@@ -28,40 +28,40 @@ const WaveletType DWPT::kDefaultWaveletTypeEnum = WAVELET_TYPE_DAUBECHIES;
 const int DWPT::kDefaultWaveletOrder = 8;
 
 DWPT::DWPT()
-  : treeFingerprint_(kDefaultTreeFingerprint),
-    waveletType_(kDefaultWaveletTypeEnum),
-    waveletOrder_(kDefaultWaveletOrder) {
+  : tree_fingerprint_(kDefaultTreeFingerprint),
+    wavelet_type_(kDefaultWaveletTypeEnum),
+    wavelet_order_(kDefaultWaveletOrder) {
   RegisterSetter("tree", [&](const std::string& value) {
-    treeFingerprint_ = WaveletFilterBank::ParseDescription(value);
+    tree_fingerprint_ = WaveletFilterBank::ParseDescription(value);
     return true;
   });
   RegisterSetter("type", [&](const std::string& value) {
-    waveletType_ = WaveletFilterBank::ParseWaveletType(value);
+    wavelet_type_ = WaveletFilterBank::ParseWaveletType(value);
     return true;
   });
   RegisterSetter("order", [&](const std::string& value) {
     int order = Parse<int>("order", value);
-    WaveletFilterBank::ValidateOrder(waveletType_, order);
-    waveletOrder_ = order;
+    WaveletFilterBank::ValidateOrder(wavelet_type_, order);
+    wavelet_order_ = order;
     return true;
   });
 }
 
 size_t DWPT::OnFormatChanged(size_t buffersCount) {
-  WaveletFilterBank::ValidateLength(treeFingerprint_,
+  WaveletFilterBank::ValidateLength(tree_fingerprint_,
                                     inputFormat_->Size());
   return buffersCount;
 }
 
 void DWPT::Initialize() const {
-  filterBank_ = std::make_unique<WaveletFilterBank>(
-      waveletType_, waveletOrder_, treeFingerprint_);
+  filter_bank_ = std::make_unique<WaveletFilterBank>(
+      wavelet_type_, wavelet_order_, tree_fingerprint_);
 }
 
 void DWPT::Do(const float* in,
               float* out) const noexcept {
-  assert(filterBank_ != nullptr && "Initialize() was not called");
-  filterBank_->Apply(in, inputFormat_->Size(), out);
+  assert(filter_bank_ != nullptr && "Initialize() was not called");
+  filter_bank_->Apply(in, inputFormat_->Size(), out);
 }
 
 REGISTER_TRANSFORM(DWPT);
