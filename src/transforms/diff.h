@@ -37,19 +37,6 @@ class Diff : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
   )
 
  protected:
-  struct SWTBuffers {
-    SWTBuffers() : first(nullptr, std::free), second (nullptr, std::free) {
-    }
-
-    SWTBuffers(const SWTBuffers&)
-        : first(nullptr, std::free), second (nullptr, std::free) {
-    }
-
-    FloatPtr first;
-    FloatPtr second;
-    std::mutex mutex;
-  };
-
   virtual void Initialize() const override;
 
   virtual void Do(const float* in, float* out) const noexcept override;
@@ -63,16 +50,12 @@ class Diff : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
   static void Rectify(bool simd, const float* input, int length,
                       float* output) noexcept;
 
-  static void DifferentiateUsingSWT(int level, const float* input, int length,
-                                    SWTBuffers* auxBuffers,
-                                    float* output) noexcept;
-
+ private:
   static constexpr int kNoSWT = 0;
 
- private:
   bool rectify_;
   int swt_;
-  mutable std::vector<SWTBuffers> swt_buffers_;
+  mutable FloatPtr swt_buffer_;
 };
 
 }  // namespace Transforms

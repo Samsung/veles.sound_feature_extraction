@@ -17,13 +17,13 @@
 #include <arm_neon.h>
 #endif
 #include <simd/wavelet.h>
-#include <src/make_unique.h>
+#include "src/make_unique.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
 Diff::Diff()
-    : rectify_(false), swt_(kNoSWT) {
+    : rectify_(false), swt_(kNoSWT), swt_buffer_(nullptr, std::free) {
   RegisterSetter("rectify", [&](const std::string& value) {
     rectify_ = Parse<bool>("rectify", value);
     return true;
@@ -40,32 +40,28 @@ Diff::Diff()
 
 void Diff::Initialize() const {
   if (swt_ != kNoSWT) {
-    int count = MaxThreadsNumber();
-    swt_buffers_.resize(count);
-    for (int i = 0; i < count; i++) {
-      swt_buffers_[i].first = std::uniquify(mallocf(inputFormat_->Size()),
-                                            std::free);
-      swt_buffers_[i].second = std::uniquify(mallocf(inputFormat_->Size()),
-                                             std::free);
-    }
+    swt_buffer_ = std::uniquify(mallocf(inputFormat_->Size()),
+                                std::free);
   }
 }
 
 void Diff::Do(const float* in, float* out) const noexcept {
   if (swt_ != kNoSWT) {
-    bool executed = false;
-    while (!executed) {
-      for (auto& bufs : swt_buffers_) {
-        if (bufs.mutex.try_lock()) {
-          DifferentiateUsingSWT(swt_, in, inputFormat_->Size(), &bufs, out);
-          bufs.mutex.unlock();
-          if (rectify_) {
-            Rectify(UseSimd(), out, inputFormat_->Size(), out);
-          }
-          executed = true;
-          break;
-        }
-      }
+    // swt_buffer_ is shared among all the threads; we just do not care
+    // because it is not really used.
+    stationary_wavelet_apply(WAVELET_TYPE_DAUBECHIES, 2, 1,
+                             EXTENSION_TYPE_CONSTANT, in, inputFormat_->Size(),
+                             swt_ == 1? out : swt_buffer_.get(),
+                             swt_ == 1? swt_buffer_.get() : out);
+    for (int i = 2; i <= swt_; i++) {
+      stationary_wavelet_apply(
+          WAVELET_TYPE_DAUBECHIES, 2, i, EXTENSION_TYPE_CONSTANT,
+          out, inputFormat_->Size(),
+          i == swt_? out : swt_buffer_.get(),
+          i == swt_? swt_buffer_.get() : out);
+    }
+    if (rectify_) {
+      Rectify(UseSimd(), out, inputFormat_->Size(), out);
     }
     return;
   }
@@ -208,22 +204,6 @@ void Diff::Rectify(bool simd, const float* input, int length,
         output[i] = value;
       }
     }
-  }
-}
-
-void Diff::DifferentiateUsingSWT(int level, const float* input, int length,
-                                 SWTBuffers* auxBuffers,
-                                 float* output) noexcept {
-  stationary_wavelet_apply(WAVELET_TYPE_DAUBECHIES, 2, 1,
-                           input, length,
-                           level == 1? output : auxBuffers->second.get(),
-                           auxBuffers->first.get());
-  for (int i = 2; i <= level; i++) {
-    stationary_wavelet_apply(
-        WAVELET_TYPE_DAUBECHIES, 2, i,
-        i % 2 == 0? auxBuffers->first.get() : auxBuffers->second.get(),
-        length, output,
-        i % 2 == 0? auxBuffers->second.get() : auxBuffers->first.get());
   }
 }
 
