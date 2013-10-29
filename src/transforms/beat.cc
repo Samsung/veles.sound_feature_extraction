@@ -161,8 +161,8 @@ void Beat::Do(const BuffersBase<float*>& in,
     // Find maximums and sort them
     ExtremumPoint* results;
     size_t found_peaks_count;
-    detect_peaks(UseSimd(), energies.data(), energies.size(), kExtremumTypeMaximum,
-                 &results, &found_peaks_count);
+    detect_peaks(UseSimd(), energies.data(), energies.size(),
+                 kExtremumTypeMaximum, &results, &found_peaks_count);
     if (results == nullptr) {
       for (int i = 0; i < peaks_; i++) {
         (*out)[ini / bands_][i][0] = 0;
