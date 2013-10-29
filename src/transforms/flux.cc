@@ -12,7 +12,13 @@
 
 #include "src/transforms/flux.h"
 #include <math.h>
-#include <simd/arithmetic-inl.h>
+#ifdef __AVX__
+#include <immintrin.h>
+#elif defined(__ARM_NEON__)
+#include <arm_neon.h>
+#endif
+#include <simd/avx_extra.h>
+#include "src/primitives/energy.h"
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -28,8 +34,10 @@ void Flux::Do(const BuffersBase<float*>& in,
 float Flux::Do(bool simd, const float* input, size_t length,
                const float* prev) noexcept {
   int ilength = length;
-  const float isum_input = 1 / sum_elements(input, length);
-  const float isum_prev = 1 / sum_elements(prev, length);
+  const float sum_input = calculate_energy(simd, input, length) * length;
+  const float sum_prev = calculate_energy(simd, prev, length) * length;
+  const float isum_input = (sum_input == 0)? 1 : 1 / sum_input;
+  const float isum_prev = (sum_prev == 0)? 1 : 1 / sum_prev;
   if (simd) {
 #ifdef __AVX__
     __m256 diff = _mm256_setzero_ps();
