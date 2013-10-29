@@ -25,16 +25,23 @@ class Hps
     : public OmpTransformBase<Formats::ArrayFormatF, Formats::SingleFormatF>,
       public TransformLogger<Hps> {
  public:
+  Hps();
+
   TRANSFORM_INTRO("HPS", "Extracting fundamental frequency with Harmonic "
                          "Product Spectrum algorithm.")
 
-  OMP_TRANSFORM_PARAMETERS()
+  OMP_TRANSFORM_PARAMETERS(
+      TP("length", "The number of harmonics to multiply.",
+         std::to_string(kDefaultCoefficientsNumber))
+  )
 
  protected:
-  virtual void Do(const float* in,
-                  float* out) const noexcept override;
+  virtual void Do(const float* in, float* out) const noexcept override;
+
  private:
-  static const int kCoefficientsNumber;
+  static constexpr int kDefaultCoefficientsNumber = 3;
+
+  int length_;
 };
 
 }  // namespace Transforms

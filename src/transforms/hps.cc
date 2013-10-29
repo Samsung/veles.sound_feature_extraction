@@ -16,21 +16,29 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-const int Hps::kCoefficientsNumber = 3;
+Hps::Hps() : length_(kDefaultCoefficientsNumber) {
+  RegisterSetter("length", [&](const std::string& value) {
+    int pv = Parse<int>("length", value);
+    if (pv < 1) {
+      return false;
+    }
+    length_ = pv;
+    return true;
+  });
+}
 
-void Hps::Do(const float* in,
-             float* out) const noexcept {
+void Hps::Do(const float* in, float* out) const noexcept {
     int sampling_rate = inputFormat_->SamplingRate();
-    int length = inputFormat_->Size();
+    int size = inputFormat_->Size();
     auto signal = in;
     float max_pitch = 0;
     float fundamental_frequency = 0;
     for (int current_index = 0;
-        (current_index + 1) * kCoefficientsNumber - 1 < length;
-         ++current_index) {
+        (current_index + 1) * length_ - 1 < size;
+         current_index++) {
       float current_pitch = 1.0;
-      for (int j = 0; j < kCoefficientsNumber; ++j) {
-        current_pitch *= signal[(current_index + 1)* (j + 1) - 1];
+      for (int j = 0; j < length_; ++j) {
+        current_pitch *= signal[(current_index + 1) * (j + 1) - 1];
       }
       if (current_pitch > max_pitch) {
         max_pitch = current_pitch;
@@ -38,14 +46,14 @@ void Hps::Do(const float* in,
       }
     }
     auto result = (fundamental_frequency * sampling_rate) /
-        (2 * (length - 1));
+        (2 * (size - 1));
 #ifdef DEBUG
     if (result < 0 || result >= sampling_rate / 2) {
       ERR("Result is out of the allowed range (%f). "
           "Dump of the input data of length %i:",
-          result, length);
+          result, size);
       std::string dump;
-      for (int j = 0; j < length; j++) {
+      for (int j = 0; j < size; j++) {
         dump += std::to_string(signal[j]) + "  ";
       }
       ERR("%s", dump.c_str());
