@@ -25,23 +25,26 @@ class FluxTest : public TransformTest<Flux> {
   virtual void SetUp() {
     SetUpTransform(2, Size, 18000);
     for (int i = 0; i < Size; i++) {
-      (*Input)[0][i] = fabs(sinf(i * i) + i * cosf(i));
-      (*Input)[1][i] = 0.f;
+      (*Input)[0][i] = i;
+      (*Input)[1][i] = i + 1;
     }
   }
 };
 
-const int FluxTest::Size = 450;
+const int FluxTest::Size = 100;
 
 #define EPSILON 0.0001f
 
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(FluxTest, Do) {
+  const float valid_res = sqrtf(4.f / (3.f * Size * (Size - 1) * (Size + 1)));
+
   Do((*Input), &(*Output));
   float res = Do(false, (*Input)[1], Size, (*Input)[0]);
-  ASSERT_EQ(0.f, (*Output)[0]);
-  ASSERT_EQF(res, (*Output)[1]);
+  ASSERT_NEAR(valid_res, res, valid_res / 10000);
+  EXPECT_NEAR(valid_res, (*Output)[0], valid_res / 10000);
+  EXPECT_NEAR(valid_res, (*Output)[1], valid_res / 10000);
 }
 
 const float extra_param[FluxTest::Size] = { 0.f };
