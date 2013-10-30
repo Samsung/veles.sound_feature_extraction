@@ -113,7 +113,7 @@ TEST(Features, All) {
       { "Delta", "" }, { "STMSN", "length=25" }
   });
   tt.AddFeature("F0_HPS", { { "Window", "type=rectangular" }, { "Window", "" },
-      { "RDFT", "" }, { "ComplexMagnitude", "" }, { "HPS", "" }
+      { "RDFT", "" }, { "ComplexMagnitude", "" }, { "SHC", "" }, { "Peaks", "" }
   });
   int16_t* buffers = new int16_t[48000];
   memcpy(buffers, data, sizeof(data));

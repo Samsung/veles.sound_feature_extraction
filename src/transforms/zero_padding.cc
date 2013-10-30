@@ -32,8 +32,8 @@ void ZeroPadding::Do(const float* in,
     memcpy(out, in, inputFormat_->Size() * sizeof(in[0]));
   }
   memsetf(out + inputFormat_->Size(),
-          outputFormat_->Size() - inputFormat_->Size(),
-          0.f);
+          0.f,
+          outputFormat_->Size() - inputFormat_->Size());
 }
 
 REGISTER_TRANSFORM(ZeroPadding);
