@@ -18,7 +18,7 @@
 #include <arm_neon.h>
 #endif
 #include <simd/avx_extra.h>
-#include "src/primitives/energy.h"
+#include <simd/normalize.h>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
@@ -34,15 +34,16 @@ void Flux::Do(const BuffersBase<float*>& in,
 float Flux::Do(bool simd, const float* input, size_t length,
                const float* prev) noexcept {
   int ilength = length;
-  const float sum_input = calculate_energy(simd, input, length) * length;
-  const float sum_prev = calculate_energy(simd, prev, length) * length;
-  const float isum_input = (sum_input == 0)? 1 : 1 / sum_input;
-  const float isum_prev = (sum_prev == 0)? 1 : 1 / sum_prev;
+  float max_input, max_prev;
+  minmax1D(simd, input, length, nullptr, &max_input);
+  minmax1D(simd, prev, length, nullptr, &max_prev);
+  const float imax_input = (max_input == 0)? 1 : 1 / max_input;
+  const float imax_prev = (max_prev == 0)? 1 : 1 / max_prev;
   if (simd) {
 #ifdef __AVX__
     __m256 diff = _mm256_setzero_ps();
-    const __m256 norm_input = _mm256_set1_ps(isum_input);
-    const __m256 norm_prev = _mm256_set1_ps(isum_prev);
+    const __m256 norm_input = _mm256_set1_ps(imax_input);
+    const __m256 norm_prev = _mm256_set1_ps(imax_prev);
     for (int i = 0; i < ilength - 15; i += 16) {
       __m256 vec11 = _mm256_load_ps(input + i);
       vec11 = _mm256_mul_ps(vec11, norm_input);
@@ -68,15 +69,15 @@ float Flux::Do(bool simd, const float* input, size_t length,
     diff = _mm256_hadd_ps(diff, diff);
     float sqr = ElementAt(diff, 0) + ElementAt(diff, 4);
     for (int i = (ilength & ~0xF); i < ilength; i++) {
-      float val = input[i] * isum_input - prev[i] * isum_prev;
+      float val = input[i] * imax_input - prev[i] * imax_prev;
       sqr += val * val;
     }
     return sqrtf(sqr);
   } else {
 #elif defined(__ARM_NEON__)
     float32x4_t diff = vdupq_n_f32(0.f);
-    const float32x4_t norm_input = vdupq_n_f32(isum_input);
-    const float32x4_t norm_prev = vdupq_n_f32(isum_prev);
+    const float32x4_t norm_input = vdupq_n_f32(imax_input);
+    const float32x4_t norm_prev = vdupq_n_f32(imax_prev);
     for (int i = 0; i < ilength - 7; i += 8) {
       float32x4_t vec11 = vld1q_f32(input + i);
       vec11 = vmulq_f32(vec11, norm_input);
@@ -95,7 +96,7 @@ float Flux::Do(bool simd, const float* input, size_t length,
                                   vget_low_f32(diff));
     float sqr = vget_lane_f32(diff2, 0) + vget_lane_f32(diff2, 1);
     for (int i = ((ilength >> 3) << 3); i < ilength; i++) {
-      float val = input[i] * isum_input - prev[i] * isum_prev;
+      float val = input[i] * imax_input - prev[i] * imax_prev;
       sqr += val * val;
     }
     return sqrtf(sqr);
@@ -105,7 +106,7 @@ float Flux::Do(bool simd, const float* input, size_t length,
 #endif
     float sqr = 0.f;
     for (int i = 0; i < ilength; i++) {
-      float val = input[i] * isum_input - prev[i] * isum_prev;
+      float val = input[i] * imax_input - prev[i] * imax_prev;
       sqr += val * val;
     }
     return sqrtf(sqr);
