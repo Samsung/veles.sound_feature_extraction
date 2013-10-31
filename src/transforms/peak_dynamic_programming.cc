@@ -1,5 +1,5 @@
-/*! @file beat_dynamic_programming.cc
- *  @brief Peaks analysis.
+/*! @file peak_dynamic_programming.cc
+ *  @brief Accurate average estimation based on dynamic programming.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -10,21 +10,22 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/transforms/beat_dynamic_programming.h"
+#include "src/transforms/peak_dynamic_programming.h"
 #include <cmath>
 #include <vector>
 
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-BeatDynamicProgramming::BeatDynamicProgramming() : mind_values_(true) {
+PeakDynamicProgramming::PeakDynamicProgramming()
+    : mind_values_(kDefaultMindValues) {
   RegisterSetter("mind_values", [&](const std::string& value) {
     mind_values_ = Parse<bool>("mind_values", value);
     return true;
   });
 }
 
-void BeatDynamicProgramming::Do(const BuffersBase<Formats::FixedArray<2>*>& in,
+void PeakDynamicProgramming::Do(const BuffersBase<Formats::FixedArray<2>*>& in,
                                 BuffersBase<float>* out)
     const noexcept {
   std::vector<std::vector<std::tuple<float, int>>> costs(in.Count());
@@ -98,7 +99,7 @@ void BeatDynamicProgramming::Do(const BuffersBase<Formats::FixedArray<2>*>& in,
   }
 }
 
-REGISTER_TRANSFORM(BeatDynamicProgramming);
+REGISTER_TRANSFORM(PeakDynamicProgramming);
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction

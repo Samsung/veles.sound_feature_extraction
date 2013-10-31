@@ -1,5 +1,5 @@
-/*! @file beat_dynamic_programming.h
- *  @brief Accurate tempo estimation based on dynamic programming.
+/*! @file peak_dynamic_programming.h
+ *  @brief Accurate average estimation based on dynamic programming.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_BEAT_DYNAMIC_PROGRAMMING
-#define SRC_TRANSFORMS_BEAT_DYNAMIC_PROGRAMMING
+#ifndef SRC_TRANSFORMS_PEAK_DYNAMIC_PROGRAMMING
+#define SRC_TRANSFORMS_PEAK_DYNAMIC_PROGRAMMING
 
 #include "src/formats/fixed_array.h"
 #include "src/formats/single_format.h"
@@ -20,19 +20,19 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
-class BeatDynamicProgramming
+class PeakDynamicProgramming
     : public TransformBase<Formats::ArrayFormat<Formats::FixedArray<2>>,
                            Formats::SingleFormatF> {
  public:
-  BeatDynamicProgramming();
+  PeakDynamicProgramming();
 
-  TRANSFORM_INTRO("BeatDynamicProgramming",
-                  "Accurate tempo estimation using dynamic programming "
+  TRANSFORM_INTRO("PeakDynamicProgramming",
+                  "Accurate average estimation using dynamic programming "
                   "approach.")
 
   TRANSFORM_PARAMETERS(
       TP("mind_values", "Whether to favor points with higher values.",
-         "true")
+         std::to_string(kDefaultMindValues))
   )
 
  protected:
@@ -41,9 +41,11 @@ class BeatDynamicProgramming
       const noexcept override;
 
  private:
+  static constexpr bool kDefaultMindValues = false;
+
   bool mind_values_;
 };
 
 }  // namespace Transforms
 }  // namespace SoundFeatureExtraction
-#endif  // SRC_TRANSFORMS_BEAT_DYNAMIC_PROGRAMMING
+#endif  // SRC_TRANSFORMS_PEAK_DYNAMIC_PROGRAMMING
