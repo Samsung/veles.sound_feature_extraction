@@ -349,6 +349,7 @@ void TransformTree::AddTransform(const std::string& name,
   // Search for the environment variable to activate dumps for this transform
   auto dump_val = std::getenv((std::string(kDumpEnvPrefix) + name).c_str());
   if (dump_val != nullptr && !strncmp(dump_val, "true", 4)) {
+    DBG("Activated dump of %s", name.c_str());
     transforms_cache_[name].Dump = true;
   }
 }
