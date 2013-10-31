@@ -24,16 +24,24 @@ class BeatDynamicProgramming
     : public TransformBase<Formats::ArrayFormat<Formats::FixedArray<2>>,
                            Formats::SingleFormatF> {
  public:
+  BeatDynamicProgramming();
+
   TRANSFORM_INTRO("BeatDynamicProgramming",
                   "Accurate tempo estimation using dynamic programming "
                   "approach.")
 
-  TRANSFORM_PARAMETERS()
+  TRANSFORM_PARAMETERS(
+      TP("mind_values", "Whether to favor points with higher values.",
+         "true")
+  )
 
  protected:
   virtual void Do(const BuffersBase<Formats::FixedArray<2>*>& in,
                   BuffersBase<float>* out)
       const noexcept override;
+
+ private:
+  bool mind_values_;
 };
 
 }  // namespace Transforms

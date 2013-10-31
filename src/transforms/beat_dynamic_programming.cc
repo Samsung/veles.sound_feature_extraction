@@ -17,6 +17,13 @@
 namespace SoundFeatureExtraction {
 namespace Transforms {
 
+BeatDynamicProgramming::BeatDynamicProgramming() : mind_values_(true) {
+  RegisterSetter("mind_values", [&](const std::string& value) {
+    mind_values_ = Parse<bool>("mind_values", value);
+    return true;
+  });
+}
+
 void BeatDynamicProgramming::Do(const BuffersBase<Formats::FixedArray<2>*>& in,
                                 BuffersBase<float>* out)
     const noexcept {
@@ -34,8 +41,16 @@ void BeatDynamicProgramming::Do(const BuffersBase<Formats::FixedArray<2>*>& in,
         float min_cost = std::numeric_limits<float>::max();
         int index = -1;
         for (int k = 0; k < candidates_counts[i - 1]; k++) {
-          float cost = fabsf(in[i][j][0] - in[i - 1][k][0]) *
-              in[i - 1][k][1] / in[i][j][1] + std::get<0>(costs[i - 1][k]);
+          float cost = in[i][j][0] - in[i - 1][k][0];
+          cost *= cost;
+          if (mind_values_) {
+            if (in[i][j][1] != 0) {
+              cost *= sqrtf(in[i - 1][k][1] / in[i][j][1]);
+            } else {
+              cost = std::numeric_limits<float>::infinity();
+            }
+          }
+          cost += std::get<0>(costs[i - 1][k]);
           if (cost < min_cost) {
             min_cost = cost;
             index = k;
@@ -53,8 +68,15 @@ void BeatDynamicProgramming::Do(const BuffersBase<Formats::FixedArray<2>*>& in,
     float min_cost = std::numeric_limits<float>::max();
     int index = -1;
     for (int k = 0; k < candidates_counts[1]; k++) {
-      float cost = fabsf(in[0][j][0] - in[1][k][0]) *
-          in[1][k][1] / in[0][j][1];
+      float cost = in[0][j][0] - in[1][k][0];
+      cost *= cost;
+      if (mind_values_) {
+        if (in[0][j][1] != 0) {
+          cost *= sqrtf(in[1][k][1] / in[0][j][1]);
+        } else {
+          cost = std::numeric_limits<float>::infinity();
+        }
+      }
       if (cost < min_cost) {
         min_cost = cost;
         index = k;
@@ -64,7 +86,7 @@ void BeatDynamicProgramming::Do(const BuffersBase<Formats::FixedArray<2>*>& in,
   }
   for (int i = in.Count() - 1; i >= 0; i--) {
     float min_cost = std::numeric_limits<float>::max();
-    int index = -1;
+    int index = 0;
     for (int j = 0; j < candidates_counts[i]; j++) {
       float cost = std::get<0>(costs[i][j]);
       if (cost < min_cost) {
