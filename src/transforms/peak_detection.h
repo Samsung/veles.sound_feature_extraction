@@ -30,7 +30,8 @@ class PeakDetection
   PeakDetection();
 
   TRANSFORM_INTRO("Peaks", "Peak detection, that is, extraction of maximums "
-                  "and/or minimums from the signal.")
+                  "and/or minimums from the signal. The first item is the "
+                  "normalized position, the second is the peak value.")
 
   OMP_TRANSFORM_PARAMETERS(
       TP("sort", "The order in which to sort peaks (position, value, or both).",
