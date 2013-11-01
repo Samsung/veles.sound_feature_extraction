@@ -1,5 +1,5 @@
 /*! @file rdft.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::RDFT.
+ *  @brief Tests for sound_feature_extraction::transforms::RDFT.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -15,12 +15,12 @@
 #include "tests/speech_sample.inc"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::RDFT;
-using SoundFeatureExtraction::Transforms::RDFTInverse;
-using SoundFeatureExtraction::TransformTree;
-using SoundFeatureExtraction::BuffersBase;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::RDFT;
+using sound_feature_extraction::transforms::RDFTInverse;
+using sound_feature_extraction::TransformTree;
+using sound_feature_extraction::BuffersBase;
 
 class RDFTTest : public TransformTest<RDFT> {
  public:

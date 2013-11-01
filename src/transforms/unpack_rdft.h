@@ -15,11 +15,11 @@
 
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class UnpackRDFT
-    : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
+    : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("UnpackRDFT", "Unpacks the result after applying RDFT.")
 
@@ -39,6 +39,6 @@ class UnpackRDFT
   mutable size_t offset_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_UNPACK_RDFT_H_

@@ -18,8 +18,8 @@
 #include <arm_neon.h>  // NOLINT(build/include_order)
 #endif
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 size_t RealToComplex::OnFormatChanged(size_t buffersCount) {
   outputFormat_->SetSize(inputFormat_->Size() * 2);
@@ -81,5 +81,5 @@ void RealToComplex::Do(bool simd, const float* input, int length,
 
 REGISTER_TRANSFORM(RealToComplex);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

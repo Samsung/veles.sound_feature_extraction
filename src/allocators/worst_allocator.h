@@ -15,7 +15,7 @@
 
 #include "src/allocators/buffers_allocator.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 namespace MemoryAllocation {
 
 class WorstAllocator : public BuffersAllocator {
@@ -27,5 +27,5 @@ class WorstAllocator : public BuffersAllocator {
 };
 
 }  // namespace MemoryAllocation
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 #endif  // SRC_ALLOCATORS_WORST_ALLOCATOR_H_

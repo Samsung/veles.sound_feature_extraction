@@ -17,12 +17,12 @@
 #include "src/formats/single_format.h"
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 template <class F>
 class ZeroCrossingsTemplate
-    : public OmpTransformBase<F, Formats::SingleFormat32> {
+    : public OmpTransformBase<F, formats::SingleFormat32> {
  public:
   TRANSFORM_INTRO("ZeroCrossings", "Number of time domain zero crossings "
                                    "of the signal.")
@@ -44,19 +44,19 @@ class ZeroCrossingsTemplate
 };
 
 class ZeroCrossingsF
-    : public ZeroCrossingsTemplate<Formats::ArrayFormatF> {
+    : public ZeroCrossingsTemplate<formats::ArrayFormatF> {
  protected:
   virtual int DoInternal(bool simd, const float* input, size_t length)
       const noexcept override;
 };
 
 class ZeroCrossings16
-    : public ZeroCrossingsTemplate<Formats::ArrayFormat16> {
+    : public ZeroCrossingsTemplate<formats::ArrayFormat16> {
  protected:
   virtual int DoInternal(bool simd, const int16_t* input, size_t length)
       const noexcept override;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_ZEROCROSSINGS_H_

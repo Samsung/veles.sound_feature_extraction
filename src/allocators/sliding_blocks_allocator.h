@@ -16,7 +16,7 @@
 #include <memory>
 #include "src/allocators/buffers_allocator.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 namespace MemoryAllocation {
 
 class SlidingBlocksImpl;
@@ -32,5 +32,5 @@ class SlidingBlocksAllocator : public BuffersAllocator {
 };
 
 }  // namespace MemoryAllocation
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 #endif  // SRC_ALLOCATORS_SLIDING_BLOCKS_ALLOCATOR_H_

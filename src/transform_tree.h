@@ -21,7 +21,7 @@
 #include "src/transform.h"
 #include "src/allocators/buffers_allocator.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 class ChainNameAlreadyExistsException : public ExceptionBase {
  public:
@@ -130,12 +130,12 @@ class FailedToAllocateBuffersException : public std::bad_alloc {
 
 class TransformTree : public Logger {
  public:
-  explicit TransformTree(Formats::ArrayFormat16&& rootFormat) noexcept;
+  explicit TransformTree(formats::ArrayFormat16&& rootFormat) noexcept;
   explicit TransformTree(
-      const std::shared_ptr<Formats::ArrayFormat16>& rootFormat) noexcept;
+      const std::shared_ptr<formats::ArrayFormat16>& rootFormat) noexcept;
   virtual ~TransformTree() noexcept;
 
-  std::shared_ptr<Formats::ArrayFormat16> RootFormat() const noexcept;
+  std::shared_ptr<formats::ArrayFormat16> RootFormat() const noexcept;
 
   void AddFeature(
       const std::string& name,
@@ -216,7 +216,7 @@ class TransformTree : public Logger {
   static constexpr const char* kDumpEnvPrefix = "SFE_DUMP_";
 
   std::shared_ptr<Node> root_;
-  std::shared_ptr<Formats::ArrayFormat16> root_format_;
+  std::shared_ptr<formats::ArrayFormat16> root_format_;
   bool tree_is_prepared_;
   std::unordered_map<std::string, std::shared_ptr<Node>> features_;
   std::unordered_map<std::string, TransformCacheItem> transforms_cache_;
@@ -225,5 +225,5 @@ class TransformTree : public Logger {
   std::shared_ptr<void> allocated_memory_;
 };
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORM_TREE_H_

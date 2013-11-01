@@ -15,7 +15,7 @@
 
 #include "src/transform.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 /// @brief Meyers singleton ideal for C++11.
 class TransformFactory {
@@ -77,5 +77,5 @@ class RegisterTransform {
 /// @param T The type name of your transform class.
 #define REGISTER_TRANSFORM(T) RegisterTransform<T> T##RegistryInstance
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORM_REGISTRY_H_

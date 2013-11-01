@@ -12,8 +12,8 @@
 
 #include "src/transforms/unpack_rdft.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 size_t UnpackRDFT::OnFormatChanged(size_t buffersCount) {
   if (inputFormat_->Size() % 2 == 1) {
@@ -44,5 +44,5 @@ void UnpackRDFT::Do(const float* in,
 
 REGISTER_TRANSFORM(UnpackRDFT);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

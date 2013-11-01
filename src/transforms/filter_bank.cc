@@ -14,8 +14,8 @@
 #include <math.h>
 #include <simd/arithmetic-inl.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 const std::unordered_map<std::string, FilterBank::ScaleType>
 FilterBank::kScaleTypeMap = {
@@ -189,5 +189,5 @@ void FilterBank::Do(const float* in, float* out) const noexcept {
 
 REGISTER_TRANSFORM(FilterBank);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

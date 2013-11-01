@@ -15,11 +15,11 @@
 
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class ZeroPadding
-    : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
+    : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("ZeroPadding", "Pads signal with zeros to make it's length "
                                  "a power of 2.")
@@ -33,6 +33,6 @@ class ZeroPadding
                   float* out) const noexcept override;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_ZERO_PADDING_H_

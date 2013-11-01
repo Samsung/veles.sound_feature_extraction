@@ -19,12 +19,12 @@
 #include "src/formats/single_format.h"
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class Beat
-    : public TransformBase<Formats::ArrayFormatF,
-                           Formats::ArrayFormat<Formats::FixedArray<2>>>,
+    : public TransformBase<formats::ArrayFormatF,
+                           formats::ArrayFormat<formats::FixedArray<2>>>,
       public TransformLogger<Beat> {
  public:
   Beat();
@@ -54,7 +54,7 @@ class Beat
   virtual void Initialize() const override;
 
   virtual void Do(const BuffersBase<float*>& in,
-                  BuffersBase<Formats::FixedArray<2>*>* out)
+                  BuffersBase<formats::FixedArray<2>*>* out)
       const noexcept override;
 
   static void CombConvolve(const float* in, size_t size, int pulses,
@@ -86,6 +86,6 @@ class Beat
   bool debug_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_BEAT_H_

@@ -15,7 +15,7 @@
 #include <vector>
 #include "src/features_parser.h"
 
-using SoundFeatureExtraction::Features::Parse;
+using sound_feature_extraction::Features::Parse;
 
 TEST(Features, Parse) {
   std::vector<std::string> lines = {

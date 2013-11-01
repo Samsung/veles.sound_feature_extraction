@@ -22,7 +22,7 @@ extern "C" {
   extern int get_omp_transforms_max_threads_num();
 }
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 namespace MemoryAllocation {
 
 size_t SlidingBlocksImpl::Solve(Node* root) noexcept {
@@ -234,4 +234,4 @@ void SlidingBlocksImpl::SaveBlocksSolution(
 }
 
 }  // namespace MemoryAllocation
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction

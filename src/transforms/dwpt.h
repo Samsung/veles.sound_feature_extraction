@@ -18,8 +18,8 @@
 #include "src/transforms/common.h"
 #include "src/primitives/wavelet_filter_bank.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 /// @brief Discrete Wavelet Packet Transform.
 /// @details Here is an example of the "tree" parameter:
@@ -46,7 +46,7 @@ namespace Transforms {
 ///             |
 ///             ------ 3
 ///
-class DWPT : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
+class DWPT : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   DWPT();
 
@@ -83,6 +83,6 @@ class DWPT : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
   mutable std::unique_ptr<Primitives::WaveletFilterBank> filter_bank_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_DWPT_H_

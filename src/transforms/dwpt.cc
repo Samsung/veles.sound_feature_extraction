@@ -13,8 +13,8 @@
 #include "src/transforms/dwpt.h"
 #include "src/make_unique.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 using Primitives::WaveletFilterBank;
 
@@ -66,5 +66,5 @@ void DWPT::Do(const float* in,
 
 REGISTER_TRANSFORM(DWPT);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

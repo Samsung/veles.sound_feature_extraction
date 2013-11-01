@@ -17,8 +17,8 @@
 #include <arm_neon.h>  // NOLINT(build/include_order)
 #endif
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 void Rectify::Do(const float* in, float* out) const noexcept {
   Do(UseSimd(), in, inputFormat_->Size(), out);
@@ -66,5 +66,5 @@ void Rectify::Do(bool simd, const float* input, int length,
 
 REGISTER_TRANSFORM(Rectify);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

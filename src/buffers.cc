@@ -15,7 +15,7 @@
 #include <cassert>
 #include <string.h>
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 Buffers::Buffers(const std::shared_ptr<BufferFormat>& format,
                  size_t count, void* reusedMemory) noexcept
@@ -100,4 +100,4 @@ std::string Buffers::Dump(size_t index) const noexcept {
   return ret + format_->Dump(*this, index);
 }
 
-} /* namespace SoundFeatureExtraction */
+} /* namespace sound_feature_extraction */

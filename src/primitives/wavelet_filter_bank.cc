@@ -23,7 +23,7 @@
 #pragma GCC diagnostic pop
 #include <simd/wavelet.h>
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 namespace Primitives {
 
 const std::unordered_map<std::string, WaveletType>
@@ -235,4 +235,4 @@ void WaveletFilterBank::RecursivelyIterate(
 }
 
 }  // namespace Primitives
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction

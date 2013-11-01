@@ -17,8 +17,8 @@
 #include <arm_neon.h>  // NOLINT(build/include_order)
 #endif
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 size_t MixStereo::OnFormatChanged(size_t buffersCount) {
   outputFormat_->SetSize(inputFormat_->Size() / 2);
@@ -72,5 +72,5 @@ void MixStereo::Do(const int16_t* in, int16_t* out) const noexcept {
 
 REGISTER_TRANSFORM(MixStereo);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

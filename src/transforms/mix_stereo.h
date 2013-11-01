@@ -16,10 +16,10 @@
 #include "src/formats/array_format.h"
 #include "src/omp_transform_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
-class MixStereo : public OmpUniformFormatTransform<Formats::ArrayFormat16> {
+class MixStereo : public OmpUniformFormatTransform<formats::ArrayFormat16> {
  public:
   TRANSFORM_INTRO("Mix", "Mix stereo audio channels together.")
 
@@ -31,6 +31,6 @@ class MixStereo : public OmpUniformFormatTransform<Formats::ArrayFormat16> {
   virtual void Do(const int16_t* in, int16_t* out) const noexcept override;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_MIX_STEREO_H_

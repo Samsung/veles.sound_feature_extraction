@@ -16,11 +16,11 @@
 #include "src/formats/array_format.h"
 #include "src/transform_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class ShortTimeMeanScaleNormalization
-    : public UniformFormatTransform<Formats::ArrayFormatF> {
+    : public UniformFormatTransform<formats::ArrayFormatF> {
  public:
   ShortTimeMeanScaleNormalization();
 
@@ -46,6 +46,6 @@ class ShortTimeMeanScaleNormalization
   int length_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_SHORT_TIME_MSN_H_

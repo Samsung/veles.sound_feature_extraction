@@ -16,8 +16,8 @@
 #include "src/formats/single_format.h"
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class SHCInvalidMinMaxWindowWidthException : public ExceptionBase {
  public:
@@ -34,7 +34,7 @@ class SHCInvalidMinMaxWindowWidthException : public ExceptionBase {
 /// @brief Prepare for fundamental frequency extraction using Spectral Harmonics
 /// Correlation.
 class SHC
-    : public OmpUniformFormatTransform<Formats::ArrayFormatF>,
+    : public OmpUniformFormatTransform<formats::ArrayFormatF>,
       public TransformLogger<SHC> {
  public:
   SHC();
@@ -72,6 +72,6 @@ class SHC
   mutable int max_samples_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_HPS_H_

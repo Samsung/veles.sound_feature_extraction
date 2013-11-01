@@ -1,5 +1,5 @@
 /*! @file filter_bank.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::FilterBank.
+ *  @brief Tests for sound_feature_extraction::transforms::FilterBank.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -15,9 +15,9 @@
 #include "src/transforms/filter_bank.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::FilterBank;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::FilterBank;
 
 class FilterBankTest : public TransformTest<FilterBank> {
  public:

@@ -1,5 +1,5 @@
 /*! @file preemphasis.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::Preemphasis.
+ *  @brief Tests for sound_feature_extraction::transforms::Preemphasis.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -14,9 +14,9 @@
 #include "src/transforms/preemphasis.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormat16;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::Preemphasis;
+using sound_feature_extraction::formats::ArrayFormat16;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::Preemphasis;
 
 class PreemphasisTest : public TransformTest<Preemphasis> {
  public:

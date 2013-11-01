@@ -15,7 +15,7 @@
 
 #include "src/parameterizable.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 class InvalidParameterNameException : public ExceptionBase {
  public:
@@ -92,6 +92,6 @@ class ParameterizableBase : public virtual Parameterizable {
               identity<float>);
 };
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 
 #endif  // SRC_PARAMETERIZABLE_BASE_H_

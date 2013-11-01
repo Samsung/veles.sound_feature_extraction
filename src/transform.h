@@ -18,7 +18,7 @@
 #include "src/buffers.h"
 #include "src/parameterizable.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 /// @brief Transform abstract class.
 class Transform : public virtual Parameterizable {
@@ -53,5 +53,5 @@ class Transform : public virtual Parameterizable {
   bool operator==(const Transform& other) const noexcept;
 };
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORM_H_

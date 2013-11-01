@@ -1,5 +1,5 @@
 /*! @file beat.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::Beat.
+ *  @brief Tests for sound_feature_extraction::transforms::Beat.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -15,7 +15,7 @@
 #include "tests/transforms/transform_test.h"
 #include "tests/transforms/beat_test.inc"
 
-using SoundFeatureExtraction::Transforms::Beat;
+using sound_feature_extraction::transforms::Beat;
 
 class BeatTest : public TransformTest<Beat> {
  public:

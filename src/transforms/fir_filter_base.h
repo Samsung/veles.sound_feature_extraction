@@ -17,8 +17,8 @@
 
 struct ConvolutionHandle;
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class FIRFilterBase : public FilterBase<ConvolutionHandle> {
  public:
@@ -36,6 +36,6 @@ class FIRFilterBase : public FilterBase<ConvolutionHandle> {
   mutable std::vector<float> filter_;
 };
 
-}  // namespace Formats
-}  // namespace SoundFeatureExtraction
+}  // namespace formats
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_FIR_FILTER_BASE_H_

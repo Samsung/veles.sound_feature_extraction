@@ -21,8 +21,8 @@
 #include "src/transforms/bandpass_filter.h"
 #include "src/transforms/highpass_filter.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 const int FrequencyBands::kDefaultBandsNumber = Fork::kDefaultFactor;
 constexpr const char* FrequencyBands::kDefaultFilterType;
@@ -185,5 +185,5 @@ void FrequencyBands::Do(const BuffersBase<float*>& in,
 
 REGISTER_TRANSFORM(FrequencyBands);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

@@ -18,8 +18,8 @@
 #include <simd/neon_mathfun.h>
 #endif
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 size_t ComplexMagnitude::OnFormatChanged(size_t buffersCount) {
   if (inputFormat_->Size() % 2 == 1) {
@@ -92,5 +92,5 @@ void ComplexMagnitude::Do(bool simd, const float* input, int length,
 
 REGISTER_TRANSFORM(ComplexMagnitude);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

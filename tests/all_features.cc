@@ -17,8 +17,8 @@
 #include "src/formats/array_format.h"
 #include "tests/speech_sample.inc"
 
-using SoundFeatureExtraction::TransformTree;
-using SoundFeatureExtraction::BuffersBase;
+using sound_feature_extraction::TransformTree;
+using sound_feature_extraction::BuffersBase;
 
 TEST(Features, All) {
   fftf_available_backends(nullptr, nullptr);

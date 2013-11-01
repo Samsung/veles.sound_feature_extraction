@@ -19,8 +19,8 @@
 #include "src/formats/single_format.h"
 #include "src/omp_transform_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 enum StatsType {
   kStatsTypeAverage = 1,
@@ -31,11 +31,11 @@ enum StatsType {
 };
 
 class Stats
-    : public OmpTransformBase<Formats::ArrayFormatF,
-                              Formats::ArrayFormat<
-                                  Formats::FixedArray<kStatsTypeCount>>> {
+    : public OmpTransformBase<formats::ArrayFormatF,
+                              formats::ArrayFormat<
+                                  formats::FixedArray<kStatsTypeCount>>> {
  public:
-  typedef Formats::FixedArray<kStatsTypeCount> StatsArray;
+  typedef formats::FixedArray<kStatsTypeCount> StatsArray;
 
   Stats();
 
@@ -74,6 +74,6 @@ private:
   int interval_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_STATS_H_

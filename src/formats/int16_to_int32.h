@@ -16,8 +16,8 @@
 #include "src/formats/array_format.h"
 #include "src/formats/array_format_converter_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Formats {
+namespace sound_feature_extraction {
+namespace formats {
 
 class Int16ToInt32Raw
     : public ArrayFormatConverterBase<ArrayFormat16, ArrayFormat32> {
@@ -26,6 +26,6 @@ class Int16ToInt32Raw
                   int32_t* out) const noexcept override;
 };
 
-}  // namespace Formats
-}  // namespace SoundFeatureExtraction
+}  // namespace formats
+}  // namespace sound_feature_extraction
 #endif  // SRC_FORMATS_INT16_TO_INT32_H_

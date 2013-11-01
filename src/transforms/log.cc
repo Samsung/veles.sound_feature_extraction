@@ -18,8 +18,8 @@
 #include <simd/neon_mathfun.h>
 #endif
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 const std::unordered_map<std::string, LogTransformBase::LogBase>
 LogTransformBase::kLogBaseMap {
@@ -127,5 +127,5 @@ REGISTER_TRANSFORM(LogSingle);
 REGISTER_TRANSFORM(LogRawInverse);
 REGISTER_TRANSFORM(LogSingleInverse);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

@@ -13,8 +13,8 @@
 #include "src/transforms/selector.h"
 #include <algorithm>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 const int Selector::kDefaultLength = 12;
 const Selector::Anchor Selector::kDefaultAnchor = ANCHOR_LEFT;
@@ -60,5 +60,5 @@ void Selector::Do(const float* in,
 
 REGISTER_TRANSFORM(Selector);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

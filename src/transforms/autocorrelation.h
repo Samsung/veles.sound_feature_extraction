@@ -22,11 +22,11 @@ namespace std {
   class mutex;
 }
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class Autocorrelation
-    : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
+    : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("Autocorrelation", "Find the cross-correlation of a signal "
                                      "with itself.")
@@ -50,6 +50,6 @@ class Autocorrelation
   mutable std::vector<SyncHandle> correlation_handles_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_DIFFRECT_H_

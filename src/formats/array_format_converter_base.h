@@ -15,7 +15,7 @@
 
 #include "src/format_converter_base.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 template <typename FIN, typename FOUT>
 class ArrayFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
@@ -28,6 +28,6 @@ class ArrayFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
   }
 };
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 
 #endif  // SRC_FORMATS_RAW_FORMAT_CONVERTER_BASE_H_

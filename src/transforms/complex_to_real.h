@@ -15,11 +15,11 @@
 
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class ComplexToReal
-    : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
+    : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("C2R", "Converts each complex number to corresponding "
                          "real numbers.")
@@ -36,6 +36,6 @@ class ComplexToReal
                  float* output) noexcept;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_COMPLEX_TO_REAL_H_

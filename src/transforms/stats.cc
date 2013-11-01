@@ -22,8 +22,8 @@
 #include <arm_neon.h>
 #endif
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 const std::unordered_map<std::string, StatsType> Stats::kStatsTypesMap {
   { "average", kStatsTypeAverage },
@@ -280,5 +280,5 @@ float Stats::CalculateKurtosis(const float* rawMoments) noexcept {
 
 REGISTER_TRANSFORM(Stats);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

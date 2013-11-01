@@ -16,10 +16,10 @@
 #include "src/formats/array_format.h"
 #include "src/transform_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
-class RDFT : public UniformFormatTransform<Formats::ArrayFormatF> {
+class RDFT : public UniformFormatTransform<formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("RDFT", "Performs Discrete Fourier Transform "
                           "on the input signal (using real FFT).")
@@ -45,6 +45,6 @@ class RDFTInverse
                   BuffersBase<float*>* out) const noexcept override;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_RDFT_H_

@@ -42,8 +42,8 @@ namespace std {
   }
 }  // namespace std
 
-namespace SoundFeatureExtraction {
-namespace Formats {
+namespace sound_feature_extraction {
+namespace formats {
 
 template<class T>
 class SingleFormat : public BufferFormatBase<T> {
@@ -152,7 +152,7 @@ typedef SingleFormat<float> SingleFormatF;
 typedef SingleFormat<int16_t> SingleFormat16;
 typedef SingleFormat<int32_t> SingleFormat32;
 
-}  // namespace Formats
-}  // namespace SoundFeatureExtraction
+}  // namespace formats
+}  // namespace sound_feature_extraction
 
 #endif  // SRC_FORMATS_SINGLE_FORMAT_H_

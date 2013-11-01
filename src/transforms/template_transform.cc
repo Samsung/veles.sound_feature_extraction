@@ -12,8 +12,8 @@
 
 #include "src/transforms/template_transform.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 TemplateTransform::TemplateTransform() {
   RegisterSetter("name", [&](const std::string& value) {
@@ -39,5 +39,5 @@ void TemplateTransform::Do(
 
 REGISTER_TRANSFORM(TemplateTransform);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

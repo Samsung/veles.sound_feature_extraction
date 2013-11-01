@@ -14,8 +14,8 @@
 #include <math.h>
 #include "src/primitives/energy.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 void Intensity::Do(const float* in,
                    float* out) const noexcept {
@@ -25,5 +25,5 @@ void Intensity::Do(const float* in,
 
 REGISTER_TRANSFORM(Intensity);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

@@ -1,5 +1,5 @@
 /*! @file intensity.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::Intensity.
+ *  @brief Tests for sound_feature_extraction::transforms::Intensity.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -14,9 +14,9 @@
 #include "src/transforms/intensity.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::Intensity;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::Intensity;
 
 class IntensityTest : public TransformTest<Intensity> {
  public:

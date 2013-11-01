@@ -19,12 +19,12 @@
 #include "src/formats/array_format.h"
 #include "src/omp_transform_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 template <class E>
 class FilterBase
-    : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
+    : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   FilterBase() noexcept
       : length_(kDefaultFilterLength),
@@ -108,8 +108,8 @@ class FilterBase
       init) \
 )
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 
 
 #endif  // SRC_TRANSFORMS_FILTER_COMMON_H_

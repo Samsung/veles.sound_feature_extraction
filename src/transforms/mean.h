@@ -17,8 +17,8 @@
 #include "src/formats/single_format.h"
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 enum MeanTypes {
   MEAN_TYPE_ARITHMETIC = 0,
@@ -27,9 +27,9 @@ enum MeanTypes {
 };
 
 class Mean
-    : public OmpTransformBase<Formats::ArrayFormatF,
-                              Formats::SingleFormat<
-                                  Formats::FixedArray<MEAN_TYPE_COUNT>>> {
+    : public OmpTransformBase<formats::ArrayFormatF,
+                              formats::SingleFormat<
+                                  formats::FixedArray<MEAN_TYPE_COUNT>>> {
  public:
   Mean();
 
@@ -44,7 +44,7 @@ class Mean
   static const std::unordered_map<std::string, MeanTypes> kMeanTypesMap;
 
   virtual void Do(const float* in,
-                  Formats::FixedArray<MEAN_TYPE_COUNT>* out)
+                  formats::FixedArray<MEAN_TYPE_COUNT>* out)
       const noexcept override;
 
   static float Do(bool simd, const float* input, size_t length,
@@ -57,6 +57,6 @@ private:
   std::set<MeanTypes> types_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_MEAN_H_

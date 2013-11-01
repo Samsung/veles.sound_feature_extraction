@@ -16,11 +16,11 @@
 #include "src/formats/array_format.h"
 #include "src/transform_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class TemplateTransform
-    : public UniformFormatTransform<Formats::ArrayFormatF> {
+    : public UniformFormatTransform<formats::ArrayFormatF> {
  public:
   TemplateTransform();
 
@@ -38,6 +38,6 @@ class TemplateTransform
                   BuffersBase<float*>* out) const noexcept override;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_TEMPLATE_TRANSFORM_H_

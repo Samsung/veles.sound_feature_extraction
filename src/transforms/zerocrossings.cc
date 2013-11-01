@@ -18,8 +18,8 @@
 #endif
 #include <simd/avx_extra.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 int ZeroCrossingsF::DoInternal(bool simd, const float* input,
                                     size_t length) const noexcept {
@@ -201,5 +201,5 @@ int ZeroCrossings16::DoInternal(bool simd, const int16_t* input,
 REGISTER_TRANSFORM(ZeroCrossingsF);
 REGISTER_TRANSFORM(ZeroCrossings16);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

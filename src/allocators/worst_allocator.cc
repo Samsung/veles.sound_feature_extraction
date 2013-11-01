@@ -12,7 +12,7 @@
 
 #include "src/allocators/worst_allocator.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 namespace MemoryAllocation {
 
 size_t WorstAllocator::Solve(Node* root) const noexcept {
@@ -39,4 +39,4 @@ Node* WorstAllocator::VisitNode(Node* node, size_t* mappedSoFar) noexcept {
 }
 
 }  // namespace MemoryAllocation
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction

@@ -1,5 +1,5 @@
 /*! @file frequency_bands.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::FrequencyBands.
+ *  @brief Tests for sound_feature_extraction::transforms::FrequencyBands.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -14,9 +14,9 @@
 #include "src/transforms/frequency_bands.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::FrequencyBands;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::FrequencyBands;
 
 class FrequencyBandsTest : public TransformTest<FrequencyBands> {
  public:
@@ -56,5 +56,5 @@ TEST_F(FrequencyBandsTest, TooBigBands) {
 TEST_F(FrequencyBandsTest, InvalidBands) {
   ASSERT_THROW({
     SetParameter("bands", "2000 15000 8000");
-  }, SoundFeatureExtraction::InvalidParameterValueException);
+  }, sound_feature_extraction::InvalidParameterValueException);
 }

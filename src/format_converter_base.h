@@ -16,7 +16,7 @@
 #include "src/format_converter.h"
 #include "src/omp_transform_base.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 template <typename FIN, typename FOUT>
 class FormatConverterBase
@@ -50,7 +50,7 @@ class FormatConverterBase
   virtual size_t OnInputFormatChanged(size_t buffersCount) = 0;
 };
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 
 
 #endif  // SRC_FORMAT_CONVERTER_BASE_H_

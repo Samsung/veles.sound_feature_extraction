@@ -1,5 +1,5 @@
 /*! @file shc.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::SHC.
+ *  @brief Tests for sound_feature_extraction::transforms::SHC.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -15,9 +15,9 @@
 #include "src/transforms/shc.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::SHC;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::SHC;
 
 class SHCTest : public TransformTest<SHC> {
  public:

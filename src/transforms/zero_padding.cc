@@ -13,8 +13,8 @@
 #include "src/transforms/zero_padding.h"
 #include <simd/arithmetic-inl.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 size_t ZeroPadding::OnFormatChanged(size_t buffersCount) {
   int length = inputFormat_->Size();
@@ -38,5 +38,5 @@ void ZeroPadding::Do(const float* in,
 
 REGISTER_TRANSFORM(ZeroPadding);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

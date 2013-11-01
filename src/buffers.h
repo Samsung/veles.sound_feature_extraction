@@ -16,7 +16,7 @@
 #include <memory>
 #include "src/buffer_format.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 class Buffers {
  public:
@@ -50,5 +50,5 @@ class Buffers {
   size_t count_;
 };
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 #endif  // SRC_BUFFERS_H_

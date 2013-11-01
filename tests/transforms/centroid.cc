@@ -1,5 +1,5 @@
 /*! @file centroid.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::Centroid.
+ *  @brief Tests for sound_feature_extraction::transforms::Centroid.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -14,9 +14,9 @@
 #include "src/transforms/centroid.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::Centroid;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::Centroid;
 
 class CentroidTest : public TransformTest<Centroid> {
  public:

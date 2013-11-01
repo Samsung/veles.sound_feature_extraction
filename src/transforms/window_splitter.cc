@@ -13,8 +13,8 @@
 #include "src/transforms/window_splitter.h"
 #include <simd/arithmetic-inl.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 void WindowSplitter16::Do(const BuffersBase<int16_t*>& in,
                           BuffersBase<int16_t*> *out)
@@ -85,5 +85,5 @@ REGISTER_TRANSFORM(WindowSplitterF);
 REGISTER_TRANSFORM(WindowSplitter16Inverse);
 REGISTER_TRANSFORM(WindowSplitterFInverse);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

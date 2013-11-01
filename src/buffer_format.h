@@ -17,9 +17,9 @@
 #include <set>
 #include "src/exceptions.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
-namespace Formats {
+namespace formats {
 
 class InvalidSamplingRateException : public ExceptionBase {
  public:
@@ -28,7 +28,7 @@ class InvalidSamplingRateException : public ExceptionBase {
                   " is not supported or invalid.") {}
 };
 
-}  // namespace Formats
+}  // namespace formats
 
 class InvalidFormatException : public ExceptionBase {
  public:
@@ -78,5 +78,5 @@ class BufferFormat {
   int samplingRate_;
 };
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 #endif  // SRC_BUFFER_FORMAT_H_

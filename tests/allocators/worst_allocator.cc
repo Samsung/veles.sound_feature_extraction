@@ -14,8 +14,8 @@
 #include <gtest/gtest.h>
 #include <memory>
 
-using SoundFeatureExtraction::MemoryAllocation::Node;
-using SoundFeatureExtraction::MemoryAllocation::WorstAllocator;
+using sound_feature_extraction::MemoryAllocation::Node;
+using sound_feature_extraction::MemoryAllocation::WorstAllocator;
 
 class WorstAllocatorTest
     : public WorstAllocator, public testing::Test {

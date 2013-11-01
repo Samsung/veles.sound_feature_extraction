@@ -22,7 +22,7 @@ extern "C" {
   extern int get_omp_transforms_max_threads_num();
 }
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 template <typename FIN, typename FOUT>
 class OmpAwareTransform : public virtual TransformBase<FIN, FOUT> {
@@ -180,6 +180,6 @@ class OmpInverseUniformFormatTransform
   init) \
 )
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 
 #endif  // SRC_OMP_TRANSFORM_BASE_H_

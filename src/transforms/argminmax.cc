@@ -18,8 +18,8 @@
 #endif
 #include <simd/avx_extra.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 const bool ArgMinMax::kDefaultExtremum = true;
 
@@ -152,5 +152,5 @@ ArgMinMaxResult ArgMinMax::Do(bool simd, const float* input, size_t length,
 
 REGISTER_TRANSFORM(ArgMinMax);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

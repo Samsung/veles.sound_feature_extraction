@@ -14,8 +14,8 @@
 #include <fftf/api.h>
 #include <simd/arithmetic-inl.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 const std::string Window::kDefaultType = "hamming";
 const WindowType Window::kDefaultTypeEnum = WINDOW_TYPE_HAMMING;
@@ -104,5 +104,5 @@ const noexcept {
 
 REGISTER_TRANSFORM(Window);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

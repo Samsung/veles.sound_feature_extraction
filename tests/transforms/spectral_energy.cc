@@ -1,5 +1,5 @@
 /*! @file spectralenergy.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::SpectralEnergy.
+ *  @brief Tests for sound_feature_extraction::transforms::SpectralEnergy.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -15,9 +15,9 @@
 #include "src/transforms/spectral_energy.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::SpectralEnergy;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::SpectralEnergy;
 
 class SpectralEnergyTest : public TransformTest<SpectralEnergy> {
  public:

@@ -19,8 +19,8 @@
 #include <simd/normalize.h>
 #include <simd/arithmetic-inl.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 SHC::SHC()
     : harmonics_(kDefaultHarmonicsNumber),
@@ -160,5 +160,5 @@ void SHC::Do(const float* in, float* out) const noexcept {
 
 REGISTER_TRANSFORM(SHC);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

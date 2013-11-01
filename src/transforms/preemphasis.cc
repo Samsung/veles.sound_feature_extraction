@@ -18,8 +18,8 @@
 #endif
 #include <simd/avx_extra.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 const float Preemphasis::kDefaultK = 0.9f;
 
@@ -99,5 +99,5 @@ void Preemphasis::Do(bool simd, const int16_t* input, size_t length,
 
 REGISTER_TRANSFORM(Preemphasis);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

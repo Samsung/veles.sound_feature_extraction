@@ -15,10 +15,10 @@
 
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
-class Rectify : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
+class Rectify : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("Rectify", "Wave rectification to decrease high-frequency "
                              "content.")
@@ -32,6 +32,6 @@ class Rectify : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
                  float* output) noexcept;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_RECTIFY_H_

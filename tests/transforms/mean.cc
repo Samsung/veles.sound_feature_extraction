@@ -1,5 +1,5 @@
 /*! @file complex_to_real.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::Mean.
+ *  @brief Tests for sound_feature_extraction::transforms::Mean.
  *  @author Shapichev Alexey <a.shapichev@samsung.com>
  *  @version 1.0
  *
@@ -15,10 +15,10 @@
 #include "src/transforms/mean.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::Formats::FixedArray;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::Mean;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::formats::FixedArray;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::Mean;
 
 class MeanTest : public TransformTest<Mean> {
  public:
@@ -58,15 +58,15 @@ TEST_F(MeanTest, Do) {
   amean /= Size;
   gmean *= powf(tmp, 1.f / Size);
   ASSERT_EQF(amean, ((*Output)[0])
-      [SoundFeatureExtraction::Transforms::MEAN_TYPE_ARITHMETIC]);
+      [sound_feature_extraction::transforms::MEAN_TYPE_ARITHMETIC]);
   ASSERT_EQF(gmean, ((*Output)[0])
-      [SoundFeatureExtraction::Transforms::MEAN_TYPE_GEOMETRIC]);
+      [sound_feature_extraction::transforms::MEAN_TYPE_GEOMETRIC]);
   ASSERT_EQF(amean,
              Do(false, (*Input)[0], Size,
-                SoundFeatureExtraction::Transforms::MEAN_TYPE_ARITHMETIC));
+                sound_feature_extraction::transforms::MEAN_TYPE_ARITHMETIC));
   ASSERT_EQF(gmean,
              Do(false, (*Input)[0], Size,
-                SoundFeatureExtraction::Transforms::MEAN_TYPE_GEOMETRIC));
+                sound_feature_extraction::transforms::MEAN_TYPE_GEOMETRIC));
 }
 
 TEST_F(MeanTest, DoSimd) {
@@ -89,15 +89,15 @@ TEST_F(MeanTest, DoSimd) {
   amean /= Size;
   gmean *= powf(tmp, 1.f / Size);
   ASSERT_EQF(amean, ((*Output)[0])
-      [SoundFeatureExtraction::Transforms::MEAN_TYPE_ARITHMETIC]);
+      [sound_feature_extraction::transforms::MEAN_TYPE_ARITHMETIC]);
   ASSERT_EQF(gmean, ((*Output)[0])
-      [SoundFeatureExtraction::Transforms::MEAN_TYPE_GEOMETRIC]);
+      [sound_feature_extraction::transforms::MEAN_TYPE_GEOMETRIC]);
   ASSERT_EQF(amean,
              Do(false, (*Input)[0], Size,
-                SoundFeatureExtraction::Transforms::MEAN_TYPE_ARITHMETIC));
+                sound_feature_extraction::transforms::MEAN_TYPE_ARITHMETIC));
   ASSERT_EQF(gmean,
              Do(false, (*Input)[0], Size,
-                SoundFeatureExtraction::Transforms::MEAN_TYPE_GEOMETRIC));
+                sound_feature_extraction::transforms::MEAN_TYPE_GEOMETRIC));
 }
 
 TEST_F(MeanTest, DoCase1) {
@@ -200,7 +200,7 @@ TEST_F(MeanTest, DoCase2) {
   ASSERT_NE(std::numeric_limits<float>::infinity(), (*Output)[0][1]);
 }
 
-#define EXTRA_PARAM SoundFeatureExtraction::Transforms::MEAN_TYPE_ARITHMETIC
+#define EXTRA_PARAM sound_feature_extraction::transforms::MEAN_TYPE_ARITHMETIC
 #define CLASS_NAME MeanTest
 #define ITER_COUNT 500000
 #define NO_OUTPUT
@@ -208,7 +208,7 @@ TEST_F(MeanTest, DoCase2) {
 #include "tests/transforms/benchmark.inc"
 
 #undef EXTRA_PARAM
-#define EXTRA_PARAM SoundFeatureExtraction::Transforms::MEAN_TYPE_GEOMETRIC
+#define EXTRA_PARAM sound_feature_extraction::transforms::MEAN_TYPE_GEOMETRIC
 #undef BENCH_NAME
 #define BENCH_NAME BenchmarkGeometric
 #include "tests/transforms/benchmark.inc"

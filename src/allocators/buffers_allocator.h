@@ -19,7 +19,7 @@
 #include "src/logger.h"
 #include "src/exceptions.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 namespace MemoryAllocation {
 
 class NodeParentIsNullException : public ExceptionBase {
@@ -76,5 +76,5 @@ class BuffersAllocator : public Logger {
 };
 
 }  // namespace MemoryAllocation
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 #endif  // SRC_ALLOCATORS_BUFFERS_ALLOCATOR_H_

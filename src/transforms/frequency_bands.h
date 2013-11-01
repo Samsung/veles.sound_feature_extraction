@@ -16,11 +16,11 @@
 #include <vector>
 #include "src/transforms/iir_filter_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class FrequencyBands
-    : public UniformFormatOmpAwareTransform<Formats::ArrayFormatF>,
+    : public UniformFormatOmpAwareTransform<formats::ArrayFormatF>,
       public TransformLogger<FrequencyBands> {
  public:
   FrequencyBands();
@@ -60,6 +60,6 @@ class FrequencyBands
   std::string filter_type_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_TEMPLATE_TRANSFORM_H_

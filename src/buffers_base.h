@@ -21,7 +21,7 @@
 #include "src/demangle.h"
 #include "src/logger.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 class InvalidBuffersException : public ExceptionBase {
  public:
@@ -175,6 +175,6 @@ class FormatLogger : public Logger {
   }
 };
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 
 #endif  // SRC_BUFFERS_BASE_H_

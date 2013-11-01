@@ -13,10 +13,10 @@
 #include "src/transforms/sfm.h"
 #include <math.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
-using Formats::FixedArray;
+using formats::FixedArray;
 
 void SFM::Do(const FixedArray<MEAN_TYPE_COUNT>& in,
              float* out) const noexcept {
@@ -42,5 +42,5 @@ void SFM::Do(const FixedArray<MEAN_TYPE_COUNT>& in,
 
 REGISTER_TRANSFORM(SFM);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

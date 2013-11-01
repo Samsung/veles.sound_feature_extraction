@@ -1,5 +1,5 @@
 /*! @file diffrect.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::Diff.
+ *  @brief Tests for sound_feature_extraction::transforms::Diff.
  *  @author Shapichev Alexey <a.shapichev@samsung.com>
  *  @version 1.0
  *
@@ -14,9 +14,9 @@
 #include "src/transforms/diff.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::Diff;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::Diff;
 
 class DiffTest : public TransformTest<Diff> {
  public:

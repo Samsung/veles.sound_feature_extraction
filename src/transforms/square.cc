@@ -13,8 +13,8 @@
 #include "src/transforms/square.h"
 #include <simd/arithmetic-inl.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 void Square::Do(const float* in, float* out) const noexcept {
   Do(UseSimd(), in, outputFormat_->Size(), out);
@@ -49,5 +49,5 @@ void SquareInverse::Do(const float* in UNUSED,
 REGISTER_TRANSFORM(Square);
 REGISTER_TRANSFORM(SquareInverse);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

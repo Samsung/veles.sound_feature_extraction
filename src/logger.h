@@ -18,7 +18,7 @@
 #endif
 #include <string>
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 #ifdef EINA
 
@@ -117,5 +117,5 @@ class Logger {
 #endif
 };
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 #endif  // SRC_LOGGER_H_

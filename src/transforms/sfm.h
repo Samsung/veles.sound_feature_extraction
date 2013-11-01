@@ -15,13 +15,13 @@
 
 #include "src/transforms/mean.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class SFM
     : public OmpTransformBase<
-          Formats::SingleFormat<Formats::FixedArray<MEAN_TYPE_COUNT>>,
-          Formats::SingleFormat<float>>,
+          formats::SingleFormat<formats::FixedArray<MEAN_TYPE_COUNT>>,
+          formats::SingleFormat<float>>,
       public TransformLogger<SFM> {
  public:
   TRANSFORM_INTRO("SFM", "Spectral Flatness Measure calculation.")
@@ -29,10 +29,10 @@ class SFM
   OMP_TRANSFORM_PARAMETERS()
 
  protected:
-  virtual void Do(const Formats::FixedArray<MEAN_TYPE_COUNT>& in,
+  virtual void Do(const formats::FixedArray<MEAN_TYPE_COUNT>& in,
                   float* out) const noexcept override;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_SFM_H_

@@ -13,8 +13,8 @@
 #include "src/transforms/delta.h"
 #include <simd/arithmetic-inl.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 const std::unordered_map<std::string, Delta::Type> Delta::kTypesMap = {
     { "simple", kTypeSimple },
@@ -190,5 +190,5 @@ void Delta::DoRegression(bool simd, const BuffersBase<float*>& in,
 
 REGISTER_TRANSFORM(Delta);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

@@ -20,8 +20,8 @@
 #endif
 #include "src/primitives/energy.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 using Primitives::WaveletFilterBank;
 
@@ -67,5 +67,5 @@ void SubbandEnergy::Do(const float* in,
 
 REGISTER_TRANSFORM(SubbandEnergy);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

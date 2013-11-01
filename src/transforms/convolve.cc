@@ -13,8 +13,8 @@
 #include "src/transforms/convolve.h"
 #include <math.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 ConvolveFilter::ConvolveFilter() noexcept : window_(WINDOW_TYPE_RECTANGULAR) {
   RegisterSetter("window", [&](const std::string& value) {
@@ -35,5 +35,5 @@ void ConvolveFilter::CalculateFilter(float* window) const noexcept {
 
 REGISTER_TRANSFORM(ConvolveFilter);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

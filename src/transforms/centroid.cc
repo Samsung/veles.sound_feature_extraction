@@ -18,8 +18,8 @@
 #endif
 #include <simd/avx_extra.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 void Centroid::Do(const float* in,
                   float* out) const noexcept {
@@ -113,5 +113,5 @@ float Centroid::Do(bool simd, const float* input, size_t length)
 
 REGISTER_TRANSFORM(Centroid);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

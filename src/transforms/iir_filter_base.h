@@ -22,8 +22,8 @@
 #pragma GCC diagnostic pop
 #include "src/transforms/filter_common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 enum IIRFilterType {
   kIIRFilterTypeBessel,
@@ -76,6 +76,6 @@ class IIRFilterBase : public FilterBase<IIRFilter> {
       init) \
 )
 
-}  // namespace Formats
-}  // namespace SoundFeatureExtraction
+}  // namespace formats
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_IIR_FILTER_BASE_H_

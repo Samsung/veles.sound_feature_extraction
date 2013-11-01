@@ -20,8 +20,8 @@
 #include <simd/avx_extra.h>
 #include <simd/normalize.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 void Flux::Do(const BuffersBase<float*>& in,
               BuffersBase<float> *out) const noexcept {
@@ -115,5 +115,5 @@ float Flux::Do(bool simd, const float* input, size_t length,
 
 REGISTER_TRANSFORM(Flux);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

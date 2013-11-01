@@ -1,5 +1,5 @@
 /*! @file dwpt.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::DWPT.
+ *  @brief Tests for sound_feature_extraction::transforms::DWPT.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,9 +13,9 @@
 #include "src/transforms/dwpt.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::DWPT;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::DWPT;
 
 class DWPTTest : public TransformTest<DWPT> {
  public:

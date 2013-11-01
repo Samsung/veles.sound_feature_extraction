@@ -12,8 +12,8 @@
 
 #include "src/formats/single_converters.h"
 
-namespace SoundFeatureExtraction {
-namespace Formats {
+namespace sound_feature_extraction {
+namespace formats {
 
 void Int32ToFloatConverter::Do(const int32_t& in,
                                float *out) const noexcept {
@@ -28,7 +28,7 @@ void FloatToInt32Converter::Do(const float& in,
 REGISTER_TRANSFORM(Int32ToFloatConverter);
 REGISTER_TRANSFORM(FloatToInt32Converter);
 
-}  // namespace Formats
-}  // namespace SoundFeatureExtraction
+}  // namespace formats
+}  // namespace sound_feature_extraction
 
 

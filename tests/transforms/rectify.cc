@@ -1,5 +1,5 @@
 /*! @file rectify.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::RECTIFY.
+ *  @brief Tests for sound_feature_extraction::transforms::RECTIFY.
  *  @author Shapichev Alexey <a.shapichev@samsung.com>
  *  @version 1.0
  *
@@ -14,9 +14,9 @@
 #include "src/transforms/rectify.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::Rectify;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::Rectify;
 
 class RectifyTest : public TransformTest<Rectify> {
  public:

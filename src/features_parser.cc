@@ -16,7 +16,7 @@
 #include <boost/regex.hpp>
 #pragma GCC diagnostic pop
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 namespace Features {
 
@@ -107,4 +107,4 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures) {
 
 }  // namespace Features
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction

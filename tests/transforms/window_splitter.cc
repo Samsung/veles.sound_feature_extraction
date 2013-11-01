@@ -13,8 +13,8 @@
 #include "tests/transforms/transform_test.h"
 #include "src/transforms/window_splitter.h"
 
-using SoundFeatureExtraction::Transforms::WindowSplitterF;
-using SoundFeatureExtraction::Transforms::WindowSplitterFInverse;
+using sound_feature_extraction::transforms::WindowSplitterF;
+using sound_feature_extraction::transforms::WindowSplitterFInverse;
 
 class WindowSplitterTest : public TransformTest<WindowSplitterF> {
  public:

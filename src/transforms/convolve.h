@@ -16,8 +16,8 @@
 #include "src/transforms/fir_filter_base.h"
 #include "src/primitives/window.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 /// @brief Convolves a raw signal with a window function.
 class ConvolveFilter : public FIRFilterBase {
@@ -39,6 +39,6 @@ class ConvolveFilter : public FIRFilterBase {
   WindowType window_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_CONVOLVE_H_

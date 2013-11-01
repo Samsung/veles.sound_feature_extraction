@@ -1,5 +1,5 @@
 /*! @file flux.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::Flux.
+ *  @brief Tests for sound_feature_extraction::transforms::Flux.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -14,9 +14,9 @@
 #include "src/transforms/flux.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::Flux;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::Flux;
 
 class FluxTest : public TransformTest<Flux> {
  public:

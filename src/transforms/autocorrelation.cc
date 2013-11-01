@@ -16,8 +16,8 @@
 #include <fftf/api.h>
 #include <mutex>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 void Autocorrelation::Initialize() const {
   // Workaround for SIGSEGV in libav FFT with sizes greater than 2^16
@@ -57,5 +57,5 @@ const noexcept {
 
 REGISTER_TRANSFORM(Autocorrelation);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

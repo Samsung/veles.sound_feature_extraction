@@ -1,5 +1,5 @@
 /*! @file window.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::Window.
+ *  @brief Tests for sound_feature_extraction::transforms::Window.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -18,7 +18,7 @@
 #include "src/formats/array_format.h"
 #include "tests/speech_sample.inc"
 
-using SoundFeatureExtraction::Transforms::Window;
+using sound_feature_extraction::transforms::Window;
 
 class WindowTest : public TransformTest<Window> {
  public:

@@ -1,5 +1,5 @@
 /*! @file subband_energy.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::SubbandEnergy.
+ *  @brief Tests for sound_feature_extraction::transforms::SubbandEnergy.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,9 +13,9 @@
 #include "src/transforms/subband_energy.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::SubbandEnergy;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::SubbandEnergy;
 
 class SubbandEnergyTest : public TransformTest<SubbandEnergy> {
  public:

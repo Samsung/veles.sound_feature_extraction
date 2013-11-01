@@ -15,10 +15,10 @@
 
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
-class Square : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
+class Square : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("Square", "Squares the signal (window floating point "
                             "format).")
@@ -39,6 +39,6 @@ class SquareInverse : public OmpInverseUniformFormatTransform<Square> {
   virtual void Do(const float* in, float* out) const noexcept override;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_SQUARE_H_

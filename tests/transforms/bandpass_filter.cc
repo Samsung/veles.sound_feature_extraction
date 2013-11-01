@@ -1,5 +1,5 @@
 /*! @file highpass_filter.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::HighpassFilter.
+ *  @brief Tests for sound_feature_extraction::transforms::HighpassFilter.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -20,7 +20,7 @@
 
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
-using SoundFeatureExtraction::Transforms::BandpassFilter;
+using sound_feature_extraction::transforms::BandpassFilter;
 
 class BandpassFilterTest : public TransformTest<BandpassFilter> {
  public:

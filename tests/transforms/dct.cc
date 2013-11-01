@@ -1,5 +1,5 @@
 /*! @file dct.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::DCT.
+ *  @brief Tests for sound_feature_extraction::transforms::DCT.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,10 +13,10 @@
 #include "src/transforms/dct.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::DCT;
-using SoundFeatureExtraction::Transforms::DCTInverse;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::DCT;
+using sound_feature_extraction::transforms::DCTInverse;
 
 class DCTTest : public TransformTest<DCT> {
  public:

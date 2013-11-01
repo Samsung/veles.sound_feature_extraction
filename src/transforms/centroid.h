@@ -16,13 +16,13 @@
 #include "src/formats/single_format.h"
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 /// @brief Calculates \f$\frac{\displaystyle\sum_{f=0}^{SamplingRate / 2}{f
 /// Value[f]}}{\displaystyle\sum_{f=0}^{SamplingRate / 2}{Value[f]}}\f$.
 class Centroid
-    : public OmpTransformBase<Formats::ArrayFormatF, Formats::SingleFormatF> {
+    : public OmpTransformBase<formats::ArrayFormatF, formats::SingleFormatF> {
  public:
   TRANSFORM_INTRO("Centroid", "Window's center of mass in frequency domain "
                               "calculation.")
@@ -36,6 +36,6 @@ class Centroid
   static float Do(bool simd, const float* input, size_t length) noexcept;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_CENTROID_H_

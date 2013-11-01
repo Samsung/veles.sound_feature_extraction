@@ -15,9 +15,9 @@
 #include <gtest/gtest.h>
 #include <memory>
 
-using SoundFeatureExtraction::MemoryAllocation::Node;
-using SoundFeatureExtraction::MemoryAllocation::BuffersAllocator;
-using SoundFeatureExtraction::MemoryAllocation::SlidingBlocksAllocator;
+using sound_feature_extraction::MemoryAllocation::Node;
+using sound_feature_extraction::MemoryAllocation::BuffersAllocator;
+using sound_feature_extraction::MemoryAllocation::SlidingBlocksAllocator;
 
 TEST(SlidingBlocksAllocator, Solve) {
   int data;

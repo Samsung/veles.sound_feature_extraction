@@ -15,11 +15,11 @@
 
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class ComplexMagnitude
-    : public OmpUniformFormatTransform<Formats::ArrayFormatF>,
+    : public OmpUniformFormatTransform<formats::ArrayFormatF>,
       public TransformLogger<ComplexMagnitude> {
  public:
   TRANSFORM_INTRO("ComplexMagnitude",
@@ -39,6 +39,6 @@ class ComplexMagnitude
                  float* output) noexcept;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_COMPLEX_MAGNITUDE_H_

@@ -16,8 +16,8 @@
 #include "src/formats/array_format.h"
 #include "src/formats/array_format_converter_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Formats {
+namespace sound_feature_extraction {
+namespace formats {
 
 class Int32ToFloatRaw
     : public ArrayFormatConverterBase<ArrayFormat32, ArrayFormatF> {
@@ -26,6 +26,6 @@ class Int32ToFloatRaw
                   float* out) const noexcept override;
 };
 
-}  // namespace Formats
-}  // namespace SoundFeatureExtraction
+}  // namespace formats
+}  // namespace sound_feature_extraction
 #endif  // SRC_FORMATS_INT32_TO_FLOAT_H_

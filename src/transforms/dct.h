@@ -16,10 +16,10 @@
 #include "src/formats/array_format.h"
 #include "src/transform_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
-class DCT : public UniformFormatTransform<Formats::ArrayFormatF> {
+class DCT : public UniformFormatTransform<formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("DCT", "Performs Discrete Cosine Transform "
                          "on the signal.")
@@ -40,6 +40,6 @@ class DCTInverse : public InverseUniformFormatTransform<DCT> {
                   BuffersBase<float*>* out) const noexcept override;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_DCT_H_

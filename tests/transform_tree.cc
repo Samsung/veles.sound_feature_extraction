@@ -14,8 +14,8 @@
 #include "src/transform_base.h"
 #include "src/transform_tree.h"
 
-using namespace SoundFeatureExtraction;  // NOLINT(*)
-using namespace SoundFeatureExtraction::Formats;  // NOLINT(*)
+using namespace sound_feature_extraction;  // NOLINT(*)
+using namespace sound_feature_extraction::formats;  // NOLINT(*)
 
 struct ParentChunk {
 };

@@ -15,8 +15,8 @@
 #include <vector>
 #include <simd/arithmetic-inl.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 size_t RDFT::OnFormatChanged(size_t buffersCount) {
   outputFormat_->SetSize(inputFormat_->Size() + 2);
@@ -80,5 +80,5 @@ void RDFTInverse::Do( const BuffersBase<float*>& in,
 REGISTER_TRANSFORM(RDFT);
 REGISTER_TRANSFORM(RDFTInverse);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

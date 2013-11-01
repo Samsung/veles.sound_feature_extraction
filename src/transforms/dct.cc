@@ -15,8 +15,8 @@
 #include <vector>
 #include <simd/arithmetic-inl.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 void DCT::Do(const BuffersBase<float*>& in,
              BuffersBase<float*>* out) const noexcept {
@@ -70,5 +70,5 @@ void DCTInverse::Do(const BuffersBase<float*>& in,
 REGISTER_TRANSFORM(DCT);
 REGISTER_TRANSFORM(DCTInverse);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

@@ -1,5 +1,5 @@
 /*! @file argminmax.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::ArgMinMax.
+ *  @brief Tests for sound_feature_extraction::transforms::ArgMinMax.
  *  @author Shapichev Alexey <a.shapichev@samsung.com>
  *  @version 1.0
  *
@@ -14,10 +14,10 @@
 #include "src/transforms/argminmax.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::ArgMinMax;
-using SoundFeatureExtraction::Transforms::ArgMinMaxResult;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::ArgMinMax;
+using sound_feature_extraction::transforms::ArgMinMaxResult;
 
 class ArgMinMaxTest : public TransformTest<ArgMinMax> {
  public:

@@ -23,19 +23,19 @@
 #include "src/transform_tree.h"
 #include "src/transform_registry.h"
 
-using SoundFeatureExtraction::Transform;
-using SoundFeatureExtraction::TransformFactory;
-using SoundFeatureExtraction::ChainNameAlreadyExistsException;
-using SoundFeatureExtraction::TransformNotRegisteredException;
-using SoundFeatureExtraction::ChainAlreadyExistsException;
-using SoundFeatureExtraction::IncompatibleTransformFormatException;
-using SoundFeatureExtraction::RawFeaturesMap;
-using SoundFeatureExtraction::Features::ParseFeaturesException;
-using SoundFeatureExtraction::TransformTree;
-using SoundFeatureExtraction::Formats::ArrayFormat16;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Buffers;
-using SoundFeatureExtraction::SimdAware;
+using sound_feature_extraction::Transform;
+using sound_feature_extraction::TransformFactory;
+using sound_feature_extraction::ChainNameAlreadyExistsException;
+using sound_feature_extraction::TransformNotRegisteredException;
+using sound_feature_extraction::ChainAlreadyExistsException;
+using sound_feature_extraction::IncompatibleTransformFormatException;
+using sound_feature_extraction::RawFeaturesMap;
+using sound_feature_extraction::Features::ParseFeaturesException;
+using sound_feature_extraction::TransformTree;
+using sound_feature_extraction::formats::ArrayFormat16;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::Buffers;
+using sound_feature_extraction::SimdAware;
 
 extern "C" {
 struct FeaturesConfiguration {
@@ -251,7 +251,7 @@ FeaturesConfiguration *setup_features_extraction(
   }
   RawFeaturesMap featmap;
   try {
-    featmap = SoundFeatureExtraction::Features::Parse(lines);
+    featmap = sound_feature_extraction::Features::Parse(lines);
   }
   catch(const ParseFeaturesException& pfe) {
     fprintf(stderr, "Failed to parse features. %s\n", pfe.what());

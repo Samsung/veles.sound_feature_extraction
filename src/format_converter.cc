@@ -14,7 +14,7 @@
 #include <cassert>
 #include <string>
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 std::string FormatConverter::Name(const BufferFormat& in,
                                   const BufferFormat& out) {
@@ -55,4 +55,4 @@ void FormatConverter::SetParameters(
 void FormatConverter::Initialize() const {
 }
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction

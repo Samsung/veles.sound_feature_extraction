@@ -17,10 +17,10 @@
 #include <mutex>
 #include <vector>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
-class Diff : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
+class Diff : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   Diff();
 
@@ -58,6 +58,6 @@ class Diff : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
   mutable FloatPtr swt_buffer_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_DIFF_H_

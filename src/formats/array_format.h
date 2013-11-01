@@ -16,8 +16,8 @@
 #include <simd/memory.h>
 #include "src/buffers_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Formats {
+namespace sound_feature_extraction {
+namespace formats {
 
 class InvalidDurationException : public ExceptionBase {
  public:
@@ -155,9 +155,9 @@ typedef ArrayFormat<int16_t> ArrayFormat16;
 typedef ArrayFormat<int32_t> ArrayFormat32;
 typedef ArrayFormat<float> ArrayFormatF;
 
-}  // namespace Formats
+}  // namespace formats
 
 typedef std::unique_ptr<float, decltype(&std::free)> FloatPtr;
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 #endif  // SRC_FORMATS_RAW_FORMAT_H_

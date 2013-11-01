@@ -16,11 +16,11 @@
 #include "src/transforms/common.h"
 #include "src/primitives/window.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 //// @brief Applies a window function to each buffer.
-class Window : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
+class Window : public OmpUniformFormatTransform<formats::ArrayFormatF> {
   template <class T> friend class WindowSplitterTemplate;
   friend class WindowSplitter16;
   friend class WindowSplitterF;
@@ -64,6 +64,6 @@ class Window : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
                                             int allocSize = -1) noexcept;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_WINDOW_H_

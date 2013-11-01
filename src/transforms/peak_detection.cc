@@ -16,8 +16,8 @@
 #include "src/primitives/wavelet_filter_bank.h"
 #include "src/make_unique.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 PeakDetection::PeakDetection()
     : peaks_number_(kDefaultPeaksNumber),
@@ -110,7 +110,7 @@ void PeakDetection::Initialize() const {
 }
 
 void PeakDetection::Do(const float* in,
-                       Formats::FixedArray<2>* out) const noexcept {
+                       formats::FixedArray<2>* out) const noexcept {
   ExtremumPoint* results;
   size_t count;
   if (swt_level_ > 0) {
@@ -177,5 +177,5 @@ void PeakDetection::Do(const float* in,
 
 REGISTER_TRANSFORM(PeakDetection);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

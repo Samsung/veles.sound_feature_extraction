@@ -13,8 +13,8 @@
 #ifndef SRC_TRANSFORMS_SINGLE_FREQUENCY_FILTER_H_
 #define SRC_TRANSFORMS_SINGLE_FREQUENCY_FILTER_H_
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 template <class B>
 class SingleFrequencyFilter : public B {
@@ -47,7 +47,7 @@ class SingleFrequencyFilter : public B {
 template <class B>
 constexpr const char* SingleFrequencyFilter<B>::kFrequencyParameterName;
 
-}  // namespace SoundFeatureExtraction
-}  // namespace Transforms
+}  // namespace sound_feature_extraction
+}  // namespace transforms
 
 #endif  // SRC_TRANSFORMS_SINGLE_FREQUENCY_FILTER_H_

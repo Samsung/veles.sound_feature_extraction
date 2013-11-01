@@ -18,8 +18,8 @@
 #include <arm_neon.h>
 #endif
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 size_t SpectralEnergy::OnFormatChanged(size_t buffersCount) {
   if (inputFormat_->Size() % 2 == 1) {
@@ -85,5 +85,5 @@ void SpectralEnergy::Do(bool simd, const float* input, int length,
 
 REGISTER_TRANSFORM(SpectralEnergy);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

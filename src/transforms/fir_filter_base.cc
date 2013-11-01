@@ -13,8 +13,8 @@
 #include "src/transforms/fir_filter_base.h"
 #include <simd/convolve.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 void FIRFilterBase::Initialize() const {
   filter_.resize(length());
@@ -45,5 +45,5 @@ void FIRFilterBase::Execute(const std::shared_ptr<ConvolutionHandle>& exec,
   convolve(*exec, in, &filter_[0], out);
 }
 
-}  // namespace Formats
-}  // namespace SoundFeatureExtraction
+}  // namespace formats
+}  // namespace sound_feature_extraction

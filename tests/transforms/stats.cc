@@ -1,5 +1,5 @@
 /*! @file argminmax.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::Stats.
+ *  @brief Tests for sound_feature_extraction::transforms::Stats.
  *  @author Shapichev Alexey <a.shapichev@samsung.com>
  *  @version 1.0
  *
@@ -15,9 +15,9 @@
 #include "src/transforms/stats.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::SingleFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::Stats;
+using sound_feature_extraction::formats::SingleFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::Stats;
 
 class StatsTest : public TransformTest<Stats> {
  public:

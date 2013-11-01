@@ -17,8 +17,8 @@
 #include "src/make_unique.h"
 #include "src/primitives/energy.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 Beat::Beat()
     : buffer_(nullptr, std::free),
@@ -138,7 +138,7 @@ void Beat::CombConvolve(const float* in, size_t size, int pulses,
 }
 
 void Beat::Do(const BuffersBase<float*>& in,
-              BuffersBase<Formats::FixedArray<2>*>* out)
+              BuffersBase<formats::FixedArray<2>*>* out)
     const noexcept {
   for (size_t ini = 0; ini < in.Count(); ini += bands_) {
     std::vector<float> energies;
@@ -235,5 +235,5 @@ void Beat::CalculateBeatEnergies(const BuffersBase<float*>& in, size_t inIndex,
 
 REGISTER_TRANSFORM(Beat);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

@@ -13,8 +13,8 @@
 #include "src/transforms/bandpass_filter.h"
 #include <math.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 constexpr const char* BandpassFilter::kHighFrequencyParameterName;
 constexpr const char* BandpassFilter::kLowFrequencyParameterName;
@@ -169,5 +169,5 @@ void BandpassFilter::Execute(const std::shared_ptr<IIRFilter>& exec,
 
 REGISTER_TRANSFORM(BandpassFilter);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

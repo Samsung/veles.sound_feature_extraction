@@ -12,13 +12,13 @@
 
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
-template class TransformBase<Formats::ArrayFormatF, Formats::ArrayFormatF>;
-template class UniformFormatTransform<Formats::ArrayFormatF>;
-template class OmpTransformBaseBufferTypeProxy<Formats::ArrayFormatF,
-    Formats::ArrayFormatF, Formats::ArrayFormatF::BufferType,
-    Formats::ArrayFormatF::BufferType>;
-template class OmpUniformFormatTransform<Formats::ArrayFormatF>;
+template class TransformBase<formats::ArrayFormatF, formats::ArrayFormatF>;
+template class UniformFormatTransform<formats::ArrayFormatF>;
+template class OmpTransformBaseBufferTypeProxy<formats::ArrayFormatF,
+    formats::ArrayFormatF, formats::ArrayFormatF::BufferType,
+    formats::ArrayFormatF::BufferType>;
+template class OmpUniformFormatTransform<formats::ArrayFormatF>;
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction

@@ -17,7 +17,7 @@
 #include <unordered_map>  // NOLINT(build/include_order)
 #include "src/exceptions.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 class ParseParametersException : public ExceptionBase {
  public:
@@ -53,6 +53,6 @@ class Parameterizable {
       const std::string& line);
 };
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 
 #endif  // SRC_PARAMETERIZABLE_H_

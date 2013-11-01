@@ -16,12 +16,12 @@
 #include "src/formats/fixed_array.h"
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class PeakAnalysis
-    : public OmpTransformBase<Formats::ArrayFormat<Formats::FixedArray<2>>,
-                              Formats::ArrayFormatF> {
+    : public OmpTransformBase<formats::ArrayFormat<formats::FixedArray<2>>,
+                              formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("PeakAnalysis", "Peak analysis. This is a modified version "
                                   "of the algorithm from \"Automatic Musical "
@@ -32,10 +32,10 @@ class PeakAnalysis
  protected:
   virtual size_t OnInputFormatChanged(size_t buffersCount) override;
 
-  virtual void Do(const Formats::FixedArray<2>* in, float* out)
+  virtual void Do(const formats::FixedArray<2>* in, float* out)
       const noexcept override;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_PEAK_ANALYSIS

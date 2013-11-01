@@ -1,5 +1,5 @@
 /*! @file rolloff.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::Rolloff.
+ *  @brief Tests for sound_feature_extraction::transforms::Rolloff.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -14,9 +14,9 @@
 #include "src/transforms/rolloff.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::Rolloff;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::Rolloff;
 
 class RolloffTest : public TransformTest<Rolloff> {
  public:

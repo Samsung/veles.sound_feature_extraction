@@ -15,7 +15,7 @@
 
 void set_use_simd(int);
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 class SimdAware {
   friend void ::set_use_simd(int);
@@ -32,6 +32,6 @@ class SimdAware {
   static bool useSimd_;
 };
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 
 #endif  // SRC_SIMD_AWARE_H_

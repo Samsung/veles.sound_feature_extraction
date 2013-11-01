@@ -1,5 +1,5 @@
 /*! @file real_to_complex.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::RealToComplex.
+ *  @brief Tests for sound_feature_extraction::transforms::RealToComplex.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,9 +13,9 @@
 #include "src/transforms/real_to_complex.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::RealToComplex;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::RealToComplex;
 
 class RealToComplexTest : public TransformTest<RealToComplex> {
  public:

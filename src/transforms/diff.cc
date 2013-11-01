@@ -19,8 +19,8 @@
 #include <simd/wavelet.h>
 #include "src/make_unique.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 Diff::Diff()
     : rectify_(false), swt_(kNoSWT), swt_buffer_(nullptr, std::free) {
@@ -209,5 +209,5 @@ void Diff::Rectify(bool simd, const float* input, int length,
 
 REGISTER_TRANSFORM(Diff);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

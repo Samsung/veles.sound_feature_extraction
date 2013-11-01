@@ -19,7 +19,7 @@
 #include "src/allocators/buffers_allocator.h"
 #include "src/logger.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 namespace MemoryAllocation {
 
 struct TraversalTreeNode {
@@ -110,5 +110,5 @@ class SlidingBlocksImpl : public Logger {
 };
 
 }  // namespace MemoryAllocation
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 #endif  // SRC_ALLOCATORS_SLIDING_BLOCKS_IMPL_H_

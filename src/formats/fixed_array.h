@@ -17,8 +17,8 @@
 #include <stdexcept>
 #include "src/buffers_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Formats {
+namespace sound_feature_extraction {
+namespace formats {
 
 template<std::uint8_t L, typename F = float>
 struct FixedArray {
@@ -58,27 +58,27 @@ struct FixedArray {
   }
 };
 
-}  // namespace Formats
+}  // namespace formats
 
 namespace Validation {
   template<std::uint8_t L>
-  struct Validator<Formats::FixedArray<L>> {
-    static bool Validate(const Formats::FixedArray<L>& value) noexcept {
+  struct Validator<formats::FixedArray<L>> {
+    static bool Validate(const formats::FixedArray<L>& value) noexcept {
       return value.Validate();
     }
 
-    static bool Validate(Formats::FixedArray<L>&& value) noexcept {
+    static bool Validate(formats::FixedArray<L>&& value) noexcept {
       return value.Validate();
     }
   };
 }  // namespace Validation
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 
 namespace std {
   template<std::uint8_t L, typename F>
   inline string to_string(
-      const SoundFeatureExtraction::Formats::FixedArray<L, F>& __val) {
+      const sound_feature_extraction::formats::FixedArray<L, F>& __val) {
     std::string res("[");
     for (int i = 0; i < L; i++) {
       res += std::to_string(__val[i]) + ",\t";

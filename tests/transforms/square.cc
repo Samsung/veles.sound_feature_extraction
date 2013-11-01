@@ -1,5 +1,5 @@
 /*! @file square.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::SquareRaw.
+ *  @brief Tests for sound_feature_extraction::transforms::SquareRaw.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,10 +13,10 @@
 #include "src/transforms/square.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormat16;
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::Square;
+using sound_feature_extraction::formats::ArrayFormat16;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::Square;
 
 class SquareTest : public TransformTest<Square> {
  public:

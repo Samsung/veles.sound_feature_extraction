@@ -1,5 +1,5 @@
 /*! @file zerocrossings.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::ZeroCrossings.
+ *  @brief Tests for sound_feature_extraction::transforms::ZeroCrossings.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -14,11 +14,11 @@
 #include "src/transforms/zerocrossings.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::Formats::ArrayFormat16;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::ZeroCrossingsF;
-using SoundFeatureExtraction::Transforms::ZeroCrossings16;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::formats::ArrayFormat16;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::ZeroCrossingsF;
+using sound_feature_extraction::transforms::ZeroCrossings16;
 
 class ZeroCrossingsWindowTest : public TransformTest<ZeroCrossingsF> {
  public:

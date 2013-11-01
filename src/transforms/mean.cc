@@ -23,10 +23,10 @@
 #include <limits>
 #include <simd/arithmetic-inl.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
-using Formats::FixedArray;
+using formats::FixedArray;
 
 const std::unordered_map<std::string, MeanTypes> Mean::kMeanTypesMap {
   { "arithmetic", MEAN_TYPE_ARITHMETIC },
@@ -190,5 +190,5 @@ float Mean::Do(bool simd, const float* input, size_t length,
 
 REGISTER_TRANSFORM(Mean);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

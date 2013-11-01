@@ -15,11 +15,11 @@
 
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class Preemphasis
-    : public OmpUniformFormatTransform<Formats::ArrayFormat16> {
+    : public OmpUniformFormatTransform<formats::ArrayFormat16> {
  public:
   Preemphasis();
 
@@ -45,6 +45,6 @@ class Preemphasis
   float k_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_PREEMPHASIS_H_

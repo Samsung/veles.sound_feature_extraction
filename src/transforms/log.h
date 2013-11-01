@@ -16,8 +16,8 @@
 #include "src/formats/single_format.h"
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class LogTransformBase {
  public:
@@ -65,7 +65,7 @@ class Log : public LogBase<F> {
                   "Takes the logarithm from each real value of the signal.")
 };
 
-class LogRaw : public Log<Formats::ArrayFormatF> {
+class LogRaw : public Log<formats::ArrayFormatF> {
  protected:
   virtual void Do(const float* in, float* out) const noexcept override;
 
@@ -74,7 +74,7 @@ class LogRaw : public Log<Formats::ArrayFormatF> {
 };
 
 class LogRawInverse : public OmpInverseUniformFormatTransform<LogRaw>,
-                      public LogBase<Formats::ArrayFormatF> {
+                      public LogBase<formats::ArrayFormatF> {
  protected:
   virtual void Do(const float* in, float* out) const noexcept override;
 
@@ -82,17 +82,17 @@ class LogRawInverse : public OmpInverseUniformFormatTransform<LogRaw>,
           float* output) const noexcept;
 };
 
-class LogSingle : public Log<Formats::SingleFormatF> {
+class LogSingle : public Log<formats::SingleFormatF> {
  protected:
   virtual void Do(const float& in, float* out) const noexcept override;
 };
 
 class LogSingleInverse : public OmpInverseUniformFormatTransform<LogSingle>,
-                         public LogBase<Formats::SingleFormatF> {
+                         public LogBase<formats::SingleFormatF> {
  protected:
   virtual void Do(const float& in, float* out) const noexcept override;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_LOG_H_

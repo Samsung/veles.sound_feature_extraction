@@ -16,11 +16,11 @@
 #include "src/formats/single_format.h"
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class Energy
-    : public OmpTransformBase<Formats::ArrayFormatF, Formats::SingleFormatF> {
+    : public OmpTransformBase<formats::ArrayFormatF, formats::SingleFormatF> {
  public:
   TRANSFORM_INTRO("Energy", "Sound energy calculation.")
 
@@ -31,6 +31,6 @@ class Energy
                   float* out) const noexcept override;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_ENERGY_H_

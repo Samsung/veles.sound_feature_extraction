@@ -1,5 +1,5 @@
 /*! @file simd_aware.cc
- *  @brief SoundFeatureExtraction::SimdAware::useSimd_ initialization.
+ *  @brief sound_feature_extraction::SimdAware::useSimd_ initialization.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -13,9 +13,9 @@
 
 #include "src/simd_aware.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 bool SimdAware::useSimd_ = true;
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 

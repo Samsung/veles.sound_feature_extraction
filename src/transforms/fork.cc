@@ -12,8 +12,8 @@
 
 #include "src/transforms/fork.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 const int Fork::kDefaultFactor = 4;
 const std::string Fork::kCloningFactorAttributeName = "CloningFactor";
@@ -47,5 +47,5 @@ void Fork::Do(
 
 REGISTER_TRANSFORM(Fork);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

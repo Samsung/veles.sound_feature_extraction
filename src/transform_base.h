@@ -21,7 +21,7 @@
 #include "src/simd_aware.h"
 #include "src/transform_registry.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 template <typename FIN, typename FOUT>
 class TransformBase : public virtual Transform,
@@ -180,5 +180,5 @@ class TransformLogger : public Logger {
   }
 };
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORM_BASE_H_

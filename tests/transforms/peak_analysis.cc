@@ -1,5 +1,5 @@
 /*! @file peak_analysis.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::PeakAnalysis.
+ *  @brief Tests for sound_feature_extraction::transforms::PeakAnalysis.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -14,9 +14,9 @@
 #include "src/transforms/peak_analysis.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::PeakAnalysis;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::PeakAnalysis;
 
 class PeakAnalysisTest : public TransformTest<PeakAnalysis> {
  public:

@@ -16,8 +16,8 @@
 #include "src/transforms/iir_filter_base.h"
 #include "src/transforms/single_frequency_filter.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 /// @brief Discards the frequencies which are higher than the threshold.
 class LowpassFilter : public SingleFrequencyFilter<IIRFilterBase> {
@@ -36,6 +36,6 @@ class LowpassFilter : public SingleFrequencyFilter<IIRFilterBase> {
                        float* out) const override;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_LOWPASS_FILTER_H_

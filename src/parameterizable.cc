@@ -18,7 +18,7 @@
 #pragma GCC diagnostic pop
 #include <sstream>
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 std::unordered_map<std::string, std::string> Parameterizable::Parse(
     const std::string& line) {
@@ -41,4 +41,4 @@ std::unordered_map<std::string, std::string> Parameterizable::Parse(
   return parameters;
 }
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction

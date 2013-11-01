@@ -17,12 +17,12 @@
 #include "src/formats/single_format.h"
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class PeakDynamicProgramming
-    : public TransformBase<Formats::ArrayFormat<Formats::FixedArray<2>>,
-                           Formats::SingleFormatF> {
+    : public TransformBase<formats::ArrayFormat<formats::FixedArray<2>>,
+                           formats::SingleFormatF> {
  public:
   PeakDynamicProgramming();
 
@@ -36,7 +36,7 @@ class PeakDynamicProgramming
   )
 
  protected:
-  virtual void Do(const BuffersBase<Formats::FixedArray<2>*>& in,
+  virtual void Do(const BuffersBase<formats::FixedArray<2>*>& in,
                   BuffersBase<float>* out)
       const noexcept override;
 
@@ -46,6 +46,6 @@ class PeakDynamicProgramming
   bool mind_values_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_PEAK_DYNAMIC_PROGRAMMING

@@ -16,7 +16,7 @@
 #include "src/format_converter_base.h"
 #include "src/formats/single_format.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 template <typename FIN, typename FOUT>
 class SingleFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
@@ -26,7 +26,7 @@ class SingleFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
   }
 };
 
-namespace Formats {
+namespace formats {
 
 class Int32ToFloatConverter
     : public SingleFormatConverterBase<SingleFormat32, SingleFormatF> {
@@ -42,7 +42,7 @@ class FloatToInt32Converter
                   int32_t *out) const noexcept override;
 };
 
-}  // namespace Formats
-}  // namespace SoundFeatureExtraction
+}  // namespace formats
+}  // namespace sound_feature_extraction
 
 #endif  // SRC_FORMATS_SINGLE_CONVERTERS_H_

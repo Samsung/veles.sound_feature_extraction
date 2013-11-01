@@ -1,5 +1,5 @@
 /*! @file peak_detection.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::PeakDetection.
+ *  @brief Tests for sound_feature_extraction::transforms::PeakDetection.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -15,9 +15,9 @@
 #include <cmath>
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::PeakDetection;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::PeakDetection;
 
 class PeakDetectionTest : public TransformTest<PeakDetection> {
  public:

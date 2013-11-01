@@ -13,15 +13,15 @@
 #include "src/transforms/peak_analysis.h"
 #include <algorithm>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 size_t PeakAnalysis::OnInputFormatChanged(size_t buffersCount) {
   outputFormat_->SetSize(inputFormat_->Size() * 2);
   return buffersCount;
 }
 
-void PeakAnalysis::Do(const Formats::FixedArray<2>* in, float *out)
+void PeakAnalysis::Do(const formats::FixedArray<2>* in, float *out)
     const noexcept {
   float sum = in[0][1];
   for (size_t i = 1; i < inputFormat_->Size(); i++) {
@@ -50,5 +50,5 @@ void PeakAnalysis::Do(const Formats::FixedArray<2>* in, float *out)
 
 REGISTER_TRANSFORM(PeakAnalysis);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

@@ -13,8 +13,8 @@
 #include "src/transforms/lowpass_filter.h"
 #include <math.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 std::shared_ptr<IIRFilter> LowpassFilter::CreateExecutor() const noexcept {
   switch (type()) {
@@ -113,5 +113,5 @@ void LowpassFilter::Execute(const std::shared_ptr<IIRFilter>& exec,
 
 REGISTER_TRANSFORM(LowpassFilter);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

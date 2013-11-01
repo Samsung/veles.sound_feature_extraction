@@ -1,5 +1,5 @@
 /*! @file short_time_msn.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::ShortTimeMeanScaleNormalization.
+ *  @brief Tests for sound_feature_extraction::transforms::ShortTimeMeanScaleNormalization.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -15,9 +15,9 @@
 #include "tests/transforms/transform_test.h"
 #include <fftf/api.h>
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::ShortTimeMeanScaleNormalization;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::ShortTimeMeanScaleNormalization;
 
 class ShortTimeMeanScaleNormalizationTest : public TransformTest<ShortTimeMeanScaleNormalization> {
  public:

@@ -1,5 +1,5 @@
 /*! @file log.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::Log.
+ *  @brief Tests for sound_feature_extraction::transforms::Log.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -14,9 +14,9 @@
 #include "src/transforms/log.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::LogRaw;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::LogRaw;
 
 class LogTest : public TransformTest<LogRaw> {
  public:

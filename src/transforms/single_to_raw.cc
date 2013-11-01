@@ -12,12 +12,12 @@
 
 #include "src/transforms/single_to_raw.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 using SingleToRawF = SingleToRaw<float>;
 
 REGISTER_TRANSFORM(SingleToRawF);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

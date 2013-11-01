@@ -16,8 +16,8 @@
 #include "src/transforms/common.h"
 #include "src/primitives/wavelet_filter_bank.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 /// @brief Calculates the energy of the sub-signals for each subband.
 /// @details Calculates
@@ -27,7 +27,7 @@ namespace Transforms {
 /// each being equal to the corresponding subband energy. Numbers count is the
 /// same as the length of the binary tree fingerprint.
 class SubbandEnergy
-    : public OmpUniformFormatTransform<Formats::ArrayFormatF> {
+    : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   SubbandEnergy();
 
@@ -56,6 +56,6 @@ class SubbandEnergy
   mutable std::vector<int> offsets_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_SUBBAND_ENERGY_H_

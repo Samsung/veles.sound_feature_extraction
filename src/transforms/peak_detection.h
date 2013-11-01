@@ -20,12 +20,12 @@
 #include "src/formats/fixed_array.h"
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 class PeakDetection
-    : public OmpTransformBase<Formats::ArrayFormatF,
-                              Formats::ArrayFormat<Formats::FixedArray<2>>> {
+    : public OmpTransformBase<formats::ArrayFormatF,
+                              formats::ArrayFormat<formats::FixedArray<2>>> {
  public:
   PeakDetection();
 
@@ -67,7 +67,7 @@ class PeakDetection
 
   virtual void Initialize() const override;
 
-  virtual void Do(const float* in, Formats::FixedArray<2>* out)
+  virtual void Do(const float* in, formats::FixedArray<2>* out)
       const noexcept override;
 
  private:
@@ -97,6 +97,6 @@ class PeakDetection
   int swt_level_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_PEAK_DETECTION

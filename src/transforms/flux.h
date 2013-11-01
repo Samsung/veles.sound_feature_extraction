@@ -17,12 +17,12 @@
 #include "src/formats/single_format.h"
 #include "src/transform_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 /// @brief \f$||\overrightarrow{Value(f)}-\overrightarrow{Value_pre(f)}||\f$.
 class Flux
-    : public TransformBase<Formats::ArrayFormatF, Formats::SingleFormatF> {
+    : public TransformBase<formats::ArrayFormatF, formats::SingleFormatF> {
  public:
   TRANSFORM_INTRO("Flux", "Measure of spectral change.")
 
@@ -36,6 +36,6 @@ class Flux
                   const float* prev) noexcept;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_ROLLOFF_H_

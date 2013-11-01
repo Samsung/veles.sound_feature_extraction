@@ -16,16 +16,16 @@
 #include "src/formats/array_format.h"
 #include "src/omp_transform_base.h"
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
-extern template class TransformBase<Formats::ArrayFormatF,
-                                    Formats::ArrayFormatF>;
-extern template class UniformFormatTransform<Formats::ArrayFormatF>;
-extern template class OmpTransformBaseBufferTypeProxy<Formats::ArrayFormatF,
-    Formats::ArrayFormatF, Formats::ArrayFormatF::BufferType,
-    Formats::ArrayFormatF::BufferType>;
-extern template class OmpUniformFormatTransform<Formats::ArrayFormatF>;
+extern template class TransformBase<formats::ArrayFormatF,
+                                    formats::ArrayFormatF>;
+extern template class UniformFormatTransform<formats::ArrayFormatF>;
+extern template class OmpTransformBaseBufferTypeProxy<formats::ArrayFormatF,
+    formats::ArrayFormatF, formats::ArrayFormatF::BufferType,
+    formats::ArrayFormatF::BufferType>;
+extern template class OmpUniformFormatTransform<formats::ArrayFormatF>;
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction
 
 #endif  // SRC_TRANSFORMS_COMMON_H_

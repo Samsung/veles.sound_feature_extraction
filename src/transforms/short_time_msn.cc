@@ -13,8 +13,8 @@
 #include <simd/arithmetic-inl.h>
 #include "src/transforms/short_time_msn.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 ShortTimeMeanScaleNormalization::ShortTimeMeanScaleNormalization()
     : length_(kDefaultLength) {
@@ -70,5 +70,5 @@ void ShortTimeMeanScaleNormalization::Do(
 
 REGISTER_TRANSFORM(ShortTimeMeanScaleNormalization);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

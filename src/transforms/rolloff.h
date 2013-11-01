@@ -16,12 +16,12 @@
 #include "src/formats/single_format.h"
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 /// @brief \f$R: \displaystyle\sum_{f=0}^{f=R}{Value[f]} = ratio \times \displaystyle\sum_{f=0}^{f=N}{Value[f]}\f$.
 class Rolloff
-    : public OmpTransformBase<Formats::ArrayFormatF, Formats::SingleFormatF> {
+    : public OmpTransformBase<formats::ArrayFormatF, formats::SingleFormatF> {
  public:
   Rolloff();
 
@@ -44,6 +44,6 @@ class Rolloff
   float ratio_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_ROLLOFF_H_

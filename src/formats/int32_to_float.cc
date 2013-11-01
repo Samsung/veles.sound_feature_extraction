@@ -13,8 +13,8 @@
 #include "src/formats/int32_to_float.h"
 #include <simd/arithmetic-inl.h>
 
-namespace SoundFeatureExtraction {
-namespace Formats {
+namespace sound_feature_extraction {
+namespace formats {
 
 void Int32ToFloatRaw::Do(const int32_t* in,
                          float* out) const noexcept {
@@ -23,5 +23,5 @@ void Int32ToFloatRaw::Do(const int32_t* in,
 
 REGISTER_TRANSFORM(Int32ToFloatRaw);
 
-}  // namespace Formats
-}  // namespace SoundFeatureExtraction
+}  // namespace formats
+}  // namespace sound_feature_extraction

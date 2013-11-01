@@ -12,8 +12,8 @@
 
 #include "src/transforms/iir_filter_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 const std::unordered_map<std::string, IIRFilterType>
 IIRFilterBase::kFilterTypeMap {
@@ -64,5 +64,5 @@ float IIRFilterBase::rolloff() const {
   return rolloff_;
 }
 
-}  // namespace Formats
-}  // namespace SoundFeatureExtraction
+}  // namespace formats
+}  // namespace sound_feature_extraction

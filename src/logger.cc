@@ -15,7 +15,7 @@
 #include <cxxabi.h>
 #include <string.h>
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 // The following defines must not be converted to static const members of Logger
 // due to the undefined order in which static constructors are invoked.
@@ -157,4 +157,4 @@ void Logger::set_color(const std::string &value) noexcept {
 #endif
 }
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction

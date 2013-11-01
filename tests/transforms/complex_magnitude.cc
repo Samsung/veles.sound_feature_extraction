@@ -1,5 +1,5 @@
 /*! @file complex_magnitude.cc
- *  @brief Tests for SoundFeatureExtraction::Transforms::ComplexMagnitude.
+ *  @brief Tests for sound_feature_extraction::transforms::ComplexMagnitude.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -15,9 +15,9 @@
 #include "src/transforms/complex_magnitude.h"
 #include "tests/transforms/transform_test.h"
 
-using SoundFeatureExtraction::Formats::ArrayFormatF;
-using SoundFeatureExtraction::BuffersBase;
-using SoundFeatureExtraction::Transforms::ComplexMagnitude;
+using sound_feature_extraction::formats::ArrayFormatF;
+using sound_feature_extraction::BuffersBase;
+using sound_feature_extraction::transforms::ComplexMagnitude;
 
 class ComplexMagnitudeTest : public TransformTest<ComplexMagnitude> {
  public:

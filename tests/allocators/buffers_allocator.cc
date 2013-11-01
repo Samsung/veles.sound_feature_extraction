@@ -1,5 +1,5 @@
 /*! @file buffers_allocator.cc
- *  @brief Tests for SoundFeatureExtraction::MemoryAllocation::BuffersAllocator.
+ *  @brief Tests for sound_feature_extraction::MemoryAllocation::BuffersAllocator.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -14,8 +14,8 @@
 #include <gtest/gtest.h>
 #include <memory>
 
-using SoundFeatureExtraction::MemoryAllocation::Node;
-using SoundFeatureExtraction::MemoryAllocation::BuffersAllocator;
+using sound_feature_extraction::MemoryAllocation::Node;
+using sound_feature_extraction::MemoryAllocation::BuffersAllocator;
 
 class BuffersAllocatorTest
     : public BuffersAllocator, public testing::Test {

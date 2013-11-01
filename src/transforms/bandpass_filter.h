@@ -15,8 +15,8 @@
 
 #include "src/transforms/iir_filter_base.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 /// @brief Discards the frequencies which are lower than the threshold.
 class BandpassFilter : public IIRFilterBase,
@@ -55,6 +55,6 @@ class BandpassFilter : public IIRFilterBase,
   int frequency_low_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_BANDPASS_FILTER_H_

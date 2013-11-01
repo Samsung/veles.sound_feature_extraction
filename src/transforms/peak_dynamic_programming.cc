@@ -14,8 +14,8 @@
 #include <cmath>
 #include <vector>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 PeakDynamicProgramming::PeakDynamicProgramming()
     : mind_values_(kDefaultMindValues) {
@@ -25,7 +25,7 @@ PeakDynamicProgramming::PeakDynamicProgramming()
   });
 }
 
-void PeakDynamicProgramming::Do(const BuffersBase<Formats::FixedArray<2>*>& in,
+void PeakDynamicProgramming::Do(const BuffersBase<formats::FixedArray<2>*>& in,
                                 BuffersBase<float>* out)
     const noexcept {
   std::vector<std::vector<std::tuple<float, int>>> costs(in.Count());
@@ -101,5 +101,5 @@ void PeakDynamicProgramming::Do(const BuffersBase<Formats::FixedArray<2>*>& in,
 
 REGISTER_TRANSFORM(PeakDynamicProgramming);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction

@@ -17,14 +17,14 @@
 #include "src/formats/single_format.h"
 #include "src/transforms/common.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 typedef std::tuple<int, float> ArgMinMaxResult;
 
 class ArgMinMax
-    : public OmpTransformBase<Formats::ArrayFormatF,
-                              Formats::SingleFormat<ArgMinMaxResult>> {
+    : public OmpTransformBase<formats::ArrayFormatF,
+                              formats::SingleFormat<ArgMinMaxResult>> {
  public:
   ArgMinMax();
 
@@ -48,6 +48,6 @@ private:
   bool extremum_;
 };
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_ARGMINMAX

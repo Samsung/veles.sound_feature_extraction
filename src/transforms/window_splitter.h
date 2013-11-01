@@ -15,8 +15,8 @@
 
 #include "src/transforms/window.h"
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 #define WINDOW_SPLITTER_TRANSFORM_PARAMETERS(init) \
   TRANSFORM_PARAMETERS(FORWARD_MACROS( \
@@ -35,7 +35,7 @@ namespace Transforms {
 
 template <class T>
 class WindowSplitterTemplateBase
-    : public virtual UniformFormatTransform<Formats::ArrayFormat<T>> {
+    : public virtual UniformFormatTransform<formats::ArrayFormat<T>> {
  public:
   WindowSplitterTemplateBase()
       : length_(kDefaultLength),
@@ -44,8 +44,8 @@ class WindowSplitterTemplateBase
         interleaved_(true) {
     this->RegisterSetter("length", [&](const std::string& value) {
       int pv = this->template Parse<int>("length", value);
-      if (pv < Formats::ArrayFormatF::kMinSamplesCount ||
-          pv > Formats::ArrayFormatF::kMaxSamplesCount) {
+      if (pv < formats::ArrayFormatF::kMinSamplesCount ||
+          pv > formats::ArrayFormatF::kMaxSamplesCount) {
         return false;
       }
       length_ = pv;
@@ -213,6 +213,6 @@ class WindowSplitterFInverse
 
 
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORMS_WINDOW_SPLITTER_H_

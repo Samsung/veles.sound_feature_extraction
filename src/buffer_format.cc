@@ -13,7 +13,7 @@
 #include "src/buffer_format.h"
 #include <cassert>
 
-namespace SoundFeatureExtraction {
+namespace sound_feature_extraction {
 
 BufferFormat::BufferFormat(const std::string& id, int samplingRate)
     : id_(id),
@@ -58,8 +58,8 @@ void BufferFormat::SetSamplingRate(int value) {
 
 void BufferFormat::ValidateSamplingRate(int value) {
   if (value < kMinSamplingRate || value > kMaxSamplingRate) {
-    throw Formats::InvalidSamplingRateException(value);
+    throw formats::InvalidSamplingRateException(value);
   }
 }
 
-}  // namespace SoundFeatureExtraction
+}  // namespace sound_feature_extraction

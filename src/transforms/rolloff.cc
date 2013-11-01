@@ -18,8 +18,8 @@
 #endif
 #include <simd/arithmetic-inl.h>
 
-namespace SoundFeatureExtraction {
-namespace Transforms {
+namespace sound_feature_extraction {
+namespace transforms {
 
 const float Rolloff::kDefaultRatio = 0.85f;
 
@@ -112,5 +112,5 @@ int Rolloff::Do(bool simd, const float* input, size_t length,
 
 REGISTER_TRANSFORM(Rolloff);
 
-}  // namespace Transforms
-}  // namespace SoundFeatureExtraction
+}  // namespace transforms
+}  // namespace sound_feature_extraction
