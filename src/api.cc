@@ -42,9 +42,9 @@ struct FeaturesConfiguration {
   std::unique_ptr<TransformTree> Tree;
 };
 
-#define BLAME(x) fprintf(stderr, "Error: " #x " is null (function %s, " \
-                                 "line %i)\n", \
-                         __FUNCTION__, __LINE__)
+#define BLAME(x) EINA_LOG_ERR("Error: " #x " is null (function %s, " \
+                              "line %i)\n", \
+                              __FUNCTION__, __LINE__)
 
 #define CHECK_NULL(x) do { if (x == nullptr) { \
     BLAME(x); \
@@ -170,7 +170,7 @@ void query_transform_details(const char *name, char **description,
   }
   auto tit = TransformFactory::Instance().Map().find(transformName);
   if (tit == TransformFactory::Instance().Map().end()) {
-    fprintf(stderr, "Error: transform %s was not found.\n", fullName.c_str());
+    EINA_LOG_ERR("Error: transform %s was not found.\n", fullName.c_str());
     return;
   }
 
@@ -180,8 +180,8 @@ void query_transform_details(const char *name, char **description,
   } else {
     auto tfit = tit->second.find(formatName);
     if (tfit == tit->second.end()) {
-      fprintf(stderr, "Error: transform %s was not found.\n",
-              fullName.c_str());
+      EINA_LOG_ERR("Error: transform %s was not found.\n",
+                   fullName.c_str());
       return;
     }
     transformInstance = tfit->second();
@@ -231,20 +231,22 @@ FeaturesConfiguration *setup_features_extraction(
     const char *const *features, int featuresCount,
     size_t bufferSize, int samplingRate) {
   CHECK_NULL_RET(features, nullptr);
+  EINA_LOG_DBG("featuresCount=%d, bufferSize=%zu, samplingRate=%i",
+      featuresCount, bufferSize, samplingRate);
   if (featuresCount < 0) {
-    fprintf(stderr, "Error: featuresCount is negative (%i)\n", featuresCount);
+    EINA_LOG_ERR("Error: featuresCount is negative (%i)\n", featuresCount);
     return nullptr;
   }
   if (featuresCount > MAX_FEATURES_COUNT) {
-    fprintf(stderr, "Error: featuresCount is too big "
-            "(%i > MAX_FEATURES_COUNT=%i)\n",
-            featuresCount, MAX_FEATURES_COUNT);
+    EINA_LOG_ERR("Error: featuresCount is too big "
+              "(%i > MAX_FEATURES_COUNT=%i)\n",
+              featuresCount, MAX_FEATURES_COUNT);
     return nullptr;
   }
   std::vector<std::string> lines;
   for (int i = 0; i < featuresCount; i++) {
     if (features[i] == nullptr) {
-      fprintf(stderr, "Error: features[%i] is null\n", i);
+      EINA_LOG_ERR("Error: features[%i] is null\n", i);
       return nullptr;
     }
     lines.push_back(features[i]);
@@ -254,7 +256,7 @@ FeaturesConfiguration *setup_features_extraction(
     featmap = sound_feature_extraction::Features::Parse(lines);
   }
   catch(const ParseFeaturesException& pfe) {
-    fprintf(stderr, "Failed to parse features. %s\n", pfe.what());
+    EINA_LOG_ERR("Failed to parse features. %s\n", pfe.what());
     return nullptr;
   }
 
@@ -266,22 +268,22 @@ FeaturesConfiguration *setup_features_extraction(
       config->Tree->AddFeature(featpair.first, featpair.second);
     }
     catch(const ChainNameAlreadyExistsException& cnaee) {
-      fprintf(stderr, "Failed to construct the transform tree. %s\n",
+      EINA_LOG_ERR("Failed to construct the transform tree. %s\n",
               cnaee.what());
       return nullptr;
     }
     catch(const TransformNotRegisteredException& tnre) {
-      fprintf(stderr, "Failed to construct the transform tree. %s\n",
+      EINA_LOG_ERR("Failed to construct the transform tree. %s\n",
               tnre.what());
       return nullptr;
     }
     catch(const ChainAlreadyExistsException& caee) {
-      fprintf(stderr, "Failed to construct the transform tree. %s\n",
+      EINA_LOG_ERR("Failed to construct the transform tree. %s\n",
               caee.what());
       return nullptr;
     }
     catch(const IncompatibleTransformFormatException& itfe) {
-      fprintf(stderr, "Failed to construct the transform tree. %s\n",
+      EINA_LOG_ERR("Failed to construct the transform tree. %s\n",
               itfe.what());
       return nullptr;
     }
@@ -305,7 +307,7 @@ FeatureExtractionResult extract_speech_features(
     retmap = fc->Tree->Execute(buffer);
   }
   catch (const std::exception& ex) {
-    fprintf(stderr, "Caught an exception with message \"%s\".\n", ex.what());
+    EINA_LOG_ERR("Caught an exception with message \"%s\".\n", ex.what());
     return FEATURE_EXTRACTION_RESULT_ERROR;
   }
   *featureNames = new char*[retmap.size()];
@@ -380,8 +382,8 @@ void destroy_features_configuration(FeaturesConfiguration* fc) {
 void free_results(int featuresCount, char **featureNames,
                   void **results, int *resultLengths) {
   if(featuresCount <= 0) {
-    fprintf(stderr, "Warning: free_results() was called with featuresCount"
-                    " <= 0, skipped\n");
+    EINA_LOG_ERR("Warning: free_results() was called with featuresCount"
+                 " <= 0, skipped\n");
     return;
   }
 
@@ -411,14 +413,14 @@ void get_set_omp_transforms_max_threads_num(int *value, bool get) {
   } else {
     int max = omp_get_max_threads();
     if (*value > max) {
-      fprintf(stderr, "Warning: can not set the maximal number of threads to "
-                      "%i (the limit is %i), so set to %i\n",
-              *value, max, max);
+      EINA_LOG_ERR("Warning: can not set the maximal number of threads to "
+                   "%i (the limit is %i), so set to %i\n",
+                   *value, max, max);
       threads_num = max;
     } else if (*value < 1) {
-      fprintf(stderr, "Warning: can not set the maximal number of threads to "
-                      "%i. The value remains the same (%i)\n",
-              *value, threads_num);
+      EINA_LOG_ERR("Warning: can not set the maximal number of threads to "
+                   "%i. The value remains the same (%i)\n",
+                   *value, threads_num);
     } else {
       threads_num = *value;
     }
