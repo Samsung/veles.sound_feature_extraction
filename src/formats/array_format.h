@@ -58,10 +58,16 @@ class ArrayFormat : public BufferFormatBase<T*>,
     return *this;
   }
 
+  /// @brief Gets the time for which the signal lasts according to the sampling
+  /// rate.
+  /// @note This method does not always make sense, of course.
   float Duration() const noexcept {
     return size_ * 2.f / this->SamplingRate();
   }
 
+  /// @brief Sets the signal length according to the sampling rate and the
+  /// desired time for which it should last.
+  /// @note This method does not always make sense, of course.
   void SetDuration(float value) {
     ValidateDuration(value);
     size_ = value * this->SamplingRate() / 2;
