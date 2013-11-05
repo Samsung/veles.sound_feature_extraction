@@ -14,6 +14,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
+#include <algorithm>
 #include <fstream>  // NOLINT(*)
 #include <iomanip>
 #include <string>
@@ -22,6 +23,7 @@
 #include "src/formats/array_format.h"
 #include "src/format_converter.h"
 #include "src/transform_registry.h"
+#include "src/transforms/identity.h"
 
 /// @brief Temporary fix for a buggy system_clock implementation in libstdc++.
 /// @see http://gcc.1065356.n5.nabble.com/patch-Default-to-enable-libstdcxx-time-auto-td940166i40.html
@@ -294,8 +296,11 @@ void TransformTree::AddTransform(const std::string& name,
   }
   // tfit is actually a map from input format to real constructor
   TransformFactory::TransformConstructor ctor;
-  auto ctorit = tfit->second.find(
-      (*currentNode)->BoundTransform->OutputFormat()->Id());
+  auto format_id = (*currentNode)->BoundTransform->OutputFormat()->Id();
+  if (name == transforms::Identity::kName) {
+    format_id = IdentityFormat().Id();
+  }
+  auto ctorit = tfit->second.find(format_id);
   if (ctorit == tfit->second.end()) {
     DBG("Formats mismatch, iterating input formats (%zu)",
         tfit->second.size());
@@ -330,19 +335,36 @@ void TransformTree::AddTransform(const std::string& name,
     auto tparams = Transform::Parse(parameters);
     t->SetParameters(tparams);
   }
-  auto reusedNode = (*currentNode)->FindIdenticalChildTransform(*t);
-  if (reusedNode != nullptr) {
-    *currentNode = reusedNode;
+  auto reused_node = (*currentNode)->FindIdenticalChildTransform(*t);
+  if (reused_node != nullptr) {
+    *currentNode = reused_node;
+    // If this node is the exit node for some feature, redirect that feature to
+    // an appended Identity transform. This step is necessary due to the way
+    // memory allocation works. Particularly, the node is considered to be
+    // a leaf if and only if the number of it's children equals to 0.
+    auto related_feature = std::find_if(
+        features_.begin(), features_.end(),
+        [reused_node](const std::pair<std::string, std::shared_ptr<Node>>& el) {
+      return el.second == reused_node;
+    });
+    if (related_feature != features_.end()) {
+      DBG("Appending an extra Identity to %s",
+          reused_node->BoundTransform->Name().c_str());
+      std::shared_ptr<Node> identity_node = reused_node;
+      AddTransform(transforms::Identity::kName, "", related_feature->first,
+                   &identity_node);
+      related_feature->second = identity_node;
+    }
   } else {
     // Set the new input format
-    size_t buffersCount = t->SetInputFormat(
+    size_t buffers_count = t->SetInputFormat(
         (*currentNode)->BoundTransform->OutputFormat(),
         (*currentNode)->BuffersCount);
     // Append the newly created transform
-    auto newNode = std::make_shared<Node>(
-        currentNode->get(), t, buffersCount, this);
-    (*currentNode)->Children[name].push_back(newNode);
-    *currentNode = newNode;
+    auto new_node = std::make_shared<Node>(currentNode->get(), t, buffers_count,
+                                           this);
+    (*currentNode)->Children[name].push_back(new_node);
+    *currentNode = new_node;
   }
   (*currentNode)->RelatedFeatures.push_back(relatedFeature);
 

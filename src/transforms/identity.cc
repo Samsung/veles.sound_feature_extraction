@@ -16,13 +16,15 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
+constexpr const char* Identity::kName;
+
 Identity::Identity()
     : input_format_(std::make_shared<IdentityFormat>()),
       output_format_(std::make_shared<IdentityFormat>()) {
 }
 
 const std::string& Identity::Name() const noexcept {
-  static const std::string name("Identity");
+  static const std::string name(kName);
   return name;
 }
 

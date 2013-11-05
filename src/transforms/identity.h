@@ -22,6 +22,8 @@ class Identity : public Transform {
  public:
   Identity();
 
+  static constexpr const char* kName = "Identity";
+
   virtual const std::string& Name() const noexcept;
 
   virtual const std::string& Description() const noexcept;
