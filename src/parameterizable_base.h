@@ -44,8 +44,8 @@ class ParameterSetterNotRegisteredException : public ExceptionBase {
 
 class ParameterizableBase : public virtual Parameterizable {
  public:
-  virtual const std::unordered_map<std::string, std::string>&
-  GetParameters() const noexcept;
+  virtual const std::unordered_map<std::string, std::string>& GetParameters()
+      const noexcept;
 
   virtual void SetParameters(
       const std::unordered_map<std::string, std::string>& parameters);
