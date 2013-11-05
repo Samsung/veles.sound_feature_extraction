@@ -23,8 +23,8 @@ namespace sound_feature_extraction {
 /// @brief Transform abstract class.
 class Transform : public virtual Parameterizable {
  public:
-  virtual ~Transform() {
- }
+  virtual ~Transform() = default;
+
   virtual const std::string& Name() const noexcept = 0;
 
   virtual const std::string& Description() const noexcept = 0;
