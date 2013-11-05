@@ -26,7 +26,7 @@ namespace transforms {
 void Flux::Do(const BuffersBase<float*>& in,
               BuffersBase<float> *out) const noexcept {
   for (size_t i = 1; i < in.Count(); i++) {
-    (*out)[i] = Do(UseSimd(), in[i], inputFormat_->Size(), in[i - 1]);
+    (*out)[i] = Do(UseSimd(), in[i], input_format_->Size(), in[i - 1]);
   }
   (*out)[0] = (*out)[1];
 }

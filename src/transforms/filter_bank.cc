@@ -103,9 +103,9 @@ void FilterBank::AddTriangularFilter(float center, float halfWidth) const {
   float rightFreq = ScaleToLinear(type_, center + halfWidth);
 
   // The number of frequency points
-  int N = inputFormat_->Size() / 2;
+  int N = input_format_->Size() / 2;
   // Frequency resolution
-  float df = inputFormat_->SamplingRate() / (2 * N);
+  float df = input_format_->SamplingRate() / (2 * N);
 
   int leftIndex = ceilf(leftFreq / df);
   int centerIndex = ceilf(centerFreq / df);
@@ -148,8 +148,8 @@ void FilterBank::AddTriangularFilter(float center, float halfWidth) const {
 }
 
 void FilterBank::Initialize() const {
-  filterBank_ = std::unique_ptr<float, void(*)(void*)>(mallocf(inputFormat_->Size()), free);
-  memsetf(filterBank_.get(), 0.f, inputFormat_->Size());
+  filterBank_ = std::unique_ptr<float, void(*)(void*)>(mallocf(input_format_->Size()), free);
+  memsetf(filterBank_.get(), 0.f, input_format_->Size());
 
   float scaleMin = LinearToScale(type_, minFreq_);
   float scaleMax = LinearToScale(type_, maxFreq_);
@@ -161,7 +161,7 @@ void FilterBank::Initialize() const {
 
   // Avoid zeros in filter since taking a logarithm from 0 is undefined.
   auto filter = filterBank_.get();
-  for (size_t i = 0; i < inputFormat_->Size(); i++) {
+  for (size_t i = 0; i < input_format_->Size(); i++) {
     if (filter[i] == 0.f) {
       filter[i] = 0.0001f;
     }
@@ -171,7 +171,7 @@ void FilterBank::Initialize() const {
 
 void FilterBank::Do(const float* in, float* out) const noexcept {
   auto filter = filterBank_.get();
-  int length = inputFormat_->Size();
+  int length = input_format_->Size();
 #ifdef SIMD
   for (int i = 0; i < length - FLOAT_STEP + 1; i += FLOAT_STEP) {
     real_multiply(in + i, filter + i, out + i);

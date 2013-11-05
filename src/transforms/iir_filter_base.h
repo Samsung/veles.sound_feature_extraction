@@ -49,10 +49,10 @@ class IIRFilterBase : public FilterBase<IIRFilter> {
  protected:
   template <class F>
   void Execute(const std::shared_ptr<F>& exec, const float* in, float* out) const {
-    memcpy(out, in, inputFormat_->UnalignedSizeInBytes());
+    memcpy(out, in, input_format_->UnalignedSizeInBytes());
     auto ptr = std::const_pointer_cast<F>(exec);
     ptr->reset();
-    ptr->process(inputFormat_->Size(), &out);
+    ptr->process(input_format_->Size(), &out);
   }
 
   static const IIRFilterType kDefaultIIRFilterType = kIIRFilterTypeChebyshevII;

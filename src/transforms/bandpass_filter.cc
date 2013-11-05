@@ -72,42 +72,42 @@ std::shared_ptr<IIRFilter> BandpassFilter::CreateExecutor() const noexcept {
     case kIIRFilterTypeBessel: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::Bessel::BandPass<kMaxFilterLength>, 1>>();
-      ret->setup(length(), inputFormat_->SamplingRate(), center_freq,
+      ret->setup(length(), input_format_->SamplingRate(), center_freq,
                  width_freq);
       return std::static_pointer_cast<IIRFilter>(ret);
     }
     case kIIRFilterTypeButterworth: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::Butterworth::BandPass<kMaxFilterLength>, 1>>();
-      ret->setup(length(), inputFormat_->SamplingRate(), center_freq,
+      ret->setup(length(), input_format_->SamplingRate(), center_freq,
                  width_freq);
       return std::static_pointer_cast<IIRFilter>(ret);
     }
     case kIIRFilterTypeChebyshevI: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::ChebyshevI::BandPass<kMaxFilterLength>, 1>>();
-      ret->setup(length(), inputFormat_->SamplingRate(), center_freq,
+      ret->setup(length(), input_format_->SamplingRate(), center_freq,
                  width_freq, ripple());
       return std::static_pointer_cast<IIRFilter>(ret);
     }
     case kIIRFilterTypeChebyshevII: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::ChebyshevII::BandPass<kMaxFilterLength>, 1>>();
-      ret->setup(length(), inputFormat_->SamplingRate(), center_freq,
+      ret->setup(length(), input_format_->SamplingRate(), center_freq,
                  width_freq, ripple());
       return std::static_pointer_cast<IIRFilter>(ret);
     }
     case kIIRFilterTypeElliptic: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::Elliptic::BandPass<kMaxFilterLength>, 1>>();
-      ret->setup(length(), inputFormat_->SamplingRate(), center_freq,
+      ret->setup(length(), input_format_->SamplingRate(), center_freq,
                  width_freq, ripple(), rolloff());
       return std::static_pointer_cast<IIRFilter>(ret);
     }
     case kIIRFilterTypeLegendre: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::Legendre::BandPass<kMaxFilterLength>, 1>>();
-      ret->setup(length(), inputFormat_->SamplingRate(), center_freq,
+      ret->setup(length(), input_format_->SamplingRate(), center_freq,
                  width_freq);
       return std::static_pointer_cast<IIRFilter>(ret);
     }

@@ -36,7 +36,7 @@ TEST_F(SHCTest, Do) {
   Do((*Input)[0], (*Output)[0]);
   ExtremumPoint* results;
   size_t rcount;
-  detect_peaks(true, (*Output)[0], outputFormat_->Size(), kExtremumTypeMaximum,
+  detect_peaks(true, (*Output)[0], output_format_->Size(), kExtremumTypeMaximum,
                &results, &rcount);
   EXPECT_EQ(17, results[0].position);
   EXPECT_NEAR(1, results[0].value, 0.0001f);
@@ -46,7 +46,7 @@ TEST_F(SHCTest, Do) {
   EXPECT_NEAR(0.6133f, results[2].value, 0.0001f);
   SetUseSimd(true);
   Do((*Input)[0], (*Output)[0]);
-  detect_peaks(true, (*Output)[0], outputFormat_->Size(), kExtremumTypeMaximum,
+  detect_peaks(true, (*Output)[0], output_format_->Size(), kExtremumTypeMaximum,
                &results, &rcount);
   EXPECT_EQ(17, results[0].position);
   EXPECT_NEAR(1, results[0].value, 0.0001f);

@@ -17,11 +17,11 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 size_t ZeroPadding::OnFormatChanged(size_t buffersCount) {
-  int length = inputFormat_->Size();
+  int length = input_format_->Size();
   if ((length & (length - 1)) == 0) {
-    outputFormat_->SetSize(length);
+    output_format_->SetSize(length);
   } else {
-    outputFormat_->SetSize(next_highest_power_of_2(length));
+    output_format_->SetSize(next_highest_power_of_2(length));
   }
   return buffersCount;
 }
@@ -29,11 +29,11 @@ size_t ZeroPadding::OnFormatChanged(size_t buffersCount) {
 void ZeroPadding::Do(const float* in,
                      float* out) const noexcept {
   if (in != out) {
-    memcpy(out, in, inputFormat_->Size() * sizeof(in[0]));
+    memcpy(out, in, input_format_->Size() * sizeof(in[0]));
   }
-  memsetf(out + inputFormat_->Size(),
+  memsetf(out + input_format_->Size(),
           0.f,
-          outputFormat_->Size() - inputFormat_->Size());
+          output_format_->Size() - input_format_->Size());
 }
 
 REGISTER_TRANSFORM(ZeroPadding);

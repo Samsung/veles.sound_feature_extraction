@@ -38,7 +38,7 @@ Preemphasis::Preemphasis()
 void Preemphasis::Do(const int16_t* in,
                      int16_t* out) const noexcept {
 
-  Do(UseSimd(), in, inputFormat_->Size(), k_, out);
+  Do(UseSimd(), in, input_format_->Size(), k_, out);
 }
 
 void Preemphasis::Do(bool simd, const int16_t* input, size_t length,

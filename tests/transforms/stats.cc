@@ -27,7 +27,7 @@ class StatsTest : public TransformTest<Stats> {
     std::mt19937 gen(rd());
     std::normal_distribution<float> d(1, 2);
     for (size_t i = 0; i < (*Input).Count(); i++) {
-      for (size_t j = 0; j < inputFormat_->Size(); j++) {
+      for (size_t j = 0; j < input_format_->Size(); j++) {
         (*Input)[i][j] = d(gen);
       }
     }

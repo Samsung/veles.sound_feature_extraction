@@ -32,7 +32,7 @@ void PeakDynamicProgramming::Do(const BuffersBase<formats::FixedArray<2>*>& in,
   std::vector<int> candidates_counts(in.Count());
   for (size_t i = 0; i < in.Count(); i++) {
     int candidates_count = 0;
-    for (size_t j = 0; in[i][j][0] != 0 && j < inputFormat_->Size(); j++) {
+    for (size_t j = 0; in[i][j][0] != 0 && j < input_format_->Size(); j++) {
       candidates_count++;
     }
     candidates_counts[i] = candidates_count;

@@ -21,8 +21,8 @@ template <typename FIN, typename FOUT>
 class ArrayFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
  protected:
   virtual size_t OnInputFormatChanged(size_t buffersCount) override final {
-    auto& outputFormat = FormatConverterBase<FIN, FOUT>::outputFormat_;
-    auto& inputFormat = FormatConverterBase<FIN, FOUT>::inputFormat_;
+    auto& outputFormat = FormatConverterBase<FIN, FOUT>::output_format_;
+    auto& inputFormat = FormatConverterBase<FIN, FOUT>::input_format_;
     outputFormat->SetSize(inputFormat->Size());
     return buffersCount;
   }

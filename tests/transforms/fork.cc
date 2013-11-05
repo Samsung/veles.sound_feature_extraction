@@ -31,7 +31,7 @@ class ForkTest : public TransformTest<Fork> {
 };
 
 TEST_F(ForkTest, Forward) {
-  ASSERT_EQ(inputFormat_->Size(), outputFormat_->Size());
+  ASSERT_EQ(input_format_->Size(), output_format_->Size());
   Do((*Input), &(*Output));
   ASSERT_EQ((*Input).Count() * kDefaultFactor, (*Output).Count());
 }

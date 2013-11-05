@@ -390,13 +390,13 @@ void TransformTree::PrepareForExecution() {
     t.Initialize();
   });
   // Solve the allocation problem
-  MemoryAllocation::Node allocationTreeRoot(0, nullptr, root_.get());
-  root_->BuildAllocationTree(&allocationTreeRoot);
+  MemoryAllocation::Node allocation_tree_root(0, nullptr, root_.get());
+  root_->BuildAllocationTree(&allocation_tree_root);
   MemoryAllocation::SlidingBlocksAllocator allocator;
-  size_t neededMemory = allocator.Solve(&allocationTreeRoot);
+  size_t neededMemory = allocator.Solve(&allocation_tree_root);
 #if DEBUG
-  allocationTreeRoot.Dump("/tmp/last_allocation.dot");
-  assert(allocator.Validate(allocationTreeRoot));
+  allocation_tree_root.Dump("/tmp/last_allocation.dot");
+  assert(allocator.Validate(allocation_tree_root));
 #endif
   // Allocate the buffers
   allocated_memory_ = std::shared_ptr<void>(malloc_aligned(neededMemory),
@@ -408,11 +408,12 @@ void TransformTree::PrepareForExecution() {
                                            std::to_string(neededMemory) +
                                            " bytes.");
   }
-  INF("Allocated %zu bytes", neededMemory);
+  INF("Allocated %zu bytes at %p", neededMemory, allocated_memory_.get());
   // Finally, apply the memory mapping, creating the actual buffers
   // We will overwrite root's BoundBuffers on execution stage
-  root_->ApplyAllocationTree(allocationTreeRoot, allocated_memory_.get());
+  root_->ApplyAllocationTree(allocation_tree_root, allocated_memory_.get());
   tree_is_prepared_ = true;
+  INF("Prepared to extract %zu features", features_.size());
 }
 
 std::unordered_map<std::string, std::shared_ptr<Buffers>>

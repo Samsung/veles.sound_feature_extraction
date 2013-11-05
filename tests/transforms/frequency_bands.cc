@@ -36,8 +36,8 @@ class FrequencyBandsTest : public TransformTest<FrequencyBands> {
 };
 
 TEST_F(FrequencyBandsTest, Do) {
-  ASSERT_EQ(static_cast<size_t>(Size), inputFormat_->Size());
-  ASSERT_EQ(static_cast<size_t>(Size), outputFormat_->Size());
+  ASSERT_EQ(static_cast<size_t>(Size), input_format_->Size());
+  ASSERT_EQ(static_cast<size_t>(Size), output_format_->Size());
   Do((*Input), &(*Output));
 }
 

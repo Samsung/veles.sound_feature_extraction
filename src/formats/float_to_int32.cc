@@ -18,7 +18,7 @@ namespace formats {
 
 void FloatToInt32Raw::Do(const float* in,
                          int32_t* out) const noexcept {
-  float_to_int32(in, inputFormat_->Size(), out);
+  float_to_int32(in, input_format_->Size(), out);
 }
 
 REGISTER_TRANSFORM(FloatToInt32Raw);

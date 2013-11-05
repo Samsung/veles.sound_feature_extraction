@@ -22,17 +22,17 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 size_t SpectralEnergy::OnFormatChanged(size_t buffersCount) {
-  if (inputFormat_->Size() % 2 == 1) {
+  if (input_format_->Size() % 2 == 1) {
     WRN("Input buffer size is odd (%zu), truncated\n",
-        inputFormat_->Size());
+        input_format_->Size());
   }
-  outputFormat_->SetSize(inputFormat_->Size() / 2);
+  output_format_->SetSize(input_format_->Size() / 2);
   return buffersCount;
 }
 
 void SpectralEnergy::Do(const float* in,
                         float* out) const noexcept {
-  Do(UseSimd(), in, inputFormat_->Size(), out);
+  Do(UseSimd(), in, input_format_->Size(), out);
 }
 
 void SpectralEnergy::Do(bool simd, const float* input, int length,

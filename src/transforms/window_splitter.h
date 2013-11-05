@@ -101,23 +101,23 @@ class WindowSplitterTemplate
   WINDOW_SPLITTER_TRANSFORM_PARAMETERS()
 
   virtual void Initialize() const {
-    int realSize = this->inputFormat_->Size() - this->outputFormat_->Size();
+    int realSize = this->input_format_->Size() - this->output_format_->Size();
     int excess = realSize % this->step_;
     if (excess != 0) {
       WRN("(input buffer size %zu - window length %zu) = %i is not "
           "divisible by step %i. It's excess (%i samples) will not be "
           "processed.",
-          this->inputFormat_->Size(), this->outputFormat_->Size(),
+          this->input_format_->Size(), this->output_format_->Size(),
           realSize, this->step_, excess);
     }
 
-    window_ = Window::InitializeWindow(this->outputFormat_->Size(), type_);
+    window_ = Window::InitializeWindow(this->output_format_->Size(), type_);
   }
 
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override final {
-    this->outputFormat_->SetSize(this->length_);
-    int realSize = this->inputFormat_->Size() - this->outputFormat_->Size();
+    this->output_format_->SetSize(this->length_);
+    int realSize = this->input_format_->Size() - this->output_format_->Size();
     this->windows_count_ = realSize / this->step_ + 1;
     return this->windows_count_ * buffersCount;
   }
@@ -150,14 +150,14 @@ class WindowSplitterInverseTemplate
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override final {
     this->windows_count_ = buffersCount / inverse_count_;
-    this->outputFormat_->SetSize(this->inputFormat_->Size() +
+    this->output_format_->SetSize(this->input_format_->Size() +
         (this->windows_count_ - 1) * this->step_);
     return inverse_count_;
   }
 
   virtual void Do(const BuffersBase<T*>& in, BuffersBase<T*>* out)
       const noexcept override {
-    int windowLength = this->inputFormat_->Size();
+    int windowLength = this->input_format_->Size();
     int offset = (windowLength - this->step_) / 2;
     for (size_t i = 0; i < in.Count(); i++) {
       int outIndex, windowIndex;

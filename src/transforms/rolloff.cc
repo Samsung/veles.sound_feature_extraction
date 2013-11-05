@@ -36,8 +36,8 @@ Rolloff::Rolloff() : ratio_(kDefaultRatio) {
 
 void Rolloff::Do(const float* in,
                  float* out) const noexcept {
-  *out = Do(UseSimd(), in, inputFormat_->Size(), ratio_) /
-      inputFormat_->Duration();
+  *out = Do(UseSimd(), in, input_format_->Size(), ratio_) /
+      input_format_->Duration();
 }
 
 int Rolloff::Do(bool simd, const float* input, size_t length,

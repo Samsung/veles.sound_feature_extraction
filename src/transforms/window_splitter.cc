@@ -20,9 +20,9 @@ void WindowSplitter16::Do(const BuffersBase<int16_t*>& in,
                           BuffersBase<int16_t*> *out)
 const noexcept {
 #ifdef __AVX__
-  int16_t intbuf[outputFormat_->Size()] __attribute__ ((aligned (32)));  // NOLINT(*)
+  int16_t intbuf[output_format_->Size()] __attribute__ ((aligned (32)));  // NOLINT(*)
 #endif
-  float fbuf[outputFormat_->Size()] __attribute__ ((aligned (64)));  // NOLINT(*)
+  float fbuf[output_format_->Size()] __attribute__ ((aligned (64)));  // NOLINT(*)
   float* window = window_.get();
 
   for (size_t i = 0; i < in.Count(); i++) {
@@ -33,18 +33,18 @@ const noexcept {
       if (type_ != WINDOW_TYPE_RECTANGULAR) {
 #ifdef __AVX__
         if (align_complement_i16(input) != 0) {
-          memcpy(intbuf, input, outputFormat_->Size() * sizeof(int16_t));
-          int16_to_float(intbuf, outputFormat_->Size(), fbuf);
+          memcpy(intbuf, input, output_format_->Size() * sizeof(int16_t));
+          int16_to_float(intbuf, output_format_->Size(), fbuf);
         } else {
-          int16_to_float(input, outputFormat_->Size(), fbuf);
+          int16_to_float(input, output_format_->Size(), fbuf);
         }
 #else
-        int16_to_float(input, outputFormat_->Size(), fbuf);
+        int16_to_float(input, output_format_->Size(), fbuf);
 #endif
-        Window::ApplyWindow(UseSimd(), window, outputFormat_->Size(), fbuf, fbuf);
-        float_to_int16(fbuf, outputFormat_->Size(), output);
+        Window::ApplyWindow(UseSimd(), window, output_format_->Size(), fbuf, fbuf);
+        float_to_int16(fbuf, output_format_->Size(), output);
       } else {  // type_ != WINDOW_TYPE_RECTANGULAR
-        memcpy(output, input, outputFormat_->Size() * sizeof(input[0]));
+        memcpy(output, input, output_format_->Size() * sizeof(input[0]));
       }
     }
   }
@@ -54,7 +54,7 @@ void WindowSplitterF::Do(const BuffersBase<float*>& in,
                          BuffersBase<float*> *out)
 const noexcept {
 #ifdef __AVX__
-  float intbuf[outputFormat_->Size()] __attribute__ ((aligned (32)));  // NOLINT(*)
+  float intbuf[output_format_->Size()] __attribute__ ((aligned (32)));  // NOLINT(*)
 #endif
   for (size_t i = 0; i < in.Count(); i++) {
     for (int j = 0; j < windows_count_; j++) {
@@ -63,18 +63,18 @@ const noexcept {
       if (type_ != WINDOW_TYPE_RECTANGULAR) {
 #ifdef __AVX__
         if (align_complement_f32(input) != 0) {
-          memcpy(intbuf, input, outputFormat_->Size() * sizeof(float));
-          Window::ApplyWindow(UseSimd(), window_.get(), outputFormat_->Size(),
+          memcpy(intbuf, input, output_format_->Size() * sizeof(float));
+          Window::ApplyWindow(UseSimd(), window_.get(), output_format_->Size(),
                               intbuf, output);
         } else {
 #endif
-        Window::ApplyWindow(UseSimd(), window_.get(), outputFormat_->Size(),
+        Window::ApplyWindow(UseSimd(), window_.get(), output_format_->Size(),
                             input, output);
 #ifdef __AVX__
         }
 #endif
       } else {
-        memcpy(output, input, outputFormat_->Size() * sizeof(input[0]));
+        memcpy(output, input, output_format_->Size() * sizeof(input[0]));
       }
     }
   }

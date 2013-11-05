@@ -97,15 +97,15 @@ size_t Beat::PulsesLength(int pulses_count, int period) noexcept {
 }
 
 size_t Beat::OnInputFormatChanged(size_t buffersCount) {
-  outputFormat_->SetSize(peaks_);
+  output_format_->SetSize(peaks_);
   return buffersCount / bands_;
 }
 
 void Beat::Initialize() const {
-  float max_period = floorf(60 * inputFormat_->SamplingRate() / min_bpm_);
+  float max_period = floorf(60 * input_format_->SamplingRate() / min_bpm_);
   size_t max_pulses_length = PulsesLength(pulses_, max_period);
   buffer_ = std::uniquify(mallocf(
-      (this->inputFormat_->Size() + max_pulses_length - 1) * sizeof(float)),
+      (this->input_format_->Size() + max_pulses_length - 1) * sizeof(float)),
       std::free);
 }
 
@@ -202,7 +202,7 @@ void Beat::CalculateBeatEnergies(const BuffersBase<float*>& in, size_t inIndex,
                                  std::vector<float>* energies,
                                  float* max_energy_bpm_found,
                                  float* max_energy_found) const noexcept {
-  auto size = this->inputFormat_->Size();
+  auto size = this->input_format_->Size();
   auto buffer = buffer_.get();
   int search_size = floorf((max_bpm - min_bpm) / step);
   energies->resize(search_size);
@@ -211,7 +211,7 @@ void Beat::CalculateBeatEnergies(const BuffersBase<float*>& in, size_t inIndex,
   for (int i = 0; i < search_size; i++) {
     float bpm = min_bpm + step * i;
     // 60 is the number of seconds in one minute
-    int period = floorf(60 * inputFormat_->SamplingRate() / bpm);
+    int period = floorf(60 * input_format_->SamplingRate() / bpm);
     float current_energy = 0;
     size_t conv_length = size + PulsesLength(pulses_, period) - 1;
     for (size_t i = inIndex; i < inIndex + bands_ && i < in.Count(); i++) {

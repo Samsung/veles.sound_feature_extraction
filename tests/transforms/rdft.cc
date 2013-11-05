@@ -53,7 +53,7 @@ TEST_F(RDFTTest, Do) {
 }
 
 TEST_F(RDFTInverseTest, Do) {
-  outputFormat_->SetSize(Size);
+  output_format_->SetSize(Size);
   Do((*Input), &(*Output));
 }
 

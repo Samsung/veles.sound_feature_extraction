@@ -65,23 +65,23 @@ SHC::SHC()
 }
 
 void SHC::Initialize() const {
-  half_window_samples_ = inputFormat_->Size() * window_width_ /
-    inputFormat_->SamplingRate();
+  half_window_samples_ = input_format_->Size() * window_width_ /
+    input_format_->SamplingRate();
 }
 
 size_t SHC::OnFormatChanged(size_t buffersCount) {
   if (max_freq_ <= min_freq_ ||
       min_freq_ - window_width_ / 2 < 0 ||
-      max_freq_ + window_width_ / 2 >= inputFormat_->SamplingRate() / 2) {
+      max_freq_ + window_width_ / 2 >= input_format_->SamplingRate() / 2) {
     throw SHCInvalidMinMaxWindowWidthException(min_freq_, max_freq_,
                                                window_width_,
-                                               inputFormat_->SamplingRate());
+                                               input_format_->SamplingRate());
   }
-  min_samples_ = inputFormat_->Size() * 2 * min_freq_ /
-      inputFormat_->SamplingRate();
-  max_samples_ = inputFormat_->Size() * 2 * max_freq_ /
-      inputFormat_->SamplingRate();
-  outputFormat_->SetSize(max_samples_ - min_samples_ + 1);
+  min_samples_ = input_format_->Size() * 2 * min_freq_ /
+      input_format_->SamplingRate();
+  max_samples_ = input_format_->Size() * 2 * max_freq_ /
+      input_format_->SamplingRate();
+  output_format_->SetSize(max_samples_ - min_samples_ + 1);
   return buffersCount;
 }
 
@@ -150,11 +150,11 @@ void SHC::Do(const float* in, float* out) const noexcept {
     out[i - min_samples_] = sum;
   }
   float max;
-  minmax1D(UseSimd(), out, outputFormat_->Size(), nullptr, &max);
+  minmax1D(UseSimd(), out, output_format_->Size(), nullptr, &max);
   if (UseSimd()) {
-    real_multiply_scalar(out, outputFormat_->Size(), 1 / max, out);
+    real_multiply_scalar(out, output_format_->Size(), 1 / max, out);
   } else {
-    real_multiply_scalar_na(out, outputFormat_->Size(), 1 / max, out);
+    real_multiply_scalar_na(out, output_format_->Size(), 1 / max, out);
   }
 }
 

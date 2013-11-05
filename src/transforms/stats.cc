@@ -82,14 +82,14 @@ Stats::Stats()
 
 size_t Stats::OnInputFormatChanged(size_t buffersCount) {
   if (interval_ != 0) {
-    auto ratio = inputFormat_->Size() / interval_;
-    if ((inputFormat_->Size() % interval_) == 0) {
-      outputFormat_->SetSize(ratio);
+    auto ratio = input_format_->Size() / interval_;
+    if ((input_format_->Size() % interval_) == 0) {
+      output_format_->SetSize(ratio);
     } else {
-      outputFormat_->SetSize(ratio + 1);
+      output_format_->SetSize(ratio + 1);
     }
   } else {
-    outputFormat_->SetSize(1);
+    output_format_->SetSize(1);
   }
   return buffersCount;
 }
@@ -97,16 +97,16 @@ size_t Stats::OnInputFormatChanged(size_t buffersCount) {
 void Stats::Do(const float* in, StatsArray* out) const noexcept {
   float rawMoments[4];
   if (interval_ == 0) {
-    CalculateRawMoments(true, in, 0, inputFormat_->Size(), rawMoments);
+    CalculateRawMoments(true, in, 0, input_format_->Size(), rawMoments);
     Calculate(rawMoments, out);
   } else {
     size_t i;
-    for (i = 0; i < inputFormat_->Size() - interval_ + 1; i+= interval_) {
+    for (i = 0; i < input_format_->Size() - interval_ + 1; i+= interval_) {
       CalculateRawMoments(true, in, i, interval_, rawMoments);
       Calculate(rawMoments, out + i / interval_);
     }
-    if (inputFormat_->Size() % interval_ != 0) {
-      CalculateRawMoments(true, in, i, inputFormat_->Size() - i, rawMoments);
+    if (input_format_->Size() % interval_ != 0) {
+      CalculateRawMoments(true, in, i, input_format_->Size() - i, rawMoments);
       Calculate(rawMoments, out + i / interval_);
     }
   }

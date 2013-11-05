@@ -40,7 +40,7 @@ Diff::Diff()
 
 void Diff::Initialize() const {
   if (swt_ != kNoSWT) {
-    swt_buffer_ = std::uniquify(mallocf(inputFormat_->Size()),
+    swt_buffer_ = std::uniquify(mallocf(input_format_->Size()),
                                 std::free);
   }
 }
@@ -50,25 +50,25 @@ void Diff::Do(const float* in, float* out) const noexcept {
     // swt_buffer_ is shared among all the threads; we just do not care
     // because it is not really used.
     stationary_wavelet_apply(WAVELET_TYPE_DAUBECHIES, 2, 1,
-                             EXTENSION_TYPE_CONSTANT, in, inputFormat_->Size(),
+                             EXTENSION_TYPE_CONSTANT, in, input_format_->Size(),
                              swt_ == 1? out : swt_buffer_.get(),
                              swt_ == 1? swt_buffer_.get() : out);
     for (int i = 2; i <= swt_; i++) {
       stationary_wavelet_apply(
           WAVELET_TYPE_DAUBECHIES, 2, i, EXTENSION_TYPE_CONSTANT,
-          out, inputFormat_->Size(),
+          out, input_format_->Size(),
           i == swt_? out : swt_buffer_.get(),
           i == swt_? swt_buffer_.get() : out);
     }
     if (rectify_) {
-      Rectify(UseSimd(), out, inputFormat_->Size(), out);
+      Rectify(UseSimd(), out, input_format_->Size(), out);
     }
     return;
   }
   if (rectify_) {
-    DoRectify(UseSimd(), in, inputFormat_->Size(), out);
+    DoRectify(UseSimd(), in, input_format_->Size(), out);
   } else {
-    Do(UseSimd(), in, inputFormat_->Size(), out);
+    Do(UseSimd(), in, input_format_->Size(), out);
   }
 }
 

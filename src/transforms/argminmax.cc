@@ -38,7 +38,7 @@ ArgMinMax::ArgMinMax() : extremum_(kDefaultExtremum) {
 
 void ArgMinMax::Do(const float* in,
                    ArgMinMaxResult *out) const noexcept {
-  *out = Do(UseSimd(), in, inputFormat_->Size(), extremum_);
+  *out = Do(UseSimd(), in, input_format_->Size(), extremum_);
 }
 
 ArgMinMaxResult ArgMinMax::Do(bool simd, const float* input, size_t length,

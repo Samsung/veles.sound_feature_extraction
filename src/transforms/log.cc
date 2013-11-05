@@ -62,7 +62,7 @@ void LogRaw::Do(bool simd, const float* input, int length,
         }
       } else {
 #elif defined(__ARM_NEON__)
-        int length = inputFormat_->Size();
+        int length = input_format_->Size();
         for (int j = 0; j < length - 3; j += 4) {
           float32x4_t vec = vld1q_f32(input + j);
           vec = log_ps(vec);
@@ -95,7 +95,7 @@ void LogRaw::Do(bool simd, const float* input, int length,
 }
 
 void LogRaw::Do(const float* in, float* out) const noexcept {
-  Do(UseSimd(), in, this->inputFormat_->Size(), out);
+  Do(UseSimd(), in, this->input_format_->Size(), out);
 }
 
 void LogRawInverse::Do(const float* in UNUSED, float* out UNUSED)

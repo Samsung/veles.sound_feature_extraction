@@ -21,7 +21,7 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 void Rectify::Do(const float* in, float* out) const noexcept {
-  Do(UseSimd(), in, inputFormat_->Size(), out);
+  Do(UseSimd(), in, input_format_->Size(), out);
 }
 
 void Rectify::Do(bool simd, const float* input, int length,

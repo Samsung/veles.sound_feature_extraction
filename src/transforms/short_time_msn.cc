@@ -34,7 +34,7 @@ void ShortTimeMeanScaleNormalization::Do(
   int back = length_ / 2;
   int front = length_ - back;
   for (size_t i = 0; i < in.Count(); i++) {
-    for (int j = 0; j < static_cast<int>(inputFormat_->Size()); j++) {
+    for (int j = 0; j < static_cast<int>(input_format_->Size()); j++) {
       int len = length_;
       int backind = i - back;
       if (backind < 0) {

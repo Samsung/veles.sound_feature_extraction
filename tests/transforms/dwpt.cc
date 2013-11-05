@@ -31,7 +31,7 @@ class DWPTTest : public TransformTest<DWPT> {
 };
 
 TEST_F(DWPTTest, Forward) {
-  ASSERT_EQ(inputFormat_->Size(), outputFormat_->Size());
+  ASSERT_EQ(input_format_->Size(), output_format_->Size());
   Do((*Input)[0], (*Output)[0]);
 }
 

@@ -40,7 +40,7 @@ float SumOfSquares(int max) {
 }
 
 TEST_F(SubbandEnergyTest, Do) {
-  ASSERT_EQ(6U, outputFormat_->Size());
+  ASSERT_EQ(6U, output_format_->Size());
   Do((*Input)[0], (*Output)[0]);
   float* output = (*Output)[0];
   int quarter = Size / 8;

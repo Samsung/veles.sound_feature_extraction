@@ -79,9 +79,9 @@ void Window::ApplyWindow(bool simd, const float* window, int length,
 
 void Window::Initialize() const {
   if (!preDft_) {
-    window_ = InitializeWindow(inputFormat_->Size(), type_);
+    window_ = InitializeWindow(input_format_->Size(), type_);
   } else {
-    int length = inputFormat_->Size();
+    int length = input_format_->Size();
     int fftLength = (length - 2) / 2;
     window_ = InitializeWindow(fftLength, type_, length);
     auto fftPlan = std::unique_ptr<FFTFInstance, void (*)(FFTFInstance *)>(
@@ -99,7 +99,7 @@ void Window::Initialize() const {
 void Window::Do(const float* in,
                 float* out)
 const noexcept {
-  ApplyWindow(UseSimd(), window_.get(), inputFormat_->Size(), in, out);
+  ApplyWindow(UseSimd(), window_.get(), input_format_->Size(), in, out);
 }
 
 REGISTER_TRANSFORM(Window);

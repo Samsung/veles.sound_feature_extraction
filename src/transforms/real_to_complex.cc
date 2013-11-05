@@ -22,13 +22,13 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 size_t RealToComplex::OnFormatChanged(size_t buffersCount) {
-  outputFormat_->SetSize(inputFormat_->Size() * 2);
+  output_format_->SetSize(input_format_->Size() * 2);
   return buffersCount;
 }
 
 void RealToComplex::Do(const float* in,
                        float* out) const noexcept {
-  Do(UseSimd(), in, inputFormat_->Size(), out);
+  Do(UseSimd(), in, input_format_->Size(), out);
 }
 
 void RealToComplex::Do(bool simd, const float* input, int length,

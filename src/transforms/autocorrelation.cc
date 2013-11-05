@@ -21,7 +21,7 @@ namespace transforms {
 
 void Autocorrelation::Initialize() const {
   // Workaround for SIGSEGV in libav FFT with sizes greater than 2^16
-  if (inputFormat_->Size() > 32768) {
+  if (input_format_->Size() > 32768) {
     fftf_set_backend_priority(FFTF_BACKEND_LIBAV, -1000);
     fftf_set_backend(FFTF_BACKEND_NONE);
   }
@@ -29,7 +29,7 @@ void Autocorrelation::Initialize() const {
   for (int i = 0; i < MaxThreadsNumber(); i++) {
     correlation_handles_[i].handle = std::shared_ptr<CrossCorrelationHandle>(
         new CrossCorrelationHandle(cross_correlate_initialize(
-            inputFormat_->Size(), inputFormat_->Size())),
+            input_format_->Size(), input_format_->Size())),
         [](CrossCorrelationHandle *ptr) {
           cross_correlate_finalize(*ptr);
           delete ptr;
@@ -40,7 +40,7 @@ void Autocorrelation::Initialize() const {
 }
 
 size_t Autocorrelation::OnFormatChanged(size_t buffersCount) {
-  outputFormat_->SetSize(inputFormat_->Size() * 2 - 1);
+  output_format_->SetSize(input_format_->Size() * 2 - 1);
   return buffersCount;
 }
 

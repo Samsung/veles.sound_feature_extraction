@@ -19,7 +19,7 @@ namespace transforms {
 
 void Energy::Do(const float* in,
                 float* out) const noexcept {
-  int length = inputFormat_->Size();
+  int length = input_format_->Size();
   *out = calculate_energy(UseSimd(), in, length);
 }
 

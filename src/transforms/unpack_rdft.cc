@@ -16,18 +16,18 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 size_t UnpackRDFT::OnFormatChanged(size_t buffersCount) {
-  if (inputFormat_->Size() % 2 == 1) {
-    outputFormat_->SetSize((inputFormat_->Size() - 1) * 2);
+  if (input_format_->Size() % 2 == 1) {
+    output_format_->SetSize((input_format_->Size() - 1) * 2);
   } else {
-    outputFormat_->SetSize((inputFormat_->Size() - 2) * 2);
+    output_format_->SetSize((input_format_->Size() - 2) * 2);
   }
   return buffersCount;
 }
 
 void UnpackRDFT::Initialize() const {
-  realMode_ = inputFormat_->Size() % 2 == 1;
-  offset_ = inputFormat_->Size();
-  length_ = outputFormat_->Size() - offset_;
+  realMode_ = input_format_->Size() % 2 == 1;
+  offset_ = input_format_->Size();
+  length_ = output_format_->Size() - offset_;
 }
 
 void UnpackRDFT::Do(const float* in,

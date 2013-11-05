@@ -24,14 +24,14 @@ void FIRFilterBase::Initialize() const {
 }
 
 size_t FIRFilterBase::OnFormatChanged(size_t buffersCount) {
-  outputFormat_->SetSize(inputFormat_->Size() + length() - 1);
+  output_format_->SetSize(input_format_->Size() + length() - 1);
   return buffersCount;
 }
 
 std::shared_ptr<ConvolutionHandle> FIRFilterBase::CreateExecutor()
     const noexcept {
   return std::shared_ptr<ConvolutionHandle>(
-      new ConvolutionHandle(convolve_initialize(inputFormat_->Size(),
+      new ConvolutionHandle(convolve_initialize(input_format_->Size(),
                                                 filter_.size())),
       [](ConvolutionHandle* ptr) {
         convolve_finalize(*ptr);

@@ -33,9 +33,9 @@ class ZeroCrossingsTemplate
   virtual void Do(const typename F::BufferElementType* in,
                   int32_t* out) const noexcept override final {
     auto result = DoInternal(this->UseSimd(), in,
-                             this->inputFormat_->Size());
+                             this->input_format_->Size());
     assert(result >= 0 &&
-           result <= static_cast<int>(this->inputFormat_->Size()));
+           result <= static_cast<int>(this->input_format_->Size()));
     *out = result;
   }
 

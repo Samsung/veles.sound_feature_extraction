@@ -45,11 +45,11 @@ class DCTInverseTest : public TransformTest<DCTInverse> {
 };
 
 TEST_F(DCTTest, Do) {
-  ASSERT_EQ(inputFormat_->Size(), outputFormat_->Size());
+  ASSERT_EQ(input_format_->Size(), output_format_->Size());
   Do((*Input), &(*Output));
 }
 
 TEST_F(DCTInverseTest, Do) {
-  ASSERT_EQ(inputFormat_->Size(), outputFormat_->Size());
+  ASSERT_EQ(input_format_->Size(), output_format_->Size());
   Do((*Input), &(*Output));
 }

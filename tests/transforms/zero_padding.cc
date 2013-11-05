@@ -31,7 +31,7 @@ class ZeroPaddingTest : public TransformTest<ZeroPadding> {
 };
 
 TEST_F(ZeroPaddingTest, Do) {
-  ASSERT_EQ(512U, outputFormat_->Size());
+  ASSERT_EQ(512U, output_format_->Size());
   Do((*Input)[0], (*Output)[0]);
   for (int i = Size; i < 512; i++) {
     ASSERT_EQ(0.f, (*Output)[0][i]);

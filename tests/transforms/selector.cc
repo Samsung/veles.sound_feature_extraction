@@ -33,7 +33,7 @@ class SelectorTest : public TransformTest<Selector> {
 };
 
 TEST_F(SelectorTest, Do) {
-  ASSERT_EQ(6U, outputFormat_->Size());
+  ASSERT_EQ(6U, output_format_->Size());
   Do((*Input)[0], (*Output)[0]);
   ASSERT_EQ(0, memcmp((*Input)[0],
                       (*Output)[0],

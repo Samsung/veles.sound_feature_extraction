@@ -19,18 +19,18 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 size_t RDFT::OnFormatChanged(size_t buffersCount) {
-  outputFormat_->SetSize(inputFormat_->Size() + 2);
+  output_format_->SetSize(input_format_->Size() + 2);
   return buffersCount;
 }
 
 size_t RDFTInverse::OnFormatChanged(size_t buffersCount) {
-  outputFormat_->SetSize(inputFormat_->Size() - 2);
+  output_format_->SetSize(input_format_->Size() - 2);
   return buffersCount;
 }
 
 void RDFT::Do(const BuffersBase<float*>& in,
               BuffersBase<float*>* out) const noexcept {
-  int length = inputFormat_->Size();
+  int length = input_format_->Size();
   std::vector<const float*> inputs(in.Count());
   std::vector<float*> outputs(in.Count());
   for (size_t i = 0; i < in.Count(); i++) {
@@ -53,7 +53,7 @@ void RDFT::Do(const BuffersBase<float*>& in,
 
 void RDFTInverse::Do( const BuffersBase<float*>& in,
                       BuffersBase<float*>* out) const noexcept {
-  int length = outputFormat_->Size();
+  int length = output_format_->Size();
   std::vector<const float*> inputs(in.Count());
   std::vector<float*> outputs(in.Count());
   for (size_t i = 0; i < in.Count(); i++) {

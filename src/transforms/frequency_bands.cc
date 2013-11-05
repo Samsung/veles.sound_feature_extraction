@@ -92,7 +92,7 @@ void FrequencyBands::Initialize() const {
   if (bands_config_ == "") {
     for (int i = 1; i < bands_number_; i++) {
       bands_config_ += std::to_string(static_cast<int>(
-          inputFormat_->SamplingRate() / (2.f * bands_number_) * i)) + " ";
+          input_format_->SamplingRate() / (2.f * bands_number_) * i)) + " ";
     }
   }
 
@@ -112,12 +112,12 @@ void FrequencyBands::Initialize() const {
   assert(bandsIterator != empty);
   while (bandsIterator != empty) {
     int freq = std::stoi(*bandsIterator++);
-    if (freq > inputFormat_->SamplingRate() / 2) {
+    if (freq > input_format_->SamplingRate() / 2) {
       WRN("Warning: the bands after %i (defined by sampling "
           "rate %i) will be discarded (first greater band was "
           "%i).\n",
-          inputFormat_->SamplingRate() / 2,
-          inputFormat_->SamplingRate(),
+          input_format_->SamplingRate() / 2,
+          input_format_->SamplingRate(),
           freq);
       break;
     }
@@ -144,7 +144,7 @@ void FrequencyBands::Initialize() const {
   bands_number_ = filters_.size();
 
   for (const auto& filter : filters_) {
-    filter->SetInputFormat(inputFormat_, 1);
+    filter->SetInputFormat(input_format_, 1);
     filter->Initialize();
   }
 }
@@ -152,7 +152,7 @@ void FrequencyBands::Initialize() const {
 void FrequencyBands::SetupFilter(size_t index, int frequency,
                                  IIRFilterBase* filter) const {
   filter->SetParameter("type", filter_type_);
-  auto ratio = frequency / inputFormat_->SamplingRate() * 2;
+  auto ratio = frequency / input_format_->SamplingRate() * 2;
   if (lengths_.size() > index) {
     filter->set_length(lengths_[index]);
   } else {

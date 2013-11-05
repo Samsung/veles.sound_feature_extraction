@@ -39,7 +39,7 @@ class CentroidTest : public TransformTest<Centroid> {
 TEST_F(CentroidTest, Do) {
   Do((*Input)[0], &(*Output)[0]);
   double res = Do(false, (*Input)[0], Size);
-  res /= inputFormat_->Duration();
+  res /= input_format_->Duration();
   ASSERT_EQF(res, (*Output)[0]);
 }
 

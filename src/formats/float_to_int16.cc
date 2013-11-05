@@ -18,7 +18,7 @@ namespace formats {
 
 void FloatToInt16Raw::Do(const float* in,
                          int16_t* out) const noexcept {
-  float_to_int16(in, inputFormat_->Size(), out);
+  float_to_int16(in, input_format_->Size(), out);
 }
 
 REGISTER_TRANSFORM(FloatToInt16Raw);

@@ -43,14 +43,14 @@ Selector::Selector()
 }
 
 size_t Selector::OnFormatChanged(size_t buffersCount) {
-  outputFormat_->SetSize(std::min(length_, inputFormat_->Size()));
+  output_format_->SetSize(std::min(length_, input_format_->Size()));
   return buffersCount;
 }
 
 void Selector::Do(const float* in,
                   float* out) const noexcept {
-  int length = outputFormat_->Size();
-  int offset = (from_ == ANCHOR_LEFT? 0 : inputFormat_->Size() - length);
+  int length = output_format_->Size();
+  int offset = (from_ == ANCHOR_LEFT? 0 : input_format_->Size() - length);
   if (in != out) {
     memcpy(out, in + offset, length * sizeof(in[0]));
   } else if (from_ == ANCHOR_RIGHT) {

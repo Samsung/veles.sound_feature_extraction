@@ -63,7 +63,7 @@ void Mean::Do(const float* in,
   for (int j = 0; j < MEAN_TYPE_COUNT; j++) {
     auto mt = static_cast<MeanTypes>(j);
     if (types_.find(mt) != types_.end()) {
-      (*out)[j] = Do(UseSimd(), in, inputFormat_->Size(), mt);
+      (*out)[j] = Do(UseSimd(), in, input_format_->Size(), mt);
     } else {
       (*out)[j] = 0;
     }

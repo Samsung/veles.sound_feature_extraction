@@ -31,7 +31,7 @@ class SingleToRaw
 
  protected:
   virtual size_t OnInputFormatChanged(size_t buffersCount) override final {
-    this->outputFormat_->SetSize(buffersCount);
+    this->output_format_->SetSize(buffersCount);
     return 1;
   }
 

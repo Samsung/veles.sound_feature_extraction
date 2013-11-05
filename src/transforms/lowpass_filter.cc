@@ -21,38 +21,38 @@ std::shared_ptr<IIRFilter> LowpassFilter::CreateExecutor() const noexcept {
     case kIIRFilterTypeBessel: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::Bessel::LowPass<kMaxFilterLength>, 1>>();
-      ret->setup(length(), inputFormat_->SamplingRate(), frequency());
+      ret->setup(length(), input_format_->SamplingRate(), frequency());
       return std::static_pointer_cast<IIRFilter>(ret);
     }
     case kIIRFilterTypeButterworth: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::Butterworth::LowPass<kMaxFilterLength>, 1>>();
-      ret->setup(length(), inputFormat_->SamplingRate(), frequency());
+      ret->setup(length(), input_format_->SamplingRate(), frequency());
       return std::static_pointer_cast<IIRFilter>(ret);
     }
     case kIIRFilterTypeChebyshevI: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::ChebyshevI::LowPass<kMaxFilterLength>, 1>>();
-      ret->setup(length(), inputFormat_->SamplingRate(), frequency(), ripple());
+      ret->setup(length(), input_format_->SamplingRate(), frequency(), ripple());
       return std::static_pointer_cast<IIRFilter>(ret);
     }
     case kIIRFilterTypeChebyshevII: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::ChebyshevII::LowPass<kMaxFilterLength>, 1>>();
-      ret->setup(length(), inputFormat_->SamplingRate(), frequency(), ripple());
+      ret->setup(length(), input_format_->SamplingRate(), frequency(), ripple());
       return std::static_pointer_cast<IIRFilter>(ret);
     }
     case kIIRFilterTypeElliptic: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::Elliptic::LowPass<kMaxFilterLength>, 1>>();
-      ret->setup(length(), inputFormat_->SamplingRate(), frequency(), ripple(),
+      ret->setup(length(), input_format_->SamplingRate(), frequency(), ripple(),
                  rolloff());
       return std::static_pointer_cast<IIRFilter>(ret);
     }
     case kIIRFilterTypeLegendre: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::Legendre::LowPass<kMaxFilterLength>, 1>>();
-      ret->setup(length(), inputFormat_->SamplingRate(), frequency());
+      ret->setup(length(), input_format_->SamplingRate(), frequency());
       return std::static_pointer_cast<IIRFilter>(ret);
     }
   }

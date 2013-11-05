@@ -29,13 +29,13 @@ class TransformTest
     this->SetInputFormat(std::make_shared<typename T::InFormat>(args...),
                          buffersCount);
     Input = std::make_shared<typename T::InBuffers>(
-        this->inputFormat_, buffersCount);
+        this->input_format_, buffersCount);
     RecreateOutputBuffers();
     this->Initialize();
   }
 
   void RecreateOutputBuffers() {
-    size_t count = this->SetInputFormat(this->inputFormat_, Input->Count());
+    size_t count = this->SetInputFormat(this->input_format_, Input->Count());
     Output = std::static_pointer_cast<typename T::OutBuffers>(
         this->CreateOutputBuffers(count));
   }

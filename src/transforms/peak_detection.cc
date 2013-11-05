@@ -92,18 +92,18 @@ PeakDetection::PeakDetection()
 }
 
 size_t PeakDetection::OnInputFormatChanged(size_t buffersCount) {
-  outputFormat_->SetSize(peaks_number_);
+  output_format_->SetSize(peaks_number_);
   return buffersCount;
 }
 
 void PeakDetection::Initialize() const {
   if (swt_level_ != 0) {
-    swt_details_buffer_ = std::uniquify(mallocf(inputFormat_->Size()),
+    swt_details_buffer_ = std::uniquify(mallocf(input_format_->Size()),
                                         std::free);
     int count = MaxThreadsNumber();
     swt_buffers_.resize(count);
     for (int i = 0; i < count; i++) {
-      swt_buffers_[i].data = std::uniquify(mallocf(inputFormat_->Size()),
+      swt_buffers_[i].data = std::uniquify(mallocf(input_format_->Size()),
                                            std::free);
     }
   }
@@ -122,16 +122,16 @@ void PeakDetection::Do(const float* in,
           // do not care because it is not really used.
           stationary_wavelet_apply(swt_type_, swt_order_, 1,
                                    EXTENSION_TYPE_CONSTANT, in,
-                                   inputFormat_->Size(),
+                                   input_format_->Size(),
                                    swt_details_buffer_.get(),
                                    buf.data.get());
           for (int i = 2; i <= swt_level_; i++) {
             stationary_wavelet_apply(
                 swt_type_, swt_order_, i, EXTENSION_TYPE_CONSTANT,
-                buf.data.get(), inputFormat_->Size(), swt_details_buffer_.get(),
+                buf.data.get(), input_format_->Size(), swt_details_buffer_.get(),
                 buf.data.get());
           }
-          detect_peaks(UseSimd(), buf.data.get(), inputFormat_->Size(), type_,
+          detect_peaks(UseSimd(), buf.data.get(), input_format_->Size(), type_,
                        &results, &count);
           buf.mutex.unlock();
           executed = true;
@@ -140,7 +140,7 @@ void PeakDetection::Do(const float* in,
       }
     }
   } else {
-    detect_peaks(UseSimd(), in, inputFormat_->Size(), type_, &results, &count);
+    detect_peaks(UseSimd(), in, input_format_->Size(), type_, &results, &count);
   }
   if ((order_ & kSortOrderValue) != 0 && results != nullptr) {
     auto extr_type = type_;
@@ -159,7 +159,7 @@ void PeakDetection::Do(const float* in,
   }
   for (int i = 0; i < rcount; i++) {
     float pos = results[i].position;
-    out[i][0] = min_pos_ + pos * (max_pos_ - min_pos_) / inputFormat_->Size();
+    out[i][0] = min_pos_ + pos * (max_pos_ - min_pos_) / input_format_->Size();
     float val = results[i].value;
     if (swt_type_ == WAVELET_TYPE_DAUBECHIES) {
       for (int i = 0; i < swt_level_; i++) {

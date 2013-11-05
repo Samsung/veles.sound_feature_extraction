@@ -17,14 +17,14 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 size_t PeakAnalysis::OnInputFormatChanged(size_t buffersCount) {
-  outputFormat_->SetSize(inputFormat_->Size() * 2);
+  output_format_->SetSize(input_format_->Size() * 2);
   return buffersCount;
 }
 
 void PeakAnalysis::Do(const formats::FixedArray<2>* in, float *out)
     const noexcept {
   float sum = in[0][1];
-  for (size_t i = 1; i < inputFormat_->Size(); i++) {
+  for (size_t i = 1; i < input_format_->Size(); i++) {
     sum += in[i][1];
   }
   if (sum == 0) {
@@ -32,7 +32,7 @@ void PeakAnalysis::Do(const formats::FixedArray<2>* in, float *out)
   }
   float max_pos = in[0][0];
   float max_val = in[0][1];
-  for (size_t i = 1; i < inputFormat_->Size(); i++) {
+  for (size_t i = 1; i < input_format_->Size(); i++) {
     if (in[i][1] > max_val) {
       max_val = in[i][1];
       max_pos = in[i][0];
@@ -41,7 +41,7 @@ void PeakAnalysis::Do(const formats::FixedArray<2>* in, float *out)
   if (max_pos == 0) {
     max_pos = 1;
   }
-  for (size_t i = 0; i < inputFormat_->Size(); i++) {
+  for (size_t i = 0; i < input_format_->Size(); i++) {
     out[i * 2] = in[i][0] / max_pos;
     out[i * 2 + 1] = in[i][1] / sum;
   }

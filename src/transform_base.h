@@ -32,25 +32,25 @@ class TransformBase : public virtual Transform,
   typedef FOUT OutFormat;
 
   TransformBase() noexcept
-      : inputFormat_(std::make_shared<FIN>()),
-        outputFormat_(std::make_shared<FOUT>()) {
+      : input_format_(std::make_shared<FIN>()),
+        output_format_(std::make_shared<FOUT>()) {
   }
 
   virtual const std::shared_ptr<BufferFormat> InputFormat()
       const noexcept override final {
-    return std::static_pointer_cast<BufferFormat>(inputFormat_);
+    return std::static_pointer_cast<BufferFormat>(input_format_);
   }
 
   virtual size_t SetInputFormat(const std::shared_ptr<BufferFormat>& format,
                                 size_t buffersCount) override {
-    inputFormat_ = std::static_pointer_cast<FIN>(format);
-    outputFormat_->CopySourceDetailsFrom(*inputFormat_);
+    input_format_ = std::static_pointer_cast<FIN>(format);
+    output_format_->CopySourceDetailsFrom(*input_format_);
     return OnInputFormatChanged(buffersCount);
   }
 
   virtual const std::shared_ptr<BufferFormat> OutputFormat()
       const noexcept override final {
-    return std::static_pointer_cast<BufferFormat>(outputFormat_);
+    return std::static_pointer_cast<BufferFormat>(output_format_);
   }
 
   /// @brief Empty stub. Implement your own, if necessary.
@@ -61,8 +61,8 @@ class TransformBase : public virtual Transform,
       const noexcept override final {
     assert(&in != nullptr);  // yes, this may happen with shared_ptr-s
     assert(out != nullptr);
-    assert(*in.Format() == *inputFormat_);
-    assert(*out->Format() == *outputFormat_);
+    assert(*in.Format() == *input_format_);
+    assert(*out->Format() == *output_format_);
     this->Do(reinterpret_cast<const InBuffers&>(in),
              reinterpret_cast<OutBuffers*>(out));
   }
@@ -70,12 +70,12 @@ class TransformBase : public virtual Transform,
   virtual std::shared_ptr<Buffers> CreateOutputBuffers(
       size_t count, void* reusedMemory = nullptr)
       const noexcept override final {
-    return std::make_shared<OutBuffers>(outputFormat_, count, reusedMemory);
+    return std::make_shared<OutBuffers>(output_format_, count, reusedMemory);
   }
 
  protected:
-  std::shared_ptr<FIN> inputFormat_;
-  std::shared_ptr<FOUT> outputFormat_;
+  std::shared_ptr<FIN> input_format_;
+  std::shared_ptr<FOUT> output_format_;
 
   typedef typename FIN::BufferType InElement;
   typedef typename FOUT::BufferType OutElement;
@@ -103,12 +103,12 @@ template <typename F>
 class UniformFormatTransform : public virtual TransformBase<F, F> {
  protected:
   virtual size_t OnInputFormatChanged(size_t buffersCount) override final {
-    this->outputFormat_ = std::make_shared<F>(*this->inputFormat_);
+    this->output_format_ = std::make_shared<F>(*this->input_format_);
     return OnFormatChanged(buffersCount);
   }
 
   virtual size_t OnOutputFormatChanged(size_t buffersCount) override final {
-    this->inputFormat_ = std::make_shared<F>(*this->outputFormat_);
+    this->input_format_ = std::make_shared<F>(*this->output_format_);
     return OnFormatChanged(buffersCount);
   }
 
@@ -129,7 +129,9 @@ class InverseTransformBase
   }
 
   virtual const std::string& Description() const noexcept override final {
-    static const std::string str = T().Description() + " Inverse of.";
+    static const std::string str = std::string("Inverse of \"") +
+        static_cast<char>(std::tolower(T().Description()[0])) +
+        T().Description().substr(1, T().Description().size() - 1) + "\".";
     return str;
   }
 };

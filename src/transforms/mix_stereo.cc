@@ -21,12 +21,12 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 size_t MixStereo::OnFormatChanged(size_t buffersCount) {
-  outputFormat_->SetSize(inputFormat_->Size() / 2);
+  output_format_->SetSize(input_format_->Size() / 2);
   return buffersCount;
 }
 
 void MixStereo::Do(const int16_t* in, int16_t* out) const noexcept {
-  int length = inputFormat_->Size();
+  int length = input_format_->Size();
   if (UseSimd()) {
 #ifdef __AVX__
     for (int i = 0; i < length - 15; i += 16) {

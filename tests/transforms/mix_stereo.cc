@@ -33,7 +33,7 @@ class MixStereoTest : public TransformTest<MixStereo> {
 };
 
 TEST_F(MixStereoTest, Do) {
-  ASSERT_EQ(Size / 2, outputFormat_->Size());
+  ASSERT_EQ(Size / 2, output_format_->Size());
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size / 2; i++) {
     ASSERT_EQ(-i, (*Output)[0][i]);

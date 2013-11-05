@@ -18,7 +18,7 @@ namespace formats {
 
 void Int32ToInt16Raw::Do(const int32_t* in,
                          int16_t* out) const noexcept {
-  int32_to_int16(in, inputFormat_->Size(), out);
+  int32_to_int16(in, input_format_->Size(), out);
 }
 
 REGISTER_TRANSFORM(Int32ToInt16Raw);

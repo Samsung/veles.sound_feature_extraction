@@ -42,8 +42,8 @@ SubbandEnergy::SubbandEnergy()
 
 size_t SubbandEnergy::OnFormatChanged(size_t buffersCount) {
   WaveletFilterBank::ValidateLength(treeFingerprint_,
-                                    inputFormat_->Size());
-  outputFormat_->SetSize(treeFingerprint_.size());
+                                    input_format_->Size());
+  output_format_->SetSize(treeFingerprint_.size());
   return buffersCount;
 }
 
@@ -52,7 +52,7 @@ void SubbandEnergy::Initialize() const {
   int offset = 0;
   for (auto depth : treeFingerprint_) {
     offsets_.push_back(offset);
-    offset += (inputFormat_->Size() >> depth);
+    offset += (input_format_->Size() >> depth);
   }
   offsets_.push_back(offset);
 }

@@ -19,7 +19,7 @@ namespace transforms {
 
 void Intensity::Do(const float* in,
                    float* out) const noexcept {
-  int length = inputFormat_->Size();
+  int length = input_format_->Size();
   *out = logf(calculate_energy(UseSimd(), in, length));
 }
 

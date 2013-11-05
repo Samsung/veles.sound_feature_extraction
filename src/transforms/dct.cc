@@ -20,7 +20,7 @@ namespace transforms {
 
 void DCT::Do(const BuffersBase<float*>& in,
              BuffersBase<float*>* out) const noexcept {
-  int length = outputFormat_->Size();
+  int length = output_format_->Size();
   std::vector<const float*> inputs(in.Count());
   std::vector<float*> outputs(in.Count());
   for (size_t i = 0; i < in.Count(); i++) {
@@ -43,7 +43,7 @@ void DCT::Do(const BuffersBase<float*>& in,
 
 void DCTInverse::Do(const BuffersBase<float*>& in,
                     BuffersBase<float*>* out) const noexcept {
-  int length = outputFormat_->Size();
+  int length = output_format_->Size();
   std::vector<const float*> inputs(in.Count());
   std::vector<float*> outputs(in.Count());
   for (size_t i = 0; i < in.Count(); i++) {

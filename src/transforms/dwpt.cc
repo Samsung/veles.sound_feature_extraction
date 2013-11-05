@@ -49,7 +49,7 @@ DWPT::DWPT()
 
 size_t DWPT::OnFormatChanged(size_t buffersCount) {
   WaveletFilterBank::ValidateLength(tree_fingerprint_,
-                                    inputFormat_->Size());
+                                    input_format_->Size());
   return buffersCount;
 }
 
@@ -61,7 +61,7 @@ void DWPT::Initialize() const {
 void DWPT::Do(const float* in,
               float* out) const noexcept {
   assert(filter_bank_ != nullptr && "Initialize() was not called");
-  filter_bank_->Apply(in, inputFormat_->Size(), out);
+  filter_bank_->Apply(in, input_format_->Size(), out);
 }
 
 REGISTER_TRANSFORM(DWPT);
