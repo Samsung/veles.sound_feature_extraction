@@ -22,7 +22,7 @@ class Buffers {
  public:
   Buffers(const std::shared_ptr<BufferFormat>& format,
           size_t count = 0, void* reusedMemory = nullptr) noexcept;
-  Buffers& operator=(const Buffers& other) noexcept;
+  Buffers& operator=(const Buffers& other);
 
   virtual ~Buffers() {
   }
@@ -39,6 +39,7 @@ class Buffers {
 
   std::string Dump() const noexcept;
   std::string Dump(size_t index) const noexcept;
+  std::string ToString() const noexcept;
 
  protected:
   void* Data() noexcept;
@@ -48,6 +49,21 @@ class Buffers {
   std::shared_ptr<BufferFormat> format_;
   std::shared_ptr<void> buffers_;
   size_t count_;
+};
+
+}  // namespace sound_feature_extraction
+
+namespace sound_feature_extraction {
+
+/// @brief This exception is thrown when an attempt is made to assign "my"
+/// buffers to "yours" of a bigger size.
+class InsufficientAllocatedMemoryException : public ExceptionBase {
+ public:
+  explicit InsufficientAllocatedMemoryException(const Buffers& my,
+                                                const Buffers& yours)
+  : ExceptionBase("Attempted to assign " + my.ToString() + " to " +
+                  yours.ToString() + ".") {
+  }
 };
 
 }  // namespace sound_feature_extraction

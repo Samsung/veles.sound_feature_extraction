@@ -15,6 +15,8 @@
 
 namespace sound_feature_extraction {
 
+constexpr const char* BufferFormat::kIdentityID;
+
 BufferFormat::BufferFormat(const std::string& id, int samplingRate)
     : id_(id),
       samplingRate_(samplingRate) {
@@ -31,11 +33,11 @@ const std::string& BufferFormat::Id() const noexcept {
 }
 
 bool BufferFormat::operator==(const BufferFormat& other) const noexcept {
-  return this->id_ == other.id_;
+  return id_ == kIdentityID || other.id_ == kIdentityID || id_ == other.id_;
 }
 
 bool BufferFormat::operator!=(const BufferFormat& other) const noexcept {
-  return this->id_ != other.id_;
+  return id_ != other.id_ && id_ != kIdentityID && other.id_ != kIdentityID;
 }
 
 void BufferFormat::CopySourceDetailsFrom(const BufferFormat& format) noexcept {
@@ -60,6 +62,28 @@ void BufferFormat::ValidateSamplingRate(int value) {
   if (value < kMinSamplingRate || value > kMaxSamplingRate) {
     throw formats::InvalidSamplingRateException(value);
   }
+}
+
+IdentityFormat::IdentityFormat() : BufferFormat(kIdentityID) {
+}
+
+IdentityFormat::IdentityFormat(int samplingRate)
+    : BufferFormat(kIdentityID, samplingRate) {
+}
+
+size_t IdentityFormat::UnalignedSizeInBytes() const noexcept {
+  return 0;
+}
+
+void IdentityFormat::Validate(const Buffers&) const {
+}
+
+std::string IdentityFormat::Dump(const Buffers&, size_t) const {
+  return "<empty>";
+}
+
+std::string IdentityFormat::ToString() const noexcept {
+  return Id();
 }
 
 }  // namespace sound_feature_extraction

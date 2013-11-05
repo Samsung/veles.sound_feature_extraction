@@ -11,9 +11,9 @@
  */
 
 #include "src/buffers.h"
-#include <simd/memory.h>
 #include <cassert>
-#include <string.h>
+#include <cstring>
+#include <simd/memory.h>
 
 namespace sound_feature_extraction {
 
@@ -35,10 +35,12 @@ Buffers::Buffers(const std::shared_ptr<BufferFormat>& format,
       });
 }
 
-Buffers& Buffers::operator=(const Buffers& other) noexcept {
-  assert(format_ == other.format_);
+Buffers& Buffers::operator=(const Buffers& other) {
+  if (SizeInBytes() < other.SizeInBytes()) {
+    throw InsufficientAllocatedMemoryException(*this, other);
+  }
   format_ = other.format_;
-  buffers_ = other.buffers_;
+  std::memcpy(Data(), other.Data(), other.SizeInBytes());
   count_ = other.count_;
   return *this;
 }
@@ -98,6 +100,17 @@ std::string Buffers::Dump(size_t index) const noexcept {
   ret += format_->ToString();
   ret += ")====\n";
   return ret + format_->Dump(*this, index);
+}
+
+std::string Buffers::ToString() const noexcept {
+  std::string ret("Buffers (format \"");
+  ret += Format()->ToString();
+  ret += "\", count ";
+  ret += std::to_string(Count());
+  ret += ", size ";
+  ret += std::to_string(SizeInBytes());
+  ret += ")";
+  return ret;
 }
 
 } /* namespace sound_feature_extraction */

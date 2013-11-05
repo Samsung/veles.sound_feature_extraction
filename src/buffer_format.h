@@ -70,12 +70,29 @@ class BufferFormat {
     return (value & (0x80 - 1)) == 0? value : (value & ~(0x80 - 1)) + 0x80;
   }
 
+ protected:
+  static constexpr const char* kIdentityID = "identity";
+
  private:
-  static const int kMinSamplingRate = 2000;
-  static const int kMaxSamplingRate = 48000;
+  static constexpr int kMinSamplingRate = 2000;
+  static constexpr int kMaxSamplingRate = 48000;
 
   std::string id_;
   int samplingRate_;
+};
+
+class IdentityFormat : public BufferFormat {
+ public:
+  IdentityFormat();
+  IdentityFormat(int samplingRate);
+
+  virtual size_t UnalignedSizeInBytes() const noexcept override final;
+
+  virtual void Validate(const Buffers& buffers) const override final;
+
+  virtual std::string Dump(const Buffers& buffers, size_t index)
+      const override final;
+  virtual std::string ToString() const noexcept override final;
 };
 
 }  // namespace sound_feature_extraction
