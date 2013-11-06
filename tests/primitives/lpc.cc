@@ -12,23 +12,47 @@
 
 #include <cmath>
 #include <gtest/gtest.h>
+#include <simd/correlate.h>
 #include <simd/memory.h>
+#include <simd/arithmetic-inl.h>
 #include "src/primitives/lpc.h"
 #include "src/make_unique.h"
 
+float CalculateLPCError(const float* ac, int length, const float* lpc) {
+  float serr = 0;
+  for (int i = 0; i < length - 1; i++) {
+    float err = 0;
+    for (int j = 0; j < i; j++) {
+      err += ac[i - j] * lpc[j];
+    }
+    for (int j = i; j < length - 1; j++) {
+      err += ac[j - i] * lpc[j];
+    }
+    err += ac[i + 1];
+    serr += err * err;
+  }
+  return serr;
+}
+
 TEST(LPC, ldr_lpc) {
   const int length = 64;
-  float array[length], vlpc[length - 1], plpc[length - 1];
-  array[0] = 1;
-  for (int i = 1; i < length; i++) {
-    array[i] = sinf(i * M_PI / 100);
+  float array[length * 2], acopy[length], vlpc[length - 1], plpc[length - 1];
+  for (int i = 0; i < length; i++) {
+    array[i] = sinf(i * M_PI / 10);
   }
+  memcpy(acopy, array, sizeof(acopy));
+  cross_correlate_simd(true, array, length, acopy, length, array);
+  memmove(array, array + length - 1, length * sizeof(float));
+  real_multiply_scalar(array, length, 1 / array[0], array);
   ldr_lpc(false, array, length, vlpc);
   ldr_lpc(true, array, length, plpc);
-  for (int i = 0; i < length - 1; i++) {
-    ASSERT_NEAR(vlpc[i], plpc[i], fabs(vlpc[i])) << i;
-  }
-
+  memsetf(acopy, 0, length);
+  float errv = CalculateLPCError(array, length, vlpc);
+  float errp = CalculateLPCError(array, length, plpc);
+  float err_fool = CalculateLPCError(array, length, acopy);
+  ASSERT_GT(err_fool, errv);
+  ASSERT_GT(err_fool, errp);
+  printf("%f  %f <-> %f\n", errv, errp, err_fool);
 }
 
 #ifdef BENCHMARK

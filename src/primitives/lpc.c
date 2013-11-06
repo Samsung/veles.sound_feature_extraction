@@ -1,72 +1,14 @@
-/*
-  Copyright 1992, 1993, 1994 by Jutta Degener and Carsten Bormann,
-  Technische Universitaet Berlin
-
-  Any use of this software is permitted provided that this notice is not
-  removed and that neither the authors nor the Technische Universitaet Berlin
-  are deemed to have made any representations as to the suitability of this
-  software for any purpose nor are held responsible for any defects of
-  this software.  THERE IS ABSOLUTELY NO WARRANTY FOR THIS SOFTWARE.
-
-  As a matter of courtesy, the authors request to be informed about uses
-  this software has found, about bugs in this software, and about any
-  improvements that may be of general interest.
-
-  Berlin, 28.11.1994
-  Jutta Degener
-  Carsten Bormann
-
-  Since the original terms of 15 years ago maybe do not make our
-  intentions completely clear given today's refined usage of the legal
-  terms, we append this additional permission:
-
-        Permission to use, copy, modify, and distribute this software
-        for any purpose with or without fee is hereby granted,
-        provided that this notice is not removed and that neither
-        the authors nor the Technische Universitaet Berlin are
-        deemed to have made any representations as to the suitability
-        of this software for any purpose nor are held responsible
-        for any defects of this software.  THERE IS ABSOLUTELY NO
-        WARRANTY FOR THIS SOFTWARE.
-
-  Berkeley/Bremen, 05.04.2009
-  Jutta Degener
-  Carsten Bormann
-
-
-   Code modified by Jean-Marc Valin
-
-   Speex License:
-
-   Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions
-   are met:
-   
-   - Redistributions of source code must retain the above copyright
-   notice, this list of conditions and the following disclaimer.
-   
-   - Redistributions in binary form must reproduce the above copyright
-   notice, this list of conditions and the following disclaimer in the
-   documentation and/or other materials provided with the distribution.
-   
-   - Neither the name of the Xiph.org Foundation nor the names of its
-   contributors may be used to endorse or promote products derived from
-   this software without specific prior written permission.
-   
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-   A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
-   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-   EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-   PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Modified by Vadim Markovtsev <v.markovtsev@samsung.com>
-*/
+/*! @file lpc.h
+ *  @brief Linear Prediction Coefficients (LPC) calculation.
+ *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
+ *  @version 1.0
+ *
+ *  @section Notes
+ *  This code partially conforms to <a href="http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml">Google C++ Style Guide</a>.
+ *
+ *  @section Copyright
+ *  Copyright 2013 Samsung R&D Institute Russia
+ */
 
 #include "src/primitives/lpc.h"
 #include <assert.h>
@@ -86,8 +28,8 @@ float ldr_lpc(int simd, const float *ac, int length, float *lpc) {
    }
 
    float error = ac[0];
-   for (int i = 0; i < length; i++) {
-      /* Sum up this iteration's reflection coefficient */
+   for (int i = 0; i < length - 1; i++) {
+      /* Sum up this iteration's reflection coefficients to calculate lambda */
       float rr = -ac[i + 1];
       if (!simd ||
 #ifdef __AVX__
@@ -135,21 +77,21 @@ float ldr_lpc(int simd, const float *ac, int length, float *lpc) {
 #error Not supported
 #endif
       }
+      float lambda = rr / error;
 
-      float r = rr / error;
       /*  Update LPC coefficients and total error */
-      lpc[i] = r;
       for (int j = 0; j < i/2; j++) {
+         int j_supp  = i - 1 - j;
          float tmp  = lpc[j];
-         int ind  = i - 1 - j;
-         lpc[j]   = lpc[j] + r * lpc[ind];
-         lpc[ind] = lpc[ind] + r * tmp;
+         lpc[j]   += lambda * lpc[j_supp];
+         lpc[j_supp] += lambda * tmp;
       }
       if (i & 1) {
-        lpc[i/2] = lpc[i/2] + lpc[i/2] * r;
+        lpc[i/2] += lambda * lpc[i/2];
       }
+      lpc[i] = lambda;
 
-      error -= error * r * r;
+      error -= lambda * lambda * error;
    }
    return error;
 }
