@@ -19,6 +19,7 @@ formats/float_to_int16.cc formats/int32_to_float.cc formats/float_to_int32.cc \
 formats/single_converters.cc \
 \
 primitives/window.cc primitives/wavelet_filter_bank.cc primitives/energy.c \
+primitives/lpc.c \
 \
 transforms/window.cc transforms/lowpass_filter.cc \
 transforms/highpass_filter.cc transforms/bandpass_filter.cc \
