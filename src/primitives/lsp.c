@@ -107,7 +107,9 @@ Original copyright
 /// @brief Evaluates a series of Chebyshev polynomials.
 /// @author David Rowe
 /// @date 24/2/93
-/// @note Only God and David Rowe know what the parameters mean.
+/// @param coef The polynom's coefficients.
+/// @param x The point which to evaluate.
+/// @param m The polynom's order, that is, the size of coef.
 static float cheb_poly_eval(const float *coef, float x, int m) {
    /* Initial conditions */
    float b0 = 0; /* b_(m+1) */
@@ -163,6 +165,9 @@ int lpc_to_lsp(int simd, const float *lpc, int length, int bisects, float delta,
   float xr = 0;               /* initialize xr to zero     */
   float xl = FREQ_SCALE;      /* start at point xl = 1     */
 
+  // TODO(v.markovtsev): to apply SIMD here, we need to split the whole interval
+  // [0, 1] into 8(4) (not equal) parts and calculate vectorized
+  // cheb_poly_eval().
   for (int j = 0; j < length; j++) {
     /* determines whether P' or Q' is evaluated. */
     float *pt = (j & 1)? Q : P;  /* ptr used for cheb_poly_eval()
@@ -198,7 +203,7 @@ int lpc_to_lsp(int simd, const float *lpc, int length, int bisects, float delta,
         for (int k = 0; k <= bisects; k++) {
           xm = (xl + xr) / 2;          /* bisect the interval   */
           psumm = cheb_poly_eval(pt, xm, m);
-          if (psumm * psuml > 0) {
+          if (psumm * psuml >= 0) {
             psuml = psumm;
             xl = xm;
           } else {

@@ -35,14 +35,15 @@ float CalculateLPCError(const float* ac, int length, const float* lpc) {
 }
 
 TEST(LPC, ldr_lpc) {
-  const int length = 64;
-  float array[length * 2], acopy[length], vlpc[length - 1], plpc[length - 1];
+  const int length = 17;
+  float array[length], acopy[length], autocorr[length * 2 - 1],
+      vlpc[length - 1], plpc[length - 1];
   for (int i = 0; i < length; i++) {
-    array[i] = sinf(i * M_PI / 10);
+    array[i] = (i + 1.f) / length;
   }
   memcpy(acopy, array, sizeof(acopy));
-  cross_correlate_simd(true, array, length, acopy, length, array);
-  memmove(array, array + length - 1, length * sizeof(float));
+  cross_correlate_simd(true, array, length, acopy, length, autocorr);
+  memmove(array, autocorr + length - 1, length * sizeof(float));
   real_multiply_scalar(array, length, 1 / array[0], array);
   ldr_lpc(false, array, length, vlpc);
   ldr_lpc(true, array, length, plpc);
@@ -50,9 +51,18 @@ TEST(LPC, ldr_lpc) {
   float errv = CalculateLPCError(array, length, vlpc);
   float errp = CalculateLPCError(array, length, plpc);
   float err_fool = CalculateLPCError(array, length, acopy);
-  ASSERT_GT(err_fool, errv);
-  ASSERT_GT(err_fool, errp);
-  printf("%f  %f <-> %f\n", errv, errp, err_fool);
+  ASSERT_NEAR(0.f, errv, 1e-10);
+  ASSERT_NEAR(0.f, errp, 1e-10);
+  ASSERT_GT(err_fool, 0);
+  EXPECT_NEAR(-1.f, vlpc[0], 0.1f);
+  for (int i = 1; i < length - 1; i++) {
+    EXPECT_NEAR(0.f, vlpc[i], 0.02f);
+  }
+  EXPECT_NEAR(-1.f, plpc[0], 0.1f);
+  for (int i = 1; i < length - 1; i++) {
+    EXPECT_NEAR(0.f, plpc[i], 0.02f);
+  }
+
 }
 
 #ifdef BENCHMARK

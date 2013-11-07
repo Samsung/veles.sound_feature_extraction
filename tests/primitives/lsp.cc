@@ -20,28 +20,25 @@
 #include "src/primitives/lpc.h"
 
 TEST(LSP, lpc_to_lsp) {
-  const int length = 64;
-  float array[length * 2], acopy[length], lpc[length - 1], freq[length] = {0};
-  for (int i = 0; i < length; i++) {
-    array[i] = sinf(i * M_PI / 10);
+  const int length = 16;
+  float lpc[length], freq[length] = {0};
+
+  lpc[0] = -1;
+  for (int i = 1; i < length; i++) {
+    lpc[i] = 0;
   }
-  memcpy(acopy, array, sizeof(acopy));
-  cross_correlate_simd(true, array, length, acopy, length, array);
-  memmove(array, array + length - 1, length * sizeof(float));
-  real_multiply_scalar(array, length, 1 / array[0], array);
-  ldr_lpc(true, array, length, lpc);
-  int roots = lpc_to_lsp(false, lpc, 16, 16, 0.01f, freq);
-  ASSERT_EQ(12, roots);
-  float valid_roots[] { 0.185900524, 0.323033303, 0.551158667,
-                        0.790174425, 0.895356715, 1.21053171,
-                        1.25504351, 1.60880125, 1.62396896,
-                        2.38771534, 2.75880361, 2.78210378 };
-  for (int i = 0; i < 12; i++) {
+  int roots = lpc_to_lsp(false, lpc, length, 16, 0.015625f, freq);
+  ASSERT_EQ(length, roots);
+  float valid_roots[] { 0.0395292342, 0.196349695, 0.39269948, 0.589048564,
+                        0.78539896, 0.981747687, 1.17809725, 1.37444675,
+                        1.57079637, 1.76714671, 1.96349549, 2.15984488,
+                        2.3561945, 2.55254412, 2.7488935, 2.94524288 };
+  for (int i = 0; i < length; i++) {
     ASSERT_NEAR(valid_roots[i], freq[i], 0.01f);
   }
-  roots = lpc_to_lsp(true, lpc, 16, 16, 0.01f, freq);
-  ASSERT_EQ(12, roots);
-  for (int i = 0; i < 12; i++) {
+  roots = lpc_to_lsp(true, lpc, length, 16, 0.015625f, freq);
+  ASSERT_EQ(length, roots);
+  for (int i = 0; i < length; i++) {
     ASSERT_NEAR(valid_roots[i], freq[i], 0.01f);
   }
 }
