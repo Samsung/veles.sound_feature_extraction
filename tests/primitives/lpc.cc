@@ -61,7 +61,7 @@ class LPCTest : public ::testing::TestWithParam<bool> {
   typedef std::unique_ptr<float, decltype(&std::free)> FloatPtr;
 
  protected:
-  LPCTest() : length_(128), iterations_(20000),
+  LPCTest() : length_(256), iterations_(10000),
               input_(nullptr, std::free),
               output_(nullptr, std::free) {
   }
