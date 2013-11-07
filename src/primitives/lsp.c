@@ -22,12 +22,12 @@ Original copyright
   Introduction to Line Spectrum Pairs (LSPs)
   ------------------------------------------
 
-  LSPs are used to encode the LPC filter coefficients {ak} for
+  LSPs are used to encode the LPC filter coefficients {lpc} for
   transmission over the channel.  LSPs have several properties (like
   less sensitivity to quantisation noise) that make them superior to
-  direct quantization of {ak}.
+  direct quantization of {lpc}.
 
-  A(z) is a polynomial of order lpcrdr with {ak} as the coefficients.
+  A(z) is a polynomial of order length with {lpc} as the coefficients.
 
   A(z) is transformed to P(z) and Q(z) (using a substitution and some
   algebra), to obtain something like:
@@ -48,9 +48,9 @@ Original copyright
   The root so P(z) and Q(z) occur in symmetrical pairs at +/-w, hence
   the name Line Spectrum Pairs (LSPs).
 
-  To convert back to ak we just evaluate (1), "clocking" an impulse
-  through it lpcrdr times gives us the impulse response of A(z) which is
-  {ak}.
+  To convert back to lpc we just evaluate (1), "clocking" an impulse
+  through it length times gives us the impulse response of A(z) which is
+  {lpc}.
 
 \*---------------------------------------------------------------------------*/
 
@@ -94,13 +94,15 @@ Original copyright
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "src/primitives/lsp.h"
 #define _XOPEN_SOURCE
 #include <math.h>
-#include "src/primitives/lsp.h"
+#include <simd/arithmetic-inl.h>
+#include <simd/mathfun.h>
 
 #define FREQ_SCALE 1.f
-#define LPC_SCALING  1.f
-#define LSP_SCALING  1.f
+#define LPC_SCALING 1.f
+#define LSP_SCALING 1.f
 
 /// @brief Evaluates a series of Chebyshev polynomials.
 /// @author David Rowe
@@ -122,15 +124,10 @@ static float cheb_poly_eval(const float *coef, float x, int m) {
    return -b1 + .5f * x * b0 + coef[m];
 }
 
-int lpc_to_lsp(const float *lpc, int length, int nb, float delta, float *freq) {
-  float temp_xr,xl,xr,xm=0;
-  float psuml,psumr,psumm,temp_psumr;
-  float *px;                  /* ptrs of respective P'(z) & Q'(z)  */
-  float *qx;
-  float *p;
-  float *q;
-  float *pt;                 /* ptr used for cheb_poly_eval() hether P' or Q' */
-  int roots = 0;             /* DR 8/2/94: number of roots found   */
+int lpc_to_lsp(int simd, const float *lpc, int length, int bisects, float delta,
+               float *freq) {
+  int roots = 0;             /* DR 8/2/94: number of roots found which will be
+                                           returned   */
   int m = length / 2;              /* order of P'(z) & Q'(z) polynomials   */
 
   /* Allocate memory space for polynomials */
@@ -140,10 +137,10 @@ int lpc_to_lsp(const float *lpc, int length, int nb, float delta, float *freq) {
   /* determine P'(z)'s and Q'(z)'s coefficients where
     P'(z) = P(z)/(1 + z^(-1)) and Q'(z) = Q(z)/(1-z^(-1)) */
 
-  px = P;                      /* initialize ptrs       */
-  qx = Q;
-  p = px;
-  q = qx;
+  float *px = P;               /* ptrs of respective P'(z) & Q'(z)  */
+  float *qx = Q;
+  float *p = P;
+  float *q = Q;
 
   *px++ = LPC_SCALING;
   *qx++ = LPC_SCALING;
@@ -151,62 +148,54 @@ int lpc_to_lsp(const float *lpc, int length, int nb, float delta, float *freq) {
     *px++ = lpc[i] + lpc[length - 1 - i] - *p++;
     *qx++ = lpc[i] - lpc[length - 1 - i] + *q++;
   }
-  px = P;
-  qx = Q;
-  for (int i = 0; i < m; i++) {
-     *px = 2**px;
-     *qx = 2**qx;
-     px++;
-     qx++;
+
+  if (simd) {
+    real_multiply_scalar(P, m, 2.f, P);
+    real_multiply_scalar(Q, m, 2.f, Q);
+  } else {
+    real_multiply_scalar_na(P, m, 2.f, P);
+    real_multiply_scalar_na(Q, m, 2.f, Q);
   }
-
-  px = P;               /* re-initialise ptrs       */
-  qx = Q;
-
-  /* now that we have computed P and Q convert to 16 bits to
-     speed up cheb_poly_eval */
 
   /* Search for a zero in P'(z) polynomial first and then alternate to Q'(z).
   Keep alternating between the two polynomials as each zero is found   */
 
-  xr = 0;               /* initialise xr to zero     */
-  xl = FREQ_SCALE;                 /* start at point xl = 1     */
+  float xr = 0;               /* initialize xr to zero     */
+  float xl = FREQ_SCALE;      /* start at point xl = 1     */
 
   for (int j = 0; j < length; j++) {
-    if (j & 1) {             /* determines whether P' or Q' is eval. */
-      pt = Q;
-    } else {
-      pt = P;
-    }
-
-    psuml = cheb_poly_eval(pt, xl, m);  /* evals poly at xl   */
+    /* determines whether P' or Q' is evaluated. */
+    float *pt = (j & 1)? Q : P;  /* ptr used for cheb_poly_eval()
+                                    either P' or Q' */
+    float psuml = cheb_poly_eval(pt, xl, m);  /* evaluates poly at xl   */
     int flag = 1;  /* program is searching for a root is 1 else has found one */
     while (flag && xr >= -FREQ_SCALE) {
       /* Modified by JMV to provide smaller steps around x=+-1 */
-      float dd = delta * (1 - .9 * xl * xl);
-      if (fabs(psuml) < .2) {
-        dd *= .5;
+      float dd = delta * (1 - 0.9f * xl * xl);
+      if (fabs(psuml) < 0.2f) {
+        dd *= 0.5f;
       }
       xr = xl - dd;                /* interval spacing   */
-      psumr = cheb_poly_eval(pt, xr, m);  /* poly(xl-delta_x)   */
-      temp_psumr = psumr;
-      temp_xr = xr;
+      float psumr = cheb_poly_eval(pt, xr, m);  /* poly(xl-delta_x)   */
+      float temp_psumr = psumr;
+      float temp_xr = xr;
 
       /*
-      If no sign change increment xr and re-evaluate poly(xr). Repeat till
-      sign change.
-      if a sign change has occurred the interval is bisected and then
+      If no sign change increment xr and re-evaluate poly(xr). Repeat untill
+      the sign changes.
+      If a sign change has occurred the interval is bisected and then
       checked again for a sign change which determines in which
       interval the zero lies in.
       If there is no sign change between poly(xm) and poly(xl) set interval
-      between xm and xr else set interval between xl and xr and repeat till
-      root is located within the specified limits.
+      between xm and xr else set interval between xl and xr and repeat untill
+      a root is located within the specified limits.
       */
 
-      if (psumr * psuml < 0) {
+      if (psumr * psuml <= 0) {
         roots++;
-        psumm = psuml;
-        for (int k = 0; k <= nb; k++) {
+        float psumm = psuml;
+        float xm;
+        for (int k = 0; k <= bisects; k++) {
           xm = (xl + xr) / 2;          /* bisect the interval   */
           psumm = cheb_poly_eval(pt, xm, m);
           if (psumm * psuml > 0) {
@@ -231,44 +220,33 @@ int lpc_to_lsp(const float *lpc, int length, int nb, float delta, float *freq) {
   return roots;
 }
 
-void lsp_to_lpc(const float *freq, int length, float *lpc) {
-  float xout1,xout2,xin1,xin2;
-  float *pw,*n1,*n2,*n3,*n4;
+void lsp_to_lpc(int simd, const float *freq, int length, float *lpc) {
   int m = length / 2;
+  float Wp[4 * m + 2];
+  float *pw = Wp;
 
-  float Wp[4*m + 2];
-  pw = Wp;
-
-  /* initialise contents of array */
-
-  for (int i = 0; i <= 4*m + 1; i++){         /* set contents of buffer to 0 */
-    *pw++ = 0.0;
-  }
-
-  /* Set pointers up */
-
-  pw = Wp;
-  xin1 = 1.0;
-  xin2 = 1.0;
+  /* set contents of buffer to 0 */
+  memsetf(Wp, 0.f, 4 * m + 2);
 
   float x_freq[length];
-  for (int i = 0; i < length; i++) {
-    x_freq[i] = cosf(freq[i]);
-  }
+  cos_psv(simd, freq, length, x_freq);
 
   /* reconstruct P(z) and Q(z) by  cascading second order
     polynomials in form 1 - 2xz(-1) +z(-2), where x is the
     LSP coefficient */
-
-  for(int j = 0; j <= length; j++) {
+  for (int j = 0; j <= length; j++) {
     int i2 = 0;
-    for(int i=0;i<m;i++,i2+=2) {
-      n1 = pw+(i*4);
-      n2 = n1 + 1;
-      n3 = n2 + 1;
+    float *n4;
+    float xout1, xout2, xin1, xin2;
+    xin1 = 1.0;
+    xin2 = 1.0;
+    for (int i = 0; i < m; i++, i2 += 2) {
+      float *n1 = pw + i * 4;
+      float *n2 = n1 + 1;
+      float *n3 = n2 + 1;
       n4 = n3 + 1;
-      xout1 = xin1 - 2.f*x_freq[i2] * *n1 + *n2;
-      xout2 = xin2 - 2.f*x_freq[i2+1] * *n3 + *n4;
+      xout1 = xin1 - 2.f * x_freq[i2] * *n1 + *n2;
+      xout2 = xin2 - 2.f * x_freq[i2 + 1] * *n3 + *n4;
       *n2 = *n1;
       *n4 = *n3;
       *n1 = xin1;
@@ -281,8 +259,8 @@ void lsp_to_lpc(const float *freq, int length, float *lpc) {
     if (j > 0) {
       lpc[j-1] = (xout1 + xout2) / 2;
     }
-    *(n4+1) = xin1;
-    *(n4+2) = xin2;
+    *(n4 + 1) = xin1;
+    *(n4 + 2) = xin2;
 
     xin1 = 0.0;
     xin2 = 0.0;
