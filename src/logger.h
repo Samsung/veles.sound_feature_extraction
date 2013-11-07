@@ -78,6 +78,12 @@ namespace sound_feature_extraction {
 #define EINA_COLOR_RESET     ""
 #define EINA_COLOR_HIGH      ""
 
+#define EINA_LOG_DBG(...) fprintf(stderr, __VA_ARGS__)
+#define EINA_LOG_INFO(...) fprintf(stderr, __VA_ARGS__)
+#define EINA_LOG_WARN(...) fprintf(stderr, __VA_ARGS__)
+#define EINA_LOG_ERR(...) fprintf(stderr, __VA_ARGS__)
+#define EINA_LOG_CRIT(...) fprintf(stderr, __VA_ARGS__)
+
 #endif
 
 class Logger {
