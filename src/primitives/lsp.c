@@ -61,9 +61,9 @@ Original copyright
 
    This file contains functions for converting Linear Prediction
    Coefficients (LPC) to Line Spectral Pair (LSP) and back. LSP coefficients
-   are first calculated in the x domain of the unit circle (Chebyshev polynom
-   variable) and then converted to frequency domain (radians) after applying
-   acos().
+   are first calculated in the x domain of the unit circle (Chebyshev
+   polynomial variable) and then converted to frequency domain (radians) after
+   applying acos().
 
    Speex License:
 
@@ -129,6 +129,7 @@ static float cheb_poly_eval(const float *coef, float x, int m) {
 
 int lpc_to_lsp(int simd, const float *lpc, int length, int bisects, float delta,
                float *freq) {
+  memsetf(freq, 0.f, length);
   int roots = 0;             /* DR 8/2/94: number of roots found which will be
                                            returned   */
   int m = length / 2;              /* order of P'(z) & Q'(z) polynomials   */
