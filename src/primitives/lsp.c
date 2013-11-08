@@ -57,12 +57,13 @@ Original copyright
 /*
    Heavily modified by Jean-Marc Valin (c) 2002-2006 (optimizations,
    additional functions, ...) and Vadim Markovtsev <v.markovtsev@samsung.com>
-   (style, refactoring).
+   (style, refactoring, theoretical fixes).
 
    This file contains functions for converting Linear Prediction
-   Coefficients (LPC) to Line Spectral Pair (LSP) and back. Note that the
-   LSP coefficients are not in radians format but in the x domain of the
-   unit circle.
+   Coefficients (LPC) to Line Spectral Pair (LSP) and back. LSP coefficients
+   are first calculated in the x domain of the unit circle (Chebyshev polynom
+   variable) and then converted to frequency domain (radians) after applying
+   acos().
 
    Speex License:
 

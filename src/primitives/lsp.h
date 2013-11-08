@@ -9,9 +9,10 @@ Original Copyright
 Modified by Vadim Markovtsev <v.markovtsev@samsung.com>
 
     This file contains functions for converting Linear Prediction
-    Coefficients (LPC) to Line Spectral Pair (LSP) and back. Note that the
-    LSP coefficients are not in radians format but in the x domain of the
-    unit circle.
+    Coefficients (LPC) to Line Spectral Pair (LSP) and back. LSP coefficients
+    are first calculated in the x domain of the unit circle (Chebyshev polynom
+    variable) and then converted to frequency domain (radians) after applying
+    acos().
 
 \*---------------------------------------------------------------------------*/
 /*!
@@ -44,7 +45,7 @@ extern "C" {
 /// @param bisects The number of sub-intervals (e.g., 4) for root refinement.
 /// @param delta The grid spacing interval (e.g., 0.02). The smaller the value
 /// is, the less probability is to skip a root, but the slower calculations.
-/// @param freq The resulting LSP frequencies in the x domain.
+/// @param freq The resulting LSP frequencies in w domain.
 /// @return The number of roots found.
 /// @details
 ///  Introduction to Line Spectrum Pairs (LSPs)
@@ -79,6 +80,10 @@ extern "C" {
 ///  To convert back to lpc we just evaluate (1), "clocking" an impulse
 ///  through it length times gives us the impulse response of A(z) which is
 ///  {lpc}.
+/// @see The Computation of Line Spectral Frequencies Using Chebyshev
+/// Polynomials, IEEE Transactions On Acoustics, Speech and Signal Processing,
+/// vol. ASSP-34, no. 6, December 1986, by Peter Kabal and Ravi Prakash
+/// Ramachandran.
 int lpc_to_lsp(int simd, const float *lpc, int length, int bisects, float delta,
                float *freq);
 
@@ -86,7 +91,7 @@ int lpc_to_lsp(int simd, const float *lpc, int length, int bisects, float delta,
 /// @author David Rowe
 /// @date 24/2/93
 /// @param simd Value indicating whether to use SIMD acceleration.
-/// @param freq The array of LSP frequencies in the x domain.
+/// @param freq The array of LSP frequencies in the w domain.
 /// @param lpc The resulting array of LPC coefficients.
 /// @param length The number of LPC coefficients.
 void lsp_to_lpc(int simd, const float *freq, int length, float *lpc);
