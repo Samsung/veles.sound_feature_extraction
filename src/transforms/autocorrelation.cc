@@ -12,12 +12,20 @@
 
 #define __STDC_LIMIT_MACROS
 #include "src/transforms/autocorrelation.h"
+#include <simd/arithmetic-inl.h>
 #include <simd/correlate.h>
 #include <fftf/api.h>
 #include <mutex>
 
 namespace sound_feature_extraction {
 namespace transforms {
+
+Autocorrelation::Autocorrelation() : normalize_(false) {
+  RegisterSetter("normalize", [&](const std::string& value) {
+    normalize_ = Parse<bool>("normalize", value);
+    return true;
+  });
+}
 
 void Autocorrelation::Initialize() const {
   // Workaround for SIGSEGV in libav FFT with sizes greater than 2^16
@@ -50,6 +58,10 @@ const noexcept {
     if (hp.mutex->try_lock()) {
       cross_correlate(*hp.handle, in, in, out);
       hp.mutex->unlock();
+      if (normalize_) {
+        float norm = 1 / out[input_format_->Size() - 1];
+        real_multiply_scalar(out, output_format_->Size(), norm, out);
+      }
       break;
     }
   }

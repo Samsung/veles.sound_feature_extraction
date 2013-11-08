@@ -28,10 +28,16 @@ namespace transforms {
 class Autocorrelation
     : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
+  Autocorrelation();
+
   TRANSFORM_INTRO("Autocorrelation", "Find the cross-correlation of a signal "
                                      "with itself.")
 
-  OMP_TRANSFORM_PARAMETERS()
+  OMP_TRANSFORM_PARAMETERS(
+      TP("normalize", "Calculate normalized autocorrelation by dividing each "
+                      "value by lag 0 result (squared signal sum).",
+         "false")
+  )
 
   void Initialize() const override;
 
@@ -48,6 +54,7 @@ class Autocorrelation
   };
 
   mutable std::vector<SyncHandle> correlation_handles_;
+  bool normalize_;
 };
 
 }  // namespace transforms
