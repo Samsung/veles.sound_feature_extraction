@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_DIFFRECT_H_
-#define SRC_TRANSFORMS_DIFFRECT_H_
+#ifndef SRC_TRANSFORMS_AUTOCORRELATION_H_
+#define SRC_TRANSFORMS_AUTOCORRELATION_H_
 
 #include <vector>
 #include "src/transforms/common.h"
@@ -59,4 +59,4 @@ class Autocorrelation
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
-#endif  // SRC_TRANSFORMS_DIFFRECT_H_
+#endif  // SRC_TRANSFORMS_AUTOCORRELATION_H_
