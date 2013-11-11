@@ -113,6 +113,7 @@ TransformTree::Node::Node(Node* parent,
       BuffersCount(buffersCount),
       Next(nullptr),
       BelongsToSlice(false),
+      CacheOptimized(false),
       ElapsedTime(new std::chrono::high_resolution_clock::duration()) {
 }
 
@@ -457,10 +458,11 @@ int TransformTree::BuildSlicedCycles() noexcept {
     }
     ret++;
     // We have found a cache optimization friendly subpath.
-    // Determine the size bottleneck.
+    // Determine the size bottleneck and mark all the nodes in that subpath.
     size_t max_size = 0;
     size_t bufs_count = current_cycle[0]->BoundBuffers->Count();
     for (auto cn : current_cycle) {
+      cn->CacheOptimized = true;
       auto size = cn->BoundTransform->InputFormat()->SizeInBytes();
       if (size > max_size) {
         max_size = size;
@@ -649,7 +651,7 @@ void TransformTree::Dump(const std::string& dotFileName) const {
       fw << "style=\"filled\", fillcolor=\"#";
       int light = 255 - (timeReport[t->Name()] - redShift) /
           (maxTimeRatio - redShift) * (255 - initialLight);
-      // this is crazy printing of smth like ff4040
+      // crazy printing of smth like ff4040
       fw << "ff" << std::hex << std::setw(2) << std::setfill('0') << light
          << std::setw(2) << std::setfill('0') << light << "\", ";
     }
@@ -733,9 +735,12 @@ void TransformTree::Dump(const std::string& dotFileName) const {
       if (child.BelongsToSlice) {
         return;
       }
-      fw << "\t" << nodeName << " -> "
-          << child.BoundTransform->SafeName()
-          << node_counters[&child] << std::endl;
+      fw << "\t" << nodeName << " -> " << child.BoundTransform->SafeName()
+          << node_counters[&child];
+      if (node.CacheOptimized && child.CacheOptimized) {
+        fw << "[color=\"green\"]";
+      }
+      fw << std::endl;
     });
     if (node.Children.size() == 0) {
       fw << "\t" << nodeName << " -> " << *node.RelatedFeatures.begin()

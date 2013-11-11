@@ -197,6 +197,7 @@ class TransformTree : public Logger {
     Node* Next;
     std::unordered_map<Node*, std::tuple<size_t, size_t>> Slices;
     bool BelongsToSlice;
+    bool CacheOptimized;
 
     std::shared_ptr<std::chrono::high_resolution_clock::duration> ElapsedTime;
     std::vector<std::string> RelatedFeatures;
