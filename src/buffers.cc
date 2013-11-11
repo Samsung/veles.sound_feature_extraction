@@ -69,6 +69,14 @@ const void* Buffers::operator[](size_t index) const noexcept {
       index * format_->SizeInBytes();
 }
 
+Buffers Buffers::Slice(size_t index, size_t length) const {
+  if (index + length > count_) {
+    throw InvalidSliceException(index, length, count_);
+  }
+  return Buffers(format_, length, reinterpret_cast<char*>(buffers_.get()) +
+                                  index * format_->SizeInBytes());
+}
+
 void* Buffers::Data() noexcept {
   return buffers_.get();
 }

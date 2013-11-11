@@ -133,7 +133,7 @@ class TransformTree : public Logger {
   explicit TransformTree(formats::ArrayFormat16&& rootFormat) noexcept;
   explicit TransformTree(
       const std::shared_ptr<formats::ArrayFormat16>& rootFormat) noexcept;
-  virtual ~TransformTree() noexcept;
+  virtual ~TransformTree() = default;
 
   std::shared_ptr<formats::ArrayFormat16> RootFormat() const noexcept;
 
@@ -149,11 +149,12 @@ class TransformTree : public Logger {
   std::unordered_map<std::string, float> ExecutionTimeReport() const noexcept;
   void Dump(const std::string& dotFileName) const;
 
-  bool ValidateAfterEachTransform() const noexcept;
-  void SetValidateAfterEachTransform(bool value) noexcept;
-
-  bool DumpBuffersAfterEachTransform() const noexcept;
-  void SetDumpBuffersAfterEachTransform(bool value) noexcept;
+  bool validate_after_each_transform() const noexcept;
+  void set_validate_after_each_transform(bool value) noexcept;
+  bool dump_buffers_after_each_transform() const noexcept;
+  void set_dump_buffers_after_each_transform(bool value) noexcept;
+  bool cache_optimization() const noexcept;
+  void set_cache_optimization(bool value) noexcept;
 
  private:
   class Node : public Logger {
@@ -183,16 +184,21 @@ class TransformTree : public Logger {
     void Execute();
 
     size_t ChildrenCount() const noexcept;
+    std::shared_ptr<Node> SelfPtr() const noexcept;
 
+    TransformTree* Host;
     Node* Parent;
     const std::shared_ptr<Transform> BoundTransform;
     std::shared_ptr<Buffers> BoundBuffers;
     size_t BuffersCount;
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<Node>>> Children;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<Node>>>
+    Children;
+    /// @brief The next executed node in the pipeline.
     Node* Next;
-    TransformTree* Host;
-    std::chrono::high_resolution_clock::duration ElapsedTime;
+    std::unordered_map<Node*, std::tuple<size_t, size_t>> Slices;
+    bool BelongsToSlice;
+
+    std::shared_ptr<std::chrono::high_resolution_clock::duration> ElapsedTime;
     std::vector<std::string> RelatedFeatures;
   };
 
@@ -209,6 +215,7 @@ class TransformTree : public Logger {
                     const std::string& parameters,
                     const std::string& relatedFeature,
                     std::shared_ptr<Node>* currentNode);
+  int BuildSlicedCycles() noexcept;
 
   static float ConvertDuration(
       const std::chrono::high_resolution_clock::duration& d) noexcept;
@@ -220,6 +227,7 @@ class TransformTree : public Logger {
   bool tree_is_prepared_;
   std::unordered_map<std::string, std::shared_ptr<Node>> features_;
   std::unordered_map<std::string, TransformCacheItem> transforms_cache_;
+  bool cache_optimization_;
   bool validate_after_each_transform_;
   bool dump_buffers_after_each_transform_;
   std::shared_ptr<void> allocated_memory_;

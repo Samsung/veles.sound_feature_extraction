@@ -73,6 +73,7 @@ class TransformBase : public virtual Transform,
     return std::make_shared<OutBuffers>(output_format_, count, reusedMemory);
   }
 
+
  protected:
   std::shared_ptr<FIN> input_format_;
   std::shared_ptr<FOUT> output_format_;
@@ -142,6 +143,16 @@ class InverseUniformFormatTransform
       public virtual UniformFormatTransform<typename T::InFormat> {
 };
 
+template<class T>
+class TransformLogger : public Logger {
+ public:
+  TransformLogger() noexcept : Logger(std::demangle(typeid(T).name()),
+                                      EINA_COLOR_LIGHTBLUE) {
+  }
+};
+
+#define FORWARD_MACROS(...) __VA_ARGS__
+
 /// @brief Adds Name() and Description() implementations.
 /// @param name The name of the transform (as returned by Name()).
 /// @param description The description of the transform (as returned
@@ -157,8 +168,6 @@ virtual const std::string& Description() const noexcept override { \
   return str; \
 }
 
-#define FORWARD_MACROS(...) __VA_ARGS__
-
 /// @brief Adds a new transform parameter to TRANSFORM_PARAMETERS.
 /// @note This macros should be used inside TRANSFORM_PARAMETERS only.
 #define TP(name, descr, defval) { name, { descr, defval } },
@@ -167,20 +176,77 @@ virtual const std::string& Description() const noexcept override { \
 /// parameter items (@see TP).
 /// @param init The list of TP parameters.
 #define TRANSFORM_PARAMETERS(init) \
-    virtual const std::unordered_map<std::string, ParameterTraits>& \
+    virtual const SupportedParametersMap& \
         SupportedParameters() const noexcept override final { \
-      static const std::unordered_map<std::string, ParameterTraits> sp = \
-          std::unordered_map<std::string, ParameterTraits> { init };\
+      static const SupportedParametersMap sp = \
+          SupportedParametersMap { init };\
       return sp; \
     }
+#if 0
+#define INHERIT_PARAMETERS(parent)                                             \
+ public:                                                                       \
+  typedef parent ParentType;                                                   \
 
-template<class T>
-class TransformLogger : public Logger {
- public:
-  TransformLogger() noexcept : Logger(std::demangle(typeid(T).name()),
-                                      EINA_COLOR_LIGHTBLUE) {
+ protected:
+  virtual const SupportedParametersMap& SupportedParameters() noexcept {
+    return *(*ChildrenSupportedParameters())[0];
   }
-};
 
+  static std::set<SupportedParametersMap*>* RegisterParameters(
+      SupportedParametersMap* map = nullptr) noexcept {
+    static SupportedParametersMap own;
+    static std::set<SupportedParametersMap*> params(&own);
+    if (map != nullptr) {
+      params.insert(map);
+      std::copy(own.begin(), own.end(), map->begin());
+      ParentType::RegisterParameters(map);
+    } else {
+      ParentType::RegisterParameters(&own);
+    }
+    return &params;
+  }
+
+  static bool RegisterParameter(
+      const std::string& name, const std::string& desc,
+      const std::string& defv,
+      const std::function<void(void*, const std::string&)> setter) {
+    for (auto ptr : *RegisterParameters()) {
+      ptr->insert({ name, { desc, defv } });
+    }
+    return true;
+  }
+
+#define PARAMETER(name, type, desc, defv)                                       \
+ private:                                                                       \
+  static const bool name##_registration = RegisterParameter(#name, desc, defv,  \
+      &set_##name_raw);                        \
+  static bool validate_##name(const type& value) noexcept;                      \
+  static type parse_##name(const std::string& strValue);                        \
+  static void set_##name_raw(void* self, const std::string& value) {            \
+    type parsed_value = parse_##name(value);                                    \
+    try {                                                                       \
+      reinterpret_cast<SelfType*>(self)->set_##name(parsed_value);              \
+    }                                                                           \
+    catch(const InvalidParameterValueException<type>&) {                        \
+      throw InvalidParameterValueException(#name, value);                       \
+    }                                                                           \
+  }                                                                             \
+  type name##_;                                                                 \
+                                                                                \
+ public:                                                                        \
+  type name() const noexcept {                                                  \
+    return name##_;                                                             \
+  }                                                                             \
+                                                                                \
+  void set_##name(const type& value) {                                          \
+    if (!validate_##name(value)) {                                              \
+      throw InvalidParameterValueException(#name, value);                       \
+    }                                                                           \
+    name##_ = value;                                                            \
+  }                                                                             \
+                                                                                \
+ protected:
+
+#endif
 }  // namespace sound_feature_extraction
 #endif  // SRC_TRANSFORM_BASE_H_

@@ -105,13 +105,17 @@ void destroy_features_configuration(FeaturesConfiguration *fc) NOTNULL(1);
 void free_results(int featuresCount, char **featureNames,
                   void **results, int *resultLengths);
 
-int get_omp_transforms_max_threads_num();
+int get_omp_transforms_max_threads_num(void);
 
 void set_omp_transforms_max_threads_num(int value);
 
-bool get_use_simd();
+bool get_use_simd(void);
 
 void set_use_simd(int value);
+
+size_t get_cpu_cache_size(void);
+
+void set_cpu_cache_size(size_t value);
 
 #if __GNUC__ >= 4
 #pragma GCC visibility pop

@@ -29,6 +29,10 @@
 /// @see http://gcc.1065356.n5.nabble.com/patch-Default-to-enable-libstdcxx-time-auto-td940166i40.html
 #define BUGGY_SYSTEM_CLOCK_FIX 1000.f
 
+extern "C" {
+extern size_t get_cpu_cache_size(void);
+}
+
 namespace sound_feature_extraction {
 
 class RootTransform : public Transform {
@@ -71,8 +75,7 @@ class RootTransform : public Transform {
     return p;
   }
 
-  virtual const ParametersMap&
-  GetParameters() const noexcept override {
+  virtual const ParametersMap& GetParameters() const noexcept override {
     static const ParametersMap p;
     return p;
   }
@@ -86,8 +89,8 @@ class RootTransform : public Transform {
 
   virtual std::shared_ptr<Buffers> CreateOutputBuffers(
       size_t count, void* reusedMemory = nullptr) const noexcept override {
-    return std::make_shared<BuffersBase<int16_t*>>(
-        format_, count, reusedMemory);
+    return std::make_shared<BuffersBase<int16_t*>>(format_, count,
+                                                   reusedMemory);
   }
 
   virtual void Do(const Buffers& in, Buffers *out) const noexcept override {
@@ -103,12 +106,14 @@ TransformTree::Node::Node(Node* parent,
                           size_t buffersCount, TransformTree* host) noexcept
     : Logger(std::string("Node (") + boundTransform->Name() + ")",
              EINA_COLOR_GREEN),
+      Host(host == nullptr? parent == nullptr? nullptr : parent->Host : host),
       Parent(parent),
       BoundTransform(boundTransform),
       BoundBuffers(nullptr),
       BuffersCount(buffersCount),
       Next(nullptr),
-      Host(host == nullptr? parent == nullptr? nullptr : parent->Host : host) {
+      BelongsToSlice(false),
+      ElapsedTime(new std::chrono::high_resolution_clock::duration()) {
 }
 
 void TransformTree::Node::ActionOnEachTransformInSubtree(
@@ -209,12 +214,21 @@ void TransformTree::Node::Execute() {
         BoundTransform->Name().c_str(),
         Parent->BoundBuffers->Count(), BoundBuffers->Count());
     auto checkPointStart = std::chrono::high_resolution_clock::now();
-    BoundTransform->Do(*Parent->BoundBuffers, BoundBuffers.get());
+    std::shared_ptr<Buffers> parent_buffers;
+    if (Parent->Slices.size() == 0) {
+      parent_buffers = Parent->BoundBuffers;
+    } else {
+      size_t index, length;
+      std::tie(index, length) = Parent->Slices[this];
+      parent_buffers = std::make_shared<Buffers>(
+          Parent->BoundBuffers->Slice(index, length));
+    }
+    BoundTransform->Do(*parent_buffers, BoundBuffers.get());
     auto checkPointFinish = std::chrono::high_resolution_clock::now();
-    ElapsedTime = checkPointFinish - checkPointStart;
-    Host->transforms_cache_[BoundTransform->Name()].ElapsedTime += ElapsedTime;
+    *ElapsedTime += checkPointFinish - checkPointStart;
+    Host->transforms_cache_[BoundTransform->Name()].ElapsedTime += *ElapsedTime;
 
-    if (Host->ValidateAfterEachTransform()) {
+    if (Host->validate_after_each_transform()) {
       try {
         BoundBuffers->Validate();
       }
@@ -224,12 +238,12 @@ void TransformTree::Node::Execute() {
           ERR("Validation failed on index %zu.\n----before----\n%s\n\n"
               "----after----\n%s\n",
               e.index(),
-              Parent->BoundBuffers->Dump(e.index()).c_str(),
+              parent_buffers->Dump(e.index()).c_str(),
               BoundBuffers->Dump(e.index()).c_str());
         } else {
           ERR("Validation failed.\n----Buffers before----\n%s\n\n"
               "----Buffers after----\n%s\n",
-              Parent->BoundBuffers->Dump().c_str(),
+              parent_buffers->Dump().c_str(),
               BoundBuffers->Dump().c_str());
         }
 #endif
@@ -239,7 +253,7 @@ void TransformTree::Node::Execute() {
     }
 
     if (Host->transforms_cache_[BoundTransform->Name()].Dump ||
-        Host->DumpBuffersAfterEachTransform()) {
+        Host->dump_buffers_after_each_transform()) {
       INF("Buffers after %s", BoundTransform->Name().c_str());
       INF("==============%s",
           std::string(BoundTransform->Name().size(), '=').c_str());
@@ -259,6 +273,17 @@ size_t TransformTree::Node::ChildrenCount() const noexcept {
   return size;
 }
 
+std::shared_ptr<TransformTree::Node> TransformTree::Node::SelfPtr()
+    const noexcept {
+  for (auto& child : Parent->Children[BoundTransform->Name()]) {
+    if (child.get() == this) {
+      return child;
+      break;
+    }
+  }
+  return nullptr;
+}
+
 TransformTree::TransformTree(formats::ArrayFormat16&& rootFormat) noexcept
     : Logger("TransformTree", EINA_COLOR_ORANGE),
       root_(std::make_shared<Node>(
@@ -266,6 +291,7 @@ TransformTree::TransformTree(formats::ArrayFormat16&& rootFormat) noexcept
             std::make_shared<formats::ArrayFormat16>(rootFormat)), 1, this)),
       root_format_(std::make_shared<formats::ArrayFormat16>(rootFormat)),
       tree_is_prepared_(false),
+      cache_optimization_(true),
       validate_after_each_transform_(false),
       dump_buffers_after_each_transform_(false) {
 }
@@ -277,11 +303,14 @@ TransformTree::TransformTree(
         nullptr, std::make_shared<RootTransform>(rootFormat), 1, this)),
       root_format_(rootFormat),
       tree_is_prepared_(false),
+      cache_optimization_(true),
       validate_after_each_transform_(false),
       dump_buffers_after_each_transform_(false) {
 }
 
-TransformTree::~TransformTree() noexcept {
+std::shared_ptr<formats::ArrayFormat16> TransformTree::RootFormat()
+    const noexcept {
+  return root_format_;
 }
 
 void TransformTree::AddTransform(const std::string& name,
@@ -376,11 +405,6 @@ void TransformTree::AddTransform(const std::string& name,
   }
 }
 
-std::shared_ptr<formats::ArrayFormat16> TransformTree::RootFormat()
-    const noexcept {
-  return root_format_;
-}
-
 void TransformTree::AddFeature(
     const std::string& name,
     const std::vector<std::pair<std::string, std::string>>& transforms) {
@@ -400,6 +424,87 @@ void TransformTree::AddFeature(
   }
 
   features_.insert(std::make_pair(name, currentNode));
+}
+
+int TransformTree::BuildSlicedCycles() noexcept {
+  int ret = 0;  // the resulting number of built cycles
+  auto node = root_.get();
+  while (node != nullptr) {
+    // Search for the next cycle entry candidate
+    do {
+      node = node->Next;
+    }
+    while (node != nullptr && (!node->BoundTransform->BufferInvariant() ||
+        node->ChildrenCount() == 0));
+    if (node == nullptr) {
+      break;
+    }
+    // Grow the cycle
+    std::vector<Node*> current_cycle;
+    do {
+      current_cycle.push_back(node);
+      node = node->Next;
+    }
+    while (node != nullptr && node->BoundTransform->BufferInvariant() &&
+           node->ChildrenCount() > 0);
+    if (node != nullptr && node->BoundTransform->BufferInvariant() &&
+        node->ChildrenCount() == 0) {
+      current_cycle.push_back(node);
+      node = node->Next;
+    }
+    if (current_cycle.size() == 1) {
+      continue;
+    }
+    ret++;
+    // We have found a cache optimization friendly subpath.
+    // Determine the size bottleneck.
+    size_t max_size = 0;
+    size_t bufs_count = current_cycle[0]->BoundBuffers->Count();
+    for (auto cn : current_cycle) {
+      auto size = cn->BoundTransform->InputFormat()->SizeInBytes();
+      if (size > max_size) {
+        max_size = size;
+      }
+      assert(bufs_count == cn->BoundBuffers->Count());
+    }
+    assert(max_size > 0);
+    size_t slice_buffers_count = get_cpu_cache_size() / max_size;
+    if (slice_buffers_count == 0) {
+      continue;
+    }
+    // Clone those nodes, connecting each slice's end to the next slice's
+    // beginning.
+    Node* head = current_cycle[0]->Parent;
+    assert(head != nullptr);
+    Node* tail = head;
+    for (size_t i = 0; i < bufs_count; i += slice_buffers_count) {
+      auto my_bufs_count = i + slice_buffers_count > bufs_count?
+          bufs_count - i : slice_buffers_count;
+      for (size_t j = 0; j < current_cycle.size(); j++) {
+        auto cn = current_cycle[j];
+        auto cloned = std::make_shared<Node>(j == 0? head : tail,
+                                             cn->BoundTransform,
+                                             my_bufs_count, this);
+        if (j == 0) {
+          head->Slices[cloned.get()] = std::make_tuple(i, my_bufs_count);
+        }
+        cloned->RelatedFeatures = cn->RelatedFeatures;
+        cloned->BoundBuffers = std::make_shared<Buffers>(
+            cn->BoundBuffers->Slice(i, my_bufs_count));
+        cloned->BuffersCount = my_bufs_count;
+        cloned->BelongsToSlice = true;
+        cloned->ElapsedTime = cn->ElapsedTime;
+        tail->Children[cloned->BoundTransform->Name()].push_back(cloned);
+        tail->Next = cloned.get();
+        tail = tail->Next;
+      }
+    }
+    tail->Children = current_cycle.back()->Children;
+    tail->Next = current_cycle.back()->Next;
+    current_cycle.front()->Parent = nullptr;
+    current_cycle.back()->Children.clear();
+  }
+  return ret;
 }
 
 void TransformTree::PrepareForExecution() {
@@ -434,6 +539,11 @@ void TransformTree::PrepareForExecution() {
   // Finally, apply the memory mapping, creating the actual buffers
   // We will overwrite root's BoundBuffers on execution stage
   root_->ApplyAllocationTree(allocation_tree_root, allocated_memory_.get());
+  // Try to do CPU cache optimization by splitting the buffers into slices
+  if (cache_optimization_) {
+    auto cycles_count = BuildSlicedCycles();
+    DBG("Built %d cycles", cycles_count);
+  }
   tree_is_prepared_ = true;
   INF("Prepared to extract %zu features", features_.size());
 }
@@ -447,12 +557,14 @@ TransformTree::Execute(const int16_t* in) {
   if (features_.size() == 0) {
     throw TreeIsEmptyException();
   }
-
+#if DEBUG
+  Dump("/tmp/last_nodes.dot");
+#endif
   // Initialize input. We have to const_cast here, but "in" is not going
   // to be overwritten anyway.
   root_->BoundBuffers = root_->BoundTransform->CreateOutputBuffers(
       1, const_cast<int16_t*>(in));
-  if (ValidateAfterEachTransform()) {
+  if (validate_after_each_transform()) {
     try {
       root_->BoundBuffers->Validate();
     }
@@ -525,10 +637,13 @@ void TransformTree::Dump(const std::string& dotFileName) const {
   fw.open(dotFileName);
   fw << "digraph TransformsTree {" << std::endl;
   std::unordered_map<std::string, int> counters;
-  std::unordered_map<const Node*, int> nodeCounters;
+  std::unordered_map<const Node*, int> node_counters;
   root_->ActionOnSubtree([&](const Node& node) {
+    if (node.BelongsToSlice) {
+      return;
+    }
     auto t = node.BoundTransform;
-    nodeCounters[&node] = counters[t->Name()];
+    node_counters[&node] = counters[t->Name()];
     fw << "\t" << t->SafeName() << counters[t->Name()]++ << " [";
     if (includeTime && timeReport[t->Name()] > redShift) {
       fw << "style=\"filled\", fillcolor=\"#";
@@ -542,7 +657,7 @@ void TransformTree::Dump(const std::string& dotFileName) const {
         << "<br /><font point-size=\"10\">";
     if (includeTime) {
       auto cur_percent = static_cast<int>(
-          (roundf(ConvertDuration(node.ElapsedTime) * 100.f / allTime)));
+          (roundf(ConvertDuration(*node.ElapsedTime) * 100.f / allTime)));
       assert(cur_percent >=0 && cur_percent <= 100);
       auto all_percent = static_cast<int>(
           roundf(timeReport[t->Name()] * 100.f));
@@ -577,9 +692,9 @@ void TransformTree::Dump(const std::string& dotFileName) const {
           "fillcolor=\"#85b3de\", label=<" << feature;
       if (includeTime) {
         fw << "<br /><font point-size=\"10\">";
-        auto featureTime = node.ElapsedTime;
+        auto featureTime = *node.ElapsedTime;
         node.ActionOnEachParent([&](const Node& parent) {
-          featureTime += parent.ElapsedTime / parent.RelatedFeatures.size();
+          featureTime += *parent.ElapsedTime / parent.RelatedFeatures.size();
         });
         auto cur_percent = static_cast<int>(
             (roundf((ConvertDuration(featureTime) * 100.f) / allTime)));
@@ -609,12 +724,18 @@ void TransformTree::Dump(const std::string& dotFileName) const {
   fw << ">]" << std::endl << std::endl;
   // Output the node connections
   root_->ActionOnSubtree([&](const Node& node) {
+    if (node.BelongsToSlice) {
+      return;
+    }
     std::string nodeName = node.BoundTransform->SafeName() +
-        std::to_string(nodeCounters[&node]);
+        std::to_string(node_counters[&node]);
     node.ActionOnEachImmediateChild([&](const Node& child) {
+      if (child.BelongsToSlice) {
+        return;
+      }
       fw << "\t" << nodeName << " -> "
           << child.BoundTransform->SafeName()
-          << nodeCounters[&child] << std::endl;
+          << node_counters[&child] << std::endl;
     });
     if (node.Children.size() == 0) {
       fw << "\t" << nodeName << " -> " << *node.RelatedFeatures.begin()
@@ -624,20 +745,28 @@ void TransformTree::Dump(const std::string& dotFileName) const {
   fw << "}" << std::endl;
 }
 
-bool TransformTree::ValidateAfterEachTransform() const noexcept {
+bool TransformTree::validate_after_each_transform() const noexcept {
   return validate_after_each_transform_;
 }
 
-void TransformTree::SetValidateAfterEachTransform(bool value) noexcept {
+void TransformTree::set_validate_after_each_transform(bool value) noexcept {
   validate_after_each_transform_ = value;
 }
 
-bool TransformTree::DumpBuffersAfterEachTransform() const noexcept {
+bool TransformTree::dump_buffers_after_each_transform() const noexcept {
   return dump_buffers_after_each_transform_;
 }
 
-void TransformTree::SetDumpBuffersAfterEachTransform(bool value) noexcept {
+void TransformTree::set_dump_buffers_after_each_transform(bool value) noexcept {
   dump_buffers_after_each_transform_ = value;
+}
+
+bool TransformTree::cache_optimization() const noexcept {
+  return cache_optimization_;
+}
+
+void TransformTree::set_cache_optimization(bool value) noexcept {
+  cache_optimization_ = value;
 }
 
 float TransformTree::ConvertDuration(

@@ -21,7 +21,7 @@ using sound_feature_extraction::BuffersBase;
 
 TEST(Features, VAD) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
-  tt.SetValidateAfterEachTransform(true);
+  tt.set_validate_after_each_transform(true);
   tt.AddFeature("Energy", { { "Window", "length=512" }, { "Energy", "" } });
   tt.AddFeature("SFM", { { "Window", "length=512" }, { "RDFT", "" },
       { "ComplexMagnitude", "" }, { "Mean", "types=arithmetic geometric" },

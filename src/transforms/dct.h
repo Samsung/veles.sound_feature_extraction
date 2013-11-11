@@ -35,6 +35,10 @@ class DCTInverse : public InverseUniformFormatTransform<DCT> {
  public:
   TRANSFORM_PARAMETERS()
 
+  virtual bool BufferInvariant() const noexcept override final {
+    return true;
+  }
+
  protected:
   virtual void Do(const BuffersBase<float*>& in,
                   BuffersBase<float*>* out) const noexcept override;

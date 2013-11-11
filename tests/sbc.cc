@@ -21,7 +21,7 @@ using sound_feature_extraction::BuffersBase;
 
 TEST(Features, SBC) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
-  tt.SetValidateAfterEachTransform(true);
+  tt.set_validate_after_each_transform(true);
   // We have to apply FilterBank twice since Energy results in
   // squared magnitude
   tt.AddFeature("SBC", { { "Window", "length=512, type=rectangular" },

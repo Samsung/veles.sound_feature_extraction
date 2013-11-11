@@ -39,6 +39,10 @@ class FrequencyBands
          "auto")
   )
 
+  virtual bool BufferInvariant() const noexcept override final {
+    return false;
+  }
+
   virtual void Initialize() const override;
 
  protected:

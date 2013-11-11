@@ -177,7 +177,9 @@ void FrequencyBands::Do(const BuffersBase<float*>& in,
    #pragma omp parallel for num_threads(this->MaxThreadsNumber())
 #endif
   for (size_t i = 0; i < in.Count(); i += filters_.size()) {
-    for (int j = 0; j < static_cast<int>(filters_.size()); j++) {
+    for (int j = 0;
+         j < static_cast<int>(filters_.size()) && (i + j) < in.Count();
+         j++) {
       filters_[j]->Do(in[i + j], (*out)[i + j]);
     }
   }

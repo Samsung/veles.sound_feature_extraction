@@ -290,7 +290,7 @@ FeaturesConfiguration *setup_features_extraction(
   }
   config->Tree->PrepareForExecution();
 #ifdef DEBUG
-  config->Tree->SetValidateAfterEachTransform(true);
+  config->Tree->set_validate_after_each_transform(true);
 #endif
   return config;
 }
@@ -427,7 +427,7 @@ void get_set_omp_transforms_max_threads_num(int *value, bool get) {
   }
 }
 
-int get_omp_transforms_max_threads_num() {
+int get_omp_transforms_max_threads_num(void) {
   int res;
   get_set_omp_transforms_max_threads_num(&res, true);
   return res;
@@ -438,12 +438,24 @@ void set_omp_transforms_max_threads_num(int value) {
   fftf_set_openmp_num_threads(get_omp_transforms_max_threads_num());
 }
 
-bool get_use_simd() {
+bool get_use_simd(void) {
   return SimdAware::UseSimd();
 }
 
 void set_use_simd(int value) {
   SimdAware::SetUseSimd(value);
+}
+
+size_t cpu_cache_size = 8 * 1024 * 1024;
+
+size_t get_cpu_cache_size() {
+  return cpu_cache_size;
+}
+
+void set_cpu_cache_size(size_t value) {
+  if (value > 0) {
+    cpu_cache_size = value;
+  }
 }
 
 }

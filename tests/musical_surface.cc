@@ -21,7 +21,7 @@ using sound_feature_extraction::BuffersBase;
 
 TEST(Features, MusicalSurface) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
-  tt.SetValidateAfterEachTransform(true);
+  tt.set_validate_after_each_transform(true);
   tt.AddFeature("Centroid", {
       { "Window", "length=512,step=205" },
       { "RDFT", "" },

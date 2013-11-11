@@ -32,7 +32,7 @@ TEST(Features, Tempo) {
 */
   test_size = 100000;  // 661504;
   TransformTree tt( { test_size, 22050 } );  // NOLINT(*)
-  tt.SetValidateAfterEachTransform(true);
+  tt.set_validate_after_each_transform(true);
   tt.AddFeature("Tempo", {
       { "Window", "type=rectangular,length=512,step=205" },
       { "Window", "type=hamming" },

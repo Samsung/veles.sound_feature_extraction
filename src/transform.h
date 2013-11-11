@@ -29,6 +29,8 @@ class Transform : public virtual Parameterizable {
 
   virtual const std::string& Description() const noexcept = 0;
 
+  virtual bool BufferInvariant() const noexcept;
+
   virtual const std::shared_ptr<BufferFormat> InputFormat() const noexcept = 0;
 
   virtual size_t SetInputFormat(const std::shared_ptr<BufferFormat>& format,

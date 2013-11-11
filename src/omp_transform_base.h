@@ -41,6 +41,10 @@ class OmpAwareTransform : public virtual TransformBase<FIN, FOUT> {
     });
   }
 
+  virtual bool BufferInvariant() const noexcept override {
+    return true;
+  }
+
   static constexpr const char* MaxThreadsNumberParameterName() noexcept {
     return "threads_num";
   }

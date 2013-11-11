@@ -23,6 +23,10 @@ using boost::algorithm::replace_all_copy;
 
 namespace sound_feature_extraction {
 
+bool Transform::BufferInvariant() const noexcept {
+  return false;
+}
+
 std::shared_ptr<Transform> Transform::Clone() const noexcept {
   auto copy = TransformFactory::Instance().Map()
       .find(this->Name())->second

@@ -32,6 +32,7 @@ class Buffers {
 
   void* operator[](size_t index) noexcept;
   const void* operator[](size_t index) const noexcept;
+  Buffers Slice(size_t index, size_t length) const;
 
   std::shared_ptr<BufferFormat> Format() const noexcept;
 
@@ -51,10 +52,6 @@ class Buffers {
   size_t count_;
 };
 
-}  // namespace sound_feature_extraction
-
-namespace sound_feature_extraction {
-
 /// @brief This exception is thrown when an attempt is made to assign "my"
 /// buffers to "yours" of a bigger size.
 class InsufficientAllocatedMemoryException : public ExceptionBase {
@@ -63,6 +60,17 @@ class InsufficientAllocatedMemoryException : public ExceptionBase {
                                                 const Buffers& yours)
   : ExceptionBase("Attempted to assign " + my.ToString() + " to " +
                   yours.ToString() + ".") {
+  }
+};
+
+/// @brief This exception is thrown when the user requests a slice which goes
+/// beyond the Buffers' Count().
+class InvalidSliceException : public ExceptionBase {
+ public:
+  explicit InvalidSliceException(size_t index, size_t length, size_t allCount)
+  : ExceptionBase("Requested a slice [" + std::to_string(index) + ", " +
+                  std::to_string(length - 1) + "] while the buffers count is " +
+                  std::to_string(allCount) + ".") {
   }
 };
 
