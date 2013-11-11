@@ -14,14 +14,14 @@
 
 namespace sound_feature_extraction {
 
-const std::unordered_map<std::string, std::string>&
+const ParametersMap&
 ParameterizableBase::GetParameters() const noexcept {
   InitializeValues();
   return values_;
 }
 
 void ParameterizableBase::SetParameters(
-    const std::unordered_map<std::string, std::string>& parameters) {
+    const ParametersMap& parameters) {
   for (auto p : parameters) {
     SetParameter(p.first, p.second);
   }

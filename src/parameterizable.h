@@ -35,22 +35,21 @@ struct ParameterTraits {
   std::string DefaultValue;
 };
 
+typedef std::unordered_map<std::string, ParameterTraits> SupportedParametersMap;
+typedef std::unordered_map<std::string, std::string> ParametersMap;
+
 class Parameterizable {
  public:
-  virtual ~Parameterizable() {
- }
+  virtual ~Parameterizable() = default;
 
-  virtual const std::unordered_map<std::string, ParameterTraits>&
-  SupportedParameters() const noexcept = 0;
+  virtual const SupportedParametersMap& SupportedParameters() const noexcept
+      = 0;
 
-  virtual const std::unordered_map<std::string, std::string>&
-  GetParameters() const noexcept = 0;
+  virtual const ParametersMap& GetParameters() const noexcept = 0;
 
-  virtual void SetParameters(
-      const std::unordered_map<std::string, std::string>& parameters) = 0;
+  virtual void SetParameters(const ParametersMap& parameters) = 0;
 
-  static std::unordered_map<std::string, std::string> Parse(
-      const std::string& line);
+  static ParametersMap Parse(const std::string& line);
 };
 
 }  // namespace sound_feature_extraction

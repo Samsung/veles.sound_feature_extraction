@@ -43,14 +43,14 @@ class Identity : public Transform {
   virtual std::shared_ptr<Buffers> CreateOutputBuffers(
       size_t count, void* reusedMemory = nullptr) const noexcept;
 
-  virtual const std::unordered_map<std::string, ParameterTraits>&
+  virtual const SupportedParametersMap&
       SupportedParameters() const noexcept override final;
 
-  virtual const std::unordered_map<std::string, std::string>& GetParameters()
+  virtual const ParametersMap& GetParameters()
       const noexcept;
 
   virtual void SetParameters(
-      const std::unordered_map<std::string, std::string>& params);
+      const ParametersMap& params);
 
  protected:
   std::shared_ptr<BufferFormat> input_format_;

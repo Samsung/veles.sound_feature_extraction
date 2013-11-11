@@ -36,20 +36,20 @@ const std::string& FormatConverter::Description() const noexcept {
   return description_;
 }
 
-const std::unordered_map<std::string, ParameterTraits>&
+const SupportedParametersMap&
 FormatConverter::SupportedParameters() const noexcept {
-  static const std::unordered_map<std::string, ParameterTraits> sp;
+  static const SupportedParametersMap sp;
   return sp;
 }
 
-const std::unordered_map<std::string, std::string>&
+const ParametersMap&
 FormatConverter::GetParameters() const noexcept {
-  static const std::unordered_map<std::string, std::string> cp;
+  static const ParametersMap cp;
   return cp;
 }
 
 void FormatConverter::SetParameters(
-  const std::unordered_map<std::string, std::string>&) {
+  const ParametersMap&) {
 }
 
 void FormatConverter::Initialize() const {

@@ -23,14 +23,14 @@ class FormatConverter : public virtual Transform {
 
   virtual const std::string& Description() const noexcept;
 
-  virtual const std::unordered_map<std::string, ParameterTraits>&
+  virtual const SupportedParametersMap&
   SupportedParameters() const noexcept;
 
-  virtual const std::unordered_map<std::string, std::string>&
+  virtual const ParametersMap&
   GetParameters() const noexcept;
 
   virtual void SetParameters(
-      const std::unordered_map<std::string, std::string>& parameters);
+      const ParametersMap& parameters);
 
   virtual void Initialize() const override;
 

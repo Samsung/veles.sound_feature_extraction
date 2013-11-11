@@ -60,20 +60,20 @@ std::shared_ptr<Buffers> Identity::CreateOutputBuffers(
   return std::make_shared<Buffers>(output_format_, count, reusedMemory);
 }
 
-const std::unordered_map<std::string, ParameterTraits>&
+const SupportedParametersMap&
     Identity::SupportedParameters() const noexcept {
-  static const std::unordered_map<std::string, ParameterTraits> sp;
+  static const SupportedParametersMap sp;
   return sp;
 }
 
-const std::unordered_map<std::string, std::string>&
+const ParametersMap&
 Identity::GetParameters() const noexcept {
-  static const std::unordered_map<std::string, std::string> p;
+  static const ParametersMap p;
   return p;
 }
 
 void Identity::SetParameters(
-    const std::unordered_map<std::string, std::string>&) {
+    const ParametersMap&) {
 }
 
 REGISTER_TRANSFORM(Identity);

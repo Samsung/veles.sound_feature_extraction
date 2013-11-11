@@ -20,9 +20,9 @@
 
 namespace sound_feature_extraction {
 
-std::unordered_map<std::string, std::string> Parameterizable::Parse(
+ParametersMap Parameterizable::Parse(
     const std::string& line) {
-  std::unordered_map<std::string, std::string> parameters;
+  ParametersMap parameters;
   std::istringstream ss(line);
   std::string s;
   int index = 0;

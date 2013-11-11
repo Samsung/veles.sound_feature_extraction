@@ -65,20 +65,20 @@ class RootTransform : public Transform {
     return format_;
   }
 
-  virtual const std::unordered_map<std::string, ParameterTraits>&
+  virtual const SupportedParametersMap&
   SupportedParameters() const noexcept override {
-    static const std::unordered_map<std::string, ParameterTraits> p;
+    static const SupportedParametersMap p;
     return p;
   }
 
-  virtual const std::unordered_map<std::string, std::string>&
+  virtual const ParametersMap&
   GetParameters() const noexcept override {
-    static const std::unordered_map<std::string, std::string> p;
+    static const ParametersMap p;
     return p;
   }
 
   virtual void SetParameters(
-      const std::unordered_map<std::string, std::string>&) override {
+      const ParametersMap&) override {
   }
 
   virtual void Initialize() const override {

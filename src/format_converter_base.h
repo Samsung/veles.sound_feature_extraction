@@ -29,18 +29,18 @@ class FormatConverterBase
     return TransformBase<FIN, FOUT>::SetInputFormat(format, buffersCount);
   }
 
-  virtual const std::unordered_map<std::string, ParameterTraits>&
+  virtual const SupportedParametersMap&
   SupportedParameters() const noexcept override final {
     return FormatConverter::SupportedParameters();
   }
 
-  virtual const std::unordered_map<std::string, std::string>&
+  virtual const ParametersMap&
   GetParameters() const noexcept override final {
     return FormatConverter::GetParameters();
   }
 
   virtual void SetParameters(
-      const std::unordered_map<std::string, std::string>&) override final {
+      const ParametersMap&) override final {
   }
 
   virtual void Initialize() const override final {
