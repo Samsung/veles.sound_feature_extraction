@@ -4,6 +4,6 @@ subband_energy zero_padding selector shc window fork complex_to_real \
 rectify frequency_bands diff mean argminmax centroid zerocrossings \
 rolloff flux autocorrelation delta short_time_msn preemphasis stats beat \
 window_splitter convolve highpass_filter bandpass_filter mix_stereo \
-peak_detection peak_analysis identity
+peak_detection peak_analysis identity lpc_cc
 
 include $(top_srcdir)/tests/Tests.make
