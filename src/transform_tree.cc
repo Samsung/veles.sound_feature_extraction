@@ -113,7 +113,7 @@ TransformTree::Node::Node(Node* parent,
       BuffersCount(buffersCount),
       Next(nullptr),
       BelongsToSlice(false),
-      CacheOptimized(false),
+      HasClones(false),
       ElapsedTime(new std::chrono::high_resolution_clock::duration()) {
 }
 
@@ -462,7 +462,7 @@ int TransformTree::BuildSlicedCycles() noexcept {
     size_t max_size = 0;
     size_t bufs_count = current_cycle[0]->BoundBuffers->Count();
     for (auto cn : current_cycle) {
-      cn->CacheOptimized = true;
+      cn->HasClones = true;
       auto size = cn->BoundTransform->InputFormat()->SizeInBytes();
       if (size > max_size) {
         max_size = size;
@@ -501,10 +501,7 @@ int TransformTree::BuildSlicedCycles() noexcept {
         tail = tail->Next;
       }
     }
-    tail->Children = current_cycle.back()->Children;
     tail->Next = current_cycle.back()->Next;
-    current_cycle.front()->Parent = nullptr;
-    current_cycle.back()->Children.clear();
   }
   return ret;
 }
@@ -737,7 +734,7 @@ void TransformTree::Dump(const std::string& dotFileName) const {
       }
       fw << "\t" << nodeName << " -> " << child.BoundTransform->SafeName()
           << node_counters[&child];
-      if (node.CacheOptimized && child.CacheOptimized) {
+      if (node.HasClones && child.HasClones) {
         fw << "[color=\"green\"]";
       }
       fw << std::endl;
