@@ -36,6 +36,7 @@
 									<listOptionValue builtIn="false" value="__SSE4_1__"/>
 									<listOptionValue builtIn="false" value="__MMX__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
+									<listOptionValue builtIn="false" value="VALGRIND=1"/>
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.1369339968" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -43,6 +44,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SoundFeatureExtraction/simd/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/include/valgrind"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.342605218" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -58,6 +60,7 @@
 									<listOptionValue builtIn="false" value="__SSE4_1__"/>
 									<listOptionValue builtIn="false" value="__MMX__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
+									<listOptionValue builtIn="false" value="VALGRIND=1"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.1495967515" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -66,6 +69,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/simd/inc&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
+									<listOptionValue builtIn="false" value="/usr/include/valgrind"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.900762215" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -107,6 +111,7 @@
 									<listOptionValue builtIn="false" value="__ARM_NEON__"/>
 									<listOptionValue builtIn="false" value="__OPTIMIZE__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
+									<listOptionValue builtIn="false" value="VALGRIND=1"/>
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.1856500846" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -114,6 +119,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SoundFeatureExtraction/simd/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/include/valgrind"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.279522435" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -123,6 +129,7 @@
 									<listOptionValue builtIn="false" value="__OPTIMIZE__"/>
 									<listOptionValue builtIn="false" value="__GXX_EXPERIMENTAL_CXX0X__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
+									<listOptionValue builtIn="false" value="VALGRIND=1"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.328182911" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -131,6 +138,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SoundFeatureExtraction/simd/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/include/valgrind"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1659153449" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -178,6 +186,7 @@
 									<listOptionValue builtIn="false" value="__SSE4_1__"/>
 									<listOptionValue builtIn="false" value="__MMX__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
+									<listOptionValue builtIn="false" value="VALGRIND=1"/>
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.1960410207" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -185,6 +194,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SoundFeatureExtraction/simd/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/include/valgrind"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.695046844" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -201,6 +211,7 @@
 									<listOptionValue builtIn="false" value="__MMX__"/>
 									<listOptionValue builtIn="false" value="__GXX_EXPERIMENTAL_CXX0X__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
+									<listOptionValue builtIn="false" value="VALGRIND=1"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.1606621278" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -209,6 +220,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SoundFeatureExtraction/simd/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/include/valgrind"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1961138923" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -250,6 +262,7 @@
 									<listOptionValue builtIn="false" value="__ARM_NEON__"/>
 									<listOptionValue builtIn="false" value="__OPTIMIZE__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
+									<listOptionValue builtIn="false" value="VALGRIND=1"/>
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.108918691" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -257,6 +270,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SoundFeatureExtraction/simd/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/include/valgrind"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1384540263" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -266,6 +280,7 @@
 									<listOptionValue builtIn="false" value="__OPTIMIZE__"/>
 									<listOptionValue builtIn="false" value="__GXX_EXPERIMENTAL_CXX0X__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
+									<listOptionValue builtIn="false" value="VALGRIND=1"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.1346521497" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -274,6 +289,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/eina-1"/>
 									<listOptionValue builtIn="false" value="/usr/include/eina-1/eina"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SoundFeatureExtraction/simd/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/include/valgrind"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1420714051" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -413,6 +429,14 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
+			<target name="clean-cscope" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j8</buildArguments>
+				<buildTarget>clean-cscope</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
 			<target name="clean-libtool" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j8</buildArguments>
@@ -421,18 +445,34 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
-			<target name="ctags" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+			<target name="cscope" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j8</buildArguments>
-				<buildTarget>ctags</buildTarget>
+				<buildTarget>cscope</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
-			<target name="ctags-recursive" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+			<target name="cscope.files" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j8</buildArguments>
-				<buildTarget>ctags-recursive</buildTarget>
+				<buildTarget>cscope.files</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="cscopelist" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j8</buildArguments>
+				<buildTarget>cscopelist</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="ctags" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j8</buildArguments>
+				<buildTarget>ctags</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
@@ -473,14 +513,6 @@
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j8</buildArguments>
 				<buildTarget>dist-lzip</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="dist-lzma" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j8</buildArguments>
-				<buildTarget>dist-lzma</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
@@ -753,14 +785,6 @@
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j8</buildArguments>
 				<buildTarget>tags</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="tags-recursive" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j8</buildArguments>
-				<buildTarget>tags-recursive</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
