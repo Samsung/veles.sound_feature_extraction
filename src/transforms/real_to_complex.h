@@ -18,13 +18,11 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class RealToComplex
-    : public OmpUniformFormatTransform<formats::ArrayFormatF> {
+class RealToComplex : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("R2C", "Converts each real number to complex "
-                         "number (imaginary part is set to zero).")
-
-  OMP_TRANSFORM_PARAMETERS()
+                         "number (imaginary part is set to zero).",
+                  RealToComplex)
 
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override;

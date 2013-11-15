@@ -28,35 +28,27 @@ template <typename FIN, typename FOUT>
 class OmpAwareTransform : public virtual TransformBase<FIN, FOUT> {
  public:
   OmpAwareTransform() noexcept
-    : max_number_of_threads_(get_omp_transforms_max_threads_num()) {
-    this->RegisterSetter(MaxThreadsNumberParameterName(),
-                         [&](const std::string& value) {
-      int tn = this->template Parse<int>(this->MaxThreadsNumberParameterName(),
-          value);
-      if (tn < 1) {
-        return false;
-      }
-      max_number_of_threads_ = tn;
-      return true;
-    });
+    : threads_number_(get_omp_transforms_max_threads_num()) {
   }
 
   virtual bool BufferInvariant() const noexcept override {
     return true;
   }
 
-  static constexpr const char* MaxThreadsNumberParameterName() noexcept {
-    return "threads_num";
-  }
+  TRANSFORM_PARAMETERS_SUPPORT(FORWARD_MACROS(OmpAwareTransform<FIN, FOUT>))
 
-  int MaxThreadsNumber() const noexcept {
-    int api_max = get_omp_transforms_max_threads_num();
-    return max_number_of_threads_ < api_max? max_number_of_threads_ : api_max;
-  }
-
- private:
-  int max_number_of_threads_;
+  TP(threads_number, int, get_omp_transforms_max_threads_num(),
+     "The maximal number of OpenMP threads.")
 };
+
+template <typename FIN, typename FOUT>
+bool OmpAwareTransform<FIN, FOUT>::validate_threads_number(
+    const int& value) noexcept {
+  return value >= 1;
+}
+
+template <typename FIN, typename FOUT>
+RTP(FORWARD_MACROS(OmpAwareTransform<FIN, FOUT>), threads_number)
 
 template <typename F>
 class UniformFormatOmpAwareTransform
@@ -120,7 +112,7 @@ class OmpTransformBaseBufferTypeProxy
       typename TransformBase<FIN, FOUT>::OutBuffers* out)
       const noexcept override final {
 #ifdef HAVE_OPENMP
-    #pragma omp parallel for num_threads(this->MaxThreadsNumber())
+    #pragma omp parallel for num_threads(this->threads_number())
 #endif
     for (size_t i = 0; i < in.Count(); i++) {
       this->Do(in[i], &(*out)[i]);
@@ -141,7 +133,7 @@ class OmpTransformBaseBufferTypeProxy<FIN, FOUT, FINELEMENT, FOUTELEMENT*>
        typename TransformBase<FIN, FOUT>::OutBuffers* out)
        const noexcept override final {
 #ifdef HAVE_OPENMP
-    #pragma omp parallel for num_threads(this->MaxThreadsNumber())
+    #pragma omp parallel for num_threads(this->threads_number())
 #endif
     for (size_t i = 0; i < in.Count(); i++) {
       this->Do(in[i], (*out)[i]);
@@ -176,13 +168,6 @@ class OmpInverseUniformFormatTransform
     : public virtual InverseTransformBase<T>,
       public virtual OmpUniformFormatTransform<typename T::InFormat> {
 };
-
-#define OMP_TRANSFORM_PARAMETERS(init) TRANSFORM_PARAMETERS(FORWARD_MACROS( \
-  TP(this->MaxThreadsNumberParameterName(), \
-     "The maximal number of OpenMP threads.", \
-     std::to_string(get_omp_transforms_max_threads_num())) \
-  init) \
-)
 
 }  // namespace sound_feature_extraction
 

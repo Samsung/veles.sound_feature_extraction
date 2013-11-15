@@ -25,14 +25,14 @@ class PeakDetectionTest : public TransformTest<PeakDetection> {
 
   virtual void SetUp() {
     Size = 608;
-    SetParameter("swt_level", "4");
-    SetParameter("swt_order", "4");
-    SetParameter("number", "3");
-    SetParameter("sort", "both");
+    set_swt_level(4);
+    set_swt_order(4);
+    set_number(3);
+    set_sort(sound_feature_extraction::kSortOrderBoth);
     SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; i++) {
       (*Input)[0][i] = sinf(i * M_PI / 100) *
-          (1.f + 0.1 * (0.5f - (rand() + 0.f) / RAND_MAX));
+          (1.f + 0.05 * (0.5f - (rand() + 0.f) / RAND_MAX));
     }
   }
 };

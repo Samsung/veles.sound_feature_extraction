@@ -20,12 +20,12 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-Autocorrelation::Autocorrelation() : normalize_(false) {
-  RegisterSetter("normalize", [&](const std::string& value) {
-    normalize_ = Parse<bool>("normalize", value);
-    return true;
-  });
+RTP(Autocorrelation, normalize)
+
+Autocorrelation::Autocorrelation() : normalize_(kDefaultNormalize) {
 }
+
+ALWAYS_VALID_TP(Autocorrelation, normalize)
 
 void Autocorrelation::Initialize() const {
   // Workaround for SIGSEGV in libav FFT with sizes greater than 2^16
@@ -33,8 +33,8 @@ void Autocorrelation::Initialize() const {
     fftf_set_backend_priority(FFTF_BACKEND_LIBAV, -1000);
     fftf_set_backend(FFTF_BACKEND_NONE);
   }
-  correlation_handles_.resize(MaxThreadsNumber());
-  for (int i = 0; i < MaxThreadsNumber(); i++) {
+  correlation_handles_.resize(threads_number());
+  for (int i = 0; i < threads_number(); i++) {
     correlation_handles_[i].handle = std::shared_ptr<CrossCorrelationHandle>(
         new CrossCorrelationHandle(cross_correlate_initialize(
             input_format_->Size(), input_format_->Size())),

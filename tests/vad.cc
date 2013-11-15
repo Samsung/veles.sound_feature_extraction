@@ -27,7 +27,7 @@ TEST(Features, VAD) {
       { "ComplexMagnitude", "" }, { "Mean", "types=arithmetic geometric" },
       { "SFM", "" } });
   tt.AddFeature("DominantFrequency", { { "Window", "length=512" }, { "RDFT", "" },
-      { "ComplexMagnitude", "" }, { "ArgMinMax", "extremum=max" } });
+      { "ComplexMagnitude", "" }, { "Peaks", "number=1, threads_number=1" } });
   int16_t* buffers = new int16_t[48000];
   memcpy(buffers, data, sizeof(data));
   tt.PrepareForExecution();

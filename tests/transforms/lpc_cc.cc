@@ -33,7 +33,7 @@ class LPC2CCTest : public TransformTest<LPC2CC> {
 };
 
 TEST_F(LPC2CCTest, Do) {
-  SetParameter("size", std::to_string(Size));
+  set_size(Size);
   Do((*Input)[0], (*Output)[0]);
   const float valid_cc[] = {
      0.693147180559945,

@@ -17,27 +17,17 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-const std::string Window::kDefaultType = "hamming";
-const WindowType Window::kDefaultTypeEnum = WINDOW_TYPE_HAMMING;
-const bool Window::kDefaultPreDft = false;
+constexpr WindowType Window::kDefaultType;
+constexpr bool Window::kDefaultPreDft;
 
 Window::Window()
-  : window_(nullptr, free),
-    type_(kDefaultTypeEnum),
-    preDft_(kDefaultPreDft) {
-  RegisterSetter("type", [&](const std::string& value) {
-    auto wti = kWindowTypeMap.find(value);
-    if (wti == kWindowTypeMap.end()) {
-      return false;
-    }
-    type_ = wti->second;
-    return true;
-  });
-  RegisterSetter("predft", [&](const std::string& value) {
-    preDft_ = Parse<bool>("predft", value);
-    return true;
-  });
+  : type_(kDefaultType),
+    predft_(kDefaultPreDft),
+    window_(nullptr, free) {
 }
+
+ALWAYS_VALID_TP(Window, type)
+ALWAYS_VALID_TP(Window, predft)
 
 Window::WindowContentsPtr Window::InitializeWindow(size_t length,
                                                    WindowType type,
@@ -78,7 +68,7 @@ void Window::ApplyWindow(bool simd, const float* window, int length,
 }
 
 void Window::Initialize() const {
-  if (!preDft_) {
+  if (!predft_) {
     window_ = InitializeWindow(input_format_->Size(), type_);
   } else {
     int length = input_format_->Size();
@@ -99,9 +89,11 @@ void Window::Initialize() const {
 void Window::Do(const float* in,
                 float* out)
 const noexcept {
-  ApplyWindow(UseSimd(), window_.get(), input_format_->Size(), in, out);
+  ApplyWindow(use_simd(), window_.get(), input_format_->Size(), in, out);
 }
 
+RTP(Window, type)
+RTP(Window, predft)
 REGISTER_TRANSFORM(Window);
 
 }  // namespace transforms

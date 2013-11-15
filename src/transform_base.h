@@ -15,6 +15,7 @@
 
 #include <assert.h>
 #include <string>
+#include <tr2/type_traits>
 #include "src/buffers_base.h"
 #include "src/logger.h"
 #include "src/parameterizable_base.h"
@@ -25,8 +26,8 @@ namespace sound_feature_extraction {
 
 template <typename FIN, typename FOUT>
 class TransformBase : public virtual Transform,
-                      public SimdAware,
-                      public ParameterizableBase {
+                      public virtual SimdAware,
+                      public virtual ParameterizableBase {
  public:
   typedef FIN InFormat;
   typedef FOUT OutFormat;
@@ -91,11 +92,52 @@ class TransformBase : public virtual Transform,
     return buffersCount;
   }
 
-  virtual void Do(const InBuffers& in, OutBuffers* out)
-      const noexcept = 0;
+  virtual void Do(const InBuffers& in, OutBuffers* out) const noexcept = 0;
 
   virtual std::string HostName() const noexcept {
     return std::string("transform ") + Name();
+  }
+
+  virtual const SupportedParametersMap&
+  SupportedParameters() const noexcept override {
+    return *SupportedParametersPtr();
+  }
+
+  virtual const ParameterSettersMap&
+  ParameterSetters() const noexcept override {
+    return *ParameterSettersPtr();
+  }
+
+  static std::set<SupportedParametersMap*>* RegisterParameters(
+      SupportedParametersMap* map = nullptr) noexcept {
+    static std::set<SupportedParametersMap*> params({SupportedParametersPtr()});
+    if (map != nullptr) {
+      params.insert(map);
+      map->insert(SupportedParametersPtr()->begin(),
+                  SupportedParametersPtr()->end());
+    }
+    return &params;
+  }
+
+  static std::set<ParameterSettersMap*>* RegisterParameterSetters(
+      ParameterSettersMap* map = nullptr) noexcept {
+    static ParameterSettersMap own;
+    static std::set<ParameterSettersMap*> params({&own});
+    if (map != nullptr) {
+      params.insert(map);
+      map->insert(own.begin(), own.end());
+    }
+    return &params;
+  }
+
+  static SupportedParametersMap* SupportedParametersPtr() noexcept {
+    static SupportedParametersMap own;
+    return &own;
+  }
+
+  static ParameterSettersMap* ParameterSettersPtr() noexcept {
+    static ParameterSettersMap own;
+    return &own;
   }
 };
 
@@ -153,100 +195,153 @@ class TransformLogger : public Logger {
 
 #define FORWARD_MACROS(...) __VA_ARGS__
 
-/// @brief Adds Name() and Description() implementations.
+/// @brief Internal macros to implement service functions to support
+/// parameters introspection.
+#define TRANSFORM_PARAMETERS_SUPPORT(self)                                     \
+ public:                                                                       \
+  typedef self SelfType;                                                       \
+  typedef typename std::tr2::direct_bases<self>::type::first::type ParentType; \
+                                                                               \
+ protected:                                                                    \
+  virtual const SupportedParametersMap&                                        \
+  SupportedParameters() const noexcept override {                              \
+    return SupportedParametersPtr()->empty()?                                  \
+        *ParentType::SupportedParametersPtr() : *SupportedParametersPtr();     \
+  }                                                                            \
+                                                                               \
+  virtual const ParameterSettersMap&                                           \
+  ParameterSetters() const noexcept override {                                 \
+    return ParameterSettersPtr()->empty()?                                     \
+        *ParentType::ParameterSettersPtr() : *ParameterSettersPtr();           \
+  }                                                                            \
+                                                                               \
+  static SupportedParametersMap* SupportedParametersPtr() noexcept {           \
+    static SupportedParametersMap own;                                         \
+    return &own;                                                               \
+  }                                                                            \
+                                                                               \
+  static ParameterSettersMap* ParameterSettersPtr() noexcept {                 \
+    static ParameterSettersMap own;                                            \
+    return &own;                                                               \
+  }                                                                            \
+                                                                               \
+  static std::set<SupportedParametersMap*>* RegisterParameters(                \
+      SupportedParametersMap* map = nullptr) noexcept {                        \
+    static std::set<SupportedParametersMap*> params(                           \
+        { SupportedParametersPtr() });                                         \
+    if (map != nullptr) {                                                      \
+      params.insert(map);                                                      \
+      map->insert(SupportedParametersPtr()->begin(),                           \
+                  SupportedParametersPtr()->end());                            \
+      ParentType::RegisterParameters(map);                                     \
+    } else {                                                                   \
+      ParentType::RegisterParameters(SupportedParametersPtr());                \
+    }                                                                          \
+    return &params;                                                            \
+  }                                                                            \
+                                                                               \
+  static std::set<ParameterSettersMap*>* RegisterParameterSetters(             \
+      ParameterSettersMap* map = nullptr) noexcept {                           \
+    static std::set<ParameterSettersMap*> params({ ParameterSettersPtr() });   \
+    if (map != nullptr) {                                                      \
+      params.insert(map);                                                      \
+      map->insert(ParameterSettersPtr()->begin(),                              \
+                  ParameterSettersPtr()->end());                               \
+      ParentType::RegisterParameterSetters(map);                               \
+    } else {                                                                   \
+      ParentType::RegisterParameterSetters(ParameterSettersPtr());             \
+    }                                                                          \
+    return &params;                                                            \
+  }                                                                            \
+                                                                               \
+ private:                                                                      \
+  static void RegisterParameter(                                               \
+      const std::string& pname, const std::string& desc,                       \
+      const std::string& defv, ParameterSetter&& setter) {                     \
+    for (auto ptr : *RegisterParameters()) {                                   \
+      ptr->insert({ pname, { desc, defv } });                                  \
+    }                                                                          \
+     for (auto ptr : *RegisterParameterSetters()) {                            \
+      ptr->insert({ pname, setter });                                          \
+    }                                                                          \
+  }                                                                            \
+                                                                               \
+ public:
+
+/// @brief Adds Name() and Description() implementations, service functions.
 /// @param name The name of the transform (as returned by Name()).
 /// @param description The description of the transform (as returned
 /// by Description()).
-#define TRANSFORM_INTRO(name, description) \
-virtual const std::string& Name() const noexcept override { \
-  static const std::string str(name); \
-  return str; \
-} \
-\
-virtual const std::string& Description() const noexcept override { \
-  static const std::string str(description); \
-  return str; \
-}
-
-/// @brief Adds a new transform parameter to TRANSFORM_PARAMETERS.
-/// @note This macros should be used inside TRANSFORM_PARAMETERS only.
-#define TP(name, descr, defval) { name, { descr, defval } },
-
-/// @brief Adds SupportedParameters() implementation based on specified
-/// parameter items (@see TP).
-/// @param init The list of TP parameters.
-#define TRANSFORM_PARAMETERS(init) \
-    virtual const SupportedParametersMap& \
-        SupportedParameters() const noexcept override final { \
-      static const SupportedParametersMap sp = \
-          SupportedParametersMap { init };\
-      return sp; \
-    }
-#if 0
-#define INHERIT_PARAMETERS(parent)                                             \
+/// @param self The corresponding class type.
+#define TRANSFORM_INTRO(name, description, self)                               \
  public:                                                                       \
-  typedef parent ParentType;                                                   \
+  virtual const std::string& Name() const noexcept override {                  \
+    static const std::string str(name);                                        \
+    return str;                                                                \
+  }                                                                            \
+                                                                               \
+  virtual const std::string& Description() const noexcept override {           \
+    static const std::string str(description);                                 \
+    return str;                                                                \
+  }                                                                            \
+                                                                               \
+  TRANSFORM_PARAMETERS_SUPPORT(self)
 
- protected:
-  virtual const SupportedParametersMap& SupportedParameters() noexcept {
-    return *(*ChildrenSupportedParameters())[0];
+/// @brief Adds a new transform parameter.
+/// @brief name The name of the parameter.
+/// @brief type The parameter's type.
+/// @brief defval The default value of the parameter. Only static constexpr or
+/// constant values are allowed.
+/// @brief descr The description of the parameter.
+/// @note This macro demands the definition of
+/// static bool validate_##name(const type& value) noexcept.
+#define TP(name, type, defv, desc)                                             \
+ private:                                                                      \
+  static bool validate_##name(const type& value) noexcept;                     \
+  static void set_##name##_raw(void* pbthis, const std::string& value) {       \
+    type parsed_value =                                                        \
+        sound_feature_extraction::Parse<decltype(name##_)>(value);             \
+    auto self = dynamic_cast<SelfType*>(reinterpret_cast<ParameterizableBase*>(\
+        pbthis));                                                              \
+    self->set_##name(parsed_value);                                            \
+  }                                                                            \
+                                                                               \
+  class name##_registration_class {                                            \
+   public:                                                                     \
+    name##_registration_class() {                                              \
+      SelfType::RegisterParameter(#name, desc, std::to_string(defv),           \
+                                  &SelfType::set_##name##_raw);                \
+    }                                                                          \
+    void Ref() const {}                                                        \
+  };                                                                           \
+  friend class name##_registration_class;                                      \
+                                                                               \
+  static const name##_registration_class name##_registration_;                 \
+  type name##_;                                                                \
+                                                                               \
+ public:                                                                       \
+  __attribute__((used)) type name() const noexcept {                           \
+    name##_registration_.Ref();                                                \
+    return name##_;                                                            \
+  }                                                                            \
+                                                                               \
+  void set_##name(const type& value) {                                         \
+    if (!validate_##name(value)) {                                             \
+      throw InvalidParameterValueException(#name, std::to_string(value),       \
+                                           this->HostName());                  \
+    }                                                                          \
+    this->UpdateParameter(#name, std::to_string(value));                       \
+    name##_ = value;                                                           \
   }
 
-  static std::set<SupportedParametersMap*>* RegisterParameters(
-      SupportedParametersMap* map = nullptr) noexcept {
-    static SupportedParametersMap own;
-    static std::set<SupportedParametersMap*> params(&own);
-    if (map != nullptr) {
-      params.insert(map);
-      std::copy(own.begin(), own.end(), map->begin());
-      ParentType::RegisterParameters(map);
-    } else {
-      ParentType::RegisterParameters(&own);
-    }
-    return &params;
+#define ALWAYS_VALID_TP(cname, name)                                           \
+  bool cname::validate_##name(const decltype(cname::name##_)&) noexcept {      \
+    return true;                                                               \
   }
 
-  static bool RegisterParameter(
-      const std::string& name, const std::string& desc,
-      const std::string& defv,
-      const std::function<void(void*, const std::string&)> setter) {
-    for (auto ptr : *RegisterParameters()) {
-      ptr->insert({ name, { desc, defv } });
-    }
-    return true;
-  }
+#define RTP(cname, name)                                                       \
+    const typename cname::name##_registration_class cname::name##_registration_;
 
-#define PARAMETER(name, type, desc, defv)                                       \
- private:                                                                       \
-  static const bool name##_registration = RegisterParameter(#name, desc, defv,  \
-      &set_##name_raw);                        \
-  static bool validate_##name(const type& value) noexcept;                      \
-  static type parse_##name(const std::string& strValue);                        \
-  static void set_##name_raw(void* self, const std::string& value) {            \
-    type parsed_value = parse_##name(value);                                    \
-    try {                                                                       \
-      reinterpret_cast<SelfType*>(self)->set_##name(parsed_value);              \
-    }                                                                           \
-    catch(const InvalidParameterValueException<type>&) {                        \
-      throw InvalidParameterValueException(#name, value);                       \
-    }                                                                           \
-  }                                                                             \
-  type name##_;                                                                 \
-                                                                                \
- public:                                                                        \
-  type name() const noexcept {                                                  \
-    return name##_;                                                             \
-  }                                                                             \
-                                                                                \
-  void set_##name(const type& value) {                                          \
-    if (!validate_##name(value)) {                                              \
-      throw InvalidParameterValueException(#name, value);                       \
-    }                                                                           \
-    name##_ = value;                                                            \
-  }                                                                             \
-                                                                                \
- protected:
-
-#endif
 }  // namespace sound_feature_extraction
+
 #endif  // SRC_TRANSFORM_BASE_H_

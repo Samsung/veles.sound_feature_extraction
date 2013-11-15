@@ -28,14 +28,14 @@ class DiffTest : public TransformTest<Diff> {
     for (int i = 0; i < Size; i++) {
       (*Input)[0][i] = i % 3 - i % 2;
     }
-    SetParameter("swt", "1");
+    set_swt(1);
     Initialize();
   }
 };
 
 TEST_F(DiffTest, Do) {
-  SetParameter("rectify", "true");
-  SetParameter("swt", "0");
+  set_rectify(true);
+  set_swt(0);
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size - 1; i++) {
     int result;
@@ -54,8 +54,8 @@ TEST_F(DiffTest, Do) {
 }
 
 TEST_F(DiffTest, DoNoRectify) {
-  SetParameter("rectify", "false");
-  SetParameter("swt", "0");
+  set_rectify(false);
+  set_swt(0);
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size - 1; i++) {
     int result;
@@ -80,14 +80,14 @@ TEST_F(DiffTest, DoNoRectify) {
 }
 
 TEST_F(DiffTest, DoSWT) {
-  SetParameter("rectify", "true");
-  SetParameter("swt", "1");
+  set_rectify(true);
+  set_swt(1);
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size; i++) {
     ASSERT_GE((*Output)[0][i], 0);
   }
-  SetParameter("swt", "2");
-  SetParameter("rectify", "false");
+  set_swt(2);
+  set_rectify(false);
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size; i++) {
     ASSERT_EQ((*Output)[0][i], (*Output)[0][i]);

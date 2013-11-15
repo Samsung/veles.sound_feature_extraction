@@ -11,7 +11,7 @@
  */
 
 #include "src/transforms/spectral_energy.h"
-#include <math.h>
+#include <cmath>
 #ifdef __AVX__
 #include <immintrin.h>
 #elif defined(__ARM_NEON__)
@@ -32,7 +32,7 @@ size_t SpectralEnergy::OnFormatChanged(size_t buffersCount) {
 
 void SpectralEnergy::Do(const float* in,
                         float* out) const noexcept {
-  Do(UseSimd(), in, input_format_->Size(), out);
+  Do(use_simd(), in, input_format_->Size(), out);
 }
 
 void SpectralEnergy::Do(bool simd, const float* input, int length,

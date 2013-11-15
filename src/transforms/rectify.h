@@ -21,9 +21,8 @@ namespace transforms {
 class Rectify : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("Rectify", "Wave rectification to decrease high-frequency "
-                             "content.")
-
-  OMP_TRANSFORM_PARAMETERS()
+                             "content.",
+                  Rectify)
 
  protected:
   virtual void Do(const float* in, float* out) const noexcept override;

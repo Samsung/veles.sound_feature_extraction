@@ -19,8 +19,7 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class ShortTimeMeanScaleNormalization
-    : public UniformFormatTransform<formats::ArrayFormatF> {
+class ShortTimeMeanScaleNormalization : public UniformFormatTransform<formats::ArrayFormatF> {
  public:
   ShortTimeMeanScaleNormalization();
 
@@ -29,21 +28,16 @@ class ShortTimeMeanScaleNormalization
                            "$stmsn_n[i] = \frac{w_n[i] - "
                            "\\sum_{k=n-L/2}^{n+L/2}{w_k[i]}}"
                            "{\\max_{k=n-L/2}^{n+L/2}{w_k[i]} -"
-                           "\\min_{k=n-L/2}^{n+L/2}{w_k[i]}}$.")
+                           "\\min_{k=n-L/2}^{n+L/2}{w_k[i]}}$.",
+                  ShortTimeMeanScaleNormalization)
 
-  TRANSFORM_PARAMETERS(
-      TP("length", "The amount of local values to average.",
-         std::to_string(kDefaultLength))
-  )
+  TP(length, int, kDefaultLength, "The amount of local values to average.")
 
  protected:
   virtual void Do(const BuffersBase<float*>& in,
                   BuffersBase<float*>* out) const noexcept override;
 
- private:
-  static const int kDefaultLength = 300;
-
-  int length_;
+  static constexpr int kDefaultLength = 300;
 };
 
 }  // namespace transforms

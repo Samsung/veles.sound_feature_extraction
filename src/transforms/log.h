@@ -19,50 +19,47 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class LogTransformBase {
+enum LogarithmBase {
+  kLogBase2,
+  kLogBase10,
+  kLogBaseE
+};
+
+namespace internal {
+constexpr const char* kLogBaseEStr = "e";
+constexpr const char* kLogBase2Str = "2";
+constexpr const char* kLogBase10Str = "10";
+}
+
+LogarithmBase Parse(const std::string& value, identity<LogarithmBase>);
+
+template <class F>
+class LogBase : public virtual OmpUniformFormatTransform<F> {
  public:
-  LogTransformBase() noexcept;
+  LogBase() : base_(kDefaultLogBase) {
+  }
+  TRANSFORM_PARAMETERS_SUPPORT(LogBase<F>)
+
+  TP(base, LogarithmBase, kDefaultLogBase, "Logarithm base (2, 10 or e).")
 
  protected:
-  enum LogBase {
-    LOG_BASE_2,
-    LOG_BASE_10,
-    LOG_BASE_E
-  };
-
-  static const std::unordered_map<std::string, LogBase> kLogBaseMap;
-  static const LogBase kDefaultLogBase;
-  static std::string LogBaseToString(LogBase lb) noexcept;
-
-  LogBase base_;
+  static constexpr LogarithmBase kDefaultLogBase = kLogBaseE;
 };
 
 template <class F>
-class LogBase : public virtual OmpUniformFormatTransform<F>,
-                public LogTransformBase {
- public:
-  LogBase() {
-    this->RegisterSetter("base", [&](const std::string& value) {
-      auto lbit = kLogBaseMap.find(value);
-      if (lbit == kLogBaseMap.end()) {
-        return false;
-      }
-      base_ = lbit->second;
-      return true;
-    });
-  }
+bool LogBase<F>::validate_base(const LogarithmBase&) noexcept {
+  return true;
+}
 
-  OMP_TRANSFORM_PARAMETERS(
-      TP("base", "Logarithm base (2, 10 or e).",
-         LogBaseToString(kDefaultLogBase))
-  )
-};
+template <class F>
+RTP(LogBase<F>, base)
 
 template <class F>
 class Log : public LogBase<F> {
  public:
   TRANSFORM_INTRO("Log",
-                  "Takes the logarithm from each real value of the signal.")
+                  "Takes the logarithm from each real value of the signal.",
+                  LogBase<F>)
 };
 
 class LogRaw : public Log<formats::ArrayFormatF> {
@@ -95,4 +92,20 @@ class LogSingleInverse : public OmpInverseUniformFormatTransform<LogSingle>,
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
+
+namespace std {
+  inline string
+  to_string(sound_feature_extraction::transforms::LogarithmBase lb) noexcept {
+    switch (lb) {
+      case sound_feature_extraction::transforms::kLogBaseE:
+        return sound_feature_extraction::transforms::internal::kLogBaseEStr;
+      case sound_feature_extraction::transforms::kLogBase2:
+        return sound_feature_extraction::transforms::internal::kLogBase2Str;
+      case sound_feature_extraction::transforms::kLogBase10:
+        return sound_feature_extraction::transforms::internal::kLogBase10Str;
+    }
+    return "";
+  }
+}  // namespace std
+
 #endif  // SRC_TRANSFORMS_LOG_H_

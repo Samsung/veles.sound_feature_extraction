@@ -25,9 +25,8 @@ class ComplexMagnitude
   TRANSFORM_INTRO("ComplexMagnitude",
                   "Calculates the magnitude of each complex number, that is, "
                   " a square root of the sum of squared real and imaginary "
-                  "parts.")
-
-  OMP_TRANSFORM_PARAMETERS()
+                  "parts.",
+                  ComplexMagnitude)
 
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override;

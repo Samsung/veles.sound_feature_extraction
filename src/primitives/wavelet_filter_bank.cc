@@ -22,19 +22,54 @@
 #include <boost/regex.hpp>  // NOLINT(build/include_order)
 #pragma GCC diagnostic pop
 #include <simd/wavelet.h>
+#include "src/stoi_function.h"
 
 namespace sound_feature_extraction {
-namespace Primitives {
 
-const std::unordered_map<std::string, WaveletType>
-    WaveletFilterBank::kWaveletTypeStrMap = {
-  { "daub", WAVELET_TYPE_DAUBECHIES },
-  { "coif", WAVELET_TYPE_COIFLET },
-  { "sym", WAVELET_TYPE_SYMLET }
-};
+TreeFingerprint Parse(const std::string& str, identity<TreeFingerprint>) {
+  static const boost::regex all_regex("^\\s*(\\d+\\s*(\\s|$))+");
+  static const boost::regex int_regex("(\\d+\\s*(\\s|$))");
+
+  boost::smatch match;
+  if (!boost::regex_match(str, match, all_regex)) {
+    throw WaveletTreeDescriptionParseException(str);
+  }
+
+  TreeFingerprint res;
+  try {
+    std::transform(boost::sregex_token_iterator(str.begin(), str.end(),
+                                                int_regex,
+                                                1),
+                   boost::sregex_token_iterator(),
+                   std::back_inserter(res),
+                   std::stoi_function);
+  }
+  catch(const std::invalid_argument& e) {
+    throw WaveletTreeDescriptionParseException(str);
+  }
+  if (res.empty()) {
+    throw WaveletTreeDescriptionParseException(str);
+  }
+  return res;
+}
+
+WaveletType Parse(const std::string& value, identity<WaveletType>) {
+  static const std::unordered_map<std::string, WaveletType> map = {
+    { WAVELET_TYPE_DAUBECHIES_STR, WAVELET_TYPE_DAUBECHIES },
+    { WAVELET_TYPE_COIFLET_STR, WAVELET_TYPE_COIFLET },
+    { WAVELET_TYPE_SYMLET_STR, WAVELET_TYPE_SYMLET }
+  };
+  auto it = map.find(value);
+  if (it == map.end()) {
+    throw WaveletTreeWaveletTypeParseException(value);
+  }
+  return it->second;
+}
+
+namespace primitives {
 
 WaveletFilterBank::WaveletFilterBank(WaveletType type, int order,
-                                     const std::vector<int>& treeDescription)
+                                     const TreeFingerprint& treeDescription)
     : type_(type),
       order_(order),
       tree_(treeDescription) {
@@ -43,39 +78,22 @@ WaveletFilterBank::WaveletFilterBank(WaveletType type, int order,
 }
 
 WaveletFilterBank::WaveletFilterBank(WaveletType type, int order,
-                                     std::vector<int>&& treeDescription)
+                                     TreeFingerprint&& treeDescription)
     : type_(type),
       order_(order),
       tree_(treeDescription) {
   ValidateDescription(treeDescription);
 }
 
-void WaveletFilterBank::ValidateOrder(WaveletType type,
+void WaveletFilterBank::ValidateWavelet(WaveletType type,
                                       int order) {
   if (!wavelet_validate_order(type, order)) {
     throw WaveletTreeInvalidOrderException(type, order);
   }
 }
 
-std::string WaveletFilterBank::WaveletTypeToString(WaveletType type) noexcept {
-  for (auto wtstrp : kWaveletTypeStrMap) {
-    if (wtstrp.second == type) {
-      return wtstrp.first;
-    }
-  }
-  return "";
-}
-
-WaveletType WaveletFilterBank::ParseWaveletType(const std::string& value) {
-  auto it = kWaveletTypeStrMap.find(value);
-  if (it == kWaveletTypeStrMap.end()) {
-    throw WaveletTreeWaveletTypeParseException(value);
-  }
-  return it->second;
-}
-
 void WaveletFilterBank::ValidateDescription(
-    const std::vector<int>& treeDescription) {
+    const TreeFingerprint& treeDescription) {
   if (treeDescription.size() < 2) {
     throw WaveletTreeInvalidDescriptionException(treeDescription);
   }
@@ -104,51 +122,8 @@ void WaveletFilterBank::ValidateDescription(
   }
 }
 
-std::vector<int> WaveletFilterBank::ParseDescription(const std::string& str) {
-  static const boost::regex allRegex("^\\s*(\\d+\\s*(\\s|$))+");
-  static const boost::regex intRegex("(\\d+\\s*(\\s|$))");
-  static const boost::sregex_token_iterator empty;
-
-  boost::smatch match;
-  if (!boost::regex_match(str, match, allRegex)) {
-    throw WaveletTreeDescriptionParseException(str);
-  }
-  boost::sregex_token_iterator intIterator(
-          str.begin(), str.end(), intRegex, 1);
-
-  std::vector<int> res;
-  while (intIterator != empty) {
-    std::string intstr = *intIterator++;
-    int val;
-    try {
-      val = std::stoi(intstr);
-    }
-    catch(const std::invalid_argument& e) {
-      throw WaveletTreeDescriptionParseException(str);
-    }
-    res.push_back(val);
-  }
-  if (res.empty()) {
-    throw WaveletTreeDescriptionParseException(str);
-  }
-  ValidateDescription(res);
-  return res;
-}
-
-std::string WaveletFilterBank::DescriptionToString(
-    const std::vector<int>& treeDescription) noexcept {
-  std::string str;
-  for (int i : treeDescription) {
-    str += std::to_string(i) + " ";
-  }
-  if (str != "") {
-    str.resize(str.size() - 1);
-  }
-  return str;
-}
-
 void WaveletFilterBank::ValidateLength(
-    const std::vector<int>& tree, size_t length) {
+    const TreeFingerprint& tree, size_t length) {
   int max = *std::max_element(tree.begin(), tree.end());
   // length / 2^max >= 1
   if (length == 0 || length % (1 << max) != 0) {
@@ -182,9 +157,9 @@ void WaveletFilterBank::ApplyInternal(float* source, size_t length,
   assert(source && result);
   ValidateLength(tree_, length);
 
-  std::vector<int> tree(tree_);
+  TreeFingerprint tree(tree_);
   std::reverse(tree.begin(), tree.end());
-  std::vector<int> workingTree;
+  TreeFingerprint workingTree;
   workingTree.reserve(tree.size());
 
   auto ldesthi = std::unique_ptr<float, void(*)(void*)>(
@@ -210,7 +185,7 @@ void WaveletFilterBank::ApplyInternal(float* source, size_t length,
 
 void WaveletFilterBank::RecursivelyIterate(
     WaveletType type, int order, size_t length,
-    std::vector<int> *tree, std::vector<int>* workingTree, float* source,
+    TreeFingerprint *tree, TreeFingerprint* workingTree, float* source,
     float* desthi, float* destlo, float** result) noexcept {
   if (tree->back() != workingTree->back()) {
     wavelet_apply(type, order, EXTENSION_TYPE_PERIODIC, source, length, desthi, destlo);
@@ -234,5 +209,5 @@ void WaveletFilterBank::RecursivelyIterate(
   }
 }
 
-}  // namespace Primitives
+}  // namespace primitives
 }  // namespace sound_feature_extraction

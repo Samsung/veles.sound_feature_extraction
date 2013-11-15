@@ -17,27 +17,22 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
+RTP(LSP, intervals)
+RTP(LSP, bisects)
+
 LSP::LSP() : intervals_(kDefaultIntervals), bisects_(kDefaultBisects) {
-  RegisterSetter("intervals", [&](const std::string& value) {
-    int pv = Parse<int>("intervals", value);
-    if (pv < 2) {
-      return false;
-    }
-    intervals_ = pv;
-    return true;
-  });
-  RegisterSetter("bisects", [&](const std::string& value) {
-    int pv = Parse<int>("bisects", value);
-    if (pv < 1) {
-      return false;
-    }
-    bisects_ = pv;
-    return true;
-  });
+}
+
+bool LSP::validate_intervals(const int& value) noexcept {
+  return value >= 2;
+}
+
+bool LSP::validate_bisects(const int& value) noexcept {
+  return value > 1;
 }
 
 void LSP::Do(const float* in, float* out) const noexcept {
-  lpc_to_lsp(UseSimd(), in, input_format_->Size(), bisects_,
+  lpc_to_lsp(use_simd(), in, input_format_->Size(), bisects_,
              2.f / intervals_, out);
 }
 

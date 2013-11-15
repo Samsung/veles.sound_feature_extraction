@@ -45,20 +45,20 @@ TEST(Features, All) {
       { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "DWPT", "order=4, tree=1 2 3 3" },
-      { "Selector", "length=16, threads_num=1" }, { "STMSN", "length=25" }
+      { "Selector", "length=16, threads_number=1" }, { "STMSN", "length=25" }
   });
   tt.AddFeature("WPP_D1", { { "Preemphasis", "value=0.2" },
       { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "DWPT", "order=4, tree=1 2 3 3" },
-      { "Selector", "length=16, threads_num=1" }, { "Delta", "" },
+      { "Selector", "length=16, threads_number=1" }, { "Delta", "" },
       { "STMSN", "length=25" }
   });
   tt.AddFeature("WPP_D2", { { "Preemphasis", "value=0.2" },
       { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "DWPT", "order=4, tree=1 2 3 3" },
-      { "Selector", "length=16, threads_num=1" }, { "Delta", "" },
+      { "Selector", "length=16, threads_number=1" }, { "Delta", "" },
       { "Delta", "" }, { "STMSN", "length=25" }
   });
   tt.AddFeature("SFM", { { "Window", "type=rectangular" }, { "Window", "" },
@@ -67,49 +67,49 @@ TEST(Features, All) {
   });
   tt.AddFeature("DominantFrequency", { { "Window", "type=rectangular" },
       { "Window", "" }, { "RDFT", "" },
-      { "ComplexMagnitude", "" }, { "ArgMinMax", "extremum=max" }
+      { "ComplexMagnitude", "" }, { "Peaks", "number=1" }
   });
   tt.AddFeature("SBC", { { "Preemphasis", "value=0.2" },
       { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" },
-      { "Selector", "length=16, threads_num=1" }, { "STMSN", "length=25" }
+      { "Selector", "length=16, threads_number=1" }, { "STMSN", "length=25" }
   });
   tt.AddFeature("SBC_D1", { { "Preemphasis", "value=0.2" },
       { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" },
-      { "Selector", "length=16, threads_num=1" }, { "Delta", "" },
+      { "Selector", "length=16, threads_number=1" }, { "Delta", "" },
       { "STMSN", "length=25" }
   });
   tt.AddFeature("SBC_D2", { { "Preemphasis", "value=0.2" },
       { "Window", "type=rectangular" },
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" },
-      { "Selector", "length=16, threads_num=1" }, { "Delta", "" },
+      { "Selector", "length=16, threads_number=1" }, { "Delta", "" },
       { "Delta", "" },{ "STMSN", "length=25" }
   });
   tt.AddFeature("MFCC", { { "Preemphasis", "value=0.2" },
       { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "SpectralEnergy", "" }, { "FilterBank", "" },
       { "FilterBank", "" }, { "Log", "" }, { "Square", "" },
-      { "Selector", "length=256, threads_num=1" }, { "DCT", "" },
-      { "Selector", "length=16, threads_num=1" }, { "STMSN", "length=25" }
+      { "Selector", "length=256, threads_number=1" }, { "DCT", "" },
+      { "Selector", "length=16, threads_number=1" }, { "STMSN", "length=25" }
   });
   tt.AddFeature("MFCC_D1", { { "Preemphasis", "value=0.2" },
       { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "SpectralEnergy", "" }, { "FilterBank", "" },
       { "FilterBank", "" }, { "Log", "" }, { "Square", "" },
-      { "Selector", "length=256, threads_num=1" }, { "DCT", "" },
-      { "Selector", "length=16, threads_num=1"}, { "Delta", "" },
+      { "Selector", "length=256, threads_number=1" }, { "DCT", "" },
+      { "Selector", "length=16, threads_number=1"}, { "Delta", "" },
       { "STMSN", "length=25" }
   });
   tt.AddFeature("MFCC_D2", { { "Preemphasis", "value=0.2" },
       { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "SpectralEnergy", "" }, { "FilterBank", "" },
       { "FilterBank", "" }, { "Log", "" }, { "Square", "" },
-      { "Selector", "length=256, threads_num=1" }, { "DCT", "" },
-      { "Selector", "length=16, threads_num=1"}, { "Delta", "" },
+      { "Selector", "length=256, threads_number=1" }, { "DCT", "" },
+      { "Selector", "length=16, threads_number=1"}, { "Delta", "" },
       { "Delta", "" }, { "STMSN", "length=25" }
   });
   tt.AddFeature("F0_HPS", { { "Window", "type=rectangular" }, { "Window", "" },

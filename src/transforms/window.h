@@ -28,20 +28,20 @@ class Window : public OmpUniformFormatTransform<formats::ArrayFormatF> {
   Window();
 
   TRANSFORM_INTRO("WindowFunction",
-                  "Applies a window function to each window.")
+                  "Applies a window function to each window.",
+                  Window)
 
-  TRANSFORM_PARAMETERS(
-      TP("type", "Type of the window. E.g. \"rectangular\" "
-                 "or \"hamming\".",
-         kDefaultType)
-      TP("predft", "Apply Discrete Fourier Transform to window function.",
-         std::to_string(kDefaultPreDft))
-  )
+  TP(type, WindowType, kDefaultType,
+     "Type of the window. E.g. \"rectangular\" or \"hamming\".")
+  TP(predft, bool, kDefaultPreDft,
+     "Apply Discrete Fourier Transform to window function.")
 
   virtual void Initialize() const override;
 
  protected:
   typedef std::unique_ptr<float, void(*)(void*)> WindowContentsPtr;
+  static constexpr WindowType kDefaultType = WINDOW_TYPE_HAMMING;
+  static constexpr bool kDefaultPreDft = false;
 
   virtual void Do(const float* in,
                   float* out) const noexcept override;
@@ -52,13 +52,6 @@ class Window : public OmpUniformFormatTransform<formats::ArrayFormatF> {
                           const float* input, float* output) noexcept;
 
  private:
-  static const std::string kDefaultType;
-  static const WindowType kDefaultTypeEnum;
-  static const bool kDefaultPreDft;
-
-  WindowType type_;
-  bool preDft_;
-
   static WindowContentsPtr InitializeWindow(size_t length,
                                             WindowType type,
                                             int allocSize = -1) noexcept;

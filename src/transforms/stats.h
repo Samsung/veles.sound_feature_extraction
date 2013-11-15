@@ -30,31 +30,82 @@ enum StatsType {
   kStatsTypeCount = 4
 };
 
-class Stats
-    : public OmpTransformBase<formats::ArrayFormatF,
+namespace internal {
+constexpr const char* kStatsTypeAverageStr = "average";
+constexpr const char* kStatsTypeStdDeviationStr = "stddev";
+constexpr const char* kStatsTypeSkewnessStr = "skewness";
+constexpr const char* kStatsTypeKurtosisStr = "kurtosis";
+}
+
+std::set<StatsType> Parse(const std::string& value,
+                          identity<std::set<StatsType>>);
+
+}  // namespace transforms
+}  // namespace sound_feature_extraction
+
+namespace std {
+  inline string to_string(
+      const set<sound_feature_extraction::transforms::StatsType>& value)
+      noexcept {
+    string res;
+    for (auto type : value) {
+      switch (type) {
+        case sound_feature_extraction::transforms::kStatsTypeAverage:
+          res += sound_feature_extraction::transforms::
+              internal::kStatsTypeAverageStr;
+          res += " ";
+          break;
+        case sound_feature_extraction::transforms::kStatsTypeStdDeviation:
+          res += sound_feature_extraction::transforms::
+              internal::kStatsTypeStdDeviationStr;
+          res += " ";
+          break;
+        case sound_feature_extraction::transforms::kStatsTypeSkewness:
+          res += sound_feature_extraction::transforms::
+              internal::kStatsTypeSkewnessStr;
+          res += " ";
+          break;
+        case sound_feature_extraction::transforms::kStatsTypeKurtosis:
+          res += sound_feature_extraction::transforms::
+              internal::kStatsTypeKurtosisStr;
+          res += " ";
+          break;
+        default:
+          break;
+      }
+    }
+    return res.empty()? "" : res.substr(0, res.size() - 1);
+  }
+}  // namespace std
+
+namespace sound_feature_extraction {
+namespace transforms {
+
+class Stats : public OmpTransformBase<formats::ArrayFormatF,
                               formats::ArrayFormat<
-                                  formats::FixedArray<kStatsTypeCount>>> {
+                                  formats::FixedArray<kStatsTypeCount>>>  {
  public:
   typedef formats::FixedArray<kStatsTypeCount> StatsArray;
 
   Stats();
 
   TRANSFORM_INTRO("Stats", "Calculate statistical measures, such as skew "
-                           "or kurtosis.")
+                           "or kurtosis.",
+                  Stats)
 
-  OMP_TRANSFORM_PARAMETERS(
-      TP("types", "Stats types to calculate (names separated with spaces, "
-                  "\"all\" for all).",
-         "all")
-      TP("interval", "\"Texture\" interval, must be bigger than 1. "
-                     "Zero means all buffers.",
-         "0")
-  )
+  TP(types, std::set<StatsType>, kDefaultStatsTypes(),
+     "Stats types to calculate (names separated with spaces, \"all\" for all).")
+  TP(interval, int, kDefaultInterval,
+     "\"Texture\" interval, must be bigger than 1. Zero means all buffers.")
 
  protected:
   typedef float(*CalculateFunc)(const float*);
 
-  static const std::unordered_map<std::string, StatsType> kStatsTypesMap;
+  static std::set<StatsType> kDefaultStatsTypes() noexcept {
+    return { kStatsTypeAverage, kStatsTypeStdDeviation,
+             kStatsTypeSkewness, kStatsTypeKurtosis };
+  }
+  static constexpr int kDefaultInterval = 0;
   static const std::unordered_map<int, CalculateFunc> kStatsFuncs;
 
   virtual size_t OnInputFormatChanged(size_t buffersCount) override;
@@ -68,10 +119,6 @@ class Stats
   static float CalculateStdDeviation(const float* rawMoments) noexcept;
   static float CalculateSkew(const float* rawMoments) noexcept;
   static float CalculateKurtosis(const float* rawMoments) noexcept;
-
-private:
-  std::set<StatsType> types_;
-  int interval_;
 };
 
 }  // namespace transforms

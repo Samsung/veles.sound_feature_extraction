@@ -19,32 +19,24 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class Fork
-    : public UniformFormatTransform<formats::ArrayFormatF> {
+class Fork : public UniformFormatTransform<formats::ArrayFormatF> {
   friend class FrequencyBands;
  public:
   Fork();
 
   TRANSFORM_INTRO("Fork", "Clones the windows, increasing their number by "
-                          "a factor of \"factor\".")
+                          "a factor of \"factor\".",
+                  Fork)
 
-  TRANSFORM_PARAMETERS(
-      TP("factor", "Windows number multiplier value.",
-         std::to_string(kDefaultFactor))
-  )
-
-  static const std::string kCloningFactorAttributeName;
+  TP(factor, int, kDefaultFactor, "Windows number multiplier value.")
 
  protected:
-  static const int kDefaultFactor;
+  static constexpr int kDefaultFactor = 4;
 
   virtual size_t OnFormatChanged(size_t buffersCount) override;
 
   virtual void Do(const BuffersBase<float*>& in,
                   BuffersBase<float*>* out) const noexcept override;
-
- private:
-  int factor_;
 };
 
 }  // namespace transforms

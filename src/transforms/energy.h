@@ -19,12 +19,10 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class Energy
-    : public OmpTransformBase<formats::ArrayFormatF, formats::SingleFormatF> {
+class Energy : public OmpTransformBase<formats::ArrayFormatF,
+                                    formats::SingleFormatF> {
  public:
-  TRANSFORM_INTRO("Energy", "Sound energy calculation.")
-
-  OMP_TRANSFORM_PARAMETERS()
+  TRANSFORM_INTRO("Energy", "Sound energy calculation.", Energy)
 
  protected:
   virtual void Do(const float* in,

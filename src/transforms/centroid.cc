@@ -23,7 +23,7 @@ namespace transforms {
 
 void Centroid::Do(const float* in,
                   float* out) const noexcept {
-  *out = Do(UseSimd(), in, input_format_->Size()) /
+  *out = Do(use_simd(), in, input_format_->Size()) /
       input_format_->Duration();
 }
 

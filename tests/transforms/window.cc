@@ -34,7 +34,7 @@ class WindowTest : public TransformTest<Window> {
 };
 
 TEST_F(WindowTest, Do) {
-  SetParameter("predft", "false");
+  set_predft(false);
   Initialize();
   Do((*Input)[0], (*Output)[0]);
   float output_na[Size] __attribute__ ((aligned (32)));
@@ -44,7 +44,7 @@ TEST_F(WindowTest, Do) {
 }
 
 TEST_F(WindowTest, DoPreDft) {
-  SetParameter("predft", "true");
+  set_predft(true);
   Initialize();
   Do((*Input)[0], (*Output)[0]);
 }

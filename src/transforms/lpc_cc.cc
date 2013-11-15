@@ -16,15 +16,13 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
+RTP(LPC2CC, size)
+
 LPC2CC::LPC2CC() : size_(kDefaultSize) {
-  RegisterSetter("size", [&](const std::string& value) {
-    int pv = Parse<int>("size", value);
-    if (pv < 2) {
-      return false;
-    }
-    size_ = pv;
-    return true;
-  });
+}
+
+bool LPC2CC::validate_size(const int& value) noexcept {
+   return value >= 2;
 }
 
 size_t LPC2CC::OnFormatChanged(size_t buffersCount) {

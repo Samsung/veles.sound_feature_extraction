@@ -25,7 +25,7 @@ class ShortTimeMeanScaleNormalizationTest : public TransformTest<ShortTimeMeanSc
 
   virtual void SetUp() {
     Size = 486;
-    SetParameter("length", "5");
+    set_length(5);
     SetUpTransform(10, Size, 18000);
     for (int k = 0; k < 10; k++) {
       for (int i = 0; i < Size; i++) {

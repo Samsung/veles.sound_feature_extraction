@@ -20,76 +20,55 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
+RTP(Beat, bands)
+RTP(Beat, pulses)
+RTP(Beat, min_bpm)
+RTP(Beat, max_bpm)
+RTP(Beat, resolution1)
+RTP(Beat, resolution2)
+RTP(Beat, peaks)
+RTP(Beat, debug)
+
 Beat::Beat()
-    : buffer_(nullptr, std::free),
-      bands_(1),
+    : bands_(kDefaultBands),
       pulses_(kDefaultPulses),
       min_bpm_(kDefaultMinBPM),
       max_bpm_(kDefaultMaxBPM),
-      step1_(kDefaultResolution1),
-      step2_(kDefaultResolution2),
+      resolution1_(kDefaultResolution1),
+      resolution2_(kDefaultResolution2),
       peaks_(kDefaultPeaks),
-      debug_(false) {
-  RegisterSetter("bands", [&](const std::string& value) {
-    int iv = Parse<int>("bands", value);
-    if (iv < 1) {
-      return false;
-    }
-    bands_ = iv;
-    return true;
-  });
-  RegisterSetter("pulses", [&](const std::string& value) {
-    int iv = Parse<int>("pulses", value);
-    if (iv < 1) {
-      return false;
-    }
-    pulses_ = iv;
-    return true;
-  });
-  RegisterSetter("min_bpm", [&](const std::string& value) {
-    int iv = Parse<int>("min_bpm", value);
-    if (iv < 1 || iv > 600) {
-      return false;
-    }
-    min_bpm_ = iv;
-    return true;
-  });
-  RegisterSetter("max_bpm", [&](const std::string& value) {
-    int iv = Parse<int>("max_bpm", value);
-    if (iv < 1 || iv > 600) {
-      return false;
-    }
-    max_bpm_ = iv;
-    return true;
-  });
-  RegisterSetter("resolution1", [&](const std::string& value) {
-    int fv = Parse<float>("resolution1", value);
-    if (fv <= 0) {
-      return false;
-    }
-    step1_ = fv;
-    return true;
-  });
-  RegisterSetter("resolution2", [&](const std::string& value) {
-    int fv = Parse<float>("resolution2", value);
-    if (fv <= 0) {
-      return false;
-    }
-    step2_ = fv;
-    return true;
-  });
-  RegisterSetter("max_peaks", [&](const std::string& value) {
-    int iv = Parse<int>("max_peaks", value);
-    if (iv < 1 || iv > 10) {
-      return false;
-    }
-    peaks_ = iv;
-    return true;
-  });
-  RegisterSetter("debug", [&](const std::string& value) {
-    debug_ = Parse<bool>("debug", value);
-    return true;
-  });
+      debug_(kDefaultDebug),
+      buffer_(nullptr, std::free) {
+}
+
+ALWAYS_VALID_TP(Beat, debug)
+
+bool Beat::validate_bands(const int& value) noexcept {
+  return value >= 1;
+}
+
+bool Beat::validate_pulses(const int& value) noexcept {
+  return value >= 1;
+}
+
+bool Beat::validate_peaks(const int& value) noexcept {
+  return value >= 1 && value <= 10;
+}
+
+bool Beat::validate_min_bpm(const float& value) noexcept {
+  return value >= 1 && value <= 600;
+}
+
+bool Beat::validate_max_bpm(const float& value) noexcept {
+  return value >= 1 && value <= 600;
+}
+
+bool Beat::validate_resolution1(const float& value) noexcept {
+  return value > 0;
+}
+
+bool Beat::validate_resolution2(const float& value) noexcept {
+  return value > 0;
 }
 
 size_t Beat::PulsesLength(int pulses_count, int period) noexcept {
@@ -144,7 +123,7 @@ void Beat::Do(const BuffersBase<float*>& in,
     std::vector<float> energies;
 
     // First pass - rough peaks estimation
-    CalculateBeatEnergies(in, ini, min_bpm_, max_bpm_, step1_, &energies);
+    CalculateBeatEnergies(in, ini, min_bpm_, max_bpm_, resolution1_, &energies);
 
     // Output the energies for the reference
     if (debug_) {
@@ -161,7 +140,7 @@ void Beat::Do(const BuffersBase<float*>& in,
     // Find maximums and sort them
     ExtremumPoint* results;
     size_t found_peaks_count;
-    detect_peaks(UseSimd(), energies.data(), energies.size(),
+    detect_peaks(use_simd(), energies.data(), energies.size(),
                  kExtremumTypeMaximum, &results, &found_peaks_count);
     if (results == nullptr) {
       for (int i = 0; i < peaks_; i++) {
@@ -184,9 +163,9 @@ void Beat::Do(const BuffersBase<float*>& in,
     // Second pass - increase peaks precision
     for (int pind = 0; pind < rcount; pind++) {
       CalculateBeatEnergies(in, ini,
-                            min_bpm_ + (results[pind].position - 1) * step1_,
-                            min_bpm_ + (results[pind].position + 1) * step1_,
-                            step2_, &energies, &(*out)[ini / bands_][pind][0],
+                            min_bpm_ + (results[pind].position - 1) * resolution1_,
+                            min_bpm_ + (results[pind].position + 1) * resolution1_,
+                            resolution2_, &energies, &(*out)[ini / bands_][pind][0],
                             &(*out)[ini / bands_][pind][1]);
     }
     for (int pind = rcount; pind < peaks_; pind++) {
@@ -216,7 +195,7 @@ void Beat::CalculateBeatEnergies(const BuffersBase<float*>& in, size_t inIndex,
     size_t conv_length = size + PulsesLength(pulses_, period) - 1;
     for (size_t i = inIndex; i < inIndex + bands_ && i < in.Count(); i++) {
       CombConvolve(in[i], size, pulses_, period, buffer);
-      current_energy += calculate_energy(Beat::UseSimd(), buffer,
+      current_energy += calculate_energy(Beat::use_simd(), buffer,
                                          conv_length) * conv_length;
     }
     (*energies)[i] = current_energy;

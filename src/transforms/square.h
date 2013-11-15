@@ -21,9 +21,8 @@ namespace transforms {
 class Square : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("Square", "Squares the signal (window floating point "
-                            "format).")
-
-  OMP_TRANSFORM_PARAMETERS()
+                            "format).",
+                  Square)
 
  protected:
   virtual void Do(const float* in, float* out) const noexcept override;
@@ -34,8 +33,6 @@ class Square : public OmpUniformFormatTransform<formats::ArrayFormatF> {
 
 class SquareInverse : public OmpInverseUniformFormatTransform<Square> {
  public:
-  OMP_TRANSFORM_PARAMETERS()
-
   virtual void Do(const float* in, float* out) const noexcept override;
 };
 

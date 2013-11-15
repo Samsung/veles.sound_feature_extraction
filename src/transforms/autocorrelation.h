@@ -25,19 +25,17 @@ namespace std {
 namespace sound_feature_extraction {
 namespace transforms {
 
-class Autocorrelation
-    : public OmpUniformFormatTransform<formats::ArrayFormatF> {
+class Autocorrelation : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   Autocorrelation();
 
-  TRANSFORM_INTRO("Autocorrelation", "Find the cross-correlation of a signal "
-                                     "with itself.")
+  TRANSFORM_INTRO("Autocorrelation",
+                  "Find the cross-correlation of a signal with itself.",
+                  Autocorrelation)
 
-  OMP_TRANSFORM_PARAMETERS(
-      TP("normalize", "Calculate normalized autocorrelation by dividing each "
-                      "value by lag 0 result (squared signal sum).",
-         "false")
-  )
+  TP(normalize, bool, kDefaultNormalize,
+     "Calculate normalized autocorrelation by dividing each "
+     "value by lag 0 result (squared signal sum).")
 
   void Initialize() const override;
 
@@ -47,6 +45,8 @@ class Autocorrelation
   virtual void Do(const float* in,
                   float* out) const noexcept override;
 
+  static constexpr bool kDefaultNormalize = false;
+
  private:
   struct SyncHandle {
     std::shared_ptr<CrossCorrelationHandle> handle;
@@ -54,7 +54,6 @@ class Autocorrelation
   };
 
   mutable std::vector<SyncHandle> correlation_handles_;
-  bool normalize_;
 };
 
 }  // namespace transforms

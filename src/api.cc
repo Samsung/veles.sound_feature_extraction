@@ -439,11 +439,11 @@ void set_omp_transforms_max_threads_num(int value) {
 }
 
 bool get_use_simd(void) {
-  return SimdAware::UseSimd();
+  return SimdAware::use_simd();
 }
 
 void set_use_simd(int value) {
-  SimdAware::SetUseSimd(value);
+  SimdAware::set_use_simd(value);
 }
 
 size_t cpu_cache_size = 8 * 1024 * 1024;

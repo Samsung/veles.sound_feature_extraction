@@ -19,33 +19,21 @@ namespace transforms {
 template <class B>
 class SingleFrequencyFilter : public B {
  public:
+  TRANSFORM_PARAMETERS_SUPPORT(SingleFrequencyFilter<B>)
+
   SingleFrequencyFilter() noexcept : frequency_(B::kMinFilterFrequency) {
-    this->RegisterSetter(kFrequencyParameterName, [&](const std::string& value) {
-      int pv = this->template Parse<int>(kFrequencyParameterName, value);
-      if (pv < B::kMinFilterFrequency || pv > B::kMaxFilterFrequency) {
-        return false;
-      }
-      frequency_ = pv;
-      return true;
-    });
   }
 
-  int frequency() const {
-    return frequency_;
-  }
-
-  void set_frequency(int value) {
-    this->SetParameter(kFrequencyParameterName, std::to_string(value));
-  }
-
-  static constexpr const char* kFrequencyParameterName = "frequency";
-
- private:
-  int frequency_;
+  TP(frequency, int, B::kMinFilterFrequency, "Filter's cutoff frequency.")
 };
 
 template <class B>
-constexpr const char* SingleFrequencyFilter<B>::kFrequencyParameterName;
+bool SingleFrequencyFilter<B>::validate_frequency(const int& value) noexcept {
+  return B::ValidateFrequency(value);
+}
+
+template <class B>
+RTP(SingleFrequencyFilter<B>, frequency)
 
 }  // namespace sound_feature_extraction
 }  // namespace transforms

@@ -11,7 +11,7 @@
  */
 
 
-#include <math.h>
+#include <cmath>
 #include "src/transforms/complex_magnitude.h"
 #include "tests/transforms/transform_test.h"
 

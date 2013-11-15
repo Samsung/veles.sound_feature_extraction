@@ -20,30 +20,25 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class PeakDynamicProgramming
-    : public TransformBase<formats::ArrayFormat<formats::FixedArray<2>>,
-                           formats::SingleFormatF> {
+class PeakDynamicProgramming : public TransformBase<
+    formats::ArrayFormat<formats::FixedArray<2>>, formats::SingleFormatF> {
  public:
   PeakDynamicProgramming();
 
   TRANSFORM_INTRO("PeakDynamicProgramming",
                   "Accurate average estimation using dynamic programming "
-                  "approach.")
+                  "approach.",
+                  PeakDynamicProgramming)
 
-  TRANSFORM_PARAMETERS(
-      TP("mind_values", "Whether to favor points with higher values.",
-         std::to_string(kDefaultMindValues))
-  )
+  TP(mind_values, bool, kDefaultMindValues,
+     "Whether to favor points with higher values.")
 
  protected:
   virtual void Do(const BuffersBase<formats::FixedArray<2>*>& in,
                   BuffersBase<float>* out)
       const noexcept override;
 
- private:
   static constexpr bool kDefaultMindValues = false;
-
-  bool mind_values_;
 };
 
 }  // namespace transforms

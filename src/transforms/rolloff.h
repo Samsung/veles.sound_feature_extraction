@@ -20,28 +20,24 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 /// @brief \f$R: \displaystyle\sum_{f=0}^{f=R}{Value[f]} = ratio \times \displaystyle\sum_{f=0}^{f=N}{Value[f]}\f$.
-class Rolloff
-    : public OmpTransformBase<formats::ArrayFormatF, formats::SingleFormatF> {
+class Rolloff : public OmpTransformBase<formats::ArrayFormatF,
+                                        formats::SingleFormatF>  {
  public:
   Rolloff();
 
-  TRANSFORM_INTRO("Rolloff", "Measure of spectral shape.")
+  TRANSFORM_INTRO("Rolloff", "Measure of spectral shape.", Rolloff)
 
-  OMP_TRANSFORM_PARAMETERS(
-      TP("ratio", "The ratio between the partial sum and the whole sum.",
-         std::to_string(kDefaultRatio))
-  )
+  TP(ratio, float, kDefaultRatio,
+     "The ratio between the partial sum and the whole sum.")
 
  protected:
-  virtual void Do(const float* in,
-                  float* out) const noexcept override;
+  virtual void Do(const float* in, float* out) const noexcept override;
 
   static int Do(bool simd, const float* input, size_t length,
                 float ratio) noexcept;
 
  private:
-  static const float kDefaultRatio;
-  float ratio_;
+  static constexpr float kDefaultRatio = 0.85f;
 };
 
 }  // namespace transforms

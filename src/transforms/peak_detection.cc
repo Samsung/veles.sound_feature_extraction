@@ -13,86 +13,70 @@
 #include "src/transforms/peak_detection.h"
 #include <algorithm>
 #include <simd/wavelet.h>
-#include "src/primitives/wavelet_filter_bank.h"
 #include "src/make_unique.h"
 
 namespace sound_feature_extraction {
+
+SortOrder Parse(const std::string& value, identity<SortOrder>) {
+  static const std::unordered_map<std::string, SortOrder> map {
+    { internal::kSortOrderValueStr, kSortOrderValue },
+    { internal::kSortOrderPositionStr, kSortOrderPosition },
+    { internal::kSortOrderBothStr, kSortOrderBoth }
+  };
+  auto soit = map.find(value);
+  if (soit == map.end()) {
+    throw InvalidParameterValueException();
+  }
+  return soit->second;
+}
+
+ExtremumType Parse(const std::string& value, identity<ExtremumType>) {
+  static const std::unordered_map<std::string, ExtremumType> map {
+    { internal::kExtremumTypeMinimumStr, kExtremumTypeMinimum },
+    { internal::kExtremumTypeMaximumStr, kExtremumTypeMaximum },
+    { internal::kExtremumTypeBothStr, kExtremumTypeBoth }
+  };
+  auto soit = map.find(value);
+  if (soit == map.end()) {
+    throw InvalidParameterValueException();
+  }
+  return soit->second;
+}
+
 namespace transforms {
 
 PeakDetection::PeakDetection()
-    : peaks_number_(kDefaultPeaksNumber),
-      order_(kSortOrderBoth),
-      type_(kExtremumTypeMaximum),
-      min_pos_(0),
-      max_pos_(1),
-      swt_details_buffer_(nullptr, std::free),
-      swt_type_(WAVELET_TYPE_DAUBECHIES),
+    : sort_(kDefaultSortOrder),
+      number_(kDefaultPeaksNumber),
+      type_(kDefaultExtremumType),
+      min_pos_(kDefaultMinPos),
+      max_pos_(kDefaultMaxPos),
+      swt_type_(kDefaultSWTType),
       swt_order_(kDefaultWaveletOrder),
-      swt_level_(0) {
-  RegisterSetter("number", [&](const std::string& value) {
-    int pv = Parse<int>("number", value);
-    if (pv < 1) {
-      return false;
-    }
-    peaks_number_ = pv;
-    return true;
-  });
-  RegisterSetter("sort", [&](const std::string& value) {
-    if (value == "value") {
-      order_ = kSortOrderValue;
-    } else if (value == "position") {
-      order_ = kSortOrderPosition;
-    } else if (value == "both") {
-      order_ = kSortOrderBoth;
-    } else {
-      return false;
-    }
-    return true;
-  });
-   RegisterSetter("type", [&](const std::string& value) {
-    if (value == "max") {
-      type_ = kExtremumTypeMaximum;
-    } else if (value == "min") {
-      type_ = kExtremumTypeMinimum;
-    } else if (value == "all") {
-      type_ = kExtremumTypeBoth;
-    } else {
-      return false;
-    }
-    return true;
-  });
-  RegisterSetter("min_pos", [&](const std::string& value) {
-    min_pos_ = Parse<float>("min_pos", value);
-    return true;
-  });
-  RegisterSetter("max_pos", [&](const std::string& value) {
-    max_pos_ = Parse<float>("max_pos", value);
-    return true;
-  });
-  RegisterSetter("swt_type", [&](const std::string& value) {
-    swt_type_ = Primitives::WaveletFilterBank::ParseWaveletType(value);
-    return true;
-  });
-  RegisterSetter("swt_order", [&](const std::string& value) {
-    int pv = Parse<int>("swt_order", value);
-    if (pv < 0) {
-      return false;
-    }
-    swt_order_ = pv;
-    return true;
-  });
-  RegisterSetter("swt_level", [&](const std::string& value) {
-    int pv = Parse<int>("swt_level", value);
-    if (pv < 0) {
-      return false;
-    }
-    swt_level_ = pv;
-    return true;
-  });
+      swt_level_(kDefaultSWTLevel),
+      swt_details_buffer_(nullptr, std::free) {
+}
+ALWAYS_VALID_TP(PeakDetection, sort)
+
+bool PeakDetection::validate_number(const int& value) noexcept {
+  return value >= 1;
+}
+
+ALWAYS_VALID_TP(PeakDetection, type)
+ALWAYS_VALID_TP(PeakDetection, min_pos)
+ALWAYS_VALID_TP(PeakDetection, max_pos)
+ALWAYS_VALID_TP(PeakDetection, swt_type)
+
+bool PeakDetection::validate_swt_order(const int& value) noexcept {
+  return value >= 2;
+}
+
+bool PeakDetection::validate_swt_level(const int& value) noexcept {
+  return value >= 0;
 }
 
 size_t PeakDetection::OnInputFormatChanged(size_t buffersCount) {
-  output_format_->SetSize(peaks_number_);
+  output_format_->SetSize(number_);
   return buffersCount;
 }
 
@@ -100,7 +84,7 @@ void PeakDetection::Initialize() const {
   if (swt_level_ != 0) {
     swt_details_buffer_ = std::uniquify(mallocf(input_format_->Size()),
                                         std::free);
-    int count = MaxThreadsNumber();
+    int count = threads_number();
     swt_buffers_.resize(count);
     for (int i = 0; i < count; i++) {
       swt_buffers_[i].data = std::uniquify(mallocf(input_format_->Size()),
@@ -131,7 +115,7 @@ void PeakDetection::Do(const float* in,
                 buf.data.get(), input_format_->Size(), swt_details_buffer_.get(),
                 buf.data.get());
           }
-          detect_peaks(UseSimd(), buf.data.get(), input_format_->Size(), type_,
+          detect_peaks(use_simd(), buf.data.get(), input_format_->Size(), type_,
                        &results, &count);
           buf.mutex.unlock();
           executed = true;
@@ -140,9 +124,9 @@ void PeakDetection::Do(const float* in,
       }
     }
   } else {
-    detect_peaks(UseSimd(), in, input_format_->Size(), type_, &results, &count);
+    detect_peaks(use_simd(), in, input_format_->Size(), type_, &results, &count);
   }
-  if ((order_ & kSortOrderValue) != 0 && results != nullptr) {
+  if ((sort_ & kSortOrderValue) != 0 && results != nullptr) {
     auto extr_type = type_;
     std::sort(results, results + count,
               [extr_type](const ExtremumPoint& f, const ExtremumPoint& s) {
@@ -150,8 +134,8 @@ void PeakDetection::Do(const float* in,
                     f.value < s.value : f.value > s.value;
               });
   }
-  int rcount = static_cast<int>(count) > peaks_number_? peaks_number_ : count;
-  if (order_ == kSortOrderBoth  && results != nullptr) {
+  int rcount = static_cast<int>(count) > number_? number_ : count;
+  if (sort_ == kSortOrderBoth  && results != nullptr) {
     std::sort(results, results + rcount,
               [](const ExtremumPoint& f, const ExtremumPoint& s) {
                 return f.position < s.position;
@@ -168,13 +152,21 @@ void PeakDetection::Do(const float* in,
     }
     out[i][1] = val;
   }
-  for (int i = count; i < peaks_number_; i++) {
+  for (int i = count; i < number_; i++) {
     out[i][0] = min_pos_;
     out[i][1] = 0;
   }
   free(results);
 }
 
+RTP(PeakDetection, sort)
+RTP(PeakDetection, number)
+RTP(PeakDetection, type)
+RTP(PeakDetection, min_pos)
+RTP(PeakDetection, max_pos)
+RTP(PeakDetection, swt_type)
+RTP(PeakDetection, swt_order)
+RTP(PeakDetection, swt_level)
 REGISTER_TRANSFORM(PeakDetection);
 
 }  // namespace transforms

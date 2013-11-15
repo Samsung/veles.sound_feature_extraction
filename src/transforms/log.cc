@@ -11,7 +11,7 @@
  */
 
 #include "src/transforms/log.h"
-#include <math.h>
+#include <cmath>
 #ifdef __AVX__
 #include <simd/avx_mathfun.h>
 #elif defined(__ARM_NEON__)
@@ -21,35 +21,23 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-const std::unordered_map<std::string, LogTransformBase::LogBase>
-LogTransformBase::kLogBaseMap {
-  { "e", LOG_BASE_E },
-  { "2", LOG_BASE_2 },
-  { "10", LOG_BASE_10 }
-};
-
-const LogTransformBase::LogBase LogTransformBase::kDefaultLogBase = LOG_BASE_E;
-
-LogTransformBase::LogTransformBase() noexcept
-    : base_(kDefaultLogBase) {
-}
-
-std::string LogTransformBase::LogBaseToString(LogBase lb) noexcept {
-  switch (lb) {
-    case LOG_BASE_E:
-      return "e";
-    case LOG_BASE_2:
-      return "2";
-    case LOG_BASE_10:
-      return "10";
+LogarithmBase Parse(const std::string& value, identity<LogarithmBase>) {
+  static const std::unordered_map<std::string, LogarithmBase> map {
+    { internal::kLogBaseEStr, kLogBaseE },
+    { internal::kLogBase2Str, kLogBase2 },
+    { internal::kLogBase10Str, kLogBase10 }
+  };
+  auto lbit = map.find(value);
+  if (lbit == map.end()) {
+    throw InvalidParameterValueException();
   }
-  return "";
+  return lbit->second;
 }
 
 void LogRaw::Do(bool simd, const float* input, int length,
-                   float* output) const noexcept {
-  switch (base_) {
-    case LOG_BASE_E: {
+                float* output) const noexcept {
+  switch (base()) {
+    case kLogBaseE: {
       if (simd) {
 #ifdef __AVX__
         for (int j = 0; j < length - 7; j += 8) {
@@ -81,12 +69,12 @@ void LogRaw::Do(bool simd, const float* input, int length,
       }
       break;
     }
-    case LOG_BASE_2:
+    case kLogBase2:
       for (int j = 0; j < length; j++) {
         output[j] = log2f(input[j]);
       }
       break;
-    case LOG_BASE_10:
+    case kLogBase10:
       for (int j = 0; j < length; j++) {
         output[j] = log10f(input[j]);
       }
@@ -95,7 +83,7 @@ void LogRaw::Do(bool simd, const float* input, int length,
 }
 
 void LogRaw::Do(const float* in, float* out) const noexcept {
-  Do(UseSimd(), in, this->input_format_->Size(), out);
+  Do(use_simd(), in, this->input_format_->Size(), out);
 }
 
 void LogRawInverse::Do(const float* in UNUSED, float* out UNUSED)
@@ -104,14 +92,14 @@ void LogRawInverse::Do(const float* in UNUSED, float* out UNUSED)
 }
 
 void LogSingle::Do(const float& in, float* out) const noexcept {
-  switch (base_) {
-    case LOG_BASE_E:
+  switch (base()) {
+    case kLogBaseE:
       *out = logf(in);
       break;
-    case LOG_BASE_2:
+    case kLogBase2:
       *out = log2f(in);
       break;
-    case LOG_BASE_10:
+    case kLogBase10:
       *out = log10f(in);
       break;
   }

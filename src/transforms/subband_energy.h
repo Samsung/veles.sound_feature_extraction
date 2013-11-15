@@ -26,20 +26,17 @@ namespace transforms {
 /// cardinal number. Thus, the output of this transform is a series of numbers,
 /// each being equal to the corresponding subband energy. Numbers count is the
 /// same as the length of the binary tree fingerprint.
-class SubbandEnergy
-    : public OmpUniformFormatTransform<formats::ArrayFormatF> {
+class SubbandEnergy : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   SubbandEnergy();
 
   TRANSFORM_INTRO("SubbandEnergy",
                   "Calculates the subband energies (subbands are defined with"
-                  "a binary tree fingerprint identical to used in DWPT).")
+                  "a binary tree fingerprint identical to used in DWPT).",
+                  SubbandEnergy)
 
-  OMP_TRANSFORM_PARAMETERS(
-    TP("tree", "The subbands binary tree fingerprint.",
-       Primitives::WaveletFilterBank::DescriptionToString(
-           kDefaultTreeFingerprint))
-  )
+  TP(tree, TreeFingerprint, kDefaultTreeFingerprint(),
+     "The subbands binary tree fingerprint.")
 
   virtual void Initialize() const override;
 
@@ -50,10 +47,16 @@ class SubbandEnergy
                   float* out) const noexcept override;
 
  private:
-  static const std::vector<int> kDefaultTreeFingerprint;
+  static TreeFingerprint kDefaultTreeFingerprint() noexcept {
+    return TreeFingerprint {
+      3, 3, 3,
+      4, 4, 4,
+      5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+      6, 6, 6, 6, 6, 6, 6, 6
+    };
+  }
 
-  std::vector<int> treeFingerprint_;
-  mutable std::vector<int> offsets_;
+  mutable TreeFingerprint offsets_;
 };
 
 }  // namespace transforms

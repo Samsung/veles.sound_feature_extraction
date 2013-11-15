@@ -11,7 +11,7 @@
  */
 
 #include "src/transforms/highpass_filter.h"
-#include <math.h>
+#include <cmath>
 
 namespace sound_feature_extraction {
 namespace transforms {

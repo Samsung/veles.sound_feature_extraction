@@ -20,43 +20,77 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-enum MeanTypes {
-  MEAN_TYPE_ARITHMETIC = 0,
-  MEAN_TYPE_GEOMETRIC,
-  MEAN_TYPE_COUNT
+enum MeanType {
+  kMeanTypeArithmetic = 0,
+  kMeanTypeGeometric,
+  kMeanTypeCount
 };
+
+namespace internal {
+constexpr const char* kMeanTypeArithmeticStr = "arithmetic";
+constexpr const char* kMeanTypeGeometricStr = "geometric";
+}
+
+std::set<MeanType> Parse(const std::string& value,
+                         identity<std::set<MeanType>>);
+
+}  // namespace transforms
+}  // namespace sound_feature_extraction
+
+namespace std {
+  inline string to_string(
+      const set<sound_feature_extraction::transforms::MeanType>& value)
+      noexcept {
+    string res;
+    for (auto type : value) {
+      switch (type) {
+        case sound_feature_extraction::transforms::kMeanTypeArithmetic:
+          res += sound_feature_extraction::transforms::internal::
+              kMeanTypeArithmeticStr;
+          res += " ";
+          break;
+        case sound_feature_extraction::transforms::kMeanTypeGeometric:
+          res += sound_feature_extraction::transforms::internal::
+              kMeanTypeGeometricStr;
+          res += " ";
+          break;
+        default:
+          break;
+      }
+    }
+    return res.empty()? "" : res.substr(0, res.size() - 1);
+  }
+}  // namespace std
+
+namespace sound_feature_extraction {
+namespace transforms {
 
 class Mean
     : public OmpTransformBase<formats::ArrayFormatF,
                               formats::SingleFormat<
-                                  formats::FixedArray<MEAN_TYPE_COUNT>>> {
+                                  formats::FixedArray<kMeanTypeCount>>> {
  public:
   Mean();
 
-  TRANSFORM_INTRO("Mean", "Window means calculation.")
+  TRANSFORM_INTRO("Mean", "Window means calculation.", Mean)
 
-  OMP_TRANSFORM_PARAMETERS(
-      TP("types", "Mean types to calculate (names separated with spaces).",
-         kDefaultMeanTypesStr)
-  )
+  TP(types, std::set<MeanType>, kDefaultMeanTypes(),
+     "Mean types to calculate (names separated with spaces).")
 
  protected:
-  static const std::unordered_map<std::string, MeanTypes> kMeanTypesMap;
-
   virtual void Do(const float* in,
-                  formats::FixedArray<MEAN_TYPE_COUNT>* out)
+                  formats::FixedArray<kMeanTypeCount>* out)
       const noexcept override;
 
   static float Do(bool simd, const float* input, size_t length,
-                  MeanTypes type) noexcept;
+                  MeanType type) noexcept;
 
-private:
-  static const std::set<MeanTypes> kDefaultMeanTypes;
-  static const std::string kDefaultMeanTypesStr;
-
-  std::set<MeanTypes> types_;
+  static std::set<MeanType> kDefaultMeanTypes() noexcept {
+    return { kMeanTypeArithmetic };
+  }
 };
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
+
 #endif  // SRC_TRANSFORMS_MEAN_H_

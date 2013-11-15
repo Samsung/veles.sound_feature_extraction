@@ -11,7 +11,7 @@
  */
 
 #include "src/transforms/complex_magnitude.h"
-#include <math.h>
+#include <cmath>
 #ifdef __AVX__
 #include <immintrin.h>
 #elif defined(__ARM_NEON__)
@@ -32,7 +32,7 @@ size_t ComplexMagnitude::OnFormatChanged(size_t buffersCount) {
 
 void ComplexMagnitude::Do(const float* in,
                           float* out) const noexcept {
-  Do(UseSimd(), in, input_format_->Size(), out);
+  Do(use_simd(), in, input_format_->Size(), out);
 }
 
 void ComplexMagnitude::Do(bool simd, const float* input, int length,

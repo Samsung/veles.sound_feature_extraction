@@ -10,7 +10,7 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <math.h>
+#include <cmath>
 #include "src/transforms/preemphasis.h"
 #include "tests/transforms/transform_test.h"
 
@@ -35,7 +35,7 @@ TEST_F(PreemphasisTest, Do) {
   Do((*Input)[0], (*Output)[0]);
   ASSERT_EQ(1, (*Output)[0][0]);
   for (int i = 1; i < Size; i++) {
-    ASSERT_NEAR(int16_t((1 - kDefaultK) * (i + 1) + kDefaultK),
+    ASSERT_NEAR(int16_t((1 - kDefaultValue) * (i + 1) + kDefaultValue),
                 (*Output)[0][i], 1.f);
   }
 }

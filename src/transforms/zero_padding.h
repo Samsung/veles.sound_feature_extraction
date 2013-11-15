@@ -18,13 +18,11 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class ZeroPadding
-    : public OmpUniformFormatTransform<formats::ArrayFormatF> {
+class ZeroPadding : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("ZeroPadding", "Pads signal with zeros to make it's length "
-                                 "a power of 2.")
-
-  OMP_TRANSFORM_PARAMETERS()
+                                 "a power of 2.",
+                  ZeroPadding)
 
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override;

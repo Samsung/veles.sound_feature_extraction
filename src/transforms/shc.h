@@ -33,24 +33,17 @@ class SHCInvalidMinMaxWindowWidthException : public ExceptionBase {
 
 /// @brief Prepare for fundamental frequency extraction using Spectral Harmonics
 /// Correlation.
-class SHC
-    : public OmpUniformFormatTransform<formats::ArrayFormatF>,
+class SHC : public OmpUniformFormatTransform<formats::ArrayFormatF>,
       public TransformLogger<SHC> {
  public:
   SHC();
 
-  TRANSFORM_INTRO("SHC", "Apply spectral harmonics correlation.")
+  TRANSFORM_INTRO("SHC", "Apply spectral harmonics correlation.", SHC)
 
-  OMP_TRANSFORM_PARAMETERS(
-      TP("harmonics", "The number of harmonics.",
-         std::to_string(kDefaultHarmonicsNumber))
-      TP("window", "The spectral window length, in Hz.",
-         std::to_string(kDefaultWindowWidth))
-      TP("min", "The minimal frequency to scan.",
-         std::to_string(kDefaultMinFrequency))
-      TP("max", "The maximal frequency to scan.",
-         std::to_string(kDefaultMaxFrequency))
-  )
+  TP(harmonics, int, kDefaultHarmonicsNumber, "The number of harmonics.")
+  TP(window, int, kDefaultWindowWidth, "The spectral window length, in Hz.")
+  TP(min, int, kDefaultMinFrequency, "The minimal frequency to scan.")
+  TP(max, int, kDefaultMaxFrequency, "The maximal frequency to scan.")
 
  protected:
   virtual void Initialize() const override;
@@ -63,10 +56,6 @@ class SHC
   static constexpr int kDefaultMinFrequency = 50;
   static constexpr int kDefaultMaxFrequency = 600;
 
-  int harmonics_;
-  int window_width_;
-  int min_freq_;
-  int max_freq_;
   mutable int half_window_samples_;
   mutable int min_samples_;
   mutable int max_samples_;

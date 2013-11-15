@@ -23,23 +23,18 @@ class LPC2CC : public OmpUniformFormatTransform<formats::ArrayFormatF> {
   LPC2CC();
 
   TRANSFORM_INTRO("LPCtoCC", "Convert Linear Prediction Coefficients (LPC) to "
-                             "Cepstral Coefficients.")
+                             "Cepstral Coefficients.",
+                  LPC2CC)
 
-  OMP_TRANSFORM_PARAMETERS(
-      TP("size", "The number of cepstral coefficients. 0 means original LPC "
-                 "length.",
-         std::to_string(kDefaultSize))
-  )
+  TP(size, int, kDefaultSize,
+     "The number of cepstral coefficients. 0 means original LPC length.")
 
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override;
 
   virtual void Do(const float* in, float* out) const noexcept override;
 
- private:
   static constexpr int kDefaultSize = 0;
-
-  int size_;
 };
 
 }  // namespace transforms

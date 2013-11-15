@@ -11,7 +11,7 @@
  */
 
 #include "src/transforms/energy.h"
-#include <math.h>
+#include <cmath>
 #include "src/primitives/energy.h"
 
 namespace sound_feature_extraction {
@@ -20,7 +20,7 @@ namespace transforms {
 void Energy::Do(const float* in,
                 float* out) const noexcept {
   int length = input_format_->Size();
-  *out = calculate_energy(UseSimd(), in, length);
+  *out = calculate_energy(use_simd(), in, length);
 }
 
 REGISTER_TRANSFORM(Energy);

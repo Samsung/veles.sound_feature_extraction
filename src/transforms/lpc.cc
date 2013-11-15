@@ -17,12 +17,12 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-LPC::LPC() : error_(false) {
-  RegisterSetter("add_error", [&](const std::string& value) {
-    error_ = Parse<bool>("add_error", value);
-    return true;
-  });
+RTP(LPC, error)
+
+LPC::LPC() : error_(kDefaultError) {
 }
+
+ALWAYS_VALID_TP(LPC, error)
 
 size_t LPC::OnFormatChanged(size_t buffersCount) {
   if (!error_) {
@@ -34,7 +34,7 @@ size_t LPC::OnFormatChanged(size_t buffersCount) {
 }
 
 void LPC::Do(const float* in, float* out) const noexcept {
-  float err = ldr_lpc(UseSimd(), in, input_format_->Size(),
+  float err = ldr_lpc(use_simd(), in, input_format_->Size(),
                       out + (error_? 1 : 0));
   if (error_) {
     out[0] = err;

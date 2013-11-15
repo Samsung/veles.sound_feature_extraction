@@ -15,7 +15,7 @@
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <boost/regex.hpp>
 #pragma GCC diagnostic pop
-#include <math.h>
+#include <cmath>
 #ifdef __AVX__
 #include <simd/avx_extra.h>
 #elif defined(__ARM_NEON__)
@@ -25,12 +25,37 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-const std::unordered_map<std::string, StatsType> Stats::kStatsTypesMap {
-  { "average", kStatsTypeAverage },
-  { "stddev", kStatsTypeStdDeviation },
-  { "skewness", kStatsTypeSkewness},
-  { "kurtosis", kStatsTypeKurtosis }
-};
+std::set<StatsType> Parse(const std::string& value,
+                          identity<std::set<StatsType>>) {
+  static const std::unordered_map<std::string, StatsType> map {
+    { internal::kStatsTypeAverageStr, kStatsTypeAverage },
+    { internal::kStatsTypeStdDeviationStr, kStatsTypeStdDeviation },
+    { internal::kStatsTypeSkewnessStr, kStatsTypeSkewness },
+    { internal::kStatsTypeKurtosisStr, kStatsTypeKurtosis }
+  };
+
+  static const boost::regex all_regex("^\\s*(\\w+\\s*(\\s|$))+");
+  boost::smatch match;
+  if (!boost::regex_match(value, match, all_regex)) {
+    throw InvalidParameterValueException();
+  }
+
+  std::set<StatsType> ret;
+  std::transform(boost::sregex_token_iterator(value.begin(), value.end(),
+                                            boost::regex("\\s*(\\w+)\\s*"),
+                                            1),
+                 boost::sregex_token_iterator(),
+                 std::inserter(ret, ret.begin()),
+                 [](const std::string& subval) {
+    auto stit = map.find(subval);
+    if (stit == map.end()) {
+      throw InvalidParameterValueException();
+    }
+    return stit->second;
+  });
+
+  return ret;
+}
 
 const std::unordered_map<int, Stats::CalculateFunc> Stats::kStatsFuncs {
   { kStatsTypeAverage, Stats::CalculateAverage },
@@ -40,44 +65,14 @@ const std::unordered_map<int, Stats::CalculateFunc> Stats::kStatsFuncs {
 };
 
 Stats::Stats()
-    : types_({ kStatsTypeAverage, kStatsTypeStdDeviation,
-               kStatsTypeSkewness, kStatsTypeKurtosis}),
-      interval_(0) {
-  RegisterSetter("types", [&](const std::string& value) {
-    static const boost::regex allRegex("^\\s*(\\w+\\s*(\\s|$))+");
-    boost::smatch match;
-    if (!boost::regex_match(value, match, allRegex)) {
-      return false;
-    }
-    static const boost::regex typesRegex("\\s*(\\w+)\\s*");
-    static const boost::sregex_token_iterator empty;
-    boost::sregex_token_iterator typesIterator(
-          value.begin(), value.end(), typesRegex, 1);
-    assert(typesIterator != empty);
-    while (typesIterator != empty) {
-      auto type_name = *typesIterator++;
-      if (type_name == "all") {
-        for (auto tmp : kStatsTypesMap) {
-          types_.insert(tmp.second);
-        }
-      } else {
-        auto mtypeit = kStatsTypesMap.find(type_name);
-        if (mtypeit == kStatsTypesMap.end()) {
-          return false;
-        }
-        types_.insert(mtypeit->second);
-      }
-    }
-    return true;
-  });
-  RegisterSetter("interval", [&](const std::string& value) {
-    int iv = Parse<int>("interval", value);
-    if (iv < 2) {
-      return false;
-    }
-    interval_ = iv;
-    return true;
-  });
+    : types_(kDefaultStatsTypes()),
+      interval_(kDefaultInterval) {
+}
+
+ALWAYS_VALID_TP(Stats, types)
+
+bool Stats::validate_interval(const int& value) noexcept {
+  return value >= 2;
 }
 
 size_t Stats::OnInputFormatChanged(size_t buffersCount) {
@@ -278,6 +273,8 @@ float Stats::CalculateKurtosis(const float* rawMoments) noexcept {
   return value;
 }
 
+RTP(Stats, types)
+RTP(Stats, interval)
 REGISTER_TRANSFORM(Stats);
 
 }  // namespace transforms

@@ -11,70 +11,66 @@
  */
 
 #include "src/transforms/filter_bank.h"
-#include <math.h>
+#include <cmath>
 #include <simd/arithmetic-inl.h>
+#include "src/transforms/filter_base.h"
 
 namespace sound_feature_extraction {
 namespace transforms {
 
-const std::unordered_map<std::string, FilterBank::ScaleType>
-FilterBank::kScaleTypeMap = {
-    { "linear", SCALE_TYPE_LINEAR },
-    { "mel", SCALE_TYPE_MEL },
-    { "bark", SCALE_TYPE_BARK }
-};
+ScaleType Parse(const std::string& value, identity<ScaleType>) {
+  static const std::unordered_map<std::string, ScaleType> map = {
+    { internal::kScaleTypeLinearStr, kScaleTypeLinear },
+    { internal::kScaleTypeMelStr, kScaleTypeMel },
+    { internal::kScaleTypeBarkStr, kScaleTypeBark }
+  };
+  auto tit = map.find(value);
+  if (tit == map.end()) {
+    throw InvalidParameterValueException();
+  }
+  return tit->second;
+}
 
-const int FilterBank::kDefaultLength = 40;
-const int FilterBank::kDefaultMinFrequency = 130;
-const int FilterBank::kDefaultMaxFrequency = 6854;
+RTP(FilterBank, type)
+RTP(FilterBank, number)
+RTP(FilterBank, frequency_min)
+RTP(FilterBank, frequency_max)
 
 FilterBank::FilterBank()
-  : type_(SCALE_TYPE_MEL),
-    length_(kDefaultLength),
-    minFreq_(kDefaultMinFrequency),
-    maxFreq_(kDefaultMaxFrequency),
-    filterBank_(nullptr, free) {
-  RegisterSetter("number", [&](const std::string& value) {
-    auto pv = Parse<size_t>("number", value);
-    if (pv > 2048) {
-      return false;
-    }
-    length_ = pv;
-    return true;
-  });
-  RegisterSetter("frequency_min", [&](const std::string& value) {
-    auto pv = Parse<int>("frequency_min", value);
-    if (pv < 10 || pv >= maxFreq_) {
-      return false;
-    }
-    minFreq_ = pv;
-    return true;
-  });
-  RegisterSetter("frequency_max", [&](const std::string& value) {
-    auto pv = Parse<int>("frequency_max", value);
-    if (pv < 10 || pv <= minFreq_) {
-      return false;
-    }
-    maxFreq_ = pv;
-    return true;
-  });
-  RegisterSetter("type", [&](const std::string& value) {
-    auto tit = kScaleTypeMap.find(value);
-    if (tit == kScaleTypeMap.end()) {
-      return false;
-    }
-    type_ = tit->second;
-    return true;
-  });
+    : type_(kDefaultScale),
+      number_(kDefaultNumber),
+      frequency_min_(kDefaultMinFrequency),
+      frequency_max_(kDefaultMaxFrequency),
+      filter_bank_(nullptr, free) {
+}
+
+ALWAYS_VALID_TP(FilterBank, type)
+
+bool FilterBank::validate_number(const int& value) noexcept {
+  return value <= 2048;
+}
+
+bool FilterBank::validate_frequency_min(const int& value) noexcept {
+  return value >= FilterBase<nullptr_t>::kMinFilterFrequency &&
+      value <= FilterBase<nullptr_t>::kMaxFilterFrequency;
+}
+
+bool FilterBank::validate_frequency_max(const int& value) noexcept {
+  return value >= FilterBase<nullptr_t>::kMinFilterFrequency &&
+      value <= FilterBase<nullptr_t>::kMaxFilterFrequency;
+}
+
+const FloatPtr& FilterBank::filter_bank() const {
+  return filter_bank_;
 }
 
 float FilterBank::LinearToScale(ScaleType type, float freq) {
   switch (type) {
-    case SCALE_TYPE_LINEAR:
+    case kScaleTypeLinear:
       return freq;
-    case SCALE_TYPE_MEL:
+    case kScaleTypeMel:
       return 1127.0f * logf(1 + freq / 700.0f);
-    case SCALE_TYPE_BARK:
+    case kScaleTypeBark:
       // see http://depository.bas-net.by/EDNI/Periodicals/Articles/Details.aspx?Key_Journal=32&Id=681
       return 8.96f * logf(0.978f +
                           5.0f * logf(0.994f +
@@ -85,11 +81,11 @@ float FilterBank::LinearToScale(ScaleType type, float freq) {
 
 float FilterBank::ScaleToLinear(ScaleType type, float value) {
   switch (type) {
-    case SCALE_TYPE_LINEAR:
+    case kScaleTypeLinear:
       return value;
-    case SCALE_TYPE_MEL:
+    case kScaleTypeMel:
       return 700.0f * (expf(value / 1127.0f) - 1);
-    case SCALE_TYPE_BARK:
+    case kScaleTypeBark:
       // see http://depository.bas-net.by/EDNI/Periodicals/Articles/Details.aspx?Key_Journal=32&Id=681
       return 2173.0f * powf(expf((expf(value / 8.96f) - 0.978f) / 5.0f) -
                             0.994f, 1.0f / 1.347f) - 75.4f;
@@ -143,24 +139,24 @@ void FilterBank::AddTriangularFilter(float center, float halfWidth) const {
       // Right slope
       ratio = 1.0f - (LinearToScale(type_, i * df) - center) / halfWidth;
     }
-    filterBank_.get()[i] += ratio;
+    filter_bank_.get()[i] += ratio;
   }
 }
 
 void FilterBank::Initialize() const {
-  filterBank_ = std::unique_ptr<float, void(*)(void*)>(mallocf(input_format_->Size()), free);
-  memsetf(filterBank_.get(), 0.f, input_format_->Size());
+  filter_bank_ = std::unique_ptr<float, void(*)(void*)>(mallocf(input_format_->Size()), free);
+  memsetf(filter_bank_.get(), 0.f, input_format_->Size());
 
-  float scaleMin = LinearToScale(type_, minFreq_);
-  float scaleMax = LinearToScale(type_, maxFreq_);
-  float dsc = (scaleMax - scaleMin) / (length_ - 1);
+  float scaleMin = LinearToScale(type_, frequency_min_);
+  float scaleMax = LinearToScale(type_, frequency_max_);
+  float dsc = (scaleMax - scaleMin) / (number_ - 1);
 
-  for (size_t i = 0; i < length_; i++) {
+  for (int i = 0; i < number_; i++) {
     AddTriangularFilter(scaleMin + dsc * i, dsc);
   }
 
   // Avoid zeros in filter since taking a logarithm from 0 is undefined.
-  auto filter = filterBank_.get();
+  auto filter = filter_bank_.get();
   for (size_t i = 0; i < input_format_->Size(); i++) {
     if (filter[i] == 0.f) {
       filter[i] = 0.0001f;
@@ -170,7 +166,7 @@ void FilterBank::Initialize() const {
 }
 
 void FilterBank::Do(const float* in, float* out) const noexcept {
-  auto filter = filterBank_.get();
+  auto filter = filter_bank_.get();
   int length = input_format_->Size();
 #ifdef SIMD
   for (int i = 0; i < length - FLOAT_STEP + 1; i += FLOAT_STEP) {

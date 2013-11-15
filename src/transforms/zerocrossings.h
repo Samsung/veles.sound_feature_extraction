@@ -21,18 +21,19 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 template <class F>
-class ZeroCrossingsTemplate
-    : public OmpTransformBase<F, formats::SingleFormat32> {
+using ZeroCrossingsTemplateBase = OmpTransformBase<F, formats::SingleFormat32>;
+
+template <class F>
+class ZeroCrossingsTemplate : public ZeroCrossingsTemplateBase<F> {
  public:
   TRANSFORM_INTRO("ZeroCrossings", "Number of time domain zero crossings "
-                                   "of the signal.")
-
-  OMP_TRANSFORM_PARAMETERS()
+                                   "of the signal.",
+                  ZeroCrossingsTemplateBase<F>)
 
  protected:
   virtual void Do(const typename F::BufferElementType* in,
                   int32_t* out) const noexcept override final {
-    auto result = DoInternal(this->UseSimd(), in,
+    auto result = DoInternal(this->use_simd(), in,
                              this->input_format_->Size());
     assert(result >= 0 &&
            result <= static_cast<int>(this->input_format_->Size()));

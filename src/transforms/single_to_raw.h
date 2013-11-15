@@ -21,13 +21,11 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 template <class T>
-class SingleToRaw
-    : public TransformBase<formats::SingleFormat<T>,
-                           formats::ArrayFormat<T>>{
+class SingleToRaw : public TransformBase<formats::SingleFormat<T>,
+                                         formats::ArrayFormat<T>> {
  public:
-  TRANSFORM_INTRO("Merge", "Merge all single-s to one solid array.")
-
-  TRANSFORM_PARAMETERS()
+  TRANSFORM_INTRO("Merge", "Merge all single-s to one solid array.",
+                  SingleToRaw)
 
  protected:
   virtual size_t OnInputFormatChanged(size_t buffersCount) override final {

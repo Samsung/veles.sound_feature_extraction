@@ -12,15 +12,32 @@
 
 
 #include "src/primitives/window.h"
-#include <math.h>
+#include <cmath>
+#include <unordered_map>
+#include "src/parameterizable_base.h"
 
-const std::unordered_map<std::string, WindowType> kWindowTypeMap {
-  { "rectangular", WINDOW_TYPE_RECTANGULAR },
-  { "hamming", WINDOW_TYPE_HAMMING },
-  { "hanning", WINDOW_TYPE_HANNING },
-  { "half-hanning-right", WINDOW_TYPE_HALF_HANNING_RIGHT },
-  { "blackman", WINDOW_TYPE_BLACKMAN }
-};
+namespace sound_feature_extraction {
+
+constexpr const char* WINDOW_TYPE_RECTANGULAR_STR = "rectangular";
+constexpr const char* WINDOW_TYPE_HAMMING_STR = "hamming";
+constexpr const char* WINDOW_TYPE_HANNING_STR = "hanning";
+constexpr const char* WINDOW_TYPE_HALF_HANNING_RIGHT_STR = "half-hanning-right";
+constexpr const char* WINDOW_TYPE_BLACKMAN_STR = "blackman";
+
+WindowType Parse(const std::string& value, identity<WindowType>) {
+  static const std::unordered_map<std::string, WindowType> map {
+    { WINDOW_TYPE_RECTANGULAR_STR, WINDOW_TYPE_RECTANGULAR },
+    { WINDOW_TYPE_HAMMING_STR, WINDOW_TYPE_HAMMING },
+    { WINDOW_TYPE_HANNING_STR, WINDOW_TYPE_HANNING },
+    { WINDOW_TYPE_HALF_HANNING_RIGHT_STR, WINDOW_TYPE_HALF_HANNING_RIGHT },
+    { WINDOW_TYPE_BLACKMAN_STR, WINDOW_TYPE_BLACKMAN }
+  };
+  auto it = map.find(value);
+  if (it == map.end()) {
+    throw InvalidParameterValueException();
+  }
+  return it->second;
+}
 
 /// @brief Calculates the element of Hamming window of length "length"
 /// at index "index".
@@ -57,3 +74,23 @@ float WindowElement(WindowType type, int length, int index) {
   }
   return 0.0f;
 }
+
+}  // namespace sound_feature_extraction
+
+namespace std {
+  string to_string(sound_feature_extraction::WindowType type) noexcept {
+    switch (type) {
+      case sound_feature_extraction::WINDOW_TYPE_RECTANGULAR:
+        return sound_feature_extraction::WINDOW_TYPE_RECTANGULAR_STR;
+      case sound_feature_extraction::WINDOW_TYPE_HAMMING:
+        return sound_feature_extraction::WINDOW_TYPE_HAMMING_STR;
+      case sound_feature_extraction::WINDOW_TYPE_HANNING:
+        return sound_feature_extraction::WINDOW_TYPE_HANNING_STR;
+      case sound_feature_extraction::WINDOW_TYPE_HALF_HANNING_RIGHT:
+        return sound_feature_extraction::WINDOW_TYPE_HALF_HANNING_RIGHT_STR;
+      case sound_feature_extraction::WINDOW_TYPE_BLACKMAN:
+        return sound_feature_extraction::WINDOW_TYPE_BLACKMAN_STR;
+    }
+    return "";
+  }
+}  // namespace std

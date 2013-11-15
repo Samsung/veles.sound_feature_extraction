@@ -18,31 +18,26 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class Preemphasis
-    : public OmpUniformFormatTransform<formats::ArrayFormat16> {
+class Preemphasis : public OmpUniformFormatTransform<formats::ArrayFormat16> {
  public:
   Preemphasis();
 
   TRANSFORM_INTRO("Preemphasis", "Filter the signal with a first-order "
-                                 "high-pass filter y[n] = 1 - k * x[n - 1].")
+                                 "high-pass filter y[n] = 1 - k * x[n - 1].",
+                  Preemphasis)
 
-  OMP_TRANSFORM_PARAMETERS(
-      TP("value", "The filter coefficient from range (0..1]. "
-                  "The higher, the more emphasis occurs.",
-         std::to_string(kDefaultK))
-  )
+  TP(value, float, kDefaultValue,
+     "The filter coefficient from range (0..1]. "
+     "The higher, the more emphasis occurs.")
 
  protected:
-  static const float kDefaultK;
+  static constexpr float kDefaultValue = 0.9f;
 
   virtual void Do(const int16_t* in,
                   int16_t* out) const noexcept override;
 
   static void Do(bool simd, const int16_t* input, size_t length,
                  float k, int16_t* output) noexcept;
-
- private:
-  float k_;
 };
 
 }  // namespace transforms

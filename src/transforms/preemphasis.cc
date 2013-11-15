@@ -21,24 +21,18 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-const float Preemphasis::kDefaultK = 0.9f;
-
 Preemphasis::Preemphasis()
-  : k_(kDefaultK) {
-  RegisterSetter("value", [&](const std::string& value) {
-    auto pv = Parse<float>("value", value);
-    if (pv > 1 || pv <= 0) {
-      return false;
-    }
-    k_ = pv;
-    return true;
-  });
+    : value_(kDefaultValue) {
+}
+
+bool Preemphasis::validate_value(const float& value) noexcept {
+  return value > 0 && value <= 1;
 }
 
 void Preemphasis::Do(const int16_t* in,
                      int16_t* out) const noexcept {
 
-  Do(UseSimd(), in, input_format_->Size(), k_, out);
+  Do(use_simd(), in, input_format_->Size(), value_, out);
 }
 
 void Preemphasis::Do(bool simd, const int16_t* input, size_t length,
@@ -97,6 +91,7 @@ void Preemphasis::Do(bool simd, const int16_t* input, size_t length,
   }
 }
 
+RTP(Preemphasis, value)
 REGISTER_TRANSFORM(Preemphasis);
 
 }  // namespace transforms

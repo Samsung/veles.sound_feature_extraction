@@ -13,35 +13,20 @@
 #ifndef SRC_FORMATS_FIXED_ARRAY_H_
 #define SRC_FORMATS_FIXED_ARRAY_H_
 
+#include <array>
 #include <cstdint>
-#include <stdexcept>
 #include "src/buffers_base.h"
 
 namespace sound_feature_extraction {
 namespace formats {
 
 template<std::uint8_t L, typename F = float>
-struct FixedArray {
+struct FixedArray : public std::array<F, L> {
   static_assert(std::is_arithmetic<F>(), "F must be an arithmetic type");
-  F Data[L];
-
-  F& operator[](int index) {
-    if (index < 0 || index > L - 1) {
-      throw std::out_of_range("index");
-    }
-    return Data[index];
-  }
-
-  const F& operator[](int index) const {
-    if (index < 0 || index > L - 1) {
-      throw std::out_of_range("index");
-    }
-    return Data[index];
-  }
 
   bool Validate() const noexcept {
     for (int i = 0; i < L; i++) {
-      if (!Validation::Validator<F>::Validate(this->Data[i])) {
+      if (!Validation::Validator<F>::Validate((*this)[i])) {
         return false;
       }
     }
@@ -50,7 +35,7 @@ struct FixedArray {
 
   bool operator== (F value) const noexcept {
     for (int i = 0; i < L; i++) {
-      if (Data[i] != value) {
+      if ((*this)[i] != value) {
         return false;
       }
     }

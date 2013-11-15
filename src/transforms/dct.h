@@ -22,9 +22,8 @@ namespace transforms {
 class DCT : public UniformFormatTransform<formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("DCT", "Performs Discrete Cosine Transform "
-                         "on the signal.")
-
-  TRANSFORM_PARAMETERS()
+                         "on the signal.",
+                  DCT)
 
  protected:
   virtual void Do(const BuffersBase<float*>& in,
@@ -33,8 +32,6 @@ class DCT : public UniformFormatTransform<formats::ArrayFormatF> {
 
 class DCTInverse : public InverseUniformFormatTransform<DCT> {
  public:
-  TRANSFORM_PARAMETERS()
-
   virtual bool BufferInvariant() const noexcept override final {
     return true;
   }

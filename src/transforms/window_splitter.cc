@@ -27,10 +27,10 @@ const noexcept {
 
   for (size_t i = 0; i < in.Count(); i++) {
     for (int j = 0; j < windows_count_; j++) {
-      auto input = in[i] + j * step_;
-      auto output = interleaved_? (*out)[i * windows_count_ + j] :
+      auto input = in[i] + j * step();
+      auto output = interleaved()? (*out)[i * windows_count_ + j] :
                                   (*out)[j * in.Count() + i];
-      if (type_ != WINDOW_TYPE_RECTANGULAR) {
+      if (type() != WINDOW_TYPE_RECTANGULAR) {
 #ifdef __AVX__
         if (align_complement_i16(input) != 0) {
           memcpy(intbuf, input, output_format_->Size() * sizeof(int16_t));
@@ -41,9 +41,9 @@ const noexcept {
 #else
         int16_to_float(input, output_format_->Size(), fbuf);
 #endif
-        Window::ApplyWindow(UseSimd(), window, output_format_->Size(), fbuf, fbuf);
+        Window::ApplyWindow(use_simd(), window, output_format_->Size(), fbuf, fbuf);
         float_to_int16(fbuf, output_format_->Size(), output);
-      } else {  // type_ != WINDOW_TYPE_RECTANGULAR
+      } else {  // type() != WINDOW_TYPE_RECTANGULAR
         memcpy(output, input, output_format_->Size() * sizeof(input[0]));
       }
     }
@@ -58,17 +58,17 @@ const noexcept {
 #endif
   for (size_t i = 0; i < in.Count(); i++) {
     for (int j = 0; j < windows_count_; j++) {
-      auto input = in[i] + j * step_;
+      auto input = in[i] + j * step();
       auto output = (*out)[i * windows_count_ + j];
-      if (type_ != WINDOW_TYPE_RECTANGULAR) {
+      if (type() != WINDOW_TYPE_RECTANGULAR) {
 #ifdef __AVX__
         if (align_complement_f32(input) != 0) {
           memcpy(intbuf, input, output_format_->Size() * sizeof(float));
-          Window::ApplyWindow(UseSimd(), window_.get(), output_format_->Size(),
+          Window::ApplyWindow(use_simd(), window_.get(), output_format_->Size(),
                               intbuf, output);
         } else {
 #endif
-        Window::ApplyWindow(UseSimd(), window_.get(), output_format_->Size(),
+        Window::ApplyWindow(use_simd(), window_.get(), output_format_->Size(),
                             input, output);
 #ifdef __AVX__
         }

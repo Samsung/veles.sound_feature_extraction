@@ -11,17 +11,17 @@
  */
 
 #include "src/transforms/sfm.h"
-#include <math.h>
+#include <cmath>
 
 namespace sound_feature_extraction {
 namespace transforms {
 
 using formats::FixedArray;
 
-void SFM::Do(const FixedArray<MEAN_TYPE_COUNT>& in,
+void SFM::Do(const FixedArray<kMeanTypeCount>& in,
              float* out) const noexcept {
-  float gMean = in[MEAN_TYPE_GEOMETRIC];
-  float aMean = in[MEAN_TYPE_ARITHMETIC];
+  float gMean = in[kMeanTypeGeometric];
+  float aMean = in[kMeanTypeArithmetic];
   if (gMean == 0) {
     DBG("Buffer has geometric mean equal to 0. Setting the result to 0");
     *out = 0;

@@ -21,13 +21,11 @@ namespace transforms {
 
 /// @brief Calculates \f$\frac{\displaystyle\sum_{f=0}^{SamplingRate / 2}{f
 /// Value[f]}}{\displaystyle\sum_{f=0}^{SamplingRate / 2}{Value[f]}}\f$.
-class Centroid
-    : public OmpTransformBase<formats::ArrayFormatF, formats::SingleFormatF> {
+class Centroid : public OmpTransformBase<formats::ArrayFormatF, formats::SingleFormatF>  {
  public:
   TRANSFORM_INTRO("Centroid", "Window's center of mass in frequency domain "
-                              "calculation.")
-
-  OMP_TRANSFORM_PARAMETERS()
+                              "calculation.",
+                  Centroid)
 
  protected:
   virtual void Do(const float* in,

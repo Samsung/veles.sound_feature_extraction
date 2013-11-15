@@ -22,28 +22,28 @@ namespace Features {
 
 void AddToTransformsList(const std::string& str, size_t featureIndex,
                          RawTransformsList* transforms) {
-  static const boost::regex nameRegex("(^\\w+)");
-  static const boost::regex parametersRegex("\\(([^\\)]*)\\)");
+  static const boost::regex name_regex("(^\\w+)");
+  static const boost::regex parameters_regex("\\(([^\\)]*)\\)");
   static const boost::sregex_token_iterator empty;
 
-  boost::sregex_token_iterator nameIterator(
-      str.begin(), str.end(), nameRegex, 1);
-  if (nameIterator == empty) {
+  boost::sregex_token_iterator name_iterator(
+      str.begin(), str.end(), name_regex, 1);
+  if (name_iterator == empty) {
     throw ParseFeaturesException(featureIndex);
   }
   transforms->push_back(std::make_pair(
-      *nameIterator++, ""));
-  if (nameIterator != empty) {
+      *name_iterator++, ""));
+  if (name_iterator != empty) {
     throw ParseFeaturesException(featureIndex);
   }
-  boost::sregex_token_iterator parametersIterator(
-      str.begin(), str.end(), parametersRegex, 1);
-  if (parametersIterator != empty) {
-    std::string pvalue = *parametersIterator++;
+  boost::sregex_token_iterator parameters_iterator(
+      str.begin(), str.end(), parameters_regex, 1);
+  if (parameters_iterator != empty) {
+    std::string pvalue = *parameters_iterator++;
     if (pvalue.size() > 0) {
       (*transforms)[transforms->size() - 1].second = pvalue;
     }
-    if (parametersIterator != empty) {
+    if (parameters_iterator != empty) {
       throw ParseFeaturesException(featureIndex);
     }
   }
@@ -63,42 +63,42 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures) {
   for (size_t index = 0; index < rawFeatures.size(); index++) {
     auto str = rawFeatures[index];
 
-    boost::sregex_token_iterator featureNameIterator(
+    boost::sregex_token_iterator feature_name_iterator(
         str.begin(), str.end(), featureRegex, 1);
-    if (featureNameIterator == empty) {
+    if (feature_name_iterator == empty) {
       throw ParseFeaturesException(index);
     }
-    std::string fname = *featureNameIterator++;
-    if (featureNameIterator != empty) {
+    std::string fname = *feature_name_iterator++;
+    if (feature_name_iterator != empty) {
       throw ParseFeaturesException(index);
     }
     ret.insert(std::make_pair(fname, RawTransformsList()));
 
-    boost::sregex_token_iterator featureTransformsIterator(
+    boost::sregex_token_iterator feature_transforms_iterator(
         str.begin(), str.end(), featureRegex, 2);
-    if (featureTransformsIterator == empty) {
+    if (feature_transforms_iterator == empty) {
       throw ParseFeaturesException(index);
     }
-    std::string transformsStr = std::string(",") + *featureTransformsIterator++;
-    if (featureTransformsIterator != empty) {
+    std::string transformsStr = std::string(",") + *feature_transforms_iterator++;
+    if (feature_transforms_iterator != empty) {
       throw ParseFeaturesException(index);
     }
 
-    boost::sregex_token_iterator featureEachTransformIterator(
+    boost::sregex_token_iterator feature_each_transform_iterator(
         transformsStr.begin(), transformsStr.end(), transformsRegex, 1);
-    while (featureEachTransformIterator != empty) {
-      AddToTransformsList(*featureEachTransformIterator++, index, &ret[fname]);
+    while (feature_each_transform_iterator != empty) {
+      AddToTransformsList(*feature_each_transform_iterator++, index, &ret[fname]);
     }
 
-    boost::sregex_token_iterator featureTransformsEndIterator(
+    boost::sregex_token_iterator feature_transforms_end_iterator(
         transformsStr.begin(), transformsStr.end(), transformsEndRegex, 1);
-    if (featureTransformsEndIterator == empty) {
+    if (feature_transforms_end_iterator == empty) {
       throw ParseFeaturesException(index);
     }
-    AddToTransformsList(*featureTransformsEndIterator++,
+    AddToTransformsList(*feature_transforms_end_iterator++,
                         index,
                         &ret[fname]);
-    if (featureTransformsEndIterator != empty) {
+    if (feature_transforms_end_iterator != empty) {
       throw ParseFeaturesException(index);
     }
   }

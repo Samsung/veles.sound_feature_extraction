@@ -11,7 +11,7 @@
  */
 
 
-#include <math.h>
+#include <cmath>
 #include "src/transforms/mean.h"
 #include "tests/transforms/transform_test.h"
 
@@ -25,7 +25,8 @@ class MeanTest : public TransformTest<Mean> {
   int Size;
 
   virtual void SetUp() {
-    SetParameter("types", "arithmetic geometric");
+    set_types({ sound_feature_extraction::transforms::kMeanTypeArithmetic,
+                sound_feature_extraction::transforms::kMeanTypeGeometric });
     Size = 486;
     SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; i++) {
@@ -39,7 +40,7 @@ class MeanTest : public TransformTest<Mean> {
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(MeanTest, Do) {
-  SetUseSimd(false);
+  set_use_simd(false);
   Do((*Input)[0], &(*Output)[0]);
 
   float amean = 0.f;
@@ -58,19 +59,19 @@ TEST_F(MeanTest, Do) {
   amean /= Size;
   gmean *= powf(tmp, 1.f / Size);
   ASSERT_EQF(amean, ((*Output)[0])
-      [sound_feature_extraction::transforms::MEAN_TYPE_ARITHMETIC]);
+      [sound_feature_extraction::transforms::kMeanTypeArithmetic]);
   ASSERT_EQF(gmean, ((*Output)[0])
-      [sound_feature_extraction::transforms::MEAN_TYPE_GEOMETRIC]);
+      [sound_feature_extraction::transforms::kMeanTypeGeometric]);
   ASSERT_EQF(amean,
              Do(false, (*Input)[0], Size,
-                sound_feature_extraction::transforms::MEAN_TYPE_ARITHMETIC));
+                sound_feature_extraction::transforms::kMeanTypeArithmetic));
   ASSERT_EQF(gmean,
              Do(false, (*Input)[0], Size,
-                sound_feature_extraction::transforms::MEAN_TYPE_GEOMETRIC));
+                sound_feature_extraction::transforms::kMeanTypeGeometric));
 }
 
 TEST_F(MeanTest, DoSimd) {
-  SetUseSimd(true);
+  set_use_simd(true);
   Do((*Input)[0], &(*Output)[0]);
 
   float amean = 0.f;
@@ -89,15 +90,15 @@ TEST_F(MeanTest, DoSimd) {
   amean /= Size;
   gmean *= powf(tmp, 1.f / Size);
   ASSERT_EQF(amean, ((*Output)[0])
-      [sound_feature_extraction::transforms::MEAN_TYPE_ARITHMETIC]);
+      [sound_feature_extraction::transforms::kMeanTypeArithmetic]);
   ASSERT_EQF(gmean, ((*Output)[0])
-      [sound_feature_extraction::transforms::MEAN_TYPE_GEOMETRIC]);
+      [sound_feature_extraction::transforms::kMeanTypeGeometric]);
   ASSERT_EQF(amean,
              Do(false, (*Input)[0], Size,
-                sound_feature_extraction::transforms::MEAN_TYPE_ARITHMETIC));
+                sound_feature_extraction::transforms::kMeanTypeArithmetic));
   ASSERT_EQF(gmean,
              Do(false, (*Input)[0], Size,
-                sound_feature_extraction::transforms::MEAN_TYPE_GEOMETRIC));
+                sound_feature_extraction::transforms::kMeanTypeGeometric));
 }
 
 TEST_F(MeanTest, DoCase1) {
@@ -130,7 +131,7 @@ TEST_F(MeanTest, DoCase1) {
        2.182069,  2.637870,  2.458133,  1.933196,  1.648814,  1.842487,  2.000000
   };
   Size = sizeof(data) / sizeof(data[0]);
-  SetParameter("types", "geometric");
+  set_types({ sound_feature_extraction::transforms::kMeanTypeGeometric });
   SetUpTransform(1, Size, 18000);
   memcpy((*Input)[0], data, sizeof(data));
   Do((*Input)[0], &(*Output)[0]);
@@ -193,7 +194,7 @@ TEST_F(MeanTest, DoCase2) {
 310.000000
   };
   Size = sizeof(data) / sizeof(data[0]);
-  SetParameter("types", "geometric");
+  set_types({ sound_feature_extraction::transforms::kMeanTypeGeometric });
   SetUpTransform(1, Size, 18000);
   memcpy((*Input)[0], data, sizeof(data));
   Do((*Input)[0], &(*Output)[0]);

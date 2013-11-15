@@ -18,15 +18,13 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class SpectralEnergy
-    : public OmpUniformFormatTransform<formats::ArrayFormatF>,
+class SpectralEnergy : public OmpUniformFormatTransform<formats::ArrayFormatF>,
       public TransformLogger<SpectralEnergy> {
  public:
   TRANSFORM_INTRO("SpectralEnergy",
                   "Calculates the squared magnitude of each complex number, "
-                  "that is, the sum of squared real and imaginary parts.")
-
-  OMP_TRANSFORM_PARAMETERS()
+                  "that is, the sum of squared real and imaginary parts.",
+                  SpectralEnergy)
 
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override;

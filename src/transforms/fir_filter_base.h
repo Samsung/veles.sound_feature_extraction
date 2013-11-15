@@ -13,7 +13,7 @@
 #ifndef SRC_TRANSFORMS_FIR_FILTER_BASE_H_
 #define SRC_TRANSFORMS_FIR_FILTER_BASE_H_
 
-#include "src/transforms/filter_common.h"
+#include "src/transforms/filter_base.h"
 
 struct ConvolutionHandle;
 

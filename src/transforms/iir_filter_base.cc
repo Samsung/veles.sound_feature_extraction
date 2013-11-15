@@ -15,54 +15,38 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-const std::unordered_map<std::string, IIRFilterType>
-IIRFilterBase::kFilterTypeMap {
-  { "bessel", kIIRFilterTypeBessel },
-  { "butterworth", kIIRFilterTypeButterworth },
-  { "chebyshevI", kIIRFilterTypeChebyshevI },
-  { "chebyshevII", kIIRFilterTypeChebyshevII },
-  { "elliptic", kIIRFilterTypeElliptic },
-  { "legendre", kIIRFilterTypeLegendre }
-};
+RTP(IIRFilterBase, type)
+RTP(IIRFilterBase, ripple)
+RTP(IIRFilterBase, rolloff)
+
+IIRFilterType Parse(const std::string& value, identity<IIRFilterType>) {
+  static const std::unordered_map<std::string, IIRFilterType> map {
+    { internal::kIIRFilterTypeBesselStr, kIIRFilterTypeBessel },
+    { internal::kIIRFilterTypeButterworthStr, kIIRFilterTypeButterworth },
+    { internal::kIIRFilterTypeChebyshevIStr, kIIRFilterTypeChebyshevI },
+    { internal::kIIRFilterTypeChebyshevIIStr, kIIRFilterTypeChebyshevII },
+    { internal::kIIRFilterTypeEllipticStr, kIIRFilterTypeElliptic },
+    { internal::kIIRFilterTypeLegendreStr, kIIRFilterTypeLegendre }
+  };
+  auto fti = map.find(value);
+  if (fti == map.end()) {
+    throw InvalidParameterValueException();
+  }
+  return fti->second;
+}
 
 IIRFilterBase::IIRFilterBase() noexcept
     : type_(kDefaultIIRFilterType),
       ripple_(kDefaultIIRFilterRipple),
       rolloff_(kDefaultIIRFilterRolloff) {
-  RegisterSetter("type", [&](const std::string& value) {
-    auto fti = kFilterTypeMap.find(value);
-    if (fti == kFilterTypeMap.end()) {
-      return false;
-    }
-    type_ = fti->second;
-    return true;
-  });
-  RegisterSetter("ripple", [&](const std::string& value) {
-    float pv = Parse<float>("ripple", value);
-    if (pv <= 0) {
-      return false;
-    }
-    ripple_ = pv;
-    return true;
-  });
-  RegisterSetter("rolloff", [&](const std::string& value) {
-    float pv = Parse<float>("rolloff", value);
-    rolloff_ = pv;
-    return true;
-  });
+}
+ALWAYS_VALID_TP(IIRFilterBase, type)
+
+bool IIRFilterBase::validate_ripple(const float& value) noexcept {
+  return value > 0;
 }
 
-IIRFilterType IIRFilterBase::type() const {
-  return type_;
-}
-
-float IIRFilterBase::ripple() const {
-  return ripple_;
-}
-
-float IIRFilterBase::rolloff() const {
-  return rolloff_;
-}
+ALWAYS_VALID_TP(IIRFilterBase, rolloff)
 
 }  // namespace formats
 }  // namespace sound_feature_extraction

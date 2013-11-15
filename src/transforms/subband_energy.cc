@@ -11,7 +11,7 @@
  */
 
 #include "src/transforms/subband_energy.h"
-#include <math.h>
+#include <cmath>
 #ifdef __AVX__
 #include <immintrin.h>
 #include <simd/avx_extra.h>
@@ -23,34 +23,33 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-using Primitives::WaveletFilterBank;
-
-const std::vector<int> SubbandEnergy::kDefaultTreeFingerprint {
-  3, 3, 3,
-  4, 4, 4,
-  5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-  6, 6, 6, 6, 6, 6, 6, 6
-};
+using primitives::WaveletFilterBank;
 
 SubbandEnergy::SubbandEnergy()
-: treeFingerprint_(kDefaultTreeFingerprint) {
-  RegisterSetter("tree", [&](const std::string& value) {
-    treeFingerprint_ = WaveletFilterBank::ParseDescription(value);
-    return true;
-  });
+    : tree_(kDefaultTreeFingerprint()) {
+}
+
+bool SubbandEnergy::validate_tree(const TreeFingerprint& value) noexcept {
+  try {
+    WaveletFilterBank::ValidateDescription(value);
+  }
+  catch(const primitives::WaveletTreeInvalidDescriptionException&) {
+    return false;
+  }
+  return true;
 }
 
 size_t SubbandEnergy::OnFormatChanged(size_t buffersCount) {
-  WaveletFilterBank::ValidateLength(treeFingerprint_,
+  WaveletFilterBank::ValidateLength(tree_,
                                     input_format_->Size());
-  output_format_->SetSize(treeFingerprint_.size());
+  output_format_->SetSize(tree_.size());
   return buffersCount;
 }
 
 void SubbandEnergy::Initialize() const {
-  offsets_.reserve(treeFingerprint_.size());
+  offsets_.reserve(tree_.size());
   int offset = 0;
-  for (auto depth : treeFingerprint_) {
+  for (auto depth : tree_) {
     offsets_.push_back(offset);
     offset += (input_format_->Size() >> depth);
   }
@@ -60,11 +59,12 @@ void SubbandEnergy::Initialize() const {
 void SubbandEnergy::Do(const float* in,
                        float* out) const noexcept {
   for (int i = 0; i < static_cast<int>(offsets_.size()) - 1; i++) {
-    out[i] = calculate_energy(UseSimd(), in + offsets_[i],
+    out[i] = calculate_energy(use_simd(), in + offsets_[i],
                               offsets_[i + 1] - offsets_[i]);
   }
 }
 
+RTP(SubbandEnergy, tree)
 REGISTER_TRANSFORM(SubbandEnergy);
 
 }  // namespace transforms

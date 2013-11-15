@@ -11,7 +11,7 @@
  */
 
 
-#include <math.h>
+#include <cmath>
 #include "src/transforms/spectral_energy.h"
 #include "tests/transforms/transform_test.h"
 

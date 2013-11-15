@@ -11,35 +11,24 @@
  */
 
 #include "src/transforms/bandpass_filter.h"
-#include <math.h>
+#include <cmath>
 
 namespace sound_feature_extraction {
 namespace transforms {
 
-constexpr const char* BandpassFilter::kHighFrequencyParameterName;
-constexpr const char* BandpassFilter::kLowFrequencyParameterName;
-
 BandpassFilter::BandpassFilter() noexcept
     : frequency_high_(kMaxFilterFrequency),
       frequency_low_(kMinFilterFrequency) {
-  RegisterSetter(kHighFrequencyParameterName, [&](const std::string& value) {
-    int pv = Parse<int>(kHighFrequencyParameterName, value);
-    if (pv < kMinFilterFrequency || pv > kMaxFilterFrequency) {
-      return false;
-    }
-    frequency_high_ = pv;
-    return true;
-  });
-  RegisterSetter(kLowFrequencyParameterName, [&](const std::string& value) {
-    int pv = Parse<int>(kLowFrequencyParameterName, value);
-    if (pv < kMinFilterFrequency || pv > kMaxFilterFrequency) {
-      return false;
-    }
-    frequency_low_ = pv;
-    return true;
-  });
 }
 
+
+bool BandpassFilter::validate_frequency_high(const int& value) noexcept {
+  return ValidateFrequency(value);
+}
+
+bool BandpassFilter::validate_frequency_low(const int& value) noexcept {
+  return ValidateFrequency(value);
+}
 
 void BandpassFilter::Initialize() const {
   if (frequency_high_ <= frequency_low_) {
@@ -47,22 +36,6 @@ void BandpassFilter::Initialize() const {
         frequency_low_);
   }
   IIRFilterBase::Initialize();
-}
-
-int BandpassFilter::frequency_high() const {
-  return frequency_high_;
-}
-
-int BandpassFilter::frequency_low() const {
-  return frequency_low_;
-}
-
-void BandpassFilter::set_frequency_high(int value) {
-  SetParameter(kHighFrequencyParameterName, std::to_string(value));
-}
-
-void BandpassFilter::set_frequency_low(int value) {
-  SetParameter(kLowFrequencyParameterName, std::to_string(value));
 }
 
 std::shared_ptr<IIRFilter> BandpassFilter::CreateExecutor() const noexcept {
@@ -167,6 +140,8 @@ void BandpassFilter::Execute(const std::shared_ptr<IIRFilter>& exec,
   }
 }
 
+RTP(BandpassFilter, frequency_low)
+RTP(BandpassFilter, frequency_high)
 REGISTER_TRANSFORM(BandpassFilter);
 
 }  // namespace transforms

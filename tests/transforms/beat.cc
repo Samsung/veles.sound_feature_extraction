@@ -10,7 +10,7 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <math.h>
+#include <cmath>
 #include "src/transforms/beat.h"
 #include "tests/transforms/transform_test.h"
 #include "tests/transforms/beat_test.inc"

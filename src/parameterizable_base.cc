@@ -42,24 +42,26 @@ void ParameterizableBase::SetParameter(const std::string& name,
   if (values_.find(name) == values_.end()) {
     throw InvalidParameterNameException(name, HostName());
   }
-  values_[name] = value;
-  auto setter = setters_.find(name);
-  if (setter == setters_.end()) {
+  auto setter = ParameterSetters().find(name);
+  if (setter == ParameterSetters().end()) {
     throw ParameterSetterNotRegisteredException(name, HostName());
   }
-  if (!setter->second(value)) {
+  try {
+    setter->second(this, value);
+  }
+  catch(const InvalidParameterValueException&) {
     throw InvalidParameterValueException(name, value, HostName());
   }
+  UpdateParameter(name, value);
 }
 
-void ParameterizableBase::RegisterSetter(const std::string& name,
-                                         const Setter& setter) noexcept {
-  setters_[name] = setter;
-}
-
-void ParameterizableBase::RegisterSetter(const std::string& name,
-                                         Setter&& setter) noexcept {
-  setters_[name] = setter;
+void ParameterizableBase::UpdateParameter(const std::string& name,
+                                          const std::string& value) {
+  InitializeValues();
+  if (values_.find(name) == values_.end()) {
+    throw InvalidParameterNameException(name, HostName());
+  }
+  values_[name] = value;
 }
 
 void ParameterizableBase::InitializeValues() const noexcept {
@@ -70,53 +72,49 @@ void ParameterizableBase::InitializeValues() const noexcept {
   }
 }
 
-bool ParameterizableBase::Parse(const std::string& name,
-                                const std::string& value,
-                                identity<bool>) {
+bool Parse(const std::string& value, identity<bool>) {
   bool ret = (value == "true");
   if (!ret && value != "false") {
-    throw InvalidParameterValueException(name, value, HostName());
+    throw InvalidParameterValueException();
   }
   return ret;
 }
 
-int ParameterizableBase::Parse(const std::string& name,
-                               const std::string& value,
-                               identity<int>) {
+int Parse(const std::string& value, identity<int>) {
   int pv;
   try {
     pv = std::stoi(value);
   }
   catch(...) {
-    throw InvalidParameterValueException(name, value, HostName());
+    throw InvalidParameterValueException();
   }
   return pv;
 }
 
-size_t ParameterizableBase::Parse(const std::string& name,
-                                  const std::string& value,
-                                  identity<size_t>) {
+size_t Parse(const std::string& value, identity<size_t>) {
   int pv;
   try {
     pv = std::stoul(value);
   }
   catch(...) {
-    throw InvalidParameterValueException(name, value, HostName());
+    throw InvalidParameterValueException();
   }
   return pv;
 }
 
-float ParameterizableBase::Parse(const std::string& name,
-                                 const std::string& value,
-                                 identity<float>) {
+float Parse(const std::string& value, identity<float>) {
   float pv;
   try {
     pv = std::stof(value);
   }
   catch(...) {
-    throw InvalidParameterValueException(name, value, HostName());
+    throw InvalidParameterValueException();
   }
   return pv;
+}
+
+std::string Parse(const std::string& value, identity<std::string>) {
+  return value;
 }
 
 }  // namespace sound_feature_extraction

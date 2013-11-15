@@ -18,18 +18,14 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class SFM
-    : public OmpTransformBase<
-          formats::SingleFormat<formats::FixedArray<MEAN_TYPE_COUNT>>,
-          formats::SingleFormat<float>>,
-      public TransformLogger<SFM> {
+class SFM : public OmpTransformBase<
+    formats::SingleFormat<formats::FixedArray<kMeanTypeCount>>,
+    formats::SingleFormat<float>>, public TransformLogger<SFM> {
  public:
-  TRANSFORM_INTRO("SFM", "Spectral Flatness Measure calculation.")
-
-  OMP_TRANSFORM_PARAMETERS()
+  TRANSFORM_INTRO("SFM", "Spectral Flatness Measure calculation.", SFM)
 
  protected:
-  virtual void Do(const formats::FixedArray<MEAN_TYPE_COUNT>& in,
+  virtual void Do(const formats::FixedArray<kMeanTypeCount>& in,
                   float* out) const noexcept override;
 };
 

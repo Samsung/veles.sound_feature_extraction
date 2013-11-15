@@ -40,30 +40,24 @@ class ParentTestFormat : public BufferFormatBase<ParentChunk> {
   }
 };
 
-class ParentTestTransform
-    : public TransformBase<ArrayFormat16, ParentTestFormat> {
+class ParentTestTransform : public TransformBase<ArrayFormat16, ParentTestFormat> {
  public:
-  ParentTestTransform() {
-    RegisterSetter("AmplifyFactor", [&](const std::string&) {
-      return true;
-    });
-  }
+  TRANSFORM_INTRO("ParentTest", "", ParentTestTransform)
 
-  TRANSFORM_INTRO("ParentTest", "")
-
-  TRANSFORM_PARAMETERS(TP("AmplifyFactor", "Volume amplification factor",
-                          "1"))
+  TP(AmplifyFactor, int, 1, "Volume amplification factor")
 
  protected:
   virtual void InitializeBuffers(const BuffersBase<int16_t*>&,
-                                 BuffersBase<ParentChunk>*)
-  const noexcept {
+                                 BuffersBase<ParentChunk>*) const noexcept {
   }
 
   virtual void Do(const BuffersBase<int16_t*>&, BuffersBase<ParentChunk> *)
-  const noexcept {
+      const noexcept {
   }
 };
+
+ALWAYS_VALID_TP(ParentTestTransform, AmplifyFactor)
+RTP(ParentTestTransform, AmplifyFactor)
 
 struct ChildChunk {
 };
@@ -88,20 +82,11 @@ class ChildTestFormat : public BufferFormatBase<ChildChunk> {
   }
 };
 
-class ChildTestTransform
-    : public TransformBase<ParentTestFormat, ChildTestFormat> {
+class ChildTestTransform : public TransformBase<ParentTestFormat, ChildTestFormat> {
  public:
-  ChildTestTransform() {
-    RegisterSetter("AnalysisLength", [&](const std::string&) {
-      return true;
-    });
-  }
+  TRANSFORM_INTRO("ChildTest", "", ChildTestTransform)
 
-  TRANSFORM_INTRO("ChildTest", "")
-
-  TRANSFORM_PARAMETERS(
-      TP("AnalysisLength", "Length of the array with analyzed results",
-         "128"))
+  TP(AnalysisLength, int, 128, "Length of the array with analyzed results")
 
  protected:
   virtual void InitializeBuffers(const BuffersBase<ParentChunk>&,
@@ -114,6 +99,8 @@ class ChildTestTransform
   }
 };
 
+ALWAYS_VALID_TP(ChildTestTransform, AnalysisLength)
+RTP(ChildTestTransform, AnalysisLength)
 REGISTER_TRANSFORM(ParentTestTransform);
 REGISTER_TRANSFORM(ChildTestTransform);
 

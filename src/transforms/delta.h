@@ -19,30 +19,36 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class Delta
-    : public UniformFormatTransform<formats::ArrayFormatF> {
+enum DeltaType {
+  kDeltaTypeSimple,
+  kDeltaTypeRegression
+};
+
+namespace internal {
+constexpr const char* kDeltaTypeSimpleStr = "simple";
+constexpr const char* kDeltaTypeRegressionStr = "regression";
+}
+
+DeltaType Parse(const std::string& value, identity<DeltaType>);
+
+class Delta : public UniformFormatTransform<formats::ArrayFormatF> {
  public:
   Delta();
 
   TRANSFORM_INTRO("Delta", "Get the difference between values of adjacent "
-                           "windows.")
+                           "windows.",
+                  Delta)
 
-  TRANSFORM_PARAMETERS(
-      TP("type", "The algorithm to calculate the deltas with. Allowed values "
-                 "are \"simple\" and \"regression\".", "simple")
-      TP("rlength", "The linear regression window length. Only odd values "
-                    " greater than 1 are accepted.",
-         std::to_string(kDefaultRegressionLength))
-  )
+      TP(type, DeltaType, kDefaultDeltaType,
+         "The algorithm to calculate the deltas with. Allowed values "
+         "are \"simple\" and \"regression\".")
+      TP(rlength, int, kDefaultRegressionLength,
+         "The linear regression window length. Only odd values "
+         " greater than 1 are accepted.")
 
  protected:
-  enum Type {
-    kTypeSimple,
-    kTypeRegression
-  };
-
-  static const std::unordered_map<std::string, Type> kTypesMap;
-  static const int kDefaultRegressionLength = 5;
+  static constexpr DeltaType kDefaultDeltaType = kDeltaTypeSimple;
+  static constexpr int kDefaultRegressionLength = 5;
 
   virtual void Do(const BuffersBase<float*>& in,
                   BuffersBase<float*>* out) const noexcept override;
@@ -53,12 +59,22 @@ class Delta
   static void DoRegression(bool simd, const BuffersBase<float*>& in,
                            int rstep, int i, float norm, int windowSize,
                            BuffersBase<float*>* out) noexcept;
-
- private:
-  Type type_;
-  int rlength_;
 };
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
+
+namespace std {
+  inline string
+  to_string(sound_feature_extraction::transforms::DeltaType value) noexcept {
+    switch (value) {
+      case sound_feature_extraction::transforms::kDeltaTypeSimple:
+        return sound_feature_extraction::transforms::internal::kDeltaTypeSimpleStr;
+      case sound_feature_extraction::transforms::kDeltaTypeRegression:
+        return sound_feature_extraction::transforms::internal::kDeltaTypeRegressionStr;
+    }
+    return "";
+  }
+}  // namespace std
+
 #endif  // SRC_TRANSFORMS_DELTA_H_

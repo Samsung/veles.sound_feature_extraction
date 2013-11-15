@@ -22,9 +22,8 @@ namespace transforms {
 class RDFT : public UniformFormatTransform<formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("RDFT", "Performs Discrete Fourier Transform "
-                          "on the input signal (using real FFT).")
-
-  TRANSFORM_PARAMETERS()
+                          "on the input signal (using real FFT).",
+                  RDFT)
 
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override;
@@ -36,8 +35,6 @@ class RDFT : public UniformFormatTransform<formats::ArrayFormatF> {
 class RDFTInverse
     : public InverseUniformFormatTransform<RDFT> {
  public:
-  TRANSFORM_PARAMETERS()
-
   virtual bool BufferInvariant() const noexcept override final {
     return true;
   }

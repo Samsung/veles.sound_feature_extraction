@@ -25,19 +25,17 @@ class LPC : public OmpUniformFormatTransform<formats::ArrayFormatF> {
 
   TRANSFORM_INTRO("LPC", "Calculate Linear Prediction Coefficients (LPC) using "
                          "Levinson-Durbin recursion from autocorrelation "
-                         "coefficients.")
+                         "coefficients.",
+                  LPC)
 
-  OMP_TRANSFORM_PARAMETERS(
-      TP("add_error", "Include total estimation error", "false")
-  )
+  TP(error, bool, kDefaultError, "Include total estimation error")
 
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override;
 
   virtual void Do(const float* in, float* out) const noexcept override;
 
- private:
-  bool error_;
+  static constexpr bool kDefaultError = false;
 };
 
 }  // namespace transforms

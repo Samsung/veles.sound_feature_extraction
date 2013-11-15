@@ -18,14 +18,11 @@ namespace transforms {
 
 ShortTimeMeanScaleNormalization::ShortTimeMeanScaleNormalization()
     : length_(kDefaultLength) {
-  RegisterSetter("length", [&](const std::string& value) {
-    int length = Parse<int>("length", value);
-    if (length < 2) {
-      return false;
-    }
-    length_ = length;
-    return true;
-  });
+}
+
+bool ShortTimeMeanScaleNormalization::validate_length(
+    const int& value) noexcept {
+  return value >= 2;
 }
 
 void ShortTimeMeanScaleNormalization::Do(
@@ -68,6 +65,7 @@ void ShortTimeMeanScaleNormalization::Do(
   }
 }
 
+RTP(ShortTimeMeanScaleNormalization, length)
 REGISTER_TRANSFORM(ShortTimeMeanScaleNormalization);
 
 }  // namespace transforms

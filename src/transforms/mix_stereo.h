@@ -21,9 +21,7 @@ namespace transforms {
 
 class MixStereo : public OmpUniformFormatTransform<formats::ArrayFormat16> {
  public:
-  TRANSFORM_INTRO("Mix", "Mix stereo audio channels together.")
-
-  OMP_TRANSFORM_PARAMETERS()
+  TRANSFORM_INTRO("Mix", "Mix stereo audio channels together.", MixStereo)
 
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override;

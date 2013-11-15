@@ -22,8 +22,8 @@ class SelectorTest : public TransformTest<Selector> {
   int Size;
 
   virtual void SetUp() {
-    SetParameter("from", "left");
-    SetParameter("length", "6");
+    set_from(sound_feature_extraction::transforms::kAnchorLeft);
+    set_length(6);
     Size = 512;
     SetUpTransform(1, Size, 16000);
     for (int i = 0; i < Size; i++) {
@@ -38,7 +38,7 @@ TEST_F(SelectorTest, Do) {
   ASSERT_EQ(0, memcmp((*Input)[0],
                       (*Output)[0],
                       6 * sizeof(float)));  // NOLINT(*)
-  SetParameter("from", "right");
+  set_from(sound_feature_extraction::transforms::kAnchorRight);
   Do((*Input)[0], (*Output)[0]);
   ASSERT_EQ(0, memcmp((*Input)[0] + 512 - 6,
                       (*Output)[0],

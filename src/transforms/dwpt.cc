@@ -16,46 +16,40 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-using Primitives::WaveletFilterBank;
-
-const std::vector<int> DWPT::kDefaultTreeFingerprint {
-  3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-  6, 6, 6, 6, 6, 6, 6, 6
-};
-
-const std::string DWPT::kDefaultWaveletType = "daub";
-const WaveletType DWPT::kDefaultWaveletTypeEnum = WAVELET_TYPE_DAUBECHIES;
-const int DWPT::kDefaultWaveletOrder = 8;
+using primitives::WaveletFilterBank;
 
 DWPT::DWPT()
-  : tree_fingerprint_(kDefaultTreeFingerprint),
-    wavelet_type_(kDefaultWaveletTypeEnum),
-    wavelet_order_(kDefaultWaveletOrder) {
-  RegisterSetter("tree", [&](const std::string& value) {
-    tree_fingerprint_ = WaveletFilterBank::ParseDescription(value);
-    return true;
-  });
-  RegisterSetter("type", [&](const std::string& value) {
-    wavelet_type_ = WaveletFilterBank::ParseWaveletType(value);
-    return true;
-  });
-  RegisterSetter("order", [&](const std::string& value) {
-    int order = Parse<int>("order", value);
-    WaveletFilterBank::ValidateOrder(wavelet_type_, order);
-    wavelet_order_ = order;
-    return true;
-  });
+    : tree_(kDefaultTreeFingerprint()),
+      type_(kDefaultWaveletType),
+      order_(kDefaultWaveletOrder) {
+}
+
+bool DWPT::validate_tree(const TreeFingerprint& value) noexcept {
+  try {
+    WaveletFilterBank::ValidateDescription(value);
+  }
+  catch(const primitives::WaveletTreeInvalidDescriptionException&) {
+    return false;
+  }
+  return true;
+}
+
+ALWAYS_VALID_TP(DWPT, type)
+
+bool DWPT::validate_order(const int& value) noexcept {
+  return value >= 2;
 }
 
 size_t DWPT::OnFormatChanged(size_t buffersCount) {
-  WaveletFilterBank::ValidateLength(tree_fingerprint_,
+  WaveletFilterBank::ValidateLength(tree_,
                                     input_format_->Size());
   return buffersCount;
 }
 
 void DWPT::Initialize() const {
   filter_bank_ = std::make_unique<WaveletFilterBank>(
-      wavelet_type_, wavelet_order_, tree_fingerprint_);
+      type_, order_, tree_);
+  WaveletFilterBank::ValidateWavelet(type_, order_);
 }
 
 void DWPT::Do(const float* in,
@@ -64,6 +58,9 @@ void DWPT::Do(const float* in,
   filter_bank_->Apply(in, input_format_->Size(), out);
 }
 
+RTP(DWPT, tree)
+RTP(DWPT, type)
+RTP(DWPT, order)
 REGISTER_TRANSFORM(DWPT);
 
 }  // namespace transforms

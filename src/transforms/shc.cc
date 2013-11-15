@@ -24,62 +24,47 @@ namespace transforms {
 
 SHC::SHC()
     : harmonics_(kDefaultHarmonicsNumber),
-      window_width_(kDefaultWindowWidth),
-      min_freq_(kDefaultMinFrequency),
-      max_freq_(kDefaultMaxFrequency),
+      window_(kDefaultWindowWidth),
+      min_(kDefaultMinFrequency),
+      max_(kDefaultMaxFrequency),
       half_window_samples_(0),
       min_samples_(0),
       max_samples_(0) {
-  RegisterSetter("length", [&](const std::string& value) {
-    int pv = Parse<int>("length", value);
-    if (pv < 1) {
-      return false;
-    }
-    harmonics_ = pv;
-    return true;
-  });
-  RegisterSetter("window", [&](const std::string& value) {
-    int pv = Parse<int>("window", value);
-    if (pv < 0) {
-      return false;
-    }
-    window_width_ = pv;
-    return true;
-  });
-  RegisterSetter("min", [&](const std::string& value) {
-    int pv = Parse<int>("min", value);
-    if (pv < 1) {
-      return false;
-    }
-    min_freq_ = pv;
-    return true;
-  });
-  RegisterSetter("max", [&](const std::string& value) {
-    int pv = Parse<int>("max", value);
-    if (pv < 1) {
-      return false;
-    }
-    max_freq_ = pv;
-    return true;
-  });
+}
+
+
+bool SHC::validate_harmonics(const int& value) noexcept {
+  return value >= 1;
+}
+
+bool SHC::validate_window(const int& value) noexcept {
+  return value >= 0;
+}
+
+bool SHC::validate_min(const int& value) noexcept {
+  return value >= 1;
+}
+
+bool SHC::validate_max(const int& value) noexcept {
+  return value >= 1;
 }
 
 void SHC::Initialize() const {
-  half_window_samples_ = input_format_->Size() * window_width_ /
+  half_window_samples_ = input_format_->Size() * window_ /
     input_format_->SamplingRate();
 }
 
 size_t SHC::OnFormatChanged(size_t buffersCount) {
-  if (max_freq_ <= min_freq_ ||
-      min_freq_ - window_width_ / 2 < 0 ||
-      max_freq_ + window_width_ / 2 >= input_format_->SamplingRate() / 2) {
-    throw SHCInvalidMinMaxWindowWidthException(min_freq_, max_freq_,
-                                               window_width_,
+  if (max_ <= min_ ||
+      min_ - window_ / 2 < 0 ||
+      max_ + window_ / 2 >= input_format_->SamplingRate() / 2) {
+    throw SHCInvalidMinMaxWindowWidthException(min_, max_,
+                                               window_,
                                                input_format_->SamplingRate());
   }
-  min_samples_ = input_format_->Size() * 2 * min_freq_ /
+  min_samples_ = input_format_->Size() * 2 * min_ /
       input_format_->SamplingRate();
-  max_samples_ = input_format_->Size() * 2 * max_freq_ /
+  max_samples_ = input_format_->Size() * 2 * max_ /
       input_format_->SamplingRate();
   output_format_->SetSize(max_samples_ - min_samples_ + 1);
   return buffersCount;
@@ -88,7 +73,7 @@ size_t SHC::OnFormatChanged(size_t buffersCount) {
 void SHC::Do(const float* in, float* out) const noexcept {
   for (int i = min_samples_; i <= max_samples_; i++) {
     float sum = 0;
-    if (UseSimd()) {
+    if (use_simd()) {
 #ifdef __AVX__
       __m256 sum_vec = _mm256_set1_ps(0);
       int f;
@@ -150,14 +135,18 @@ void SHC::Do(const float* in, float* out) const noexcept {
     out[i - min_samples_] = sum;
   }
   float max;
-  minmax1D(UseSimd(), out, output_format_->Size(), nullptr, &max);
-  if (UseSimd()) {
+  minmax1D(use_simd(), out, output_format_->Size(), nullptr, &max);
+  if (use_simd()) {
     real_multiply_scalar(out, output_format_->Size(), 1 / max, out);
   } else {
     real_multiply_scalar_na(out, output_format_->Size(), 1 / max, out);
   }
 }
 
+RTP(SHC, harmonics)
+RTP(SHC, window)
+RTP(SHC, min)
+RTP(SHC, max)
 REGISTER_TRANSFORM(SHC);
 
 }  // namespace transforms

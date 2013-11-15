@@ -26,33 +26,20 @@ class BandpassFilter : public IIRFilterBase,
 
   TRANSFORM_INTRO("Bandpass", "Bandpass filter. Cuts off frequences higher "
                               "than \"frequency_high\" and lower than "
-                              "\"frequency_low\".")
+                              "\"frequency_low\".",
+                  BandpassFilter)
 
-  IIR_FILTER_PARAMETERS(
-      TP(kHighFrequencyParameterName, "All frequencies higher will be cut",
-         std::to_string(kMaxFilterFrequency))
-      TP(kLowFrequencyParameterName, "All frequencies lower will be cut",
-         std::to_string(kMinFilterFrequency))
-  )
-
-  int frequency_high() const;
-  int frequency_low() const;
-  void set_frequency_high(int value);
-  void set_frequency_low(int value);
+  TP(frequency_high, int, kMaxFilterFrequency,
+     "All frequencies higher will be cut.")
+  TP(frequency_low, int, kMinFilterFrequency,
+     "All frequencies lower will be cut.")
 
   virtual void Initialize() const override;
-
-  static constexpr const char* kHighFrequencyParameterName = "frequency_high";
-  static constexpr const char* kLowFrequencyParameterName = "frequency_low";
 
  protected:
   virtual std::shared_ptr<IIRFilter> CreateExecutor() const noexcept override;
   virtual void Execute(const std::shared_ptr<IIRFilter>& exec, const float* in,
                        float* out) const override;
-
- private:
-  int frequency_high_;
-  int frequency_low_;
 };
 
 }  // namespace transforms

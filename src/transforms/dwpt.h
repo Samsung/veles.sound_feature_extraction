@@ -50,18 +50,15 @@ class DWPT : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   DWPT();
 
-  TRANSFORM_INTRO("DWPT", "Discrete Wavelet Packet Transform")
+  TRANSFORM_INTRO("DWPT", "Discrete Wavelet Packet Transform", DWPT)
 
-  OMP_TRANSFORM_PARAMETERS(
-    TP("tree", "The wavelet packet binary tree fingerprint.",
-       Primitives::WaveletFilterBank::DescriptionToString(
-           kDefaultTreeFingerprint))
-    TP("type", "The type of wavelet to apply. Supported values are "
-               "daub (Daubechies), coif (Coiflet) and sym (Symlet).",
-       kDefaultWaveletType)
-    TP("order", "The number of coefficients in the wavelet.",
-        std::to_string(kDefaultWaveletOrder))
-  )
+  TP(tree, TreeFingerprint, kDefaultTreeFingerprint(),
+     "The wavelet packet binary tree fingerprint.")
+  TP(type, WaveletType, kDefaultWaveletType,
+     "The type of wavelet to apply. Supported values are "
+     "daub (Daubechies), coif (Coiflet) and sym (Symlet).")
+  TP(order, int, kDefaultWaveletOrder,
+     "The number of coefficients in the wavelet.")
 
   virtual void Initialize() const override;
 
@@ -71,18 +68,20 @@ class DWPT : public OmpUniformFormatTransform<formats::ArrayFormatF> {
   virtual void Do(const float* in,
                   float* out) const noexcept override;
 
- private:
-  static const std::vector<int> kDefaultTreeFingerprint;
-  static const std::string kDefaultWaveletType;
-  static const WaveletType kDefaultWaveletTypeEnum;
-  static const int kDefaultWaveletOrder;
+  static TreeFingerprint kDefaultTreeFingerprint() noexcept {
+    return TreeFingerprint {
+      3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+      6, 6, 6, 6, 6, 6, 6, 6
+    };
+  };
+  static constexpr WaveletType kDefaultWaveletType = WAVELET_TYPE_DAUBECHIES;
+  static constexpr int kDefaultWaveletOrder = 8;
 
-  std::vector<int> tree_fingerprint_;
-  WaveletType wavelet_type_;
-  int wavelet_order_;
-  mutable std::unique_ptr<Primitives::WaveletFilterBank> filter_bank_;
+ private:
+  mutable std::unique_ptr<primitives::WaveletFilterBank> filter_bank_;
 };
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
+
 #endif  // SRC_TRANSFORMS_DWPT_H_

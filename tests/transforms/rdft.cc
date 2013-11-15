@@ -40,7 +40,7 @@ class RDFTInverseTest : public TransformTest<RDFTInverse> {
   int Size;
 
   virtual void SetUp() {
-    Size = 512;
+    Size = 514;
     SetUpTransform(1, Size, 16000);
     for (int i = 0; i < Size; i++) {
       (*Input)[0][i] = (i - Size / 2.0f) / Size;
@@ -53,7 +53,6 @@ TEST_F(RDFTTest, Do) {
 }
 
 TEST_F(RDFTInverseTest, Do) {
-  output_format_->SetSize(Size);
   Do((*Input), &(*Output));
 }
 
@@ -66,10 +65,10 @@ TEST(RDFT, Multiple) {
       { "RDFT", "" }, { "IRDFT", "" }, { "RDFT", "" }, { "IRDFT", "" },
       { "RDFT", "" }, { "IRDFT", "" }
   });
-  int16_t* buffers = new int16_t[48000];
-  memcpy(buffers, data, sizeof(data));
+  std::unique_ptr<int16_t[]> buffers(new int16_t[48000]);
+  memcpy(buffers.get(), data, sizeof(data));
   tt.PrepareForExecution();
-  auto res = tt.Execute(buffers);
+  auto res = tt.Execute(buffers.get());
   ASSERT_EQ(1U, res.size());
   res["3RDFT"]->Validate();
 }

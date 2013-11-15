@@ -47,7 +47,7 @@ TEST_F(StatsTest, DoAll) {
 }
 
 TEST_F(StatsTest, DoInterval) {
-  SetParameter("interval", "25000");
+  set_interval(25000);
   RecreateOutputBuffers();
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < 2; i++) {
@@ -663,7 +663,7 @@ const float nan_data[] = {
 };
 
 TEST_F(StatsTest, DoRealCase) {
-  SetParameter("interval", "100");
+  set_interval(100);
   auto size = sizeof(nan_data) / sizeof(nan_data[0]);
   SetUpTransform(1, size, 16000);
   memcpy((*Input)[0], nan_data, sizeof(nan_data));

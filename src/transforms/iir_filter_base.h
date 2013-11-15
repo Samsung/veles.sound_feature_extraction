@@ -20,7 +20,7 @@
 #pragma GCC diagnostic ignored "-Wsequence-point"
 #include <DspFilters/Dsp.h>
 #pragma GCC diagnostic pop
-#include "src/transforms/filter_common.h"
+#include "src/transforms/filter_base.h"
 
 namespace sound_feature_extraction {
 namespace transforms {
@@ -34,17 +34,31 @@ enum IIRFilterType {
   kIIRFilterTypeLegendre
 };
 
+namespace internal {
+constexpr const char* kIIRFilterTypeBesselStr = "bessel";
+constexpr const char* kIIRFilterTypeButterworthStr = "butterworth";
+constexpr const char* kIIRFilterTypeChebyshevIStr = "chebyshevI";
+constexpr const char* kIIRFilterTypeChebyshevIIStr = "chebyshevII";
+constexpr const char* kIIRFilterTypeEllipticStr = "elliptic";
+constexpr const char* kIIRFilterTypeLegendreStr = "legendre";
+}
+
+IIRFilterType Parse(const std::string& value, identity<IIRFilterType>);
+
 typedef Dsp::PoleFilterBase2 IIRFilter;
 
 class IIRFilterBase : public FilterBase<IIRFilter> {
  public:
   IIRFilterBase() noexcept;
 
-  IIRFilterType type() const;
-  float ripple() const;
-  float rolloff() const;
+  TRANSFORM_PARAMETERS_SUPPORT(IIRFilterBase)
 
-  static const std::unordered_map<std::string, IIRFilterType> kFilterTypeMap;
+  TP(type, IIRFilterType, kDefaultIIRFilterType,
+     "IIR filter type (bessel, butterworth, etc.).")
+  TP(ripple, float, kDefaultIIRFilterRipple,
+     "Ripple level in dB (used by a subset of filter types).")
+  TP(rolloff, float, kDefaultIIRFilterRolloff,
+     "Rolloff level in dB (used by a subset of filter types).")
 
  protected:
   template <class F>
@@ -55,27 +69,40 @@ class IIRFilterBase : public FilterBase<IIRFilter> {
     ptr->process(input_format_->Size(), &out);
   }
 
-  static const IIRFilterType kDefaultIIRFilterType = kIIRFilterTypeChebyshevII;
+  static constexpr IIRFilterType kDefaultIIRFilterType =
+      kIIRFilterTypeChebyshevII;
   static constexpr float kDefaultIIRFilterRipple = 1;
   static constexpr float kDefaultIIRFilterRolloff = 0;
-
- private:
-  IIRFilterType type_;
-  float ripple_;
-  float rolloff_;
 };
 
-#define IIR_FILTER_PARAMETERS(init) FILTER_PARAMETERS( \
-  FORWARD_MACROS( \
-      TP("type", "IIR filter type (bessel, butterworth, etc.).", \
-         "butterworth") \
-      TP("ripple", "Ripple level in dB (used by a subset of filter types).", \
-         std::to_string(kDefaultIIRFilterRipple)) \
-      TP("rolloff", "Rolloff level in dB (used by a subset of filter types).", \
-         std::to_string(kDefaultIIRFilterRolloff)) \
-      init) \
-)
-
-}  // namespace formats
+}  // namespace transforms
 }  // namespace sound_feature_extraction
+
+namespace std {
+  inline string
+  to_string(sound_feature_extraction::transforms::IIRFilterType type) noexcept {
+    switch (type) {
+      case sound_feature_extraction::transforms::kIIRFilterTypeBessel:
+        return sound_feature_extraction::transforms::
+            internal::kIIRFilterTypeBesselStr;
+      case sound_feature_extraction::transforms::kIIRFilterTypeButterworth:
+        return sound_feature_extraction::transforms::
+            internal::kIIRFilterTypeButterworthStr;
+      case sound_feature_extraction::transforms::kIIRFilterTypeChebyshevI:
+        return sound_feature_extraction::transforms::
+            internal::kIIRFilterTypeChebyshevIStr;
+      case sound_feature_extraction::transforms::kIIRFilterTypeChebyshevII:
+        return sound_feature_extraction::transforms::
+            internal::kIIRFilterTypeChebyshevIIStr;
+      case sound_feature_extraction::transforms::kIIRFilterTypeElliptic:
+        return sound_feature_extraction::transforms::
+            internal::kIIRFilterTypeEllipticStr;
+      case sound_feature_extraction::transforms::kIIRFilterTypeLegendre:
+        return sound_feature_extraction::transforms::
+            internal::kIIRFilterTypeLegendreStr;
+    }
+    return "";
+  }
+}  // namespace std
+
 #endif  // SRC_TRANSFORMS_IIR_FILTER_BASE_H_

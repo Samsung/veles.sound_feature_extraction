@@ -24,19 +24,14 @@ namespace transforms {
 
 Diff::Diff()
     : rectify_(false), swt_(kNoSWT), swt_buffer_(nullptr, std::free) {
-  RegisterSetter("rectify", [&](const std::string& value) {
-    rectify_ = Parse<bool>("rectify", value);
-    return true;
-  });
-  RegisterSetter("swt", [&](const std::string& value) {
-    int pv = Parse<int>("swt", value);
-    if (pv < 1 && pv != kNoSWT) {
-      return false;
-    }
-    swt_ = pv;
-    return true;
-  });
 }
+
+ALWAYS_VALID_TP(Diff, rectify)
+
+bool Diff::validate_swt(const int& value) noexcept {
+  return value >= 1 || value == kNoSWT;
+}
+
 
 void Diff::Initialize() const {
   if (swt_ != kNoSWT) {
@@ -61,14 +56,14 @@ void Diff::Do(const float* in, float* out) const noexcept {
           i == swt_? swt_buffer_.get() : out);
     }
     if (rectify_) {
-      Rectify(UseSimd(), out, input_format_->Size(), out);
+      Rectify(use_simd(), out, input_format_->Size(), out);
     }
     return;
   }
   if (rectify_) {
-    DoRectify(UseSimd(), in, input_format_->Size(), out);
+    DoRectify(use_simd(), in, input_format_->Size(), out);
   } else {
-    Do(UseSimd(), in, input_format_->Size(), out);
+    Do(use_simd(), in, input_format_->Size(), out);
   }
 }
 
@@ -207,6 +202,8 @@ void Diff::Rectify(bool simd, const float* input, int length,
   }
 }
 
+RTP(Diff, rectify)
+RTP(Diff, swt)
 REGISTER_TRANSFORM(Diff);
 
 }  // namespace transforms

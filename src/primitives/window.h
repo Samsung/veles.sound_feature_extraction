@@ -14,7 +14,9 @@
 #define SRC_PRIMITIVES_WINDOW_H_
 
 #include <string>
-#include <unordered_map>  // NOLINT(build/include_order)
+#include "src/parameterizable_base.h"
+
+namespace sound_feature_extraction {
 
 /// @brief All implemented window types.
 /// @see http://en.wikipedia.org/wiki/Window_function.
@@ -26,13 +28,7 @@ typedef enum {
   WINDOW_TYPE_BLACKMAN
 } WindowType;
 
-/// @brief The map between window name and window type.
-/// @details For example,
-/// @code
-/// WindowTypeMap["hamming"] == WINDOW_TYPE_HAMMING
-/// @endcode
-/// is true.
-extern const std::unordered_map<std::string, WindowType> kWindowTypeMap;
+WindowType Parse(const std::string& value, identity<WindowType>);
 
 /// @brief Returns the window element at the specified index.
 /// @param type The window type.
@@ -40,5 +36,11 @@ extern const std::unordered_map<std::string, WindowType> kWindowTypeMap;
 /// @param index The index of the element to return.
 /// @return The requested window element.
 float WindowElement(WindowType type, int length, int index);
+
+}  // namespace sound_feature_extraction
+
+namespace std {
+  string to_string(sound_feature_extraction::WindowType type) noexcept;
+}  // namespace std
 
 #endif  // SRC_PRIMITIVES_WINDOW_H_

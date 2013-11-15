@@ -18,53 +18,46 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class FilterBank
-    : public OmpUniformFormatTransform<formats::ArrayFormatF> {
+enum ScaleType {
+  kScaleTypeLinear,
+  kScaleTypeMel,
+  kScaleTypeBark
+};
+
+class FilterBank : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   FilterBank();
 
   TRANSFORM_INTRO("FilterBank",
                   "Converts the signal to the selected psychoacoustic scale "
-                  "(default is mel).")
+                  "(default is mel).",
+                  FilterBank)
 
-  OMP_TRANSFORM_PARAMETERS(
-      TP("type", "The type of the scale. Supported values are \"linear\","
-                 "\"mel\" and \"bark\".",
-         "mel")
-      TP("number", "The number of triangular filters.",
-         std::to_string(kDefaultLength))
-      TP("frequency_min", "Minimal frequency of the filter bank.",
-         std::to_string(kDefaultMinFrequency))
-      TP("frequency_max", "Maximal frequency of the filter bank.",
-         std::to_string(kDefaultMaxFrequency))
-  )
+  TP(type, ScaleType, kDefaultScale,
+     "The type of the scale. Supported values are \"linear\","
+     "\"mel\" and \"bark\".")
+  TP(number, int, kDefaultNumber,
+     "The number of triangular filters.")
+  TP(frequency_min, int, kDefaultMinFrequency,
+     "Minimal frequency of the filter bank.")
+  TP(frequency_max, int, kDefaultMaxFrequency,
+     "Maximal frequency of the filter bank.")
 
   virtual void Initialize() const override;
 
  protected:
-  enum ScaleType {
-    SCALE_TYPE_LINEAR,
-    SCALE_TYPE_MEL,
-    SCALE_TYPE_BARK
-  };
-
-  static const std::unordered_map<std::string, ScaleType> kScaleTypeMap;
-  static const int kDefaultLength;
-  static const int kDefaultMinFrequency;
-  static const int kDefaultMaxFrequency;
+  static constexpr ScaleType kDefaultScale = kScaleTypeMel;
+  static constexpr int kDefaultNumber = 40;
+  static constexpr int kDefaultMinFrequency = 130;
+  static constexpr int kDefaultMaxFrequency = 6854;
 
   virtual void Do(const float* in,
                   float* out) const noexcept override;
 
-
   static float LinearToScale(ScaleType type, float freq);
   static float ScaleToLinear(ScaleType type, float value);
 
-  ScaleType type_;
-  size_t length_;
-  int minFreq_;
-  int maxFreq_;
-  mutable std::unique_ptr<float, void(*)(void*)> filterBank_;
+  const FloatPtr& filter_bank() const;
 
  private:
   /// @brief Adds a triangular filter to the filter bank.
@@ -73,8 +66,37 @@ class FilterBank
   /// @param halfWidth The half width of the base of the triangle,
   /// in psychoacoustic scale units.
   void AddTriangularFilter(float center, float halfWidth) const;
+
+  mutable FloatPtr filter_bank_;
 };
+
+namespace internal {
+constexpr const char* kScaleTypeLinearStr = "linear";
+constexpr const char* kScaleTypeMelStr = "mel";
+constexpr const char* kScaleTypeBarkStr = "bark";
+}
+
+ScaleType Parse(const std::string& value, identity<ScaleType>);
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
+
+namespace std {
+  inline string
+  to_string(sound_feature_extraction::transforms::ScaleType scale) noexcept {
+    switch (scale) {
+      case sound_feature_extraction::transforms::kScaleTypeLinear:
+        return sound_feature_extraction::transforms::internal::
+            kScaleTypeLinearStr;
+      case sound_feature_extraction::transforms::kScaleTypeMel:
+        return sound_feature_extraction::transforms::internal::
+            kScaleTypeMelStr;
+      case sound_feature_extraction::transforms::kScaleTypeBark:
+        return sound_feature_extraction::transforms::internal::
+            kScaleTypeBarkStr;
+    }
+    return "";
+  }
+}  // namespace std
+
 #endif  // SRC_TRANSFORMS_FILTER_BANK_H_

@@ -13,11 +13,12 @@
 #include <gtest/gtest.h>
 #include "src/primitives/wavelet_filter_bank.h"
 
-using sound_feature_extraction::Primitives::WaveletFilterBank;
-using sound_feature_extraction::Primitives::
+using sound_feature_extraction::primitives::WaveletFilterBank;
+using sound_feature_extraction::TreeFingerprint;
+using sound_feature_extraction::Parse;
+using sound_feature_extraction::primitives::
     WaveletTreeInvalidDescriptionException;
-using sound_feature_extraction::Primitives::
-    WaveletTreeDescriptionParseException;
+using sound_feature_extraction::WaveletTreeDescriptionParseException;
 
 TEST(WaveletFilterBank, ValidateDescription) {
   std::vector<int> desc { 3, 3, 2, 2, 3, 3 };  // NOLINT(*)
@@ -40,16 +41,17 @@ TEST(WaveletFilterBank, ValidateDescription) {
 }
 
 TEST(WaveletFilterBank, ParseDescription) {
-  ASSERT_NO_THROW(WaveletFilterBank::ParseDescription("1 1"));
-  ASSERT_NO_THROW(WaveletFilterBank::ParseDescription(" 1\t1 "));
-  ASSERT_NO_THROW(WaveletFilterBank::ParseDescription("3 4 4 2 2 5 5 4 3"));
-  ASSERT_THROW(WaveletFilterBank::ParseDescription("abc"),
+  ASSERT_NO_THROW(Parse<TreeFingerprint>("1 1"));
+  ASSERT_NO_THROW(Parse<TreeFingerprint>(" 1\t1 "));
+  ASSERT_NO_THROW(Parse<TreeFingerprint>("3 4 4 2 2 5 5 4 3"));
+  ASSERT_THROW(Parse<TreeFingerprint>("abc"),
                WaveletTreeDescriptionParseException);
-  ASSERT_THROW(WaveletFilterBank::ParseDescription("1 1 abc"),
+  ASSERT_THROW(Parse<TreeFingerprint>("1 1 abc"),
                  WaveletTreeDescriptionParseException);
-  ASSERT_THROW(WaveletFilterBank::ParseDescription("1 -1"),
+  ASSERT_THROW(Parse<TreeFingerprint>("1 -1"),
                WaveletTreeDescriptionParseException);
-  ASSERT_THROW(WaveletFilterBank::ParseDescription("1 1 1"),
+  auto desc = Parse<TreeFingerprint>("1 1 1");
+  ASSERT_THROW(WaveletFilterBank::ValidateDescription(desc),
                WaveletTreeInvalidDescriptionException);
 }
 

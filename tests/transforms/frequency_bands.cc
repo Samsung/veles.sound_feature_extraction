@@ -24,7 +24,7 @@ class FrequencyBandsTest : public TransformTest<FrequencyBands> {
 
   virtual void SetUp() {
     Size = 512;
-    SetParameter("number", "4");
+    set_number(4);
     SetUpTransform(4, Size, 16000);
     for (int i = 0; i < Size; i++) {
       (*Input)[0][i] = sinf(i / 10.f);
@@ -42,19 +42,19 @@ TEST_F(FrequencyBandsTest, Do) {
 }
 
 TEST_F(FrequencyBandsTest, DoWithBands) {
-  SetParameter("bands", "2000 3000 5000");
+  set_bands("2000 3000 5000");
   Initialize();
   Do((*Input), &(*Output));
 }
 
 TEST_F(FrequencyBandsTest, TooBigBands) {
-  SetParameter("bands", "2000 3000 18000");
+  set_bands("2000 3000 18000");
   Initialize();
-  ASSERT_EQ(3, bands_number());
+  ASSERT_EQ(3, filters().size());
 }
 
 TEST_F(FrequencyBandsTest, InvalidBands) {
   ASSERT_THROW({
-    SetParameter("bands", "2000 15000 8000");
+    set_bands("2000 15000 8000");
   }, sound_feature_extraction::InvalidParameterValueException);
 }

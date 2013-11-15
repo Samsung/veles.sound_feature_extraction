@@ -1,4 +1,4 @@
-/*! @file filter_common.h
+/*! @file filter_base.h
  *  @brief Common stuff for FIRFilterBase and IIRFilterBase.
  *  @author Vadim Markovtsev <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_FILTER_COMMON_H_
-#define SRC_TRANSFORMS_FILTER_COMMON_H_
+#ifndef SRC_TRANSFORMS_FILTER_BASE_H_
+#define SRC_TRANSFORMS_FILTER_BASE_H_
 
 #include <cassert>
 #include <vector>
@@ -23,21 +23,16 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 template <class E>
-class FilterBase
-    : public OmpUniformFormatTransform<formats::ArrayFormatF> {
+class FilterBase : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   FilterBase() noexcept
       : length_(kDefaultFilterLength),
-        max_executors_(MaxThreadsNumber()) {
-    RegisterSetter("length", [&](const std::string& value) {
-      int pv = Parse<int>("length", value);
-      if (pv < kMinFilterLength || pv > kMaxFilterLength) {
-        return false;
-      }
-      length_ = pv;
-      return true;
-    });
+        max_executors_(threads_number()) {
   }
+
+  TRANSFORM_PARAMETERS_SUPPORT(FilterBase)
+
+  TP(length, int, kDefaultFilterLength, "Filter size in samples (order).")
 
   virtual void Initialize() const override {
     executors_.resize(max_executors_);
@@ -61,15 +56,6 @@ class FilterBase
     }
   }
 
-  int length() const {
-    return length_;
-  }
-
-  void set_length(int value) {
-    assert(value >= kMinFilterLength);
-    length_ = value;
-  }
-
   int max_executors() const {
     return max_executors_;
   }
@@ -89,6 +75,9 @@ class FilterBase
   virtual std::shared_ptr<E> CreateExecutor() const noexcept = 0;
   virtual void Execute(const std::shared_ptr<E>& exec, const float* in,
                        float* out) const = 0;
+  static bool ValidateFrequency(const int& value) noexcept {
+    return value >= kMinFilterFrequency && value <= kMaxFilterFrequency;
+  }
 
  private:
   struct ThreadSafeExecutor {
@@ -97,19 +86,21 @@ class FilterBase
   };
 
   mutable std::vector<ThreadSafeExecutor> executors_;
-  int length_;
   int max_executors_;
 };
 
-#define FILTER_PARAMETERS(init) OMP_TRANSFORM_PARAMETERS( \
-  FORWARD_MACROS( \
-      TP("length", "Filter size in samples (order).", \
-         std::to_string(kDefaultFilterLength)) \
-      init) \
-)
+template <class E>
+bool FilterBase<E>::validate_length(const int& value) noexcept {
+  if (value < kMinFilterLength || value > kMaxFilterLength) {
+    return false;
+  }
+  return true;
+}
+
+template <class E>
+RTP(FilterBase<E>, length)
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
 
-
-#endif  // SRC_TRANSFORMS_FILTER_COMMON_H_
+#endif  // SRC_TRANSFORMS_FILTER_BASE_H_

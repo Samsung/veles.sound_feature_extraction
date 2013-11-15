@@ -16,48 +16,46 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-const int Selector::kDefaultLength = 12;
-const Selector::Anchor Selector::kDefaultAnchor = ANCHOR_LEFT;
-
-Selector::Selector()
-  : length_(kDefaultLength),
-    from_(kDefaultAnchor) {
-  RegisterSetter("length", [&](const std::string& value) {
-    int length = Parse<size_t>("length", value);
-    if (length < 1) {
-      return false;
-    }
-    length_ = length;
-    return true;
-  });
-  RegisterSetter("from", [&](const std::string& value) {
-    if (value == "left") {
-      from_ = ANCHOR_LEFT;
-    } else if (value == "right") {
-      from_ = ANCHOR_RIGHT;
-    } else {
-      return false;
-    }
-    return true;
-  });
+Anchor Parse(const std::string value, identity<Anchor>) {
+  if (value == internal::kAnchorLeftStr) {
+    return kAnchorLeft;
+  }
+  if (value == internal::kAnchorRightStr) {
+    return kAnchorRight;
+  }
+  throw InvalidParameterValueException();
 }
 
+Selector::Selector()
+    : length_(kDefaultLength),
+      from_(kDefaultAnchor) {
+}
+
+bool Selector::validate_length(const int& value) noexcept {
+  return value >= 1;
+}
+
+ALWAYS_VALID_TP(Selector, from)
+
 size_t Selector::OnFormatChanged(size_t buffersCount) {
-  output_format_->SetSize(std::min(length_, input_format_->Size()));
+  output_format_->SetSize(std::min(static_cast<size_t>(length_),
+                                   input_format_->Size()));
   return buffersCount;
 }
 
 void Selector::Do(const float* in,
                   float* out) const noexcept {
   int length = output_format_->Size();
-  int offset = (from_ == ANCHOR_LEFT? 0 : input_format_->Size() - length);
+  int offset = (from_ == kAnchorLeft? 0 : input_format_->Size() - length);
   if (in != out) {
     memcpy(out, in + offset, length * sizeof(in[0]));
-  } else if (from_ == ANCHOR_RIGHT) {
+  } else if (from_ == kAnchorRight) {
     memmove(out, in + offset, length * sizeof(in[0]));
   }
 }
 
+RTP(Selector, from)
+RTP(Selector, length)
 REGISTER_TRANSFORM(Selector);
 
 }  // namespace transforms

@@ -44,7 +44,7 @@ TEST_F(AutocorrelationTest, Do) {
 }
 
 TEST_F(AutocorrelationTest, DoNormalized) {
-  SetParameter("normalize", "true");
+  set_normalize(true);
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size * 2 - 1; i++) {
     ASSERT_LE((*Output)[0][i], 1.f) << i;

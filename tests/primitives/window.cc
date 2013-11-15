@@ -18,6 +18,8 @@
 
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
+using namespace sound_feature_extraction;
+
 TEST(Window, Rectangular) {
   ASSERT_EQ(1.0f, WindowElement(WINDOW_TYPE_RECTANGULAR, 4, 0));
   ASSERT_EQ(1.0f, WindowElement(WINDOW_TYPE_RECTANGULAR, 5, 2));

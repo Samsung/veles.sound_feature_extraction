@@ -17,7 +17,7 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 void Square::Do(const float* in, float* out) const noexcept {
-  Do(UseSimd(), in, output_format_->Size(), out);
+  Do(use_simd(), in, output_format_->Size(), out);
 }
 
 void Square::Do(bool simd, const float* input, int length,

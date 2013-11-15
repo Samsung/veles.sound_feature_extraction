@@ -20,16 +20,16 @@ namespace sound_feature_extraction {
 class SimdAware {
   friend void ::set_use_simd(int);
  public:
-  static bool UseSimd() noexcept {
-    return useSimd_;
+  static bool use_simd() noexcept {
+    return use_simd_;
   }
 
  protected:
-  static void SetUseSimd(bool value) noexcept {
-    useSimd_ = value;
+  static void set_use_simd(bool value) noexcept {
+    use_simd_ = value;
   }
 
-  static bool useSimd_;
+  static bool use_simd_;
 };
 
 }  // namespace sound_feature_extraction

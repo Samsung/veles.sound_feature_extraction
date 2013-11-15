@@ -16,55 +16,51 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-const std::unordered_map<std::string, Delta::Type> Delta::kTypesMap = {
-    { "simple", kTypeSimple },
-    { "regression", kTypeRegression }
-};
+DeltaType Parse(const std::string& value, identity<DeltaType>) {
+  static const std::unordered_map<std::string, DeltaType> map {
+    { internal::kDeltaTypeSimpleStr, kDeltaTypeSimple },
+    { internal::kDeltaTypeRegressionStr, kDeltaTypeRegression }
+  };
+  auto dti = map.find(value);
+  if (dti == map.end()) {
+    throw InvalidParameterValueException();
+  }
+  return dti->second;
+}
 
 Delta::Delta()
-  : type_(kTypeSimple),
-    rlength_(kDefaultRegressionLength) {
-  RegisterSetter("type", [&](const std::string& value) {
-    auto pvi = kTypesMap.find(value);
-    if (pvi == kTypesMap.end()) {
-      return false;
-    }
-    type_ = pvi->second;
-    return true;
-  });
-  RegisterSetter("rlength", [&](const std::string& value) {
-    int pv = Parse<int>("rlength", value);
-    if (pv < 3 || pv % 2 == 0) {
-      return false;
-    }
-    rlength_ = pv;
-    return true;
-  });
+    : type_(kDefaultDeltaType),
+      rlength_(kDefaultRegressionLength) {
+}
+
+ALWAYS_VALID_TP(Delta, type)
+bool Delta::validate_rlength(const int& value) noexcept {
+  return value >= 3 && (value % 2) == 1;
 }
 
 void Delta::Do(const BuffersBase<float*>& in,
                BuffersBase<float*>* out) const noexcept {
 
   switch (type_) {
-    case kTypeSimple:
+    case kDeltaTypeSimple:
       for (size_t i = 1; i < in.Count(); i++) {
-        DoSimple(UseSimd(), in[i - 1], in[i],
+        DoSimple(use_simd(), in[i - 1], in[i],
                  input_format_->Size(), (*out)[i]);
       }
       for (size_t i = 0; i < input_format_->Size(); i++) {
         (*out)[0][i] = (*out)[1][i];
       }
     break;
-    case kTypeRegression: {
+    case kDeltaTypeRegression: {
       int rstep = rlength_ / 2;
       float norm = 2 * rstep * (rstep + 1) * (2 * rstep + 1) / 6;
       for (size_t i = rstep; i < in.Count() - rstep; i++) {
-        DoRegression(UseSimd(), in, rstep, i, norm, input_format_->Size(), out);
+        DoRegression(use_simd(), in, rstep, i, norm, input_format_->Size(), out);
       }
       for (size_t i = rstep - 1; i > 0; i--) {
         norm = 2 * i * (i + 1) * (2 * i + 1) / 6;
-        DoRegression(UseSimd(), in, i, i, norm, input_format_->Size(), out);
-        DoRegression(UseSimd(), in, in.Count() - i, i, norm, input_format_->Size(),
+        DoRegression(use_simd(), in, i, i, norm, input_format_->Size(), out);
+        DoRegression(use_simd(), in, in.Count() - i, i, norm, input_format_->Size(),
                      out);
       }
       for (size_t i = 0; i < input_format_->Size(); i++) {
@@ -188,6 +184,8 @@ void Delta::DoRegression(bool simd, const BuffersBase<float*>& in,
   }
 }
 
+RTP(Delta, rlength)
+RTP(Delta, type)
 REGISTER_TRANSFORM(Delta);
 
 }  // namespace transforms

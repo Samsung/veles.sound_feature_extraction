@@ -19,12 +19,10 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class Intensity
-    : public OmpTransformBase<formats::ArrayFormatF, formats::SingleFormatF> {
+class Intensity : public OmpTransformBase<formats::ArrayFormatF, formats::SingleFormatF>  {
  public:
-  TRANSFORM_INTRO("Intensity", "Unnormalized sound intensity calculation.")
-
-  OMP_TRANSFORM_PARAMETERS()
+  TRANSFORM_INTRO("Intensity", "Unnormalized sound intensity calculation.",
+                  Intensity)
 
  protected:
   virtual void Do(const float* in,

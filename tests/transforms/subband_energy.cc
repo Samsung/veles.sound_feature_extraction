@@ -22,7 +22,7 @@ class SubbandEnergyTest : public TransformTest<SubbandEnergy> {
   int Size;
 
   virtual void SetUp() {
-    SetParameter("tree", "3 3 2 2 3 3");
+    set_tree({ 3, 3, 2, 2, 3, 3 });
     Size = 512;
     SetUpTransform(1, Size, 16000);
     for (int i = 0; i < Size; i++) {

@@ -11,6 +11,8 @@
  */
 
 #include "src/transforms/mean.h"
+#include <algorithm>
+#include <limits>
 #ifdef __AVX__
 #include <simd/avx_mathfun.h>
 #elif defined(__ARM_NEON__)
@@ -20,7 +22,6 @@
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <boost/regex.hpp>
 #pragma GCC diagnostic pop
-#include <limits>
 #include <simd/arithmetic-inl.h>
 
 namespace sound_feature_extraction {
@@ -28,42 +29,47 @@ namespace transforms {
 
 using formats::FixedArray;
 
-const std::unordered_map<std::string, MeanTypes> Mean::kMeanTypesMap {
-  { "arithmetic", MEAN_TYPE_ARITHMETIC },
-  { "geometric", MEAN_TYPE_GEOMETRIC },
-};
-const std::set<MeanTypes> Mean::kDefaultMeanTypes { MEAN_TYPE_ARITHMETIC };
-const std::string Mean::kDefaultMeanTypesStr = "arithmetic";
+std::set<MeanType> Parse(const std::string& value,
+                         identity<std::set<MeanType>>) {
+  static const std::unordered_map<std::string, MeanType> map {
+    { internal::kMeanTypeArithmeticStr, kMeanTypeArithmetic },
+    { internal::kMeanTypeGeometricStr, kMeanTypeGeometric },
+  };
 
-Mean::Mean() : types_(kDefaultMeanTypes) {
-  RegisterSetter("types", [&](const std::string& value) {
-    static const boost::regex allRegex("^\\s*(\\w+\\s*(\\s|$))+");
-    boost::smatch match;
-    if (!boost::regex_match(value, match, allRegex)) {
-      return false;
+  static const boost::regex all_regex("^\\s*(\\w+\\s*(\\s|$))+");
+  boost::smatch match;
+  if (!boost::regex_match(value, match, all_regex)) {
+    throw InvalidParameterValueException();
+  }
+
+  std::set<MeanType> ret;
+  std::transform(boost::sregex_token_iterator(value.begin(), value.end(),
+                                            boost::regex("\\s*(\\w+)\\s*"),
+                                            1),
+                 boost::sregex_token_iterator(),
+                 std::inserter(ret, ret.begin()),
+                 [](const std::string& subval) {
+    auto mtypeit = map.find(subval);
+    if (mtypeit == map.end()) {
+      throw InvalidParameterValueException();
     }
-    static const boost::regex typesRegex("\\s*(\\w+)\\s*");
-    static const boost::sregex_token_iterator empty;
-    boost::sregex_token_iterator typesIterator(
-          value.begin(), value.end(), typesRegex, 1);
-    assert(typesIterator != empty);
-    while (typesIterator != empty) {
-      auto mtypeit = kMeanTypesMap.find(*typesIterator++);
-      if (mtypeit == kMeanTypesMap.end()) {
-        return false;
-      }
-      types_.insert(mtypeit->second);
-    }
-    return true;
+    return mtypeit->second;
   });
+
+  return ret;
 }
 
+Mean::Mean() : types_(kDefaultMeanTypes()) {
+}
+
+ALWAYS_VALID_TP(Mean, types)
+
 void Mean::Do(const float* in,
-            FixedArray<MEAN_TYPE_COUNT>* out) const noexcept {
-  for (int j = 0; j < MEAN_TYPE_COUNT; j++) {
-    auto mt = static_cast<MeanTypes>(j);
+            FixedArray<kMeanTypeCount>* out) const noexcept {
+  for (int j = 0; j < kMeanTypeCount; j++) {
+    auto mt = static_cast<MeanType>(j);
     if (types_.find(mt) != types_.end()) {
-      (*out)[j] = Do(UseSimd(), in, input_format_->Size(), mt);
+      (*out)[j] = Do(use_simd(), in, input_format_->Size(), mt);
     } else {
       (*out)[j] = 0;
     }
@@ -71,10 +77,10 @@ void Mean::Do(const float* in,
 }
 
 float Mean::Do(bool simd, const float* input, size_t length,
-               MeanTypes type) noexcept {
+               MeanType type) noexcept {
   int ilength = static_cast<int>(length);
   switch (type) {
-    case MEAN_TYPE_ARITHMETIC: {
+    case kMeanTypeArithmetic: {
       float res;
       if (simd) {
 #if defined(__AVX__) || defined(__ARM_NEON__)
@@ -88,7 +94,7 @@ float Mean::Do(bool simd, const float* input, size_t length,
       res /= length;
       return res;
     }
-    case MEAN_TYPE_GEOMETRIC: {
+    case kMeanTypeGeometric: {
       const float power = 1.f / ilength;
       if (simd) {
 #ifdef __AVX__
@@ -188,6 +194,7 @@ float Mean::Do(bool simd, const float* input, size_t length,
   return 0.f;
 }
 
+RTP(Mean, types)
 REGISTER_TRANSFORM(Mean);
 
 }  // namespace transforms

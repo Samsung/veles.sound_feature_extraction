@@ -12,7 +12,7 @@
 
 #define __STDC_LIMIT_MACROS
 #include <gtest/gtest.h>
-#include <math.h>
+#include <cmath>
 #include <sound_feature_extraction/api.h>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"

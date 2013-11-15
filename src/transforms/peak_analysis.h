@@ -19,15 +19,14 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class PeakAnalysis
-    : public OmpTransformBase<formats::ArrayFormat<formats::FixedArray<2>>,
-                              formats::ArrayFormatF> {
+class PeakAnalysis : public OmpTransformBase<
+    formats::ArrayFormat<formats::FixedArray<2>>,
+    formats::ArrayFormatF>  {
  public:
   TRANSFORM_INTRO("PeakAnalysis", "Peak analysis. This is a modified version "
                                   "of the algorithm from \"Automatic Musical "
-                                  "Genre Classification Of Audio Signals\".")
-
-  OMP_TRANSFORM_PARAMETERS()
+                                  "Genre Classification Of Audio Signals\".",
+                  PeakAnalysis)
 
  protected:
   virtual size_t OnInputFormatChanged(size_t buffersCount) override;

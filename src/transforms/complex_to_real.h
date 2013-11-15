@@ -18,13 +18,11 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class ComplexToReal
-    : public OmpUniformFormatTransform<formats::ArrayFormatF> {
+class ComplexToReal : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   TRANSFORM_INTRO("C2R", "Converts each complex number to corresponding "
-                         "real numbers.")
-
-  OMP_TRANSFORM_PARAMETERS()
+                         "real numbers.",
+                  ComplexToReal)
 
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override;

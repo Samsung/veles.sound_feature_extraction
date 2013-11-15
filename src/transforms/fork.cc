@@ -15,18 +15,11 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-const int Fork::kDefaultFactor = 4;
-const std::string Fork::kCloningFactorAttributeName = "CloningFactor";
-
 Fork::Fork() : factor_(kDefaultFactor) {
-  RegisterSetter("factor", [&](const std::string& value) {
-    int pv = Parse<int>("factor", value);
-    if (pv < 1) {
-      return false;
-    }
-    factor_ = pv;
-    return true;
-  });
+}
+
+bool Fork::validate_factor(const int& value) noexcept {
+  return value >= 1;
 }
 
 size_t Fork::OnFormatChanged(size_t buffersCount) {
@@ -45,6 +38,7 @@ void Fork::Do(
   }
 }
 
+RTP(Fork, factor)
 REGISTER_TRANSFORM(Fork);
 
 }  // namespace transforms

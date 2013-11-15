@@ -39,6 +39,6 @@ class FilterBankTest : public TransformTest<FilterBank> {
 TEST_F(FilterBankTest, Do) {
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size; i++) {
-    ASSERT_EQF(100 * filterBank_.get()[i], (*Output)[0][i]);
+    ASSERT_EQF(100 * filter_bank().get()[i], (*Output)[0][i]);
   }
 }

@@ -29,24 +29,19 @@ class Beat
  public:
   Beat();
 
-  TRANSFORM_INTRO("Beat", "Find the tempo of a musical signal.")
+  TRANSFORM_INTRO("Beat", "Find the tempo of a musical signal.", Beat)
 
-  TRANSFORM_PARAMETERS(
-      TP("bands", "The number of bands to sum.", "1")
-      TP("pulses", "The number of pulses for the convolution.",
-         std::to_string(kDefaultPulses))
-      TP("min_bpm", "Minimal number of beats per minute.",
-         std::to_string(kDefaultMinBPM))
-      TP("max_bpm", "Maximal number of beats per minute.",
-         std::to_string(kDefaultMaxBPM))
-      TP("resolution1", "The bpm resolution during the first pass.",
-         std::to_string(kDefaultResolution1))
-      TP("resolution2", "The bpm resolution during the second pass.",
-         std::to_string(kDefaultResolution2))
-      TP("max_peaks", "The number of the most significant peaks to record.",
-         std::to_string(kDefaultPeaks))
-      TP("debug", "Dump the resulting energy vectors.", "false")
-  )
+  TP(bands, int, kDefaultBands, "The number of bands to sum.")
+  TP(pulses, int, kDefaultPulses, "The number of pulses for the convolution.")
+  TP(min_bpm, float, kDefaultMinBPM, "Minimal number of beats per minute.")
+  TP(max_bpm, float, kDefaultMaxBPM, "Maximal number of beats per minute.")
+  TP(resolution1, float, kDefaultResolution1,
+     "The bpm resolution during the first pass.")
+  TP(resolution2, float, kDefaultResolution2,
+     "The bpm resolution during the second pass.")
+  TP(peaks, int, kDefaultPeaks,
+     "The number of the most significant peaks to record.")
+  TP(debug, bool, kDefaultDebug, "Dump the resulting energy vectors.")
 
  protected:
   virtual size_t OnInputFormatChanged(size_t buffersCount) override;
@@ -68,22 +63,16 @@ class Beat
                              float* max_energy_bpm_found = nullptr,
                              float* max_energy_found = nullptr) const noexcept;
 
+  static constexpr int kDefaultBands = 1;
   static constexpr int kDefaultPulses = 3;
   static constexpr float kDefaultMinBPM = 60.f;
   static constexpr float kDefaultMaxBPM = 240.f;
   static constexpr float kDefaultResolution1 = 2.f;
   static constexpr float kDefaultResolution2 = 0.1f;
   static constexpr int kDefaultPeaks = 3;
+  static constexpr bool kDefaultDebug = false;
 
   mutable FloatPtr buffer_;
-  int bands_;
-  int pulses_;
-  float min_bpm_;
-  float max_bpm_;
-  float step1_;
-  float step2_;
-  int peaks_;
-  bool debug_;
 };
 
 }  // namespace transforms

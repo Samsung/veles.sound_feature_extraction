@@ -10,7 +10,7 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <math.h>
+#include <cmath>
 #include <simd/detect_peaks.h>
 #include "src/transforms/shc.h"
 #include "tests/transforms/transform_test.h"
@@ -32,7 +32,7 @@ class SHCTest : public TransformTest<SHC> {
 };
 
 TEST_F(SHCTest, Do) {
-  SetUseSimd(false);
+  set_use_simd(false);
   Do((*Input)[0], (*Output)[0]);
   ExtremumPoint* results;
   size_t rcount;
@@ -44,7 +44,7 @@ TEST_F(SHCTest, Do) {
   EXPECT_NEAR(0.6133f, results[1].value, 0.0001f);
   EXPECT_EQ(90, results[2].position);
   EXPECT_NEAR(0.6133f, results[2].value, 0.0001f);
-  SetUseSimd(true);
+  set_use_simd(true);
   Do((*Input)[0], (*Output)[0]);
   detect_peaks(true, (*Output)[0], output_format_->Size(), kExtremumTypeMaximum,
                &results, &rcount);

@@ -27,7 +27,7 @@ size_t MixStereo::OnFormatChanged(size_t buffersCount) {
 
 void MixStereo::Do(const int16_t* in, int16_t* out) const noexcept {
   int length = input_format_->Size();
-  if (UseSimd()) {
+  if (use_simd()) {
 #ifdef __AVX__
     for (int i = 0; i < length - 15; i += 16) {
       __m128i vec1 = _mm_load_si128(

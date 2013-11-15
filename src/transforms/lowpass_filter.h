@@ -19,16 +19,14 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
+using LowpassFilterBase = SingleFrequencyFilter<IIRFilterBase>;
+
 /// @brief Discards the frequencies which are higher than the threshold.
-class LowpassFilter : public SingleFrequencyFilter<IIRFilterBase> {
+class LowpassFilter : public LowpassFilterBase {
  public:
   TRANSFORM_INTRO("Lowpass", "Lowpass filter. All frequences higher than "
-                             "\"frequency\" shall not pass.")
-
-  IIR_FILTER_PARAMETERS(
-      TP("frequency", "Suppress frequencies higher than this value.",
-         std::to_string(kMinFilterFrequency))
-  )
+                             "\"frequency\" shall not pass.",
+                  LowpassFilter)
 
  protected:
   virtual std::shared_ptr<IIRFilter> CreateExecutor() const noexcept override;

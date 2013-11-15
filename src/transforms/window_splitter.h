@@ -18,62 +18,60 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-#define WINDOW_SPLITTER_TRANSFORM_PARAMETERS(init) \
-  TRANSFORM_PARAMETERS(FORWARD_MACROS( \
-   TP("length", "Window size in samples. Ignored in inverse mode.", \
-         std::to_string(this->kDefaultLength)) \
-   TP("step", "Distance between sequential windows in samples.", \
-      std::to_string(this->kDefaultStep)) \
-   TP("type", "Type of the window. E.g. \"rectangular\" " \
-              "or \"hamming\".", \
-      "hamming") \
-   TP("interleaved", "Interleave windows from sequential input buffers. " \
-                     "In inverse mode, treat the windows as interleaved.", \
-      "true") \
-  init) \
-)
-
 template <class T>
 class WindowSplitterTemplateBase
     : public virtual UniformFormatTransform<formats::ArrayFormat<T>> {
  public:
+  typedef UniformFormatTransform<formats::ArrayFormat<T>> Base;
+
   WindowSplitterTemplateBase()
       : length_(kDefaultLength),
         step_(kDefaultStep),
-        windows_count_(0),
-        interleaved_(true) {
-    this->RegisterSetter("length", [&](const std::string& value) {
-      int pv = this->template Parse<int>("length", value);
-      if (pv < formats::ArrayFormatF::kMinSamplesCount ||
-          pv > formats::ArrayFormatF::kMaxSamplesCount) {
-        return false;
-      }
-      length_ = pv;
-      return true;
-    });
-    this->RegisterSetter("step", [&](const std::string& value) {
-      int pv = this->template Parse<int>("step", value);
-      if (pv < 1) {
-        return false;
-      }
-      step_ = pv;
-      return true;
-    });
-    this->RegisterSetter("interleaved", [&](const std::string& value) {
-      interleaved_ = this->template Parse<bool>("interleaved", value);
-      return true;
-    });
+        interleaved_(kDefaultInterleaved),
+        windows_count_(0) {
   }
+
+  TRANSFORM_PARAMETERS_SUPPORT(WindowSplitterTemplateBase<T>)
+
+  TP(length, int, kDefaultLength, "Window size in samples.")
+  TP(step, int, kDefaultStep, "Distance between sequential windows in samples.")
+  TP(interleaved, bool, kDefaultInterleaved,
+     "Interleave windows from sequential input buffers. "
+     "In inverse mode, treat the windows as interleaved.")
 
  protected:
   static constexpr int kDefaultLength = 512;
   static constexpr int kDefaultStep = 205;
+  static constexpr bool kDefaultInterleaved = true;
 
-  int length_;
-  int step_;
   mutable int windows_count_;
-  bool interleaved_;
 };
+
+template <class T>
+bool WindowSplitterTemplateBase<T>::validate_length(const int& value) noexcept {
+  return value >= formats::ArrayFormatF::kMinSamplesCount &&
+         value <= formats::ArrayFormatF::kMaxSamplesCount;
+}
+
+template <class T>
+bool WindowSplitterTemplateBase<T>::validate_step(const int& value) noexcept {
+  return value >= 1;
+}
+
+template <class T>
+bool WindowSplitterTemplateBase<T>::validate_interleaved(
+    const bool&) noexcept {
+  return true;
+}
+
+template <class T>
+RTP(WindowSplitterTemplateBase<T>, length)
+
+template <class T>
+RTP(WindowSplitterTemplateBase<T>, step)
+
+template <class T>
+RTP(WindowSplitterTemplateBase<T>, interleaved)
 
 /// @brief Splits the raw stream into numerous small chunks aka windows.
 template <class T>
@@ -82,33 +80,27 @@ class WindowSplitterTemplate
       public TransformLogger<WindowSplitterTemplate<T>> {
  public:
   WindowSplitterTemplate()
-      : window_(nullptr, free),
-        type_(WINDOW_TYPE_HAMMING) {
-    this->RegisterSetter("type", [&](const std::string& value) {
-      auto wti = kWindowTypeMap.find(value);
-      if (wti == kWindowTypeMap.end()) {
-        return false;
-      }
-      type_ = wti->second;
-      return true;
-    });
+      : type_(kDefaultWindowType),
+        window_(nullptr, free) {
   }
 
   TRANSFORM_INTRO("Window", "Splits the raw input signal into numerous "
                             "windows stepping \"step\" ms with length "
-                            "\"length\" ms of type \"type\".")
+                            "\"length\" ms of type \"type\".",
+                  WindowSplitterTemplate<T>)
 
-  WINDOW_SPLITTER_TRANSFORM_PARAMETERS()
+  TP(type, WindowType, kDefaultWindowType,
+     "Type of the window. E.g. \"rectangular\" or \"hamming\".")
 
   virtual void Initialize() const {
     int realSize = this->input_format_->Size() - this->output_format_->Size();
-    int excess = realSize % this->step_;
+    int excess = realSize % this->step();
     if (excess != 0) {
       WRN("(input buffer size %zu - window length %zu) = %i is not "
           "divisible by step %i. It's excess (%i samples) will not be "
           "processed.",
           this->input_format_->Size(), this->output_format_->Size(),
-          realSize, this->step_, excess);
+          realSize, this->step(), excess);
     }
 
     window_ = Window::InitializeWindow(this->output_format_->Size(), type_);
@@ -116,15 +108,24 @@ class WindowSplitterTemplate
 
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override final {
-    this->output_format_->SetSize(this->length_);
+    this->output_format_->SetSize(this->length());
     int realSize = this->input_format_->Size() - this->output_format_->Size();
-    this->windows_count_ = realSize / this->step_ + 1;
+    this->windows_count_ = realSize / this->step()+ 1;
     return this->windows_count_ * buffersCount;
   }
 
+  static constexpr WindowType kDefaultWindowType = WINDOW_TYPE_HAMMING;
+
   mutable Window::WindowContentsPtr window_;
-  WindowType type_;
 };
+
+template <class T>
+bool WindowSplitterTemplate<T>::validate_type(const WindowType&) noexcept {
+  return true;
+}
+
+template <class T>
+RTP(WindowSplitterTemplate<T>, type)
 
 /// @brief Merges chunks of data.
 template <class T>
@@ -132,38 +133,30 @@ class WindowSplitterInverseTemplate
     : public virtual WindowSplitterTemplateBase<T> {
  public:
   WindowSplitterInverseTemplate()
-      : inverse_count_(kDefaultInverseCount) {
-    this->RegisterSetter("count", [&](const std::string& value) {
-      int pv = this->template Parse<int>("inverse_count", value);
-      if (pv < 1) {
-        return false;
-      }
-      inverse_count_ = pv;
-      return true;
-    });
+      : count_(kDefaultInverseCount) {
   }
 
-  WINDOW_SPLITTER_TRANSFORM_PARAMETERS(
-      TP("count", "The resulting amount of buffers.",
-         std::to_string(kDefaultInverseCount)))
+  TRANSFORM_PARAMETERS_SUPPORT(WindowSplitterInverseTemplate<T>)
+
+  TP(count, int, kDefaultInverseCount, "The resulting amount of buffers.")
 
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override final {
-    this->windows_count_ = buffersCount / inverse_count_;
+    this->windows_count_ = buffersCount / count_;
     this->output_format_->SetSize(this->input_format_->Size() +
-        (this->windows_count_ - 1) * this->step_);
-    return inverse_count_;
+        (this->windows_count_ - 1) * this->step());
+    return count_;
   }
 
   virtual void Do(const BuffersBase<T*>& in, BuffersBase<T*>* out)
       const noexcept override {
     int windowLength = this->input_format_->Size();
-    int offset = (windowLength - this->step_) / 2;
+    int offset = (windowLength - this->step()) / 2;
     for (size_t i = 0; i < in.Count(); i++) {
       int outIndex, windowIndex;
-      if (this->interleaved_) {
-        outIndex = i % inverse_count_;
-        windowIndex = (i / inverse_count_) % this->windows_count_;
+      if (this->interleaved()) {
+        outIndex = i % count_;
+        windowIndex = (i / count_) % this->windows_count_;
       } else {
         outIndex = i / this->windows_count_;
         windowIndex = i % this->windows_count_;
@@ -173,11 +166,11 @@ class WindowSplitterInverseTemplate
                (windowLength - offset) * sizeof(T));
       } else if (windowIndex < this->windows_count_ - 1) {
         memcpy((*out)[outIndex] +
-                   windowLength - offset + this->step_ * (windowIndex - 1),
-               in[i] + offset, this->step_ * sizeof(T));
+                   windowLength - offset + this->step()* (windowIndex - 1),
+               in[i] + offset, this->step()* sizeof(T));
       } else {
         memcpy((*out)[outIndex] +
-                   windowLength - offset + this->step_ * (windowIndex - 1),
+                   windowLength - offset + this->step() * (windowIndex - 1),
                in[i] + offset,
                (windowLength - offset) * sizeof(T));
       }
@@ -185,9 +178,16 @@ class WindowSplitterInverseTemplate
   }
 
   static constexpr int kDefaultInverseCount = 1;
-
-  int inverse_count_;
 };
+
+template <class T>
+bool WindowSplitterInverseTemplate<T>::validate_count(
+    const int& value) noexcept {
+  return value >= 1;
+}
+
+template <class T>
+RTP(WindowSplitterInverseTemplate<T>, count)
 
 class WindowSplitter16 : public WindowSplitterTemplate<int16_t> {
  protected:
@@ -210,8 +210,6 @@ class WindowSplitterFInverse
     : public WindowSplitterInverseTemplate<float>,
       public virtual InverseUniformFormatTransform<WindowSplitterF> {
 };
-
-
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction

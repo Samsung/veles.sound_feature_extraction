@@ -10,7 +10,7 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <math.h>
+#include <cmath>
 #include "src/transforms/intensity.h"
 #include "tests/transforms/transform_test.h"
 

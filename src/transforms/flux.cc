@@ -11,7 +11,7 @@
  */
 
 #include "src/transforms/flux.h"
-#include <math.h>
+#include <cmath>
 #ifdef __AVX__
 #include <immintrin.h>
 #elif defined(__ARM_NEON__)
@@ -26,7 +26,7 @@ namespace transforms {
 void Flux::Do(const BuffersBase<float*>& in,
               BuffersBase<float> *out) const noexcept {
   for (size_t i = 1; i < in.Count(); i++) {
-    (*out)[i] = Do(UseSimd(), in[i], input_format_->Size(), in[i - 1]);
+    (*out)[i] = Do(use_simd(), in[i], input_format_->Size(), in[i - 1]);
   }
   (*out)[0] = (*out)[1];
 }

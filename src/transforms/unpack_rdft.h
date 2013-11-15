@@ -18,12 +18,10 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class UnpackRDFT
-    : public OmpUniformFormatTransform<formats::ArrayFormatF> {
+class UnpackRDFT : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
-  TRANSFORM_INTRO("UnpackRDFT", "Unpacks the result after applying RDFT.")
-
-  OMP_TRANSFORM_PARAMETERS()
+  TRANSFORM_INTRO("UnpackRDFT", "Unpacks the result after applying RDFT.",
+                  UnpackRDFT)
 
   void Initialize() const override;
 

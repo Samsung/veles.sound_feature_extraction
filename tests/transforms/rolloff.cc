@@ -10,7 +10,7 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include <math.h>
+#include <cmath>
 #include "src/transforms/rolloff.h"
 #include "tests/transforms/transform_test.h"
 
@@ -37,7 +37,7 @@ class RolloffTest : public TransformTest<Rolloff> {
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
 TEST_F(RolloffTest, Do) {
-  SetParameter("ratio", "0.8");
+  set_ratio(0.8);
   Do((*Input)[0], &(*Output)[0]);
   float res = Do(false, (*Input)[0], Size, 0.8f);
   res /= input_format_->Duration();

@@ -25,30 +25,23 @@ class LSP : public OmpUniformFormatTransform<formats::ArrayFormatF> {
 
   TRANSFORM_INTRO("LSP", "Converts Linear Prediction Coefficients (LPC) to "
                          "more robust Line Spectral Pairs (LSP) "
-                         "representation.")
+                         "representation.",
+                  LSP)
 
-  OMP_TRANSFORM_PARAMETERS(
-      TP("intervals", "The number of intervals to scan in the range [-1, 1]. "
-                      "The corresponding delta equals to 2 / intervals. The "
-                      "bigger the number, the less probability is to skip "
-                      "a root.",
-         std::to_string(kDefaultIntervals))
-      TP("bisects", "The number of bisections for the root value refinement. "
-                    "The bigger the number, the more precise the values are "
-                    "and the less probability is to skip "
-                    "a root.",
-         std::to_string(kDefaultBisects))
-  )
+  TP(intervals, int, kDefaultIntervals,
+     "The number of intervals to scan in the range [-1, 1]. "
+      "The corresponding delta equals to 2 / intervals. The "
+      "bigger the number, the less probability is to skip a root.")
+  TP(bisects, int, kDefaultBisects,
+     "The number of bisections for the root value refinement. "
+     "The bigger the number, the more precise the values are "
+     "and the less probability is to skip a root.")
 
  protected:
   virtual void Do(const float* in, float* out) const noexcept override;
 
- private:
   static constexpr int kDefaultIntervals = 128;
   static constexpr int kDefaultBisects = 16;
-
-  int intervals_;
-  int bisects_;
 };
 
 }  // namespace transforms

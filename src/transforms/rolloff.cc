@@ -21,22 +21,15 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-const float Rolloff::kDefaultRatio = 0.85f;
-
 Rolloff::Rolloff() : ratio_(kDefaultRatio) {
-  RegisterSetter("ratio", [&](const std::string& value) {
-    float fv = Parse<float>("ratio", value);
-    if (fv <= 0.f || fv >= 1.f) {
-      return false;
-    }
-    ratio_ = fv;
-    return true;
-  });
 }
 
-void Rolloff::Do(const float* in,
-                 float* out) const noexcept {
-  *out = Do(UseSimd(), in, input_format_->Size(), ratio_) /
+bool Rolloff::validate_ratio(const float& value) noexcept {
+  return value > 0.f && value < 1.f;
+}
+
+void Rolloff::Do(const float* in, float* out) const noexcept {
+  *out = Do(use_simd(), in, input_format_->Size(), ratio_) /
       input_format_->Duration();
 }
 
@@ -110,6 +103,7 @@ int Rolloff::Do(bool simd, const float* input, size_t length,
   }
 }
 
+RTP(Rolloff, ratio)
 REGISTER_TRANSFORM(Rolloff);
 
 }  // namespace transforms

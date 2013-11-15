@@ -27,8 +27,8 @@ class ConvolveTest : public TransformTest<ConvolveFilter> {
 
   virtual void SetUp() {
     Size = sizeof(Data) / sizeof(Data[0]);
-    SetParameter("window", "half-hanning-right");
-    SetParameter("length", "8820");
+    set_window(sound_feature_extraction::WINDOW_TYPE_HALF_HANNING_RIGHT);
+    set_length(8820);
     SetUpTransform(1, Size, 22050);
     std::memcpy((*Input)[0], Data, sizeof(Data));
   }

@@ -17,13 +17,13 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
+RTP(PeakDynamicProgramming, mind_values)
+
 PeakDynamicProgramming::PeakDynamicProgramming()
     : mind_values_(kDefaultMindValues) {
-  RegisterSetter("mind_values", [&](const std::string& value) {
-    mind_values_ = Parse<bool>("mind_values", value);
-    return true;
-  });
 }
+
+ALWAYS_VALID_TP(PeakDynamicProgramming, mind_values)
 
 void PeakDynamicProgramming::Do(const BuffersBase<formats::FixedArray<2>*>& in,
                                 BuffersBase<float>* out)

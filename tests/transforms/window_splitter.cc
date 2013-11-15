@@ -53,9 +53,9 @@ TEST_F(WindowSplitterTest, Do) {
 }
 
 TEST_F(WindowSplitterInverseTest, DoInterleaved) {
-  SetParameter("interleaved", "true");
-  SetParameter("step", "309");
-  SetParameter("count", "2");
+  set_interleaved(true);
+  set_step(309);
+  set_count(2);
   RecreateOutputBuffers();
   ASSERT_EQ(2U, Output->Count());
   ASSERT_EQ(1953U, output_format_->Size());

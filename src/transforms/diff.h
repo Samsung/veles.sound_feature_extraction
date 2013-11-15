@@ -24,17 +24,15 @@ class Diff : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   Diff();
 
-  TRANSFORM_INTRO("Diff", "Differentiate the signal.")
+  TRANSFORM_INTRO("Diff", "Differentiate the signal.", Diff)
 
-  OMP_TRANSFORM_PARAMETERS(
-      TP("rectify", "Perform half-wave rectification (retain only if the "
-                    "difference is positive).",
-         "false")
-      TP("swt", "Smoothly differentiate using Stationary Wavelet Transform "
-                "(db1) of the specified level. The level must be greater than "
-                "or equal to 0. If set to zero, this parameter is ignored.",
-         std::to_string(kNoSWT))
-  )
+  TP(rectify, bool, false,
+     "Perform half-wave rectification (retain only if the difference is "
+     "positive).")
+  TP(swt, int, kNoSWT,
+     "Smoothly differentiate using Stationary Wavelet Transform "
+     "(db1) of the specified level. The level must be greater than "
+     "or equal to 0. If set to zero, this parameter is ignored.")
 
  protected:
   virtual void Initialize() const override;
@@ -50,11 +48,9 @@ class Diff : public OmpUniformFormatTransform<formats::ArrayFormatF> {
   static void Rectify(bool simd, const float* input, int length,
                       float* output) noexcept;
 
- private:
   static constexpr int kNoSWT = 0;
 
-  bool rectify_;
-  int swt_;
+ private:
   mutable FloatPtr swt_buffer_;
 };
 

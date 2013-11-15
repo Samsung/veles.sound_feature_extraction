@@ -16,54 +16,26 @@
 #include <stddef.h>
 #include <vector>
 #include <string>
-#include <unordered_map>  // NOLINT(build/include_order)
-#include "src/exceptions.h"
+#include <unordered_map>
 #include <simd/wavelet_types.h>
+#include "src/parameterizable_base.h"
 
 namespace sound_feature_extraction {
-namespace Primitives {
 
-class WaveletFilterBank {
+typedef std::vector<int> TreeFingerprint;
+
+constexpr const char* WAVELET_TYPE_DAUBECHIES_STR = "daub";
+constexpr const char* WAVELET_TYPE_COIFLET_STR = "coif";
+constexpr const char* WAVELET_TYPE_SYMLET_STR = "sym";
+
+WaveletType Parse(const std::string& value, identity<WaveletType>);
+TreeFingerprint Parse(const std::string& str, identity<TreeFingerprint>);
+
+class WaveletTreeDescriptionParseException : public ExceptionBase {
  public:
-  explicit WaveletFilterBank(WaveletType type, int order,
-                             const std::vector<int>& treeDescription);
-  explicit WaveletFilterBank(WaveletType type, int order,
-                             std::vector<int>&& treeDescription);
-
-  void Apply(const float* source, size_t length, float *result) noexcept;
-
-  static void ValidateOrder(WaveletType type, int order);
-  static std::string WaveletTypeToString(WaveletType type) noexcept;
-  static WaveletType ParseWaveletType(const std::string& value);
-  static void ValidateDescription(const std::vector<int>& treeDescription);
-  static std::vector<int> ParseDescription(const std::string& str);
-  static std::string DescriptionToString(
-      const std::vector<int>& treeDescription) noexcept;
-  static void ValidateLength(const std::vector<int>& tree, size_t length);
-
- private:
-  WaveletType type_;
-  int order_;
-  std::vector<int> tree_;
-
-  static const std::unordered_map<std::string, WaveletType> kWaveletTypeStrMap;
-
-  static void RecursivelyIterate(WaveletType type, int order,
-                                 size_t length, std::vector<int>* tree,
-                                 std::vector<int>* workingTree,
-                                 float* source, float* desthi, float* destlo,
-                                 float** result) noexcept;
-
-  void ApplyInternal(float* source, size_t length, float *result) noexcept;
-};
-
-class WaveletTreeInvalidOrderException : public ExceptionBase {
- public:
-  explicit WaveletTreeInvalidOrderException(
-      WaveletType type, int order)
-  : ExceptionBase("Order " + std::to_string(order) + "is invalid for "
-                  "wavelet type \"" +
-                  WaveletFilterBank::WaveletTypeToString(type) + "\".") {
+  explicit WaveletTreeDescriptionParseException(
+      const std::string& treeDescription)
+  : ExceptionBase("Failed to parse \"" + treeDescription + "\".") {
   }
 };
 
@@ -75,35 +47,98 @@ class WaveletTreeWaveletTypeParseException : public ExceptionBase {
   }
 };
 
-class WaveletTreeInvalidDescriptionException : public ExceptionBase {
+namespace primitives {
+
+class WaveletFilterBank {
  public:
-  explicit WaveletTreeInvalidDescriptionException(
-      const std::vector<int>& treeDescription)
-  : ExceptionBase("Wavelet tree description \"" +
-                  WaveletFilterBank::DescriptionToString(treeDescription) +
-                  "\" is invalid.") {
+  explicit WaveletFilterBank(WaveletType type, int order,
+                             const TreeFingerprint& treeDescription);
+  explicit WaveletFilterBank(WaveletType type, int order,
+                             TreeFingerprint&& treeDescription);
+
+  void Apply(const float* source, size_t length, float *result) noexcept;
+
+  static void ValidateWavelet(WaveletType type, int order);
+  static void ValidateDescription(const TreeFingerprint& treeDescription);
+  static void ValidateLength(const TreeFingerprint& tree, size_t length);
+
+ private:
+  WaveletType type_;
+  int order_;
+  TreeFingerprint tree_;
+
+  static void RecursivelyIterate(WaveletType type, int order,
+                                 size_t length, TreeFingerprint* tree,
+                                 TreeFingerprint* workingTree,
+                                 float* source, float* desthi, float* destlo,
+                                 float** result) noexcept;
+
+  void ApplyInternal(float* source, size_t length, float *result) noexcept;
+};
+
+}  // namespace primitives
+}  // namespace sound_feature_extraction
+
+namespace std {
+  inline string to_string(WaveletType type) noexcept {
+    switch (type) {
+      case WAVELET_TYPE_DAUBECHIES:
+        return sound_feature_extraction::WAVELET_TYPE_DAUBECHIES_STR;
+      case WAVELET_TYPE_COIFLET:
+        return sound_feature_extraction::WAVELET_TYPE_COIFLET_STR;
+      case WAVELET_TYPE_SYMLET:
+        return sound_feature_extraction::WAVELET_TYPE_SYMLET_STR;
+    }
+    return "";
+  }
+
+  inline string to_string(
+      const sound_feature_extraction::TreeFingerprint& tf) noexcept {
+    std::string str;
+    for (int i : tf) {
+      str += std::to_string(i) + " ";
+    }
+    if (!str.empty()) {
+      str.resize(str.size() - 1);
+    }
+    return str;
+  }
+}  // namespace std
+
+namespace sound_feature_extraction {
+namespace primitives {
+
+class WaveletTreeInvalidOrderException : public ExceptionBase {
+ public:
+  explicit WaveletTreeInvalidOrderException(
+      WaveletType type, int order)
+  : ExceptionBase("Order " + std::to_string(order) + "is invalid for "
+                  "wavelet type \"" + std::to_string(type) + "\".") {
   }
 };
 
-class WaveletTreeDescriptionParseException : public ExceptionBase {
+class WaveletTreeInvalidDescriptionException : public ExceptionBase {
  public:
-  explicit WaveletTreeDescriptionParseException(
-      const std::string& treeDescription)
-  : ExceptionBase("Failed to parse \"" + treeDescription + "\".") {
+  explicit WaveletTreeInvalidDescriptionException(
+      const TreeFingerprint& treeDescription)
+  : ExceptionBase("Wavelet tree description \"" +
+                  std::to_string(treeDescription) +
+                  "\" is invalid.") {
   }
 };
 
 class WaveletTreeInvalidSourceLengthException : public ExceptionBase {
  public:
   explicit WaveletTreeInvalidSourceLengthException(
-      const std::vector<int>& treeDescription, size_t length)
+      const TreeFingerprint& treeDescription, size_t length)
   : ExceptionBase("Input length " + std::to_string(length) +
                   " is incompatible with tree \"" +
-                  WaveletFilterBank::DescriptionToString(treeDescription) +
+                  std::to_string(treeDescription) +
                   "\".") {
   }
 };
 
-}  // namespace Primitives
+}  // namespace primitives
 }  // namespace sound_feature_extraction
+
 #endif  // SRC_PRIMITIVES_WAVELET_FILTER_BANK_H_

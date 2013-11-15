@@ -24,19 +24,15 @@ class ConvolveFilter : public FIRFilterBase {
  public:
   ConvolveFilter() noexcept;
 
-  TRANSFORM_INTRO("Convolve", "Convolve a raw signal with a window function.")
+  TRANSFORM_INTRO("Convolve", "Convolve a raw signal with a window function.",
+                  ConvolveFilter)
 
-  FILTER_PARAMETERS(
-      TP("window", "Type of the window. E.g. \"rectangular\" "
-                   "or \"hamming\".",
-         "rectangular")
-  )
+  TP(window, WindowType, kDefaultWindowType,
+     "Type of the window. E.g. \"rectangular\" or \"hamming\".")
 
  protected:
+  static constexpr WindowType kDefaultWindowType = WINDOW_TYPE_RECTANGULAR;
   virtual void CalculateFilter(float* filter) const noexcept;
-
- private:
-  WindowType window_;
 };
 
 }  // namespace transforms

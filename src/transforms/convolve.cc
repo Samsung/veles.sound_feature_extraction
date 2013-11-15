@@ -11,21 +11,15 @@
  */
 
 #include "src/transforms/convolve.h"
-#include <math.h>
+#include <cmath>
 
 namespace sound_feature_extraction {
 namespace transforms {
 
-ConvolveFilter::ConvolveFilter() noexcept : window_(WINDOW_TYPE_RECTANGULAR) {
-  RegisterSetter("window", [&](const std::string& value) {
-    auto wti = kWindowTypeMap.find(value);
-    if (wti == kWindowTypeMap.end()) {
-      return false;
-    }
-    window_ = wti->second;
-    return true;
-  });
+ConvolveFilter::ConvolveFilter() noexcept : window_(kDefaultWindowType) {
 }
+
+ALWAYS_VALID_TP(ConvolveFilter, window)
 
 void ConvolveFilter::CalculateFilter(float* window) const noexcept {
   for (int i = 0; i < length(); i++) {
@@ -33,6 +27,7 @@ void ConvolveFilter::CalculateFilter(float* window) const noexcept {
   }
 }
 
+RTP(ConvolveFilter, window)
 REGISTER_TRANSFORM(ConvolveFilter);
 
 }  // namespace transforms

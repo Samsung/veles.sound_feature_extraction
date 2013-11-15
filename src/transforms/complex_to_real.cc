@@ -28,7 +28,7 @@ size_t ComplexToReal::OnFormatChanged(size_t buffersCount) {
 
 void ComplexToReal::Do(const float* in,
     float* out) const noexcept {
-  Do(UseSimd(), in, input_format_->Size(), out);
+  Do(use_simd(), in, input_format_->Size(), out);
 }
 
 void ComplexToReal::Do(bool simd, const float* input, int length,

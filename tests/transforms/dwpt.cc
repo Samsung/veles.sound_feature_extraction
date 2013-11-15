@@ -35,10 +35,3 @@ TEST_F(DWPTTest, Forward) {
   Do((*Input)[0], (*Output)[0]);
 }
 
-/*
-TEST_F(DWPTTest, Backward) {
-  SetParameter("inverse", "true");
-  Do((*Input), &(*Output));
-}
-*/
-
