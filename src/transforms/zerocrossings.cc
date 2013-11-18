@@ -22,7 +22,7 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 int ZeroCrossingsF::DoInternal(bool simd, const float* input,
-                                    size_t length) const noexcept {
+                               size_t length) const noexcept {
   int ilength = length;
   if (simd) {
 #ifdef __AVX__
@@ -45,7 +45,7 @@ int ZeroCrossingsF::DoInternal(bool simd, const float* input,
     crossings = _mm256_hadd_ps(crossings, crossings);
     crossings = _mm256_hadd_ps(crossings, crossings);
     int res = ElementAt(crossings, 0) + ElementAt(crossings, 4);
-    int startIndex = ((ilength - 1) >> 3) << 3;
+    int startIndex = (ilength - 1) & ~0x7;
     float valpre = input[startIndex];
     for (int i = startIndex + 1; i < ilength; i++) {
       float val = input[i];
@@ -60,7 +60,7 @@ int ZeroCrossingsF::DoInternal(bool simd, const float* input,
     return res;
   } else {
 #elif defined(__ARM_NEON__)
-    uint32x4_t crossings = vdupq_n_u32(0);
+    uint32x4_t crossings = vdupq_n_u32(0), ones = vdupq_n_u32(1);
     const float32x4_t zeros = vdupq_n_f32(0.f);
     for (int i = 0; i < ilength - 4; i += 4) {
       float32x4_t vecpre = vld1q_f32(input + i);
@@ -69,11 +69,12 @@ int ZeroCrossingsF::DoInternal(bool simd, const float* input,
       float32x4_t tmp = vmulq_f32(vecpre, vec);
       uint32x4_t cmpres = vcltq_f32(tmp, zeros);
       cmpres = vorrq_u32(cmpres, zerocheck);
+      cmpres = vandq_u32(cmpres, ones);
       crossings = vaddq_u32(crossings, cmpres);
     }
     uint64x2_t crossings64 = vpaddlq_u32(crossings);
     int res = vgetq_lane_u64(crossings64, 0) + vgetq_lane_u64(crossings64, 1);
-    int startIndex = ((ilength - 1) >> 2) << 2;
+    int startIndex = (ilength - 1) & ~0x3;
     float valpre = input[startIndex];
     for (int i = startIndex + 1; i < ilength; i++) {
       float val = input[i];
@@ -107,7 +108,7 @@ int ZeroCrossingsF::DoInternal(bool simd, const float* input,
 }
 
 int ZeroCrossings16::DoInternal(bool simd, const int16_t* input,
-                                 size_t length) const noexcept {
+                                size_t length) const noexcept {
   int ilength = length;
   if (simd) {
 #ifdef __AVX__
@@ -153,6 +154,7 @@ int ZeroCrossings16::DoInternal(bool simd, const int16_t* input,
   } else {
 #elif defined(__ARM_NEON__)
     uint32x4_t crossings = vdupq_n_u32(0);
+    uint16x8_t ones = vdupq_n_u16(1);
     const int16x8_t zeros = vdupq_n_s16(0);
     for (int i = 0; i < ilength - 8; i += 8) {
       int16x8_t vecpre = vld1q_s16(input + i);
@@ -161,6 +163,7 @@ int ZeroCrossings16::DoInternal(bool simd, const int16_t* input,
       int16x8_t tmp = veorq_s16(vecpre, vec);
       uint16x8_t cmpres = vcleq_s16(tmp, zeros);
       cmpres = veorq_u16(cmpres, zerocheck);
+      cmpres = vandq_u16(cmpres, ones);
       crossings = vpadalq_u16(crossings, cmpres);
     }
     uint64x2_t crossings64 = vpaddlq_u32(crossings);
