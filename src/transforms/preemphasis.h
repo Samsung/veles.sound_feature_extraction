@@ -18,7 +18,7 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class Preemphasis : public OmpUniformFormatTransform<formats::ArrayFormat16> {
+class Preemphasis : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   Preemphasis();
 
@@ -33,11 +33,10 @@ class Preemphasis : public OmpUniformFormatTransform<formats::ArrayFormat16> {
  protected:
   static constexpr float kDefaultValue = 0.9f;
 
-  virtual void Do(const int16_t* in,
-                  int16_t* out) const noexcept override;
+  virtual void Do(const float* in, float* out) const noexcept override;
 
-  static void Do(bool simd, const int16_t* input, size_t length,
-                 float k, int16_t* output) noexcept;
+  static void Do(bool simd, const float* input, size_t length,
+                 float k, float* output) noexcept;
 };
 
 }  // namespace transforms

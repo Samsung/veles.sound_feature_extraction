@@ -35,8 +35,8 @@ TEST_F(PreemphasisTest, Do) {
   Do((*Input)[0], (*Output)[0]);
   ASSERT_EQ(1, (*Output)[0][0]);
   for (int i = 1; i < Size; i++) {
-    ASSERT_NEAR(int16_t((1 - kDefaultValue) * (i + 1) + kDefaultValue),
-                (*Output)[0][i], 1.f);
+    ASSERT_NEAR((1 - kDefaultValue) * (i + 1) + kDefaultValue,
+                (*Output)[0][i], 1.f) << i;
   }
 }
 

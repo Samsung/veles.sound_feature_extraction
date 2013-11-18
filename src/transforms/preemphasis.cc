@@ -29,41 +29,26 @@ bool Preemphasis::validate_value(const float& value) noexcept {
   return value > 0 && value <= 1;
 }
 
-void Preemphasis::Do(const int16_t* in,
-                     int16_t* out) const noexcept {
+void Preemphasis::Do(const float* in,
+                     float* out) const noexcept {
 
   Do(use_simd(), in, input_format_->Size(), value_, out);
 }
 
-void Preemphasis::Do(bool simd, const int16_t* input, size_t length,
-                     float k, int16_t* output)
+void Preemphasis::Do(bool simd, const float* input, size_t length,
+                     float k, float* output)
     noexcept {
   int ilength = length;
   output[0] = input[0];
   if (simd) {
 #ifdef __AVX__
-#ifdef __AVX2__
-#error Use AVX2 here instead of SSE
-#endif
-    const __m128 veck = _mm_set1_ps(k);
+    const __m256 veck = _mm256_set1_ps(-k);
     for (int i = 1; i < ilength - 8; i += 8) {
-      __m128i vecpre = _mm_loadu_si128(
-          reinterpret_cast<const __m128i*>(input + i - 1));
-      __m128i intlo = _mm_unpacklo_epi16(_mm_set1_epi16(0), vecpre);
-      __m128i inthi = _mm_unpackhi_epi16(_mm_set1_epi16(0), vecpre);
-      intlo = _mm_sra_epi32(intlo, _mm_set1_epi32(16));
-      inthi = _mm_sra_epi32(inthi, _mm_set1_epi32(16));
-      __m128 flo = _mm_cvtepi32_ps(intlo);
-      __m128 fhi = _mm_cvtepi32_ps(inthi);
-      flo = _mm_mul_ps(flo, veck);
-      fhi = _mm_mul_ps(fhi, veck);
-      intlo = _mm_cvttps_epi32(flo);
-      inthi = _mm_cvttps_epi32(fhi);
-      vecpre = _mm_packs_epi32(intlo, inthi);
-      __m128i vec = _mm_loadu_si128(
-          reinterpret_cast<const __m128i*>(input + i));
-      vec = _mm_subs_epi16(vec, vecpre);
-      _mm_storeu_si128(reinterpret_cast<__m128i*>(output + i), vec);
+      __m256 vecpre = _mm256_load_ps(input + i - 1);
+      __m256 vec = _mm256_loadu_ps(input + i);
+      vecpre = _mm256_mul_ps(vecpre, veck);
+      vec = _mm256_add_ps(vec, vecpre);
+      _mm256_storeu_ps(output + i, vec);
     }
     for (int i = ((ilength - 1) & ~7); i < ilength; i++) {
       output[i] = input[i] - k * input[i - 1];
@@ -71,13 +56,14 @@ void Preemphasis::Do(bool simd, const int16_t* input, size_t length,
     return;
   } else {
 #elif defined(__ARM_NEON__)
-    for (int i = 1; i < ilength - 8; i += 8) {
-      int16x8_t vecpre = vld1q_s16(input + i - 1);
-      int16x8_t vec = vld1q_s16(input + i);
-      vec = vqsubq_s16(vec, vecpre);
-      vst1q_s16(output + i, vec);
+    const float32x4_t veck = vdupq_n_f32(-k);
+    for (int i = 1; i < ilength - 4; i += 4) {
+      float32x4_t vecpre = vld1q_f32(input + i - 1);
+      float32x4_t vec = vld1q_f32(input + i);
+      vec = vmlaq_f32(vec, vecpre, veck);
+      vst1q_f32(output + i, vec);
     }
-    for (int i = ((ilength - 1) & ~7); i < ilength; i++) {
+    for (int i = ((ilength - 1) & ~3); i < ilength; i++) {
       output[i] = input[i] - k * input[i - 1];
     }
     return;
