@@ -62,8 +62,8 @@ void SpectralEnergy::Do(bool simd, const float* input, int length,
     for (int j = 0; j < length - 3; j += 4) {
       float32x4_t cvec = vld1q_f32(input + j);
       float32x4_t sqrvec = vmulq_f32(cvec, cvec);
-      float32x2_t sums = vpadd_f32(vget_high_f32(sqrvec),
-                                   vget_low_f32(sqrvec));
+      float32x2_t sums = vpadd_f32(vget_low_f32(sqrvec),
+                                   vget_high_f32(sqrvec));
       vst1_f32(output + j / 2, sums);
     }
     for (int j = ((length >> 2) << 2); j < length; j += 2) {
