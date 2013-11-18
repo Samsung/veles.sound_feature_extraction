@@ -65,10 +65,10 @@ void ComplexMagnitude::Do(bool simd, const float* input, int length,
       float32x4_t cvec2 = vld1q_f32(input + j + 4);
       float32x4_t sqrvec1 = vmulq_f32(cvec1, cvec1);
       float32x4_t sqrvec2 = vmulq_f32(cvec2, cvec2);
-      float32x2_t sums1 = vpadd_f32(vget_high_f32(sqrvec1),
-                                    vget_low_f32(sqrvec1));
-      float32x2_t sums2 = vpadd_f32(vget_high_f32(sqrvec2),
-                                    vget_low_f32(sqrvec2));
+      float32x2_t sums1 = vpadd_f32(vget_low_f32(sqrvec1),
+                                    vget_high_f32(sqrvec1));
+      float32x2_t sums2 = vpadd_f32(vget_low_f32(sqrvec2),
+                                    vget_high_f32(sqrvec2));
       float32x4_t sums = vcombine_f32(sums1, sums2);
       sums = sqrt_ps(sums);
       vst1q_f32(output + j / 2, sums);
