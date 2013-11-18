@@ -53,9 +53,7 @@ void ComplexToReal::Do(bool simd, const float* input, int length,
   } else {
 #elif defined(__ARM_NEON__)
     for (int i = 0; i < length - 7; i += 8) {
-      float32x4_t vec1 = vld1q_f32(input + i);
-      float32x4_t vec2 = vld1q_f32(input + i + 4);
-      float32x4x2_t result = vuzpq_f32(vec2, vec1);
+      float32x4x2_t result = vld2q_f32(input + i);
       vst1q_f32(output + i / 2, result.val[0]);
     }
     for (int i = ((length >> 3) << 3); i < length; i += 2) {

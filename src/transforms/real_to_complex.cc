@@ -61,7 +61,8 @@ void RealToComplex::Do(bool simd, const float* input, int length,
     for (int i = 0; i < length - 3; i += 4) {
       float32x4_t vec = vld1q_f32(input + i);
       float32x4x2_t res = vzipq_f32(vec, zeros);
-      vst2q_f32(output + i * 2, res);
+      vst1q_f32(output + i * 2, res.val[0]);
+      vst1q_f32(output + i * 2 + 4, res.val[1]);
     }
 
     for (int i = ((length >> 2) << 2); i < length; i++) {
