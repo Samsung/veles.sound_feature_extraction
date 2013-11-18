@@ -3,7 +3,7 @@ directory = $(top_builddir)/docs/html
 
 $(directory)index.html: doxyfile.stamp
 
-doxyfile.stamp: $(top_srcdir)/inc/SoundFeatureExtraction/api.h Doxyfile
+doxyfile.stamp: $(top_srcdir)/inc/sound_feature_extraction/api.h Doxyfile
 	$(AM_V_GEN)$(DOXYGEN) Doxyfile
 	$(AM_V_at)echo Timestamp > doxyfile.stamp
 
