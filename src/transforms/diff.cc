@@ -161,13 +161,9 @@ void Diff::Rectify(bool simd, const float* input, int length,
       _mm256_store_ps(output + i, result1);
       _mm256_store_ps(output + i + 8, result2);
     }
-    for (int i = (length & ~0x7); i < length; i++) {
+    for (int i = (length & ~0xF); i < length; i++) {
       float value = input[i];
-      if (value < 0) {
-        output[i] = 0;
-      } else {
-        output[i] = value;
-      }
+      output[i] = (value < 0)? 0 : value;
     }
   } else {
 #elif defined(__ARM_NEON__)
@@ -179,13 +175,9 @@ void Diff::Rectify(bool simd, const float* input, int length,
       vst1q_f32(output + i, result1);
       vst1q_f32(output + i + 4, result2);
     }
-    for (int i = (length & ~0x3); i < length; i++) {
+    for (int i = (length & ~0x7); i < length; i++) {
       float value = input[i];
-      if (value < 0) {
-        output[i] = 0;
-      } else {
-        output[i] = value;
-      }
+      output[i] = (value < 0)? 0 : value;
     }
   } else {
 #else
@@ -193,11 +185,7 @@ void Diff::Rectify(bool simd, const float* input, int length,
 #endif
     for (int i = 0; i < length; i++) {
       float value = input[i];
-      if (value < 0) {
-        output[i] = 0;
-      } else {
-        output[i] = value;
-      }
+      output[i] = (value < 0)? 0 : value;
     }
   }
 }

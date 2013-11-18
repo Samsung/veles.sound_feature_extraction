@@ -79,18 +79,21 @@ TEST_F(DiffTest, DoNoRectify) {
   ASSERT_FLOAT_EQ(-1, (*Output)[0][Size - 1]);
 }
 
-TEST_F(DiffTest, DoSWT) {
+TEST_F(DiffTest, DoSWTRectify) {
   set_rectify(true);
   set_swt(1);
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size; i++) {
-    ASSERT_GE((*Output)[0][i], 0);
+    ASSERT_GE((*Output)[0][i], 0) << i;
   }
-  set_swt(2);
+}
+
+TEST_F(DiffTest, DoSWTNoRectify) {
   set_rectify(false);
+  set_swt(2);
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size; i++) {
-    ASSERT_EQ((*Output)[0][i], (*Output)[0][i]);
+    ASSERT_EQ((*Output)[0][i], (*Output)[0][i]) << i;
   }
 }
 
