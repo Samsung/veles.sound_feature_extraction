@@ -15,14 +15,6 @@
 #include "src/primitives/energy.h"
 #include <simd/arithmetic-inl.h>
 
-#ifdef SIMD
-#define EPSILON 0.005f
-#else
-#define EPSILON 0.5f
-#endif
-
-#define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
-
 TEST(Energy, calculate_energy) {
   const int length = 510;
   float array[length] __attribute__((aligned(64)));
@@ -30,7 +22,7 @@ TEST(Energy, calculate_energy) {
     array[i] = i + 1;
   }
   float result = calculate_energy(true, array, length);
-  ASSERT_EQF((length + 1) * (2 * length + 1.0f) / 6, result);
+  ASSERT_NEAR((length + 1) * (2 * length + 1.0f) / 6, result, 0.01f);
 }
 
 #define TEST_NAME Energy
