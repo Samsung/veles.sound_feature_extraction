@@ -124,12 +124,12 @@ float ldr_lpc(int simd, const float *ac, int length, float *lpc) {
           float32x4_t lpc_vec = vld1q_f32(lpc + j);
           float32x4_t lpc_supp_vec = vld1q_f32(lpc + j_supp);
 
-          float32x4_t lpc_supp_vec_rev = vrev64q_f32(lpc_supp_vec_rev);
+          float32x4_t lpc_supp_vec_rev = vrev64q_f32(lpc_supp_vec);
           lpc_supp_vec_rev = vcombine_f32(vget_high_f32(lpc_supp_vec_rev),
                                           vget_low_f32(lpc_supp_vec_rev));
-          float32x4_t lpc_vec_rev = vrev64q_f32(lpc_vec_rev);
+          float32x4_t lpc_vec_rev = vrev64q_f32(lpc_vec);
           lpc_vec_rev = vcombine_f32(vget_high_f32(lpc_vec_rev),
-                                          vget_low_f32(lpc_vec_rev));
+                                     vget_low_f32(lpc_vec_rev));
 
           lpc_vec = vmlaq_f32(lpc_vec, lpc_supp_vec_rev, lambda_vec);
           lpc_supp_vec = vmlaq_f32(lpc_supp_vec, lpc_vec_rev, lambda_vec);
