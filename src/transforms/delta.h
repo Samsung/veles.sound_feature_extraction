@@ -40,8 +40,8 @@ class Delta : public UniformFormatTransform<formats::ArrayFormatF> {
                   Delta)
 
       TP(type, DeltaType, kDefaultDeltaType,
-         "The algorithm to calculate the deltas with. Allowed values "
-         "are \"simple\" and \"regression\".")
+         "The algorithm to calculate the deltas. Allowed values are "
+         "\"simple\" and \"regression\".")
       TP(rlength, int, kDefaultRegressionLength,
          "The linear regression window length. Only odd values "
          " greater than 1 are accepted.")

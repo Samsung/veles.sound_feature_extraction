@@ -37,6 +37,20 @@ TEST_F(DeltaTest, Do) {
   ASSERT_EQ(2U, (*Output).Count());
   Do((*Input), &(*Output));
   for (int i = 0; i < Size; i++) {
-    ASSERT_NEAR((*Output)[0][i], 1, 0.00001f);
+    ASSERT_NEAR((*Output)[0][i], 1, 0.00001f) << i;
   }
 }
+/*
+TEST_F(DeltaTest, DoRegression) {
+  set_type(sound_feature_extraction::transforms::kDeltaTypeRegression);
+  set_use_simd(false);
+  Do((*Input), &(*Output));
+  set_use_simd(true);
+  auto output_simd = std::static_pointer_cast<Delta::OutBuffers>(
+      CreateOutputBuffers(Output->Count()));
+  Do((*Input), &(*output_simd));
+  for (int i = 0; i < Size; i++) {
+    ASSERT_NEAR((*Output)[0][i], (*output_simd)[0][i], 0.00001f) << i;
+  }
+}
+*/

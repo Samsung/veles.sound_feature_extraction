@@ -87,7 +87,7 @@ void Delta::DoSimple(bool simd, const float* prev, const float* cur,
       _mm256_store_ps(res + i, diff1);
       _mm256_store_ps(res + i + 8, diff2);
     }
-    for (int i = ilength & ~7; i < ilength; i++) {
+    for (int i = (ilength & ~0xF); i < ilength; i++) {
       res[i] = cur[i] - prev[i];
     }
     return;
@@ -103,7 +103,7 @@ void Delta::DoSimple(bool simd, const float* prev, const float* cur,
       vst1q_f32(res + i, diff1);
       vst1q_f32(res + i + 4, diff2);
     }
-    for (int i = ilength & ~3; i < ilength; i++) {
+    for (int i = (ilength & ~0x7); i < ilength; i++) {
       res[i] = cur[i] - prev[i];
     }
     return;
@@ -121,6 +121,7 @@ void Delta::DoSimple(bool simd, const float* prev, const float* cur,
 void Delta::DoRegression(bool simd, const BuffersBase<float*>& in,
                          int rstep, int i, float norm, int windowSize,
                          BuffersBase<float*>* out) noexcept {
+  assert(false && "Unstable implementation of Delta regression");
   if (simd) {
 #ifdef __AVX__
     __m256 normvec = _mm256_set1_ps(norm);
