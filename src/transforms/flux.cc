@@ -89,13 +89,13 @@ float Flux::Do(bool simd, const float* input, size_t length,
       vec22 = vmulq_f32(vec22, norm_prev);
       float32x4_t diff1 = vsubq_f32(vec11, vec21);
       float32x4_t diff2 = vsubq_f32(vec12, vec22);
-      diff = vmlaq_f32(diff1, diff1, diff);
-      diff = vmlaq_f32(diff2, diff2, diff);
+      diff = vmlaq_f32(diff, diff1, diff1);
+      diff = vmlaq_f32(diff, diff2, diff2);
     }
     float32x2_t diff2 = vpadd_f32(vget_high_f32(diff),
                                   vget_low_f32(diff));
     float sqr = vget_lane_f32(diff2, 0) + vget_lane_f32(diff2, 1);
-    for (int i = ((ilength >> 3) << 3); i < ilength; i++) {
+    for (int i = (ilength & ~0x7); i < ilength; i++) {
       float val = input[i] * imax_input - prev[i] * imax_prev;
       sqr += val * val;
     }
