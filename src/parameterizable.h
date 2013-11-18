@@ -40,7 +40,12 @@ typedef std::unordered_map<std::string, std::string> ParametersMap;
 
 class Parameterizable {
  public:
+  // TODO(v.markovtsev): drop this hack when gcc 4.7.x is not supported
+#if (__GNUC__ == 4 && __GNUC_MINOR__ < 8)
+  virtual ~Parameterizable() {}
+#else
   virtual ~Parameterizable() = default;
+#endif
 
   virtual const SupportedParametersMap& SupportedParameters() const noexcept
       = 0;
