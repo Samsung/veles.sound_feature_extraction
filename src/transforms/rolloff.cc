@@ -40,9 +40,9 @@ int Rolloff::Do(bool simd, const float* input, size_t length,
   if (simd) {
 #if defined(__AVX__) || defined(__ARM_NEON__)
     threshold = sum_elements(input, length) * ratio;
-#ifdef __AVX__
     int j;
     float psum = 0.f;
+#ifdef __AVX__
     int max_index = ilength - 15;
     for (j = 0; j < max_index && psum < threshold; j += 16) {
       __m256 vec1 = _mm256_load_ps(input + j);
@@ -65,12 +65,10 @@ int Rolloff::Do(bool simd, const float* input, size_t length,
     }
     return i - 1;
 #else
-    int j;
-    float psum = 0.f;
     int max_index = ilength - 7;
     for (j = 0; j < max_index && psum < threshold; j += 8) {
       float32x4_t vec1 = vld1q_f32(input + j);
-      float32x4_t vec2 = vld1q_f32(input + j + 8);
+      float32x4_t vec2 = vld1q_f32(input + j + 4);
       float32x4_t psumvec = vaddq_f32(vec1, vec2);
       float32x2_t psumvec2 = vpadd_f32(vget_high_f32(psumvec),
                                        vget_low_f32(psumvec));
@@ -78,13 +76,13 @@ int Rolloff::Do(bool simd, const float* input, size_t length,
     }
     if (j < max_index) {
       int i;
-      for (i = j - 1; i > j - 16 && psum > threshold; i--) {
+      for (i = j - 1; i > j - 8 && psum > threshold; i--) {
         psum -= input[i];
       }
       return i + 1;
     }
     int i;
-    for (i = j - 16; i < ilength && psum < threshold; i++) {
+    for (i = j - 8; i < ilength && psum < threshold; i++) {
       psum += input[i];
     }
     return i - 1;
