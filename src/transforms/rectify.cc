@@ -11,6 +11,7 @@
  */
 
 #include "src/transforms/rectify.h"
+#include <cmath>
 #ifdef __AVX__
 #include <immintrin.h>  // NOLINT(build/include_order)
 #elif defined(__ARM_NEON__)
@@ -39,7 +40,7 @@ void Rectify::Do(bool simd, const float* input, int length,
       _mm256_store_ps(output + i + 8, vecabs2);
     }
     for (int i = (length & ~0xF); i < length; i++) {
-      output[i] = abs(input[i]);
+      output[i] = fabsf(input[i]);
     }
   } else {
 #elif defined(__ARM_NEON__)
@@ -51,8 +52,8 @@ void Rectify::Do(bool simd, const float* input, int length,
       vst1q_f32(output + i, res1);
       vst1q_f32(output + i + 4, res2);
     }
-    for (int i = ((length >> 3) << 3); i < length; i += 2) {
-      output[i / 2] = input[i];
+    for (int i = (length & ~0x7); i < length; i++) {
+      output[i] = fabsf(input[i]);
     }
   } else {
 #else

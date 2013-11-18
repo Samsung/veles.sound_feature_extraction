@@ -37,7 +37,7 @@ class RectifyTest : public TransformTest<Rectify> {
 TEST_F(RectifyTest, Do) {
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size; i++) {
-    ASSERT_EQ(i, (*Output)[0][i]);
+    ASSERT_EQ(i, (*Output)[0][i]) << i;
   }
 }
 
