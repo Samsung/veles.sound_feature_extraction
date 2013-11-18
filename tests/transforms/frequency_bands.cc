@@ -50,7 +50,7 @@ TEST_F(FrequencyBandsTest, DoWithBands) {
 TEST_F(FrequencyBandsTest, TooBigBands) {
   set_bands("2000 3000 18000");
   Initialize();
-  ASSERT_EQ(3, filters().size());
+  ASSERT_EQ(3U, filters().size());
 }
 
 TEST_F(FrequencyBandsTest, InvalidBands) {

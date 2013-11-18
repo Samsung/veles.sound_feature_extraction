@@ -51,13 +51,11 @@ bool FilterBank::validate_number(const int& value) noexcept {
 }
 
 bool FilterBank::validate_frequency_min(const int& value) noexcept {
-  return value >= FilterBase<nullptr_t>::kMinFilterFrequency &&
-      value <= FilterBase<nullptr_t>::kMaxFilterFrequency;
+  return FilterBase<std::nullptr_t>::ValidateFrequency(value);
 }
 
 bool FilterBank::validate_frequency_max(const int& value) noexcept {
-  return value >= FilterBase<nullptr_t>::kMinFilterFrequency &&
-      value <= FilterBase<nullptr_t>::kMaxFilterFrequency;
+  return FilterBase<std::nullptr_t>::ValidateFrequency(value);
 }
 
 const FloatPtr& FilterBank::filter_bank() const {

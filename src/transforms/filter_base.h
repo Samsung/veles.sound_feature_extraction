@@ -65,6 +65,10 @@ class FilterBase : public OmpUniformFormatTransform<formats::ArrayFormatF> {
     max_executors_ = value;
   }
 
+  static bool ValidateFrequency(const int& value) noexcept {
+    return value >= kMinFilterFrequency && value <= kMaxFilterFrequency;
+  }
+
   static constexpr int kMinFilterLength = 8;
   static constexpr int kMaxFilterLength = 1000000;
   static constexpr int kDefaultFilterLength = 256;
@@ -75,9 +79,6 @@ class FilterBase : public OmpUniformFormatTransform<formats::ArrayFormatF> {
   virtual std::shared_ptr<E> CreateExecutor() const noexcept = 0;
   virtual void Execute(const std::shared_ptr<E>& exec, const float* in,
                        float* out) const = 0;
-  static bool ValidateFrequency(const int& value) noexcept {
-    return value >= kMinFilterFrequency && value <= kMaxFilterFrequency;
-  }
 
  private:
   struct ThreadSafeExecutor {
