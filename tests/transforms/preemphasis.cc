@@ -14,7 +14,7 @@
 #include "src/transforms/preemphasis.h"
 #include "tests/transforms/transform_test.h"
 
-using sound_feature_extraction::formats::ArrayFormat16;
+using sound_feature_extraction::formats::ArrayFormatF;
 using sound_feature_extraction::BuffersBase;
 using sound_feature_extraction::transforms::Preemphasis;
 
@@ -42,8 +42,6 @@ TEST_F(PreemphasisTest, Do) {
 
 #undef CLASS_NAME
 #define CLASS_NAME PreemphasisTest
-#undef INPUT_TYPE
-#define INPUT_TYPE int16_t
 #define PARAM_REORDER
 #define EXTRA_PARAM 0.5f
 #include "tests/transforms/benchmark.inc"

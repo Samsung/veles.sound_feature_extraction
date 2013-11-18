@@ -201,7 +201,7 @@ TEST_F(MeanTest, DoCase2) {
   ASSERT_NE(std::numeric_limits<float>::infinity(), (*Output)[0][1]);
 }
 
-#define EXTRA_PARAM sound_feature_extraction::transforms::MEAN_TYPE_ARITHMETIC
+#define EXTRA_PARAM sound_feature_extraction::transforms::kMeanTypeArithmetic
 #define CLASS_NAME MeanTest
 #define ITER_COUNT 500000
 #define NO_OUTPUT
@@ -209,7 +209,7 @@ TEST_F(MeanTest, DoCase2) {
 #include "tests/transforms/benchmark.inc"
 
 #undef EXTRA_PARAM
-#define EXTRA_PARAM sound_feature_extraction::transforms::MEAN_TYPE_GEOMETRIC
+#define EXTRA_PARAM sound_feature_extraction::transforms::kMeanTypeGeometric
 #undef BENCH_NAME
 #define BENCH_NAME BenchmarkGeometric
 #include "tests/transforms/benchmark.inc"
