@@ -144,12 +144,13 @@ float Mean::Do(bool simd, const float* input, size_t length,
             powvec = vdupq_n_f32(power),
             infvec = vdupq_n_f32(std::numeric_limits<float>::infinity());
 
-        for (int j = 0; j < ilength - 7; j += 8) {
+        for (int j = 0; j < ilength - 3; j += 4) {
           float32x4_t vec = vld1q_f32(input + j);
           float32x4_t mulvec = vmulq_f32(tmp, vec);
           uint32x4_t cmpvec = vceqq_f32(mulvec, infvec);
           uint64x2_t cmpvec2 = vpaddlq_u32(cmpvec);
-          if (vgetq_lane_u64(cmpvec2, 0) != 0 || vgetq_lane_u64(cmpvec2, 1) != 0) {
+          if (vgetq_lane_u64(cmpvec2, 0) != 0 ||
+              vgetq_lane_u64(cmpvec2, 1) != 0) {
             tmp = pow_ps(tmp, powvec);
             res = vmulq_f32(res, tmp);
             tmp = vec;
@@ -160,7 +161,7 @@ float Mean::Do(bool simd, const float* input, size_t length,
         tmp = pow_ps(tmp, powvec);
         res = vmulq_f32(res, tmp);
         float sctmp = 1.f;
-        for (int j = (ilength & ~0x3); j < ilength; j += 2) {
+        for (int j = (ilength & ~0x3); j < ilength; j++) {
           sctmp *= input[j];
         }
         float scres = powf(sctmp, power);
