@@ -59,7 +59,11 @@ class UniformFormatOmpAwareTransform
 template <typename FINELEMENT, typename FOUTELEMENT>
 class OmpTransformBaseBufferTypeDispatcher {
  public:
+#if (__GNUC__ == 4 && __GNUC_MINOR__ < 8)
+  virtual ~OmpTransformBaseBufferTypeDispatcher() {};
+#else
   virtual ~OmpTransformBaseBufferTypeDispatcher() = default;
+#endif
 
  protected:
   virtual void Do(const FINELEMENT& in, FOUTELEMENT* out) const noexcept = 0;
@@ -68,7 +72,11 @@ class OmpTransformBaseBufferTypeDispatcher {
 template <typename FINELEMENT, typename FOUTELEMENT>
 class OmpTransformBaseBufferTypeDispatcher<FINELEMENT*, FOUTELEMENT> {
  public:
+#if (__GNUC__ == 4 && __GNUC_MINOR__ < 8)
+  virtual ~OmpTransformBaseBufferTypeDispatcher() {};
+#else
   virtual ~OmpTransformBaseBufferTypeDispatcher() = default;
+#endif
 
  protected:
   virtual void Do(const FINELEMENT* in, FOUTELEMENT* out) const noexcept = 0;
@@ -77,7 +85,11 @@ class OmpTransformBaseBufferTypeDispatcher<FINELEMENT*, FOUTELEMENT> {
 template <typename FINELEMENT, typename FOUTELEMENT>
 class OmpTransformBaseBufferTypeDispatcher<FINELEMENT, FOUTELEMENT*> {
  public:
+#if (__GNUC__ == 4 && __GNUC_MINOR__ < 8)
+  virtual ~OmpTransformBaseBufferTypeDispatcher() {};
+#else
   virtual ~OmpTransformBaseBufferTypeDispatcher() = default;
+#endif
 
  protected:
   virtual void Do(const FINELEMENT& in, FOUTELEMENT* out) const noexcept = 0;
@@ -86,7 +98,11 @@ class OmpTransformBaseBufferTypeDispatcher<FINELEMENT, FOUTELEMENT*> {
 template <typename FINELEMENT, typename FOUTELEMENT>
 class OmpTransformBaseBufferTypeDispatcher<FINELEMENT*, FOUTELEMENT*> {
  public:
+#if (__GNUC__ == 4 && __GNUC_MINOR__ < 8)
+  virtual ~OmpTransformBaseBufferTypeDispatcher() {};
+#else
   virtual ~OmpTransformBaseBufferTypeDispatcher() = default;
+#endif
 
  protected:
   virtual void Do(const FINELEMENT* in, FOUTELEMENT* out) const noexcept = 0;
