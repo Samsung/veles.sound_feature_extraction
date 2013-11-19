@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_PEAK_DYNAMIC_PROGRAMMING
-#define SRC_TRANSFORMS_PEAK_DYNAMIC_PROGRAMMING
+#ifndef SRC_TRANSFORMS_PEAK_DYNAMIC_PROGRAMMING_H_
+#define SRC_TRANSFORMS_PEAK_DYNAMIC_PROGRAMMING_H_
 
 #include "src/formats/fixed_array.h"
 #include "src/formats/single_format.h"
@@ -43,4 +43,4 @@ class PeakDynamicProgramming : public TransformBase<
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
-#endif  // SRC_TRANSFORMS_PEAK_DYNAMIC_PROGRAMMING
+#endif  // SRC_TRANSFORMS_PEAK_DYNAMIC_PROGRAMMING_H_

@@ -10,7 +10,7 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "sliding_blocks_impl.h"
+#include "src/allocators/sliding_blocks_impl.h"
 #include <cassert>
 #include <algorithm>
 #include <map>
@@ -54,11 +54,9 @@ size_t SlidingBlocksImpl::Solve(Node* root) noexcept {
     GreedySolve(&blocks, &blocks_set);
     size_t height = CalculateBlocksSolutionPeakHeight(blocks);
     #pragma omp critical
-    {
-      if (height < min_height || min_height == 0) {
-        min_height = height;
-        solution = blocks;
-      }
+    if (height < min_height || min_height == 0) {
+      min_height = height;
+      solution = blocks;
     }
   }
   SaveBlocksSolution(solution);
@@ -129,7 +127,8 @@ void SlidingBlocksImpl::GenerateTreeTraversalVariants(
   tmpVariant.reserve(node->Chain.size() + innerVariantSize);
   tmpVariant.insert(tmpVariant.end(), node->Chain.begin(), node->Chain.end());
   do {
-    AddTraversalVariantsRecursive(tmpVariant, 0, permutation, innerVariants, variants);
+    AddTraversalVariantsRecursive(tmpVariant, 0, permutation, innerVariants,
+                                  variants);
   } while (std::next_permutation(permutation.begin(), permutation.end()));
 }
 

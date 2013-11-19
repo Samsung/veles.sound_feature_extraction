@@ -1,10 +1,10 @@
 /*---------------------------------------------------------------------------*\
 Original Copyright
-	FILE........: AK2LSPD.H
-	TYPE........: Turbo C header file
-	COMPANY.....: Voicetronix
-	AUTHOR......: James Whitehall
-	DATE CREATED: 21/11/95
+  FILE........: AK2LSPD.H
+  TYPE........: Turbo C header file
+  COMPANY.....: Voicetronix
+  AUTHOR......: James Whitehall
+  DATE CREATED: 21/11/95
 
 Modified by Vadim Markovtsev <v.markovtsev@samsung.com>
 
@@ -30,6 +30,8 @@ Modified by Vadim Markovtsev <v.markovtsev@samsung.com>
 
 #ifndef SRC_PRIMITIVES_LSP_H_
 #define SRC_PRIMITIVES_LSP_H_
+
+#include "src/config.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -84,6 +86,10 @@ extern "C" {
 /// Polynomials, IEEE Transactions On Acoustics, Speech and Signal Processing,
 /// vol. ASSP-34, no. 6, December 1986, by Peter Kabal and Ravi Prakash
 /// Ramachandran.
+/// @pre lpc and freq are not NULL.
+/// @pre length is greater than or equal to 2.
+/// @pre bisects is not negative.
+/// @pre delta is greater than 0.
 int lpc_to_lsp(int simd, const float *lpc, int length, int bisects, float delta,
                float *freq);
 
@@ -94,6 +100,8 @@ int lpc_to_lsp(int simd, const float *lpc, int length, int bisects, float delta,
 /// @param freq The array of LSP frequencies in the w domain.
 /// @param lpc The resulting array of LPC coefficients.
 /// @param length The number of LPC coefficients.
+/// @pre lpc and freq are not NULL.
+/// @pre length is greater than or equal to 2.
 void lsp_to_lpc(int simd, const float *freq, int length, float *lpc);
 
 /// @brief Ensures the LSPs are stable.
@@ -104,4 +112,4 @@ void lsp_enforce_margin(int length, float margin, float *lsp);
 }
 #endif
 
-#endif	/* SRC_PRIMITIVES_LSP_H_ */
+#endif  // SRC_PRIMITIVES_LSP_H_

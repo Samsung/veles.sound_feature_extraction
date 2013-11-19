@@ -51,7 +51,7 @@ class SingleFormat : public BufferFormatBase<T> {
   SingleFormat() noexcept {
   }
 
-  SingleFormat(int samplingRate)
+  explicit SingleFormat(int samplingRate)
       : BufferFormatBase<T>(samplingRate) {
   }
 

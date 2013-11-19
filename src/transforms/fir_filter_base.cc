@@ -36,8 +36,7 @@ std::shared_ptr<ConvolutionHandle> FIRFilterBase::CreateExecutor()
       [](ConvolutionHandle* ptr) {
         convolve_finalize(*ptr);
         delete ptr;
-      }
-  );
+      });
 }
 
 void FIRFilterBase::Execute(const std::shared_ptr<ConvolutionHandle>& exec,

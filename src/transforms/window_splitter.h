@@ -114,7 +114,8 @@ class WindowSplitterTemplate
     return this->windows_count_ * buffersCount;
   }
 
-  static constexpr WindowType kDefaultWindowType = WINDOW_TYPE_HAMMING;
+  static constexpr WindowType kDefaultWindowType =
+      WindowType::kWindowTypeHamming;
 
   mutable Window::WindowContentsPtr window_;
 };

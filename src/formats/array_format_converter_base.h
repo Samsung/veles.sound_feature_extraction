@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_FORMATS_RAW_FORMAT_CONVERTER_BASE_H_
-#define SRC_FORMATS_RAW_FORMAT_CONVERTER_BASE_H_
+#ifndef SRC_FORMATS_ARRAY_FORMAT_CONVERTER_BASE_H_
+#define SRC_FORMATS_ARRAY_FORMAT_CONVERTER_BASE_H_
 
 #include "src/format_converter_base.h"
 
@@ -30,4 +30,4 @@ class ArrayFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
 
 }  // namespace sound_feature_extraction
 
-#endif  // SRC_FORMATS_RAW_FORMAT_CONVERTER_BASE_H_
+#endif  // SRC_FORMATS_ARRAY_FORMAT_CONVERTER_BASE_H_

@@ -142,7 +142,8 @@ void FilterBank::AddTriangularFilter(float center, float halfWidth) const {
 }
 
 void FilterBank::Initialize() const {
-  filter_bank_ = std::unique_ptr<float, void(*)(void*)>(mallocf(input_format_->Size()), free);
+  filter_bank_ = std::unique_ptr<float, void(*)(void*)>(
+      mallocf(input_format_->Size()), std::free);
   memsetf(filter_bank_.get(), 0.f, input_format_->Size());
 
   float scaleMin = LinearToScale(type_, frequency_min_);

@@ -55,7 +55,8 @@ class Selector : public OmpUniformFormatTransform<formats::ArrayFormatF> {
 }  // namespace sound_feature_extraction
 
 namespace std {
-  inline string to_string(sound_feature_extraction::transforms::Anchor a) noexcept {
+  inline string to_string(
+      sound_feature_extraction::transforms::Anchor a) noexcept {
     return a == sound_feature_extraction::transforms::kAnchorLeft?
         sound_feature_extraction::transforms::internal::kAnchorLeftStr :
         sound_feature_extraction::transforms::internal::kAnchorRightStr;

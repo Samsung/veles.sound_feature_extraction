@@ -29,7 +29,7 @@ size_t Fork::OnFormatChanged(size_t buffersCount) {
 void Fork::Do(
     const BuffersBase<float*>& in,
     BuffersBase<float*>* out) const noexcept {
-  size_t copy_size = input_format_->Size() * sizeof(float);
+  size_t copy_size = input_format_->Size() * sizeof(in[0][0]);
   for (size_t i = 0, j = 0; i < in.Count(); i++, j += factor_) {
     auto input = in[i];
     for (int k = 0; k < factor_; k++) {

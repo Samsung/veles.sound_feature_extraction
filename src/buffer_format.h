@@ -84,7 +84,7 @@ class BufferFormat {
 class IdentityFormat : public BufferFormat {
  public:
   IdentityFormat();
-  IdentityFormat(int samplingRate);
+  explicit IdentityFormat(int samplingRate);
 
   virtual size_t UnalignedSizeInBytes() const noexcept override final;
 

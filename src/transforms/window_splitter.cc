@@ -30,7 +30,7 @@ const noexcept {
       auto input = in[i] + j * step();
       auto output = interleaved()? (*out)[i * windows_count_ + j] :
                                   (*out)[j * in.Count() + i];
-      if (type() != WINDOW_TYPE_RECTANGULAR) {
+      if (type() != WindowType::kWindowTypeRectangular) {
 #ifdef __AVX__
         if (align_complement_i16(input) != 0) {
           memcpy(intbuf, input, output_format_->Size() * sizeof(int16_t));
@@ -41,9 +41,10 @@ const noexcept {
 #else
         int16_to_float(input, output_format_->Size(), fbuf);
 #endif
-        Window::ApplyWindow(use_simd(), window, output_format_->Size(), fbuf, fbuf);
+        Window::ApplyWindow(use_simd(), window, output_format_->Size(),
+                            fbuf, fbuf);
         float_to_int16(fbuf, output_format_->Size(), output);
-      } else {  // type() != WINDOW_TYPE_RECTANGULAR
+      } else {  // type() != kWindowTypeRectangular
         memcpy(output, input, output_format_->Size() * sizeof(input[0]));
       }
     }
@@ -60,10 +61,10 @@ const noexcept {
     for (int j = 0; j < windows_count_; j++) {
       auto input = in[i] + j * step();
       auto output = (*out)[i * windows_count_ + j];
-      if (type() != WINDOW_TYPE_RECTANGULAR) {
+      if (type() != WindowType::kWindowTypeRectangular) {
 #ifdef __AVX__
         if (align_complement_f32(input) != 0) {
-          memcpy(intbuf, input, output_format_->Size() * sizeof(float));
+          memcpy(intbuf, input, output_format_->Size() * sizeof(input[0]));
           Window::ApplyWindow(use_simd(), window_.get(), output_format_->Size(),
                               intbuf, output);
         } else {

@@ -163,9 +163,10 @@ void Beat::Do(const BuffersBase<float*>& in,
     // Second pass - increase peaks precision
     for (int pind = 0; pind < rcount; pind++) {
       CalculateBeatEnergies(in, ini,
-                            min_bpm_ + (results[pind].position - 1) * resolution1_,
-                            min_bpm_ + (results[pind].position + 1) * resolution1_,
-                            resolution2_, &energies, &(*out)[ini / bands_][pind][0],
+                            min_bpm_ + (results[pind].position-1)*resolution1_,
+                            min_bpm_ + (results[pind].position+1)*resolution1_,
+                            resolution2_, &energies,
+                            &(*out)[ini / bands_][pind][0],
                             &(*out)[ini / bands_][pind][1]);
     }
     for (int pind = rcount; pind < peaks_; pind++) {

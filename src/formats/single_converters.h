@@ -22,7 +22,7 @@ template <typename FIN, typename FOUT>
 class SingleFormatConverterBase : public FormatConverterBase<FIN, FOUT> {
  protected:
   virtual size_t OnInputFormatChanged(size_t buffersCount) override final {
-   return buffersCount;
+    return buffersCount;
   }
 };
 

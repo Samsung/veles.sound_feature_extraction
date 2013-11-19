@@ -19,6 +19,7 @@
 using sound_feature_extraction::formats::ArrayFormatF;
 using sound_feature_extraction::BuffersBase;
 using sound_feature_extraction::transforms::ConvolveFilter;
+using sound_feature_extraction::WindowType;
 
 class ConvolveTest : public TransformTest<ConvolveFilter> {
  public:
@@ -27,7 +28,7 @@ class ConvolveTest : public TransformTest<ConvolveFilter> {
 
   virtual void SetUp() {
     Size = sizeof(Data) / sizeof(Data[0]);
-    set_window(sound_feature_extraction::WINDOW_TYPE_HALF_HANNING_RIGHT);
+    set_window(WindowType::kWindowTypeHalfHanningRight);
     set_length(8820);
     SetUpTransform(1, Size, 22050);
     std::memcpy((*Input)[0], Data, sizeof(Data));

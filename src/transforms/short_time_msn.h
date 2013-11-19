@@ -19,7 +19,8 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class ShortTimeMeanScaleNormalization : public UniformFormatTransform<formats::ArrayFormatF> {
+class ShortTimeMeanScaleNormalization
+    : public UniformFormatTransform<formats::ArrayFormatF> {
  public:
   ShortTimeMeanScaleNormalization();
 

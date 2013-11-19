@@ -31,7 +31,8 @@ class ConvolveFilter : public FIRFilterBase {
      "Type of the window. E.g. \"rectangular\" or \"hamming\".")
 
  protected:
-  static constexpr WindowType kDefaultWindowType = WINDOW_TYPE_RECTANGULAR;
+  static constexpr WindowType kDefaultWindowType =
+      WindowType::kWindowTypeRectangular;
   virtual void CalculateFilter(float* filter) const noexcept;
 };
 

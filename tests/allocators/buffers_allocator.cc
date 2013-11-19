@@ -21,7 +21,7 @@ class BuffersAllocatorTest
     : public BuffersAllocator, public testing::Test {
  public:
   virtual size_t Solve(Node*) const noexcept override {
-   return 0;
+    return 0;
   }
 
   virtual void SetUp() {
@@ -32,9 +32,9 @@ class BuffersAllocatorTest
     node->Address = 0;
 
     node->Children.push_back(Node(1, node, item++));
-    node->Children[node->Children.size() - 1].Address = 1;
+    node->Children.back().Address = 1;
     node->Children.push_back(Node(2, node, item++));
-    node->Children[node->Children.size() - 1].Address = 2;
+    node->Children.back().Address = 2;
     prev->Next = &node->Children[0];
     node->Children[node->Children.size() - 2].Next =
         &node->Children[node->Children.size() - 1];
@@ -43,13 +43,13 @@ class BuffersAllocatorTest
     node = &node->Children[1];
 
     node->Children.push_back(Node(3, node, item++));
-    node->Children[node->Children.size() - 1].Address = 4;
+    node->Children.back().Address = 4;
 
     node->Children.push_back(Node(2, node, item++));
-    node->Children[node->Children.size() - 1].Address = 7;
+    node->Children.back().Address = 7;
 
     node->Children.push_back(Node(4, node, item++));
-    node->Children[node->Children.size() - 1].Address = 9;
+    node->Children.back().Address = 9;
 
     prev->Next = &node->Children[0];
     node->Children[node->Children.size() - 2].Next =
@@ -61,10 +61,10 @@ class BuffersAllocatorTest
     node = &node->Children[0];
 
     node->Children.push_back(Node(1, node, item++));
-    node->Children[node->Children.size() - 1].Address = 0;
+    node->Children.back().Address = 0;
 
     node->Children.push_back(Node(2, node, item++));
-    node->Children[node->Children.size() - 1].Address = 2;
+    node->Children.back().Address = 2;
     prev->Next = &node->Children[0];
     node->Children[node->Children.size() - 2].Next =
         &node->Children[node->Children.size() - 1];
@@ -73,14 +73,14 @@ class BuffersAllocatorTest
     node = &node->Parent->Children[1];
 
     node->Children.push_back(Node(1, node, item++));
-    node->Children[node->Children.size() - 1].Address = 13;
+    node->Children.back().Address = 13;
     prev->Next = &node->Children[0];
 
     prev = &node->Children[node->Children.size() - 1];
     node = &node->Children[0];
 
     node->Children.push_back(Node(1, node, item++));
-    node->Children[node->Children.size() - 1].Address = 4;
+    node->Children.back().Address = 4;
     prev->Next = &node->Children[0];
     node->Children[0].Next = nullptr;
     Root->Dump("/tmp/buffers_allocator_test.dot");

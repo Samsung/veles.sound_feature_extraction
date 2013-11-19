@@ -11,8 +11,8 @@
  */
 
 #include "src/transforms/rdft.h"
-#include <fftf/api.h>
 #include <vector>
+#include <fftf/api.h>
 #include <simd/arithmetic-inl.h>
 
 namespace sound_feature_extraction {
@@ -51,8 +51,8 @@ void RDFT::Do(const BuffersBase<float*>& in,
   fftf_calc(fftPlan.get());
 }
 
-void RDFTInverse::Do( const BuffersBase<float*>& in,
-                      BuffersBase<float*>* out) const noexcept {
+void RDFTInverse::Do(const BuffersBase<float*>& in,
+                     BuffersBase<float*>* out) const noexcept {
   int length = output_format_->Size();
   std::vector<const float*> inputs(in.Count());
   std::vector<float*> outputs(in.Count());

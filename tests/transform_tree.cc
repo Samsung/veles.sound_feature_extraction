@@ -40,7 +40,8 @@ class ParentTestFormat : public BufferFormatBase<ParentChunk> {
   }
 };
 
-class ParentTestTransform : public TransformBase<ArrayFormat16, ParentTestFormat> {
+class ParentTestTransform
+    : public TransformBase<ArrayFormat16, ParentTestFormat> {
  public:
   TRANSFORM_INTRO("ParentTest", "", ParentTestTransform)
 
@@ -82,7 +83,8 @@ class ChildTestFormat : public BufferFormatBase<ChildChunk> {
   }
 };
 
-class ChildTestTransform : public TransformBase<ParentTestFormat, ChildTestFormat> {
+class ChildTestTransform
+    : public TransformBase<ParentTestFormat, ChildTestFormat> {
  public:
   TRANSFORM_INTRO("ChildTest", "", ChildTestTransform)
 

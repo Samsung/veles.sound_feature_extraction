@@ -33,20 +33,22 @@ std::shared_ptr<IIRFilter> LowpassFilter::CreateExecutor() const noexcept {
     case kIIRFilterTypeChebyshevI: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::ChebyshevI::LowPass<kMaxFilterLength>, 1>>();
-      ret->setup(length(), input_format_->SamplingRate(), frequency(), ripple());
+      ret->setup(length(), input_format_->SamplingRate(), frequency(),
+                 ripple());
       return std::static_pointer_cast<IIRFilter>(ret);
     }
     case kIIRFilterTypeChebyshevII: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::ChebyshevII::LowPass<kMaxFilterLength>, 1>>();
-      ret->setup(length(), input_format_->SamplingRate(), frequency(), ripple());
+      ret->setup(length(), input_format_->SamplingRate(), frequency(),
+                 ripple());
       return std::static_pointer_cast<IIRFilter>(ret);
     }
     case kIIRFilterTypeElliptic: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::Elliptic::LowPass<kMaxFilterLength>, 1>>();
-      ret->setup(length(), input_format_->SamplingRate(), frequency(), ripple(),
-                 rolloff());
+      ret->setup(length(), input_format_->SamplingRate(), frequency(),
+                 ripple(), rolloff());
       return std::static_pointer_cast<IIRFilter>(ret);
     }
     case kIIRFilterTypeLegendre: {

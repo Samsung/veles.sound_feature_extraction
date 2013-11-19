@@ -19,7 +19,8 @@ using sound_feature_extraction::formats::ArrayFormatF;
 using sound_feature_extraction::BuffersBase;
 using sound_feature_extraction::transforms::ShortTimeMeanScaleNormalization;
 
-class ShortTimeMeanScaleNormalizationTest : public TransformTest<ShortTimeMeanScaleNormalization> {
+class ShortTimeMeanScaleNormalizationTest
+    : public TransformTest<ShortTimeMeanScaleNormalization> {
  public:
   int Size;
 

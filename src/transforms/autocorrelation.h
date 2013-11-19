@@ -25,7 +25,8 @@ namespace std {
 namespace sound_feature_extraction {
 namespace transforms {
 
-class Autocorrelation : public OmpUniformFormatTransform<formats::ArrayFormatF> {
+class Autocorrelation
+    : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
   Autocorrelation();
 

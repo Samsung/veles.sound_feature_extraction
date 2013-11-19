@@ -40,7 +40,7 @@ class Window : public OmpUniformFormatTransform<formats::ArrayFormatF> {
 
  protected:
   typedef std::unique_ptr<float, void(*)(void*)> WindowContentsPtr;
-  static constexpr WindowType kDefaultType = WINDOW_TYPE_HAMMING;
+  static constexpr WindowType kDefaultType = WindowType::kWindowTypeHamming;
   static constexpr bool kDefaultPreDft = false;
 
   virtual void Do(const float* in,

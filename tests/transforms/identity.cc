@@ -30,7 +30,7 @@ class IdentityTest : public Identity,
         CreateOutputBuffers(3));
     Initialize();
 
-    for (int j = 0; j < 3;j++) {
+    for (int j = 0; j < 3; j++) {
       for (int i = 0; i < 1000; i++) {
         (*Input)[j][i] = i;
       }
@@ -44,7 +44,7 @@ class IdentityTest : public Identity,
 
 TEST_F(IdentityTest, Do) {
   Do((*Input), Output.get());
-  for (int j = 0; j < 3;j++) {
+  for (int j = 0; j < 3; j++) {
     for (int i = 0; i < 1000; i++) {
       ASSERT_FLOAT_EQ(i, (*Output)[j][i]);
     }

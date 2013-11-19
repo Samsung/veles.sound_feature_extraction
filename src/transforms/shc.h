@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_HPS_H_
-#define SRC_TRANSFORMS_HPS_H_
+#ifndef SRC_TRANSFORMS_SHC_H_
+#define SRC_TRANSFORMS_SHC_H_
 
 #include "src/formats/single_format.h"
 #include "src/transforms/common.h"
@@ -63,4 +63,4 @@ class SHC : public OmpUniformFormatTransform<formats::ArrayFormatF>,
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
-#endif  // SRC_TRANSFORMS_HPS_H_
+#endif  // SRC_TRANSFORMS_SHC_H_

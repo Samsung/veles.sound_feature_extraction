@@ -53,7 +53,7 @@ class BufferFormatBase : public BufferFormat {
       : BufferFormat(CutNamespaces(std::demangle(typeid(T).name()))) {
   }
 
-  BufferFormatBase(int samplingRate)
+  explicit BufferFormatBase(int samplingRate)
       : BufferFormat(CutNamespaces(std::demangle(typeid(T).name())),
                      samplingRate) {
   }
@@ -99,8 +99,9 @@ namespace Validation {
   template <>
   struct Validator<float> {
     static bool Validate(float value) noexcept {
-      return value == value && value != std::numeric_limits<float>::infinity() &&
-        value != -std::numeric_limits<float>::infinity();
+      return value == value &&
+          value != std::numeric_limits<float>::infinity() &&
+          value != -std::numeric_limits<float>::infinity();
     }
   };
 }  // namespace Validation
@@ -127,14 +128,14 @@ class BuffersBase : public Buffers {
     return std::static_pointer_cast<BufferFormatBase<T>>(Buffers::Format());
   }
 
-private:
+ private:
   BuffersBase(const BuffersBase<T>&) = delete;
   BuffersBase& operator=(const BuffersBase<T>&) = delete;
 
   void RunConstructors() {
     if (!std::is_pointer<T>::value) {
       for (size_t i = 0; i < this->Count(); i++) {
-        auto mem = reinterpret_cast<T *>(Buffers::operator [](i));
+        auto mem = reinterpret_cast<T*>(Buffers::operator [](i));
         new(mem) T();
       }
     }
@@ -163,7 +164,7 @@ class BuffersBase<T*> : public Buffers {
     return std::static_pointer_cast<BufferFormatBase<T*>>(Buffers::Format());
   }
 
-private:
+ private:
   BuffersBase(const BuffersBase<T*>&) = delete;
   BuffersBase& operator=(const BuffersBase<T*>&) = delete;
 };

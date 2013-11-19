@@ -112,8 +112,8 @@ void PeakDetection::Do(const float* in,
           for (int i = 2; i <= swt_level_; i++) {
             stationary_wavelet_apply(
                 swt_type_, swt_order_, i, EXTENSION_TYPE_CONSTANT,
-                buf.data.get(), input_format_->Size(), swt_details_buffer_.get(),
-                buf.data.get());
+                buf.data.get(), input_format_->Size(),
+                swt_details_buffer_.get(), buf.data.get());
           }
           detect_peaks(use_simd(), buf.data.get(), input_format_->Size(), type_,
                        &results, &count);
@@ -124,7 +124,8 @@ void PeakDetection::Do(const float* in,
       }
     }
   } else {
-    detect_peaks(use_simd(), in, input_format_->Size(), type_, &results, &count);
+    detect_peaks(use_simd(), in, input_format_->Size(), type_, &results,
+                 &count);
   }
   if ((sort_ & kSortOrderValue) != 0 && results != nullptr) {
     auto extr_type = type_;

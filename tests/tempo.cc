@@ -52,7 +52,7 @@ TEST(Features, Tempo) {
     memcpy(buffers + i, data, sizeof(data));
   }
   memcpy(buffers + i, data, (test_size - i) * 2);
-  //memcpy(buffers, &fdata[0], test_size * 2);
+  // memcpy(buffers, &fdata[0], test_size * 2);
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   delete[] buffers;

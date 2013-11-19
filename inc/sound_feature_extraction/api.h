@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef INC_SOUNDFEATUREEXTRACTION_API_H_
-#define INC_SOUNDFEATUREEXTRACTION_API_H_
+#ifndef INC_SOUND_FEATURE_EXTRACTION_API_H_
+#define INC_SOUND_FEATURE_EXTRACTION_API_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -125,4 +125,4 @@ void set_cpu_cache_size(size_t value);
 }
 #endif
 
-#endif  // INC_SOUNDFEATUREEXTRACTION_API_H_
+#endif  // INC_SOUND_FEATURE_EXTRACTION_API_H_

@@ -17,7 +17,7 @@ namespace sound_feature_extraction {
 namespace MemoryAllocation {
 
 SlidingBlocksAllocator::SlidingBlocksAllocator() noexcept
-    : impl_(new SlidingBlocksImpl()){
+    : impl_(new SlidingBlocksImpl()) {
 }
 
 size_t  SlidingBlocksAllocator::Solve(Node* root) const noexcept {

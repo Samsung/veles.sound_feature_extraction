@@ -19,7 +19,8 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-class Intensity : public OmpTransformBase<formats::ArrayFormatF, formats::SingleFormatF>  {
+class Intensity : public OmpTransformBase<formats::ArrayFormatF,
+                                          formats::SingleFormatF>  {
  public:
   TRANSFORM_INTRO("Intensity", "Unnormalized sound intensity calculation.",
                   Intensity)

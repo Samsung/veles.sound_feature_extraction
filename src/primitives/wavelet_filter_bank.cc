@@ -12,7 +12,7 @@
 
 #include "src/primitives/wavelet_filter_bank.h"
 #include <cassert>
-#include <string.h>
+#include <cstring>
 #include <algorithm>
 #include <list>
 #include <memory>
@@ -162,9 +162,9 @@ void WaveletFilterBank::ApplyInternal(float* source, size_t length,
   TreeFingerprint workingTree;
   workingTree.reserve(tree.size());
 
-  auto ldesthi = std::unique_ptr<float, void(*)(void*)>(
+  auto ldesthi = std::unique_ptr<float, decltype(&std::free)>(
       wavelet_allocate_destination(order_, length), free);
-  auto ldestlo = std::unique_ptr<float, void(*)(void*)>(
+  auto ldestlo = std::unique_ptr<float, decltype(&std::free)>(
       wavelet_allocate_destination(order_, length), free);
   wavelet_apply(type_, order_, EXTENSION_TYPE_PERIODIC, source, length,
                 ldesthi.get(), ldestlo.get());
@@ -188,7 +188,8 @@ void WaveletFilterBank::RecursivelyIterate(
     TreeFingerprint *tree, TreeFingerprint* workingTree, float* source,
     float* desthi, float* destlo, float** result) noexcept {
   if (tree->back() != workingTree->back()) {
-    wavelet_apply(type, order, EXTENSION_TYPE_PERIODIC, source, length, desthi, destlo);
+    wavelet_apply(type, order, EXTENSION_TYPE_PERIODIC, source, length, desthi,
+                  destlo);
     float *desthihi, *desthilo, *destlohi, *destlolo;
     wavelet_recycle_source(order, source, length,
                            &desthihi, &desthilo,

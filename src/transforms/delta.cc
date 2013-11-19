@@ -40,7 +40,6 @@ bool Delta::validate_rlength(const int& value) noexcept {
 
 void Delta::Do(const BuffersBase<float*>& in,
                BuffersBase<float*>* out) const noexcept {
-
   switch (type_) {
     case kDeltaTypeSimple:
       for (size_t i = 1; i < in.Count(); i++) {
@@ -55,13 +54,14 @@ void Delta::Do(const BuffersBase<float*>& in,
       int rstep = rlength_ / 2;
       float norm = 2 * rstep * (rstep + 1) * (2 * rstep + 1) / 6;
       for (size_t i = rstep; i < in.Count() - rstep; i++) {
-        DoRegression(use_simd(), in, rstep, i, norm, input_format_->Size(), out);
+        DoRegression(use_simd(), in, rstep, i, norm, input_format_->Size(),
+                     out);
       }
       for (size_t i = rstep - 1; i > 0; i--) {
         norm = 2 * i * (i + 1) * (2 * i + 1) / 6;
         DoRegression(use_simd(), in, i, i, norm, input_format_->Size(), out);
-        DoRegression(use_simd(), in, in.Count() - i, i, norm, input_format_->Size(),
-                     out);
+        DoRegression(use_simd(), in, in.Count() - i, i, norm,
+                     input_format_->Size(), out);
       }
       for (size_t i = 0; i < input_format_->Size(); i++) {
         (*out)[0][i] = (*out)[1][i];

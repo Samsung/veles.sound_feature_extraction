@@ -41,8 +41,7 @@ void Autocorrelation::Initialize() const {
         [](CrossCorrelationHandle *ptr) {
           cross_correlate_finalize(*ptr);
           delete ptr;
-        }
-    );
+        });
     correlation_handles_[i].mutex = std::make_shared<std::mutex>();
   }
 }

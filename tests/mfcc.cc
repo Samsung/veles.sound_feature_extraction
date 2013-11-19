@@ -50,7 +50,7 @@ TEST(Features, MFCCTrivial) {
   // squared magnitude
   tt.AddFeature("MFCC", { { "Window", "length=512" }, { "RDFT", "" },
       { "SpectralEnergy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
-      { "Selector", "length=256" },{ "Log", "" }, { "Square", "" },
+      { "Selector", "length=256" }, { "Log", "" }, { "Square", "" },
       { "DCT", "" } });
   int16_t* buffers = new int16_t[48000];
   for (int i = 0; i < 48000; i++) {

@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_PEAK_ANALYSIS
-#define SRC_TRANSFORMS_PEAK_ANALYSIS
+#ifndef SRC_TRANSFORMS_PEAK_ANALYSIS_H_
+#define SRC_TRANSFORMS_PEAK_ANALYSIS_H_
 
 #include "src/formats/fixed_array.h"
 #include "src/transforms/common.h"
@@ -37,4 +37,4 @@ class PeakAnalysis : public OmpTransformBase<
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
-#endif  // SRC_TRANSFORMS_PEAK_ANALYSIS
+#endif  // SRC_TRANSFORMS_PEAK_ANALYSIS_H_

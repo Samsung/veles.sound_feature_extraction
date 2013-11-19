@@ -23,7 +23,7 @@ namespace sound_feature_extraction {
 namespace MemoryAllocation {
 
 struct TraversalTreeNode {
-  TraversalTreeNode(std::weak_ptr<TraversalTreeNode> parent)
+  explicit TraversalTreeNode(std::weak_ptr<TraversalTreeNode> parent)
       : Parent(parent) {
   }
 

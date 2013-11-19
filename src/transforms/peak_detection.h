@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_PEAK_DETECTION
-#define SRC_TRANSFORMS_PEAK_DETECTION
+#ifndef SRC_TRANSFORMS_PEAK_DETECTION_H_
+#define SRC_TRANSFORMS_PEAK_DETECTION_H_
 
 #include <mutex>
 #include <vector>
@@ -140,4 +140,4 @@ namespace std {
   }
 }  // namespace std
 
-#endif  // SRC_TRANSFORMS_PEAK_DETECTION
+#endif  // SRC_TRANSFORMS_PEAK_DETECTION_H_

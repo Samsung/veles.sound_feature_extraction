@@ -59,7 +59,7 @@ class UniformFormatOmpAwareTransform
 template <typename FINELEMENT, typename FOUTELEMENT>
 class OmpTransformBaseBufferTypeDispatcher {
  public:
-  virtual ~OmpTransformBaseBufferTypeDispatcher() {}
+  virtual ~OmpTransformBaseBufferTypeDispatcher() = default;
 
  protected:
   virtual void Do(const FINELEMENT& in, FOUTELEMENT* out) const noexcept = 0;
@@ -68,7 +68,7 @@ class OmpTransformBaseBufferTypeDispatcher {
 template <typename FINELEMENT, typename FOUTELEMENT>
 class OmpTransformBaseBufferTypeDispatcher<FINELEMENT*, FOUTELEMENT> {
  public:
-  virtual ~OmpTransformBaseBufferTypeDispatcher() {}
+  virtual ~OmpTransformBaseBufferTypeDispatcher() = default;
 
  protected:
   virtual void Do(const FINELEMENT* in, FOUTELEMENT* out) const noexcept = 0;
@@ -77,7 +77,7 @@ class OmpTransformBaseBufferTypeDispatcher<FINELEMENT*, FOUTELEMENT> {
 template <typename FINELEMENT, typename FOUTELEMENT>
 class OmpTransformBaseBufferTypeDispatcher<FINELEMENT, FOUTELEMENT*> {
  public:
-  virtual ~OmpTransformBaseBufferTypeDispatcher() {}
+  virtual ~OmpTransformBaseBufferTypeDispatcher() = default;
 
  protected:
   virtual void Do(const FINELEMENT& in, FOUTELEMENT* out) const noexcept = 0;
@@ -86,7 +86,7 @@ class OmpTransformBaseBufferTypeDispatcher<FINELEMENT, FOUTELEMENT*> {
 template <typename FINELEMENT, typename FOUTELEMENT>
 class OmpTransformBaseBufferTypeDispatcher<FINELEMENT*, FOUTELEMENT*> {
  public:
-  virtual ~OmpTransformBaseBufferTypeDispatcher() {}
+  virtual ~OmpTransformBaseBufferTypeDispatcher() = default;
 
  protected:
   virtual void Do(const FINELEMENT* in, FOUTELEMENT* out) const noexcept = 0;
@@ -104,12 +104,17 @@ template <typename FIN, typename FOUT,
 class OmpTransformBaseBufferTypeProxy
     : public virtual OmpTransformBaseInterface<FIN, FOUT> {
  protected:
-  using OmpTransformBaseBufferTypeDispatcher<
-      typename FIN::BufferType, typename FOUT::BufferType>::Do;
+  using OmpTransformBaseInterface<FIN, FOUT>::
+      template OmpTransformBaseBufferTypeDispatcher<
+          typename FIN::BufferType, typename FOUT::BufferType>::Do;
+  using typename OmpTransformBaseInterface<FIN, FOUT>::
+      template OmpAwareTransform<FIN, FOUT>::
+      template TransformBase<FIN, FOUT>::InBuffers;
+  using typename OmpTransformBaseInterface<FIN, FOUT>::
+      template OmpAwareTransform<FIN, FOUT>::
+      template TransformBase<FIN, FOUT>::OutBuffers;
 
-  virtual void Do(
-      const typename TransformBase<FIN, FOUT>::InBuffers& in,
-      typename TransformBase<FIN, FOUT>::OutBuffers* out)
+  virtual void Do(const InBuffers& in, OutBuffers* out)
       const noexcept override final {
 #ifdef HAVE_OPENMP
     #pragma omp parallel for num_threads(this->threads_number())
@@ -124,14 +129,19 @@ template <typename FIN, typename FOUT,
           typename FINELEMENT, typename FOUTELEMENT>
 class OmpTransformBaseBufferTypeProxy<FIN, FOUT, FINELEMENT, FOUTELEMENT*>
     : public virtual OmpTransformBaseInterface<FIN, FOUT> {
-  protected:
-   using OmpTransformBaseBufferTypeDispatcher<
-       typename FIN::BufferType, typename FOUT::BufferType>::Do;
+ protected:
+  using OmpTransformBaseInterface<FIN, FOUT>::
+      template OmpTransformBaseBufferTypeDispatcher<
+          typename FIN::BufferType, typename FOUT::BufferType>::Do;
+  using typename OmpTransformBaseInterface<FIN, FOUT>::
+     template OmpAwareTransform<FIN, FOUT>::
+     template TransformBase<FIN, FOUT>::InBuffers;
+  using typename OmpTransformBaseInterface<FIN, FOUT>::
+     template OmpAwareTransform<FIN, FOUT>::
+     template TransformBase<FIN, FOUT>::OutBuffers;
 
-   virtual void Do(
-       const typename TransformBase<FIN, FOUT>::InBuffers& in,
-       typename TransformBase<FIN, FOUT>::OutBuffers* out)
-       const noexcept override final {
+  virtual void Do(const InBuffers& in, OutBuffers* out)
+      const noexcept override final {
 #ifdef HAVE_OPENMP
     #pragma omp parallel for num_threads(this->threads_number())
 #endif

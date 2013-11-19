@@ -18,19 +18,19 @@
 
 namespace sound_feature_extraction {
 
-constexpr const char* WINDOW_TYPE_RECTANGULAR_STR = "rectangular";
-constexpr const char* WINDOW_TYPE_HAMMING_STR = "hamming";
-constexpr const char* WINDOW_TYPE_HANNING_STR = "hanning";
-constexpr const char* WINDOW_TYPE_HALF_HANNING_RIGHT_STR = "half-hanning-right";
-constexpr const char* WINDOW_TYPE_BLACKMAN_STR = "blackman";
+constexpr const char* kWindowTypeRectangularStr = "rectangular";
+constexpr const char* kWindowTypeHammingStr = "hamming";
+constexpr const char* kWindowTypeHanningStr = "hanning";
+constexpr const char* kWindowTypeHalfHanningRightStr = "half-hanning-right";
+constexpr const char* kWindowTypeBlackmanStr = "blackman";
 
 WindowType Parse(const std::string& value, identity<WindowType>) {
   static const std::unordered_map<std::string, WindowType> map {
-    { WINDOW_TYPE_RECTANGULAR_STR, WINDOW_TYPE_RECTANGULAR },
-    { WINDOW_TYPE_HAMMING_STR, WINDOW_TYPE_HAMMING },
-    { WINDOW_TYPE_HANNING_STR, WINDOW_TYPE_HANNING },
-    { WINDOW_TYPE_HALF_HANNING_RIGHT_STR, WINDOW_TYPE_HALF_HANNING_RIGHT },
-    { WINDOW_TYPE_BLACKMAN_STR, WINDOW_TYPE_BLACKMAN }
+    { kWindowTypeRectangularStr, WindowType::kWindowTypeRectangular },
+    { kWindowTypeHammingStr, WindowType::kWindowTypeHamming },
+    { kWindowTypeHanningStr, WindowType::kWindowTypeHanning },
+    { kWindowTypeHalfHanningRightStr, WindowType::kWindowTypeHalfHanningRight },
+    { kWindowTypeBlackmanStr, WindowType::kWindowTypeBlackman }
   };
   auto it = map.find(value);
   if (it == map.end()) {
@@ -61,15 +61,15 @@ static float BlackmanWindow(int index, int length) {
 
 float WindowElement(WindowType type, int length, int index) {
   switch (type) {
-    case WINDOW_TYPE_RECTANGULAR:
+    case WindowType::kWindowTypeRectangular:
       return 1.0f;
-    case WINDOW_TYPE_HAMMING:
+    case WindowType::kWindowTypeHamming:
       return HammingWindow(index, length);
-    case WINDOW_TYPE_HANNING:
+    case WindowType::kWindowTypeHanning:
       return HanningWindow(index, length);
-    case WINDOW_TYPE_HALF_HANNING_RIGHT:
+    case WindowType::kWindowTypeHalfHanningRight:
       return HalfHanningWindowRight(index, length);
-    case WINDOW_TYPE_BLACKMAN:
+    case WindowType::kWindowTypeBlackman:
       return BlackmanWindow(index, length);
   }
   return 0.0f;
@@ -78,18 +78,20 @@ float WindowElement(WindowType type, int length, int index) {
 }  // namespace sound_feature_extraction
 
 namespace std {
+  using sound_feature_extraction::WindowType;
+
   string to_string(sound_feature_extraction::WindowType type) noexcept {
     switch (type) {
-      case sound_feature_extraction::WINDOW_TYPE_RECTANGULAR:
-        return sound_feature_extraction::WINDOW_TYPE_RECTANGULAR_STR;
-      case sound_feature_extraction::WINDOW_TYPE_HAMMING:
-        return sound_feature_extraction::WINDOW_TYPE_HAMMING_STR;
-      case sound_feature_extraction::WINDOW_TYPE_HANNING:
-        return sound_feature_extraction::WINDOW_TYPE_HANNING_STR;
-      case sound_feature_extraction::WINDOW_TYPE_HALF_HANNING_RIGHT:
-        return sound_feature_extraction::WINDOW_TYPE_HALF_HANNING_RIGHT_STR;
-      case sound_feature_extraction::WINDOW_TYPE_BLACKMAN:
-        return sound_feature_extraction::WINDOW_TYPE_BLACKMAN_STR;
+      case WindowType::kWindowTypeRectangular:
+        return sound_feature_extraction::kWindowTypeRectangularStr;
+      case WindowType::kWindowTypeHamming:
+        return sound_feature_extraction::kWindowTypeHammingStr;
+      case WindowType::kWindowTypeHanning:
+        return sound_feature_extraction::kWindowTypeHanningStr;
+      case WindowType::kWindowTypeHalfHanningRight:
+        return sound_feature_extraction::kWindowTypeHalfHanningRightStr;
+      case WindowType::kWindowTypeBlackman:
+        return sound_feature_extraction::kWindowTypeBlackmanStr;
     }
     return "";
   }

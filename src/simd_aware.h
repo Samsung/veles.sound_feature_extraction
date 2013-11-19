@@ -13,12 +13,12 @@
 #ifndef SRC_SIMD_AWARE_H_
 #define SRC_SIMD_AWARE_H_
 
-void set_use_simd(int);
+void set_use_simd(int /* value */);
 
 namespace sound_feature_extraction {
 
 class SimdAware {
-  friend void ::set_use_simd(int);
+  friend void ::set_use_simd(int /* value */);
  public:
   static bool use_simd() noexcept {
     return use_simd_;

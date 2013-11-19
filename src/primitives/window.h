@@ -20,13 +20,13 @@ namespace sound_feature_extraction {
 
 /// @brief All implemented window types.
 /// @see http://en.wikipedia.org/wiki/Window_function.
-typedef enum {
-  WINDOW_TYPE_RECTANGULAR,
-  WINDOW_TYPE_HAMMING,
-  WINDOW_TYPE_HANNING,
-  WINDOW_TYPE_HALF_HANNING_RIGHT,
-  WINDOW_TYPE_BLACKMAN
-} WindowType;
+enum class WindowType {
+  kWindowTypeRectangular,
+  kWindowTypeHamming,
+  kWindowTypeHanning,
+  kWindowTypeHalfHanningRight,
+  kWindowTypeBlackman
+};
 
 WindowType Parse(const std::string& value, identity<WindowType>);
 

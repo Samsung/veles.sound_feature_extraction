@@ -48,7 +48,7 @@ size_t BufferFormat::SizeInBytes() const noexcept {
   return Aligned(UnalignedSizeInBytes());
 }
 
- int BufferFormat::SamplingRate() const noexcept {
+int BufferFormat::SamplingRate() const noexcept {
   assert(samplingRate_ > 0);
   return samplingRate_;
 }

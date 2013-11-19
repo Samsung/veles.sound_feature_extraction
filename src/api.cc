@@ -49,12 +49,12 @@ struct FeaturesConfiguration {
 #define CHECK_NULL(x) do { if (x == nullptr) { \
     BLAME(x); \
     return; \
-} } while(0)
+} } while (0)
 
 #define CHECK_NULL_RET(x, ret) do { if (x == nullptr) { \
     BLAME(x); \
     return ret; \
-} } while(0)
+} } while (0)
 
 void copy_string(const std::string& str, char **ptr) {
   size_t size = str.size() + 1;
@@ -306,7 +306,7 @@ FeatureExtractionResult extract_speech_features(
   try {
     retmap = fc->Tree->Execute(buffer);
   }
-  catch (const std::exception& ex) {
+  catch(const std::exception& ex) {
     EINA_LOG_ERR("Caught an exception with message \"%s\".\n", ex.what());
     return FEATURE_EXTRACTION_RESULT_ERROR;
   }
@@ -381,7 +381,7 @@ void destroy_features_configuration(FeaturesConfiguration* fc) {
 
 void free_results(int featuresCount, char **featureNames,
                   void **results, int *resultLengths) {
-  if(featuresCount <= 0) {
+  if (featuresCount <= 0) {
     EINA_LOG_ERR("Warning: free_results() was called with featuresCount"
                  " <= 0, skipped\n");
     return;
@@ -457,5 +457,4 @@ void set_cpu_cache_size(size_t value) {
     cpu_cache_size = value;
   }
 }
-
-}
+}  // extern "C"

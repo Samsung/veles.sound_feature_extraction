@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_ROLLOFF_H_
-#define SRC_TRANSFORMS_ROLLOFF_H_
+#ifndef SRC_TRANSFORMS_FLUX_H_
+#define SRC_TRANSFORMS_FLUX_H_
 
 #include "src/formats/array_format.h"
 #include "src/formats/single_format.h"
@@ -37,4 +37,4 @@ class Flux : public FluxBase {
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
-#endif  // SRC_TRANSFORMS_ROLLOFF_H_
+#endif  // SRC_TRANSFORMS_FLUX_H_

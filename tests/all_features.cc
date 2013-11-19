@@ -26,8 +26,9 @@ TEST(Features, All) {
   tt.AddFeature("Energy", { { "Window", "type=rectangular" }, { "Window", "" },
       { "Energy", "" }
   });
-  tt.AddFeature("Centroid", { { "Window", "type=rectangular" }, { "Window", "" },
-      { "RDFT", "" }, { "ComplexMagnitude", "" }, { "Centroid", "" }
+  tt.AddFeature("Centroid", { { "Window", "type=rectangular" },
+      { "Window", "" },  { "RDFT", "" }, { "ComplexMagnitude", "" },
+      { "Centroid", "" }
   });
   tt.AddFeature("Rolloff", { { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "ComplexMagnitude", "" }, { "Rolloff", "" }
@@ -87,7 +88,7 @@ TEST(Features, All) {
       { "DWPT", "" }, { "SubbandEnergy", "" }, { "Log", "" },
       /*{ "Square", "" },*/ { "ZeroPadding", "" }, { "DCT", "" },
       { "Selector", "length=16, threads_number=1" }, { "Delta", "" },
-      { "Delta", "" },{ "STMSN", "length=25" }
+      { "Delta", "" }, { "STMSN", "length=25" }
   });
   tt.AddFeature("MFCC", { { "Preemphasis", "value=0.2" },
       { "Window", "type=rectangular" }, { "Window", "" },

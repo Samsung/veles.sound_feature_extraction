@@ -69,9 +69,11 @@ namespace std {
   to_string(sound_feature_extraction::transforms::DeltaType value) noexcept {
     switch (value) {
       case sound_feature_extraction::transforms::kDeltaTypeSimple:
-        return sound_feature_extraction::transforms::internal::kDeltaTypeSimpleStr;
+        return sound_feature_extraction::transforms::internal::
+            kDeltaTypeSimpleStr;
       case sound_feature_extraction::transforms::kDeltaTypeRegression:
-        return sound_feature_extraction::transforms::internal::kDeltaTypeRegressionStr;
+        return sound_feature_extraction::transforms::internal::
+            kDeltaTypeRegressionStr;
     }
     return "";
   }

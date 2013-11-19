@@ -129,6 +129,11 @@ static float cheb_poly_eval(const float *coef, float x, int m) {
 
 int lpc_to_lsp(int simd, const float *lpc, int length, int bisects, float delta,
                float *freq) {
+  assert(lpc);
+  assert(length >= 2);
+  assert(bisects >= 0);
+  assert(delta > 0);
+  assert(freq);
   memsetf(freq, 0.f, length);
   int roots = 0;             /* DR 8/2/94: number of roots found which will be
                                            returned   */
@@ -200,16 +205,14 @@ int lpc_to_lsp(int simd, const float *lpc, int length, int bisects, float delta,
 
       if (psumr * psuml <= 0) {
         roots++;
-        float psumm = psuml;
         float xm;
         for (int k = 0; k <= bisects; k++) {
           xm = (xl + xr) / 2;          /* bisect the interval   */
-          psumm = cheb_poly_eval(pt, xm, m);
+          float psumm = cheb_poly_eval(pt, xm, m);
           if (psumm * psuml >= 0) {
             psuml = psumm;
             xl = xm;
           } else {
-            psumr = psumm;
             xr = xm;
           }
         }
@@ -228,6 +231,9 @@ int lpc_to_lsp(int simd, const float *lpc, int length, int bisects, float delta,
 }
 
 void lsp_to_lpc(int simd, const float *freq, int length, float *lpc) {
+  assert(freq);
+  assert(length >= 2);
+  assert(lpc);
   int m = length / 2;
   float Wp[4 * m + 2];
   float *pw = Wp;
@@ -268,9 +274,6 @@ void lsp_to_lpc(int simd, const float *freq, int length, float *lpc) {
     }
     *(n4 + 1) = xin1;
     *(n4 + 2) = xin2;
-
-    xin1 = 0.0;
-    xin2 = 0.0;
   }
 }
 

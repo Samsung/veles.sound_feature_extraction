@@ -22,7 +22,7 @@ LPC2CC::LPC2CC() : size_(kDefaultSize) {
 }
 
 bool LPC2CC::validate_size(const int& value) noexcept {
-   return value >= 2;
+  return value >= 2;
 }
 
 size_t LPC2CC::OnFormatChanged(size_t buffersCount) {

@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_FORMATS_RAW_FORMAT_H_
-#define SRC_FORMATS_RAW_FORMAT_H_
+#ifndef SRC_FORMATS_ARRAY_FORMAT_H_
+#define SRC_FORMATS_ARRAY_FORMAT_H_
 
 #include <simd/memory.h>
 #include "src/buffers_base.h"
@@ -28,8 +28,7 @@ class InvalidDurationException : public ExceptionBase {
 
 template <class T>
 class ArrayFormat : public BufferFormatBase<T*>,
-                    public FormatLogger<ArrayFormat<T>>
-{
+                    public FormatLogger<ArrayFormat<T>> {
  public:
   typedef T BufferElementType;
 
@@ -166,4 +165,4 @@ typedef ArrayFormat<float> ArrayFormatF;
 typedef std::unique_ptr<float, decltype(&std::free)> FloatPtr;
 
 }  // namespace sound_feature_extraction
-#endif  // SRC_FORMATS_RAW_FORMAT_H_
+#endif  // SRC_FORMATS_ARRAY_FORMAT_H_

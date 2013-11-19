@@ -79,7 +79,7 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures) {
     if (feature_transforms_iterator == empty) {
       throw ParseFeaturesException(index);
     }
-    std::string transformsStr = std::string(",") + *feature_transforms_iterator++;
+    auto transformsStr = std::string(",") + *feature_transforms_iterator++;
     if (feature_transforms_iterator != empty) {
       throw ParseFeaturesException(index);
     }
@@ -87,7 +87,8 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures) {
     boost::sregex_token_iterator feature_each_transform_iterator(
         transformsStr.begin(), transformsStr.end(), transformsRegex, 1);
     while (feature_each_transform_iterator != empty) {
-      AddToTransformsList(*feature_each_transform_iterator++, index, &ret[fname]);
+      AddToTransformsList(*feature_each_transform_iterator++, index,
+                          &ret[fname]);
     }
 
     boost::sregex_token_iterator feature_transforms_end_iterator(

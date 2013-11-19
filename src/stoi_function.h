@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef STOI_FUNCTION_H_
-#define STOI_FUNCTION_H_
+#ifndef SRC_STOI_FUNCTION_H_
+#define SRC_STOI_FUNCTION_H_
 
 #include <functional>
 #include <string>
@@ -24,4 +24,4 @@ static const auto stoi_function = bind(
 
 }  // namespace std
 
-#endif  // STOI_FUNCTION_H_
+#endif  // SRC_STOI_FUNCTION_H_
