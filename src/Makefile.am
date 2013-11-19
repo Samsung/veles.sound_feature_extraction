@@ -31,7 +31,7 @@ transforms/intensity.cc transforms/dwpt.cc transforms/subband_energy.cc \
 transforms/zero_padding.cc transforms/selector.cc transforms/shc.cc \
 transforms/fork.cc transforms/complex_to_real.cc transforms/rectify.cc \
 transforms/frequency_bands.cc transforms/diff.cc transforms/mean.cc \
-transforms/sfm.cc transforms/energy.cc \
+transforms/sfm.cc transforms/energy.cc transforms/subsampling.cc \
 transforms/centroid.cc transforms/zerocrossings.cc transforms/rolloff.cc \
 transforms/flux.cc transforms/beat.cc transforms/autocorrelation.cc \
 transforms/delta.cc transforms/short_time_msn.cc transforms/preemphasis.cc \
