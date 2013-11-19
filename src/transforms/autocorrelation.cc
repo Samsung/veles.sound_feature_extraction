@@ -20,8 +20,6 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-RTP(Autocorrelation, normalize)
-
 Autocorrelation::Autocorrelation() : normalize_(kDefaultNormalize) {
 }
 
@@ -51,8 +49,7 @@ size_t Autocorrelation::OnFormatChanged(size_t buffersCount) {
   return buffersCount;
 }
 
-void Autocorrelation::Do(const float* in, float* out)
-const noexcept {
+void Autocorrelation::Do(const float* in, float* out) const noexcept {
   for (auto hp : correlation_handles_) {
     if (hp.mutex->try_lock()) {
       cross_correlate(*hp.handle, in, in, out);
@@ -66,6 +63,7 @@ const noexcept {
   }
 }
 
+RTP(Autocorrelation, normalize)
 REGISTER_TRANSFORM(Autocorrelation);
 
 }  // namespace transforms
