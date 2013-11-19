@@ -18,11 +18,45 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-enum ScaleType {
-  kScaleTypeLinear,
-  kScaleTypeMel,
-  kScaleTypeBark
+enum class ScaleType {
+  kLinear,
+  kMel,
+  kBark
 };
+
+namespace internal {
+constexpr const char* kScaleTypeLinearStr = "linear";
+constexpr const char* kScaleTypeMelStr = "mel";
+constexpr const char* kScaleTypeBarkStr = "bark";
+}
+
+ScaleType Parse(const std::string& value, identity<ScaleType>);
+
+}  // namespace transforms
+}  // namespace sound_feature_extraction
+
+namespace std {
+  using sound_feature_extraction::transforms::ScaleType;
+
+  inline string
+  to_string(const ScaleType& scale) noexcept {
+    switch (scale) {
+      case ScaleType::kLinear:
+        return sound_feature_extraction::transforms::internal::
+            kScaleTypeLinearStr;
+      case ScaleType::kMel:
+        return sound_feature_extraction::transforms::internal::
+            kScaleTypeMelStr;
+      case ScaleType::kBark:
+        return sound_feature_extraction::transforms::internal::
+            kScaleTypeBarkStr;
+    }
+    return "";
+  }
+}  // namespace std
+
+namespace sound_feature_extraction {
+namespace transforms {
 
 class FilterBank : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
@@ -46,7 +80,7 @@ class FilterBank : public OmpUniformFormatTransform<formats::ArrayFormatF> {
   virtual void Initialize() const override;
 
  protected:
-  static constexpr ScaleType kDefaultScale = kScaleTypeMel;
+  static constexpr ScaleType kDefaultScale = ScaleType::kMel;
   static constexpr int kDefaultNumber = 40;
   static constexpr int kDefaultMinFrequency = 130;
   static constexpr int kDefaultMaxFrequency = 6854;
@@ -70,33 +104,7 @@ class FilterBank : public OmpUniformFormatTransform<formats::ArrayFormatF> {
   mutable FloatPtr filter_bank_;
 };
 
-namespace internal {
-constexpr const char* kScaleTypeLinearStr = "linear";
-constexpr const char* kScaleTypeMelStr = "mel";
-constexpr const char* kScaleTypeBarkStr = "bark";
-}
-
-ScaleType Parse(const std::string& value, identity<ScaleType>);
-
 }  // namespace transforms
 }  // namespace sound_feature_extraction
-
-namespace std {
-  inline string
-  to_string(sound_feature_extraction::transforms::ScaleType scale) noexcept {
-    switch (scale) {
-      case sound_feature_extraction::transforms::kScaleTypeLinear:
-        return sound_feature_extraction::transforms::internal::
-            kScaleTypeLinearStr;
-      case sound_feature_extraction::transforms::kScaleTypeMel:
-        return sound_feature_extraction::transforms::internal::
-            kScaleTypeMelStr;
-      case sound_feature_extraction::transforms::kScaleTypeBark:
-        return sound_feature_extraction::transforms::internal::
-            kScaleTypeBarkStr;
-    }
-    return "";
-  }
-}  // namespace std
 
 #endif  // SRC_TRANSFORMS_FILTER_BANK_H_

@@ -19,9 +19,9 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-enum DeltaType {
-  kDeltaTypeSimple,
-  kDeltaTypeRegression
+enum class DeltaType {
+  kSimple,
+  kRegression
 };
 
 namespace internal {
@@ -30,6 +30,29 @@ constexpr const char* kDeltaTypeRegressionStr = "regression";
 }
 
 DeltaType Parse(const std::string& value, identity<DeltaType>);
+
+}  // namespace transforms
+}  // namespace sound_feature_extraction
+
+namespace std {
+  using sound_feature_extraction::transforms::DeltaType;
+
+  inline string
+  to_string(const DeltaType& value) noexcept {
+    switch (value) {
+      case DeltaType::kSimple:
+        return sound_feature_extraction::transforms::internal::
+            kDeltaTypeSimpleStr;
+      case DeltaType::kRegression:
+        return sound_feature_extraction::transforms::internal::
+            kDeltaTypeRegressionStr;
+    }
+    return "";
+  }
+}  // namespace std
+
+namespace sound_feature_extraction {
+namespace transforms {
 
 class Delta : public UniformFormatTransform<formats::ArrayFormatF> {
  public:
@@ -47,7 +70,7 @@ class Delta : public UniformFormatTransform<formats::ArrayFormatF> {
          " greater than 1 are accepted.")
 
  protected:
-  static constexpr DeltaType kDefaultDeltaType = kDeltaTypeSimple;
+  static constexpr DeltaType kDefaultDeltaType = DeltaType::kSimple;
   static constexpr int kDefaultRegressionLength = 5;
 
   virtual void Do(const BuffersBase<float*>& in,
@@ -63,20 +86,5 @@ class Delta : public UniformFormatTransform<formats::ArrayFormatF> {
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
-
-namespace std {
-  inline string
-  to_string(sound_feature_extraction::transforms::DeltaType value) noexcept {
-    switch (value) {
-      case sound_feature_extraction::transforms::kDeltaTypeSimple:
-        return sound_feature_extraction::transforms::internal::
-            kDeltaTypeSimpleStr;
-      case sound_feature_extraction::transforms::kDeltaTypeRegression:
-        return sound_feature_extraction::transforms::internal::
-            kDeltaTypeRegressionStr;
-    }
-    return "";
-  }
-}  // namespace std
 
 #endif  // SRC_TRANSFORMS_DELTA_H_

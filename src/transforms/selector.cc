@@ -18,13 +18,15 @@ namespace transforms {
 
 Anchor Parse(const std::string value, identity<Anchor>) {
   if (value == internal::kAnchorLeftStr) {
-    return kAnchorLeft;
+    return Anchor::kLeft;
   }
   if (value == internal::kAnchorRightStr) {
-    return kAnchorRight;
+    return Anchor::kRight;
   }
   throw InvalidParameterValueException();
 }
+
+constexpr Anchor Selector::kDefaultAnchor;
 
 Selector::Selector()
     : length_(kDefaultLength),
@@ -46,10 +48,11 @@ size_t Selector::OnFormatChanged(size_t buffersCount) {
 void Selector::Do(const float* in,
                   float* out) const noexcept {
   int length = output_format_->Size();
-  int offset = (from_ == kAnchorLeft? 0 : input_format_->Size() - length);
+  int offset = (from_ == Anchor::kLeft?
+      0 : input_format_->Size() - length);
   if (in != out) {
     memcpy(out, in + offset, length * sizeof(in[0]));
-  } else if (from_ == kAnchorRight) {
+  } else if (from_ == Anchor::kRight) {
     memmove(out, in + offset, length * sizeof(in[0]));
   }
 }

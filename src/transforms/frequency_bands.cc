@@ -42,6 +42,8 @@ FilterOrders Parse(const std::string& value, identity<FilterOrders>) {
   return result;
 }
 
+constexpr IIRFilterType FrequencyBands::kDefaultFilterType;
+
 FrequencyBands::FrequencyBands()
     : number_(kDefaultBandsNumber),
       bands_(),

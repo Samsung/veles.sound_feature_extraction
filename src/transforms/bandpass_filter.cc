@@ -42,42 +42,42 @@ std::shared_ptr<IIRFilter> BandpassFilter::CreateExecutor() const noexcept {
   auto center_freq = (frequency_high_ + frequency_low_) / 2;
   auto width_freq = frequency_high_ - frequency_low_;
   switch (type()) {
-    case kIIRFilterTypeBessel: {
+    case IIRFilterType::kBessel: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::Bessel::BandPass<kMaxFilterLength>, 1>>();
       ret->setup(length(), input_format_->SamplingRate(), center_freq,
                  width_freq);
       return std::static_pointer_cast<IIRFilter>(ret);
     }
-    case kIIRFilterTypeButterworth: {
+    case IIRFilterType::kButterworth: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::Butterworth::BandPass<kMaxFilterLength>, 1>>();
       ret->setup(length(), input_format_->SamplingRate(), center_freq,
                  width_freq);
       return std::static_pointer_cast<IIRFilter>(ret);
     }
-    case kIIRFilterTypeChebyshevI: {
+    case IIRFilterType::kChebyshevI: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::ChebyshevI::BandPass<kMaxFilterLength>, 1>>();
       ret->setup(length(), input_format_->SamplingRate(), center_freq,
                  width_freq, ripple());
       return std::static_pointer_cast<IIRFilter>(ret);
     }
-    case kIIRFilterTypeChebyshevII: {
+    case IIRFilterType::kChebyshevII: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::ChebyshevII::BandPass<kMaxFilterLength>, 1>>();
       ret->setup(length(), input_format_->SamplingRate(), center_freq,
                  width_freq, ripple());
       return std::static_pointer_cast<IIRFilter>(ret);
     }
-    case kIIRFilterTypeElliptic: {
+    case IIRFilterType::kElliptic: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::Elliptic::BandPass<kMaxFilterLength>, 1>>();
       ret->setup(length(), input_format_->SamplingRate(), center_freq,
                  width_freq, ripple(), rolloff());
       return std::static_pointer_cast<IIRFilter>(ret);
     }
-    case kIIRFilterTypeLegendre: {
+    case IIRFilterType::kLegendre: {
       auto ret = std::make_shared<Dsp::SimpleFilter<
           Dsp::Legendre::BandPass<kMaxFilterLength>, 1>>();
       ret->setup(length(), input_format_->SamplingRate(), center_freq,
@@ -93,42 +93,42 @@ void BandpassFilter::Execute(const std::shared_ptr<IIRFilter>& exec,
                             float* out) const {
   std::shared_ptr<IIRFilter> ptr = exec;
   switch (type()) {
-    case kIIRFilterTypeBessel:
+    case IIRFilterType::kBessel:
       IIRFilterBase::Execute(
           std::static_pointer_cast<
               Dsp::SimpleFilter<Dsp::Bessel::BandPass<kMaxFilterLength>, 1>
           >(ptr),
           in, out);
       break;
-    case kIIRFilterTypeButterworth:
+    case IIRFilterType::kButterworth:
       IIRFilterBase::Execute(
           std::static_pointer_cast<
               Dsp::SimpleFilter<Dsp::Butterworth::BandPass<kMaxFilterLength>, 1>
           >(ptr),
           in, out);
       break;
-    case kIIRFilterTypeChebyshevI:
+    case IIRFilterType::kChebyshevI:
       IIRFilterBase::Execute(
           std::static_pointer_cast<
               Dsp::SimpleFilter<Dsp::ChebyshevI::BandPass<kMaxFilterLength>, 1>
           >(ptr),
           in, out);
       break;
-    case kIIRFilterTypeChebyshevII:
+    case IIRFilterType::kChebyshevII:
       IIRFilterBase::Execute(
           std::static_pointer_cast<
               Dsp::SimpleFilter<Dsp::ChebyshevII::BandPass<kMaxFilterLength>, 1>
           >(ptr),
           in, out);
       break;
-    case kIIRFilterTypeElliptic:
+    case IIRFilterType::kElliptic:
       IIRFilterBase::Execute(
           std::static_pointer_cast<
               Dsp::SimpleFilter<Dsp::Elliptic::BandPass<kMaxFilterLength>, 1>
           >(ptr),
           in, out);
       break;
-    case kIIRFilterTypeLegendre:
+    case IIRFilterType::kLegendre:
       IIRFilterBase::Execute(
           std::static_pointer_cast<
               Dsp::SimpleFilter< Dsp::Legendre::BandPass<kMaxFilterLength>, 1>

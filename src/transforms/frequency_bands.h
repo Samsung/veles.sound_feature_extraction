@@ -71,7 +71,8 @@ class FrequencyBands
   virtual void Initialize() const override;
 
  protected:
-  static constexpr IIRFilterType kDefaultFilterType = kIIRFilterTypeChebyshevII;
+  static constexpr IIRFilterType kDefaultFilterType =
+      IIRFilterType::kChebyshevII;
   static constexpr int kDefaultBandsNumber = Fork::kDefaultFactor;
 
   virtual void Do(const BuffersBase<float*>& in,

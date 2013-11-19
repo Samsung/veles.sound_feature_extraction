@@ -21,12 +21,12 @@ RTP(IIRFilterBase, rolloff)
 
 IIRFilterType Parse(const std::string& value, identity<IIRFilterType>) {
   static const std::unordered_map<std::string, IIRFilterType> map {
-    { internal::kIIRFilterTypeBesselStr, kIIRFilterTypeBessel },
-    { internal::kIIRFilterTypeButterworthStr, kIIRFilterTypeButterworth },
-    { internal::kIIRFilterTypeChebyshevIStr, kIIRFilterTypeChebyshevI },
-    { internal::kIIRFilterTypeChebyshevIIStr, kIIRFilterTypeChebyshevII },
-    { internal::kIIRFilterTypeEllipticStr, kIIRFilterTypeElliptic },
-    { internal::kIIRFilterTypeLegendreStr, kIIRFilterTypeLegendre }
+    { internal::kIIRFilterTypeBesselStr, IIRFilterType::kBessel },
+    { internal::kIIRFilterTypeButterworthStr, IIRFilterType::kButterworth },
+    { internal::kIIRFilterTypeChebyshevIStr, IIRFilterType::kChebyshevI },
+    { internal::kIIRFilterTypeChebyshevIIStr, IIRFilterType::kChebyshevII },
+    { internal::kIIRFilterTypeEllipticStr, IIRFilterType::kElliptic },
+    { internal::kIIRFilterTypeLegendreStr, IIRFilterType::kLegendre }
   };
   auto fti = map.find(value);
   if (fti == map.end()) {
@@ -34,6 +34,8 @@ IIRFilterType Parse(const std::string& value, identity<IIRFilterType>) {
   }
   return fti->second;
 }
+
+constexpr IIRFilterType IIRFilterBase::kDefaultIIRFilterType;
 
 IIRFilterBase::IIRFilterBase() noexcept
     : type_(kDefaultIIRFilterType),

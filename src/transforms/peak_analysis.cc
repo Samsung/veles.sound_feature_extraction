@@ -17,7 +17,7 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 size_t PeakAnalysis::OnInputFormatChanged(size_t buffersCount) {
-  output_format_->SetSize(input_format_->Size() * 2);
+  output_format_->SetSize(input_format_->Size() * 2 + 1);
   return buffersCount;
 }
 
@@ -42,10 +42,10 @@ void PeakAnalysis::Do(const formats::FixedArray<2>* in, float *out)
     max_pos = 1;
   }
   for (size_t i = 0; i < input_format_->Size(); i++) {
-    out[i * 2] = in[i][0] / max_pos;
-    out[i * 2 + 1] = in[i][1] / sum;
+    out[i * 2 + 1] = in[i][0] / max_pos;
+    out[i * 2 + 2] = in[i][1] / sum;
   }
-  out[0] = in[0][0];
+  out[0] = max_pos;
 }
 
 REGISTER_TRANSFORM(PeakAnalysis);

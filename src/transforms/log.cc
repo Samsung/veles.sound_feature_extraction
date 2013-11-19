@@ -23,9 +23,9 @@ namespace transforms {
 
 LogarithmBase Parse(const std::string& value, identity<LogarithmBase>) {
   static const std::unordered_map<std::string, LogarithmBase> map {
-    { internal::kLogBaseEStr, kLogBaseE },
-    { internal::kLogBase2Str, kLogBase2 },
-    { internal::kLogBase10Str, kLogBase10 }
+    { internal::kLogBaseEStr, LogarithmBase::kE },
+    { internal::kLogBase2Str, LogarithmBase::k2 },
+    { internal::kLogBase10Str, LogarithmBase::k10 }
   };
   auto lbit = map.find(value);
   if (lbit == map.end()) {
@@ -37,7 +37,7 @@ LogarithmBase Parse(const std::string& value, identity<LogarithmBase>) {
 void LogRaw::Do(bool simd, const float* input, int length,
                 float* output) const noexcept {
   switch (base()) {
-    case kLogBaseE: {
+    case LogarithmBase::kE: {
       if (simd) {
 #ifdef __AVX__
         for (int j = 0; j < length - 7; j += 8) {
@@ -69,12 +69,12 @@ void LogRaw::Do(bool simd, const float* input, int length,
       }
       break;
     }
-    case kLogBase2:
+    case LogarithmBase::k2:
       for (int j = 0; j < length; j++) {
         output[j] = log2f(input[j]);
       }
       break;
-    case kLogBase10:
+    case LogarithmBase::k10:
       for (int j = 0; j < length; j++) {
         output[j] = log10f(input[j]);
       }
@@ -93,13 +93,13 @@ void LogRawInverse::Do(const float* in UNUSED, float* out UNUSED)
 
 void LogSingle::Do(const float& in, float* out) const noexcept {
   switch (base()) {
-    case kLogBaseE:
+    case LogarithmBase::kE:
       *out = logf(in);
       break;
-    case kLogBase2:
+    case LogarithmBase::k2:
       *out = log2f(in);
       break;
-    case kLogBase10:
+    case LogarithmBase::k10:
       *out = log10f(in);
       break;
   }

@@ -18,8 +18,8 @@ namespace transforms {
 
 DeltaType Parse(const std::string& value, identity<DeltaType>) {
   static const std::unordered_map<std::string, DeltaType> map {
-    { internal::kDeltaTypeSimpleStr, kDeltaTypeSimple },
-    { internal::kDeltaTypeRegressionStr, kDeltaTypeRegression }
+    { internal::kDeltaTypeSimpleStr, DeltaType::kSimple },
+    { internal::kDeltaTypeRegressionStr, DeltaType::kRegression }
   };
   auto dti = map.find(value);
   if (dti == map.end()) {
@@ -27,6 +27,8 @@ DeltaType Parse(const std::string& value, identity<DeltaType>) {
   }
   return dti->second;
 }
+
+constexpr DeltaType Delta::kDefaultDeltaType;
 
 Delta::Delta()
     : type_(kDefaultDeltaType),
@@ -41,7 +43,7 @@ bool Delta::validate_rlength(const int& value) noexcept {
 void Delta::Do(const BuffersBase<float*>& in,
                BuffersBase<float*>* out) const noexcept {
   switch (type_) {
-    case kDeltaTypeSimple:
+    case DeltaType::kSimple:
       for (size_t i = 1; i < in.Count(); i++) {
         DoSimple(use_simd(), in[i - 1], in[i],
                  input_format_->Size(), (*out)[i]);
@@ -50,7 +52,7 @@ void Delta::Do(const BuffersBase<float*>& in,
         (*out)[0][i] = (*out)[1][i];
       }
     break;
-    case kDeltaTypeRegression: {
+    case DeltaType::kRegression: {
       int rstep = rlength_ / 2;
       float norm = 2 * rstep * (rstep + 1) * (2 * rstep + 1) / 6;
       for (size_t i = rstep; i < in.Count() - rstep; i++) {

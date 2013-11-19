@@ -20,9 +20,9 @@ namespace transforms {
 
 ScaleType Parse(const std::string& value, identity<ScaleType>) {
   static const std::unordered_map<std::string, ScaleType> map = {
-    { internal::kScaleTypeLinearStr, kScaleTypeLinear },
-    { internal::kScaleTypeMelStr, kScaleTypeMel },
-    { internal::kScaleTypeBarkStr, kScaleTypeBark }
+    { internal::kScaleTypeLinearStr, ScaleType::kLinear },
+    { internal::kScaleTypeMelStr, ScaleType::kMel },
+    { internal::kScaleTypeBarkStr, ScaleType::kBark }
   };
   auto tit = map.find(value);
   if (tit == map.end()) {
@@ -31,10 +31,7 @@ ScaleType Parse(const std::string& value, identity<ScaleType>) {
   return tit->second;
 }
 
-RTP(FilterBank, type)
-RTP(FilterBank, number)
-RTP(FilterBank, frequency_min)
-RTP(FilterBank, frequency_max)
+constexpr ScaleType FilterBank::kDefaultScale;
 
 FilterBank::FilterBank()
     : type_(kDefaultScale),
@@ -64,11 +61,11 @@ const FloatPtr& FilterBank::filter_bank() const {
 
 float FilterBank::LinearToScale(ScaleType type, float freq) {
   switch (type) {
-    case kScaleTypeLinear:
+    case ScaleType::kLinear:
       return freq;
-    case kScaleTypeMel:
+    case ScaleType::kMel:
       return 1127.0f * logf(1 + freq / 700.0f);
-    case kScaleTypeBark:
+    case ScaleType::kBark:
       // see http://depository.bas-net.by/EDNI/Periodicals/Articles/Details.aspx?Key_Journal=32&Id=681
       return 8.96f * logf(0.978f +
                           5.0f * logf(0.994f +
@@ -79,11 +76,11 @@ float FilterBank::LinearToScale(ScaleType type, float freq) {
 
 float FilterBank::ScaleToLinear(ScaleType type, float value) {
   switch (type) {
-    case kScaleTypeLinear:
+    case ScaleType::kLinear:
       return value;
-    case kScaleTypeMel:
+    case ScaleType::kMel:
       return 700.0f * (expf(value / 1127.0f) - 1);
-    case kScaleTypeBark:
+    case ScaleType::kBark:
       // see http://depository.bas-net.by/EDNI/Periodicals/Articles/Details.aspx?Key_Journal=32&Id=681
       return 2173.0f * powf(expf((expf(value / 8.96f) - 0.978f) / 5.0f) -
                             0.994f, 1.0f / 1.347f) - 75.4f;
@@ -182,6 +179,10 @@ void FilterBank::Do(const float* in, float* out) const noexcept {
 #endif
 }
 
+RTP(FilterBank, type)
+RTP(FilterBank, number)
+RTP(FilterBank, frequency_min)
+RTP(FilterBank, frequency_max)
 REGISTER_TRANSFORM(FilterBank);
 
 }  // namespace transforms

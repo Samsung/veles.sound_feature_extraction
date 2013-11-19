@@ -18,9 +18,9 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-enum Anchor {
-  kAnchorLeft,
-  kAnchorRight
+enum class Anchor {
+  kLeft,
+  kRight
 };
 
 namespace internal {
@@ -29,6 +29,22 @@ constexpr const char* kAnchorRightStr = "right";
 }
 
 Anchor Parse(const std::string value, identity<Anchor>);
+
+}  // namespace transforms
+}  // namespace sound_feature_extraction
+
+namespace std {
+  using sound_feature_extraction::transforms::Anchor;
+
+  inline string to_string(const Anchor& a) noexcept {
+    return a == Anchor::kLeft?
+        sound_feature_extraction::transforms::internal::kAnchorLeftStr :
+        sound_feature_extraction::transforms::internal::kAnchorRightStr;
+  }
+}  // namespace std
+
+namespace sound_feature_extraction {
+namespace transforms {
 
 class Selector : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  public:
@@ -48,19 +64,10 @@ class Selector : public OmpUniformFormatTransform<formats::ArrayFormatF> {
                   float* out) const noexcept override;
 
   static constexpr int kDefaultLength = 12;
-  static constexpr Anchor kDefaultAnchor = kAnchorLeft;
+  static constexpr Anchor kDefaultAnchor = Anchor::kLeft;
 };
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
-
-namespace std {
-  inline string to_string(
-      sound_feature_extraction::transforms::Anchor a) noexcept {
-    return a == sound_feature_extraction::transforms::kAnchorLeft?
-        sound_feature_extraction::transforms::internal::kAnchorLeftStr :
-        sound_feature_extraction::transforms::internal::kAnchorRightStr;
-  }
-}  // namespace std
 
 #endif  // SRC_TRANSFORMS_SELECTOR_H_

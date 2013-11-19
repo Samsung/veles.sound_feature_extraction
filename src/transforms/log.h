@@ -19,10 +19,10 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-enum LogarithmBase {
-  kLogBase2,
-  kLogBase10,
-  kLogBaseE
+enum class LogarithmBase {
+  k2,
+  k10,
+  kE
 };
 
 namespace internal {
@@ -32,6 +32,29 @@ constexpr const char* kLogBase10Str = "10";
 }
 
 LogarithmBase Parse(const std::string& value, identity<LogarithmBase>);
+
+}  // namespace transforms
+}  // namespace sound_feature_extraction
+
+namespace std {
+  using sound_feature_extraction::transforms::LogarithmBase;
+
+  inline string
+  to_string(const LogarithmBase& lb) noexcept {
+    switch (lb) {
+      case LogarithmBase::kE:
+        return sound_feature_extraction::transforms::internal::kLogBaseEStr;
+      case LogarithmBase::k2:
+        return sound_feature_extraction::transforms::internal::kLogBase2Str;
+      case LogarithmBase::k10:
+        return sound_feature_extraction::transforms::internal::kLogBase10Str;
+    }
+    return "";
+  }
+}  // namespace std
+
+namespace sound_feature_extraction {
+namespace transforms {
 
 template <class F>
 class LogBase : public virtual OmpUniformFormatTransform<F> {
@@ -43,8 +66,11 @@ class LogBase : public virtual OmpUniformFormatTransform<F> {
   TP(base, LogarithmBase, kDefaultLogBase, "Logarithm base (2, 10 or e).")
 
  protected:
-  static constexpr LogarithmBase kDefaultLogBase = kLogBaseE;
+  static constexpr LogarithmBase kDefaultLogBase = LogarithmBase::kE;
 };
+
+template <class F>
+constexpr LogarithmBase LogBase<F>::kDefaultLogBase;
 
 template <class F>
 bool LogBase<F>::validate_base(const LogarithmBase&) noexcept {
@@ -92,20 +118,5 @@ class LogSingleInverse : public OmpInverseUniformFormatTransform<LogSingle>,
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
-
-namespace std {
-  inline string
-  to_string(sound_feature_extraction::transforms::LogarithmBase lb) noexcept {
-    switch (lb) {
-      case sound_feature_extraction::transforms::kLogBaseE:
-        return sound_feature_extraction::transforms::internal::kLogBaseEStr;
-      case sound_feature_extraction::transforms::kLogBase2:
-        return sound_feature_extraction::transforms::internal::kLogBase2Str;
-      case sound_feature_extraction::transforms::kLogBase10:
-        return sound_feature_extraction::transforms::internal::kLogBase10Str;
-    }
-    return "";
-  }
-}  // namespace std
 
 #endif  // SRC_TRANSFORMS_LOG_H_

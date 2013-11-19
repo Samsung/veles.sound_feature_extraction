@@ -25,13 +25,13 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-enum IIRFilterType {
-  kIIRFilterTypeBessel,
-  kIIRFilterTypeButterworth,
-  kIIRFilterTypeChebyshevI,
-  kIIRFilterTypeChebyshevII,
-  kIIRFilterTypeElliptic,
-  kIIRFilterTypeLegendre
+enum class IIRFilterType {
+  kBessel,
+  kButterworth,
+  kChebyshevI,
+  kChebyshevII,
+  kElliptic,
+  kLegendre
 };
 
 namespace internal {
@@ -44,6 +44,41 @@ constexpr const char* kIIRFilterTypeLegendreStr = "legendre";
 }
 
 IIRFilterType Parse(const std::string& value, identity<IIRFilterType>);
+
+}  // namespace transforms
+}  // namespace sound_feature_extraction
+
+namespace std {
+  using sound_feature_extraction::transforms::IIRFilterType;
+
+  inline string
+  to_string(const IIRFilterType& type) noexcept {
+    switch (type) {
+      case IIRFilterType::kBessel:
+        return sound_feature_extraction::transforms::
+            internal::kIIRFilterTypeBesselStr;
+      case IIRFilterType::kButterworth:
+        return sound_feature_extraction::transforms::
+            internal::kIIRFilterTypeButterworthStr;
+      case IIRFilterType::kChebyshevI:
+        return sound_feature_extraction::transforms::
+            internal::kIIRFilterTypeChebyshevIStr;
+      case IIRFilterType::kChebyshevII:
+        return sound_feature_extraction::transforms::
+            internal::kIIRFilterTypeChebyshevIIStr;
+      case IIRFilterType::kElliptic:
+        return sound_feature_extraction::transforms::
+            internal::kIIRFilterTypeEllipticStr;
+      case IIRFilterType::kLegendre:
+        return sound_feature_extraction::transforms::
+            internal::kIIRFilterTypeLegendreStr;
+    }
+    return "";
+  }
+}  // namespace std
+
+namespace sound_feature_extraction {
+namespace transforms {
 
 typedef Dsp::PoleFilterBase2 IIRFilter;
 
@@ -71,39 +106,12 @@ class IIRFilterBase : public FilterBase<IIRFilter> {
   }
 
   static constexpr IIRFilterType kDefaultIIRFilterType =
-      kIIRFilterTypeChebyshevII;
+      IIRFilterType::kChebyshevII;
   static constexpr float kDefaultIIRFilterRipple = 1;
   static constexpr float kDefaultIIRFilterRolloff = 0;
 };
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
-
-namespace std {
-  inline string
-  to_string(sound_feature_extraction::transforms::IIRFilterType type) noexcept {
-    switch (type) {
-      case sound_feature_extraction::transforms::kIIRFilterTypeBessel:
-        return sound_feature_extraction::transforms::
-            internal::kIIRFilterTypeBesselStr;
-      case sound_feature_extraction::transforms::kIIRFilterTypeButterworth:
-        return sound_feature_extraction::transforms::
-            internal::kIIRFilterTypeButterworthStr;
-      case sound_feature_extraction::transforms::kIIRFilterTypeChebyshevI:
-        return sound_feature_extraction::transforms::
-            internal::kIIRFilterTypeChebyshevIStr;
-      case sound_feature_extraction::transforms::kIIRFilterTypeChebyshevII:
-        return sound_feature_extraction::transforms::
-            internal::kIIRFilterTypeChebyshevIIStr;
-      case sound_feature_extraction::transforms::kIIRFilterTypeElliptic:
-        return sound_feature_extraction::transforms::
-            internal::kIIRFilterTypeEllipticStr;
-      case sound_feature_extraction::transforms::kIIRFilterTypeLegendre:
-        return sound_feature_extraction::transforms::
-            internal::kIIRFilterTypeLegendreStr;
-    }
-    return "";
-  }
-}  // namespace std
 
 #endif  // SRC_TRANSFORMS_IIR_FILTER_BASE_H_
