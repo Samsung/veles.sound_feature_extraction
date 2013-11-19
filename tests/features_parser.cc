@@ -15,9 +15,9 @@
 #include <vector>
 #include "src/features_parser.h"
 
-using sound_feature_extraction::Features::Parse;
+using sound_feature_extraction::features::Parse;
 
-TEST(Features, Parse) {
+TEST(features, Parse) {
   std::vector<std::string> lines = {
       "MFCC[Window(length=25, step=10), DFT, MelFreq(size=16), "
           "Log10, DCT(engine=Kiss)]",

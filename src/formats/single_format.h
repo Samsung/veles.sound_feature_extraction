@@ -83,7 +83,7 @@ class SingleFormat : public BufferFormatBase<T> {
                       const std::string& id) {
     for (size_t i = 0; i < buffers.Count(); i++) {
       F value = buffers[i];
-      if (!Validation::Validator<F>::Validate(value)) {
+      if (!validation::Validator<F>::Validate(value)) {
         throw InvalidBuffersException(id, i,
                                       std::to_string(value));
       }
@@ -111,7 +111,7 @@ class SingleFormat : public BufferFormatBase<T> {
   template<std::size_t I = 0, typename... TP>
   static typename std::enable_if<I < sizeof...(TP), bool>::type
   ValidateTupleElement(const std::tuple<TP...>& t) noexcept {
-    return Validation::
+    return validation::
         Validator<typename std::tuple_element<I, std::tuple<TP...>>::type>::
         Validate(std::get<I>(t)) &
         ValidateTupleElement<I + 1, TP...>(t);

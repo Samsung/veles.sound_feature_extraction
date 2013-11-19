@@ -14,8 +14,8 @@
 #include <gtest/gtest.h>
 #include <memory>
 
-using sound_feature_extraction::MemoryAllocation::Node;
-using sound_feature_extraction::MemoryAllocation::BuffersAllocator;
+using sound_feature_extraction::memory_allocation::Node;
+using sound_feature_extraction::memory_allocation::BuffersAllocator;
 
 class BuffersAllocatorTest
     : public BuffersAllocator, public testing::Test {

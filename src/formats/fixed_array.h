@@ -26,7 +26,7 @@ struct FixedArray : public std::array<F, L> {
 
   bool Validate() const noexcept {
     for (int i = 0; i < L; i++) {
-      if (!Validation::Validator<F>::Validate((*this)[i])) {
+      if (!validation::Validator<F>::Validate((*this)[i])) {
         return false;
       }
     }
@@ -45,7 +45,7 @@ struct FixedArray : public std::array<F, L> {
 
 }  // namespace formats
 
-namespace Validation {
+namespace validation {
   template<std::uint8_t L>
   struct Validator<formats::FixedArray<L>> {
     static bool Validate(const formats::FixedArray<L>& value) noexcept {
@@ -56,7 +56,7 @@ namespace Validation {
       return value.Validate();
     }
   };
-}  // namespace Validation
+}  // namespace validation
 
 }  // namespace sound_feature_extraction
 

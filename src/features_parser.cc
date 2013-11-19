@@ -18,7 +18,7 @@
 
 namespace sound_feature_extraction {
 
-namespace Features {
+namespace features {
 
 void AddToTransformsList(const std::string& str, size_t featureIndex,
                          RawTransformsList* transforms) {
@@ -106,6 +106,6 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures) {
   return ret;
 }
 
-}  // namespace Features
+}  // namespace features
 
 }  // namespace sound_feature_extraction

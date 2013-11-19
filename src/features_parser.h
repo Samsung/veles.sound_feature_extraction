@@ -35,7 +35,7 @@ typedef std::unordered_map<
     RawTransformsList
   > RawFeaturesMap;
 
-namespace Features {
+namespace features {
 
 class ParseFeaturesException : public ExceptionBase {
  public:
@@ -50,7 +50,7 @@ class ParseFeaturesException : public ExceptionBase {
 /// <parameter name>=<value>), <transform name>]
 RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures);
 
-}  // namespace Features
+}  // namespace features
 
 }  // namespace sound_feature_extraction
 

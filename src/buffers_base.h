@@ -84,7 +84,7 @@ class BufferFormatBase : public BufferFormat {
       const noexcept = 0;
 };
 
-namespace Validation {
+namespace validation {
   template <class TE>
   struct Validator {
     static bool Validate(const TE&) noexcept {
@@ -104,7 +104,7 @@ namespace Validation {
           value != -std::numeric_limits<float>::infinity();
     }
   };
-}  // namespace Validation
+}  // namespace validation
 
 template <typename T>
 class BuffersBase : public Buffers {

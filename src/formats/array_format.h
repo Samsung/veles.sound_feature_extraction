@@ -94,7 +94,7 @@ class ArrayFormat : public BufferFormatBase<T*>,
       bool allZeros = true;
       for (size_t j = 0; j < size_; j++) {
         T value = buffers[i][j];
-        if (!Validation::Validator<T>::Validate(value)) {
+        if (!validation::Validator<T>::Validate(value)) {
           throw InvalidBuffersException(this->Id(), i,
                                         std::string("[") + std::to_string(j) +
                                         "] = " + std::to_string(value));

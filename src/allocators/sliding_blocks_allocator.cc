@@ -14,7 +14,7 @@
 #include "src/allocators/sliding_blocks_impl.h"
 
 namespace sound_feature_extraction {
-namespace MemoryAllocation {
+namespace memory_allocation {
 
 SlidingBlocksAllocator::SlidingBlocksAllocator() noexcept
     : impl_(new SlidingBlocksImpl()) {
@@ -24,5 +24,5 @@ size_t  SlidingBlocksAllocator::Solve(Node* root) const noexcept {
   return impl_->Solve(root);
 }
 
-}  // namespace MemoryAllocation
+}  // namespace memory_allocation
 }  // namespace sound_feature_extraction

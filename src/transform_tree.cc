@@ -177,11 +177,11 @@ TransformTree::Node::FindIdenticalChildTransform(
 }
 
 void TransformTree::Node::BuildAllocationTree(
-    MemoryAllocation::Node* node) const noexcept {
+    memory_allocation::Node* node) const noexcept {
   node->Children.reserve(ChildrenCount());
   for (auto& subnodes : Children) {
     for (auto& inode : subnodes.second) {
-      MemoryAllocation::Node child(
+      memory_allocation::Node child(
           inode->BuffersCount *
               inode->BoundTransform->OutputFormat()->SizeInBytes(),
           node,
@@ -193,7 +193,7 @@ void TransformTree::Node::BuildAllocationTree(
 }
 
 void TransformTree::Node::ApplyAllocationTree(
-    const MemoryAllocation::Node& node,
+    const memory_allocation::Node& node,
     void* allocatedMemory) noexcept {
   BoundBuffers = BoundTransform->CreateOutputBuffers(
       BuffersCount,
@@ -516,9 +516,9 @@ void TransformTree::PrepareForExecution() {
     t.Initialize();
   });
   // Solve the allocation problem
-  MemoryAllocation::Node allocation_tree_root(0, nullptr, root_.get());
+  memory_allocation::Node allocation_tree_root(0, nullptr, root_.get());
   root_->BuildAllocationTree(&allocation_tree_root);
-  MemoryAllocation::SlidingBlocksAllocator allocator;
+  memory_allocation::SlidingBlocksAllocator allocator;
   size_t neededMemory = allocator.Solve(&allocation_tree_root);
 #if DEBUG
   allocation_tree_root.Dump("/tmp/last_allocation.dot");

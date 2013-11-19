@@ -16,7 +16,7 @@
 #include "src/allocators/buffers_allocator.h"
 
 namespace sound_feature_extraction {
-namespace MemoryAllocation {
+namespace memory_allocation {
 
 class WorstAllocator : public BuffersAllocator {
  public:
@@ -26,6 +26,6 @@ class WorstAllocator : public BuffersAllocator {
   static Node* VisitNode(Node* node, size_t* mappedSoFar) noexcept;
 };
 
-}  // namespace MemoryAllocation
+}  // namespace memory_allocation
 }  // namespace sound_feature_extraction
 #endif  // SRC_ALLOCATORS_WORST_ALLOCATOR_H_

@@ -17,7 +17,7 @@
 #include "src/allocators/buffers_allocator.h"
 
 namespace sound_feature_extraction {
-namespace MemoryAllocation {
+namespace memory_allocation {
 
 class SlidingBlocksImpl;
 
@@ -31,6 +31,6 @@ class SlidingBlocksAllocator : public BuffersAllocator {
   std::shared_ptr<SlidingBlocksImpl> impl_;
 };
 
-}  // namespace MemoryAllocation
+}  // namespace memory_allocation
 }  // namespace sound_feature_extraction
 #endif  // SRC_ALLOCATORS_SLIDING_BLOCKS_ALLOCATOR_H_

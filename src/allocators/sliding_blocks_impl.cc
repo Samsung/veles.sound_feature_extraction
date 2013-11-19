@@ -23,7 +23,7 @@ extern "C" {
 }
 
 namespace sound_feature_extraction {
-namespace MemoryAllocation {
+namespace memory_allocation {
 
 size_t SlidingBlocksImpl::Solve(Node* root) noexcept {
   std::vector<std::vector<Node*>> traversalVariants;
@@ -232,5 +232,5 @@ void SlidingBlocksImpl::SaveBlocksSolution(
   }
 }
 
-}  // namespace MemoryAllocation
+}  // namespace memory_allocation
 }  // namespace sound_feature_extraction

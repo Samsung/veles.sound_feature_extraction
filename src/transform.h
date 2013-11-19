@@ -20,7 +20,7 @@
 
 namespace sound_feature_extraction {
 
-/// @brief Transform abstract class.
+/// @brief Abstract class representing a public interface of any transform.
 class Transform : public virtual Parameterizable {
  public:
   virtual ~Transform() = default;

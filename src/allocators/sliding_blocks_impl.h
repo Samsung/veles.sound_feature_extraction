@@ -20,7 +20,7 @@
 #include "src/logger.h"
 
 namespace sound_feature_extraction {
-namespace MemoryAllocation {
+namespace memory_allocation {
 
 struct TraversalTreeNode {
   explicit TraversalTreeNode(std::weak_ptr<TraversalTreeNode> parent)
@@ -109,6 +109,6 @@ class SlidingBlocksImpl : public Logger {
   static void SaveBlocksSolution(const std::vector<Block>& blocks) noexcept;
 };
 
-}  // namespace MemoryAllocation
+}  // namespace memory_allocation
 }  // namespace sound_feature_extraction
 #endif  // SRC_ALLOCATORS_SLIDING_BLOCKS_IMPL_H_

@@ -17,7 +17,7 @@
 #include <set>
 
 namespace sound_feature_extraction {
-namespace MemoryAllocation {
+namespace memory_allocation {
 
 void Node::Dump(const std::string& dotFileName) const {
   std::ofstream fw;
@@ -156,4 +156,4 @@ bool BuffersAllocator::SegmentsOverlap(size_t a1, size_t a2,
 }
 
 }  // namespace sound_feature_extraction
-}  // namespace MemoryAllocation
+}  // namespace memory_allocation

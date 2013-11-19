@@ -30,7 +30,7 @@ using sound_feature_extraction::TransformNotRegisteredException;
 using sound_feature_extraction::ChainAlreadyExistsException;
 using sound_feature_extraction::IncompatibleTransformFormatException;
 using sound_feature_extraction::RawFeaturesMap;
-using sound_feature_extraction::Features::ParseFeaturesException;
+using sound_feature_extraction::features::ParseFeaturesException;
 using sound_feature_extraction::TransformTree;
 using sound_feature_extraction::formats::ArrayFormat16;
 using sound_feature_extraction::BuffersBase;
@@ -253,7 +253,7 @@ FeaturesConfiguration *setup_features_extraction(
   }
   RawFeaturesMap featmap;
   try {
-    featmap = sound_feature_extraction::Features::Parse(lines);
+    featmap = sound_feature_extraction::features::Parse(lines);
   }
   catch(const ParseFeaturesException& pfe) {
     EINA_LOG_ERR("Failed to parse features. %s\n", pfe.what());

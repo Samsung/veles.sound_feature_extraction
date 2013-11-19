@@ -176,9 +176,9 @@ class TransformTree : public Logger {
     std::shared_ptr<Node> FindIdenticalChildTransform(const Transform& base)
         const noexcept;
 
-    void BuildAllocationTree(MemoryAllocation::Node* node) const noexcept;
+    void BuildAllocationTree(memory_allocation::Node* node) const noexcept;
 
-    void ApplyAllocationTree(const MemoryAllocation::Node& node,
+    void ApplyAllocationTree(const memory_allocation::Node& node,
                              void* allocatedMemory) noexcept;
 
     void Execute();
