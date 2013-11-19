@@ -25,21 +25,22 @@ class PeakAnalysisTest : public TransformTest<PeakAnalysis> {
   virtual void SetUp() {
     Size = 4;
     SetUpTransform(1, Size, 18000);
-    for (int i = 0; i < Size; i++) {
+    for (int i = 0; i < Size - 1; i++) {
       (*Input)[0][i][0] = (i + 1) * 10;
       (*Input)[0][i][1] = 100;
     }
+    (*Input)[0][Size - 1][0] = 10;
+    (*Input)[0][Size - 1][1] = 101;
   }
 };
 
 TEST_F(PeakAnalysisTest, Do) {
   Do((*Input)[0], (*Output)[0]);
-  for (int i = 0; i < Size; i++) {
-    if (i == 0) {
-      ASSERT_FLOAT_EQ(10, (*Output)[0][i * 2]);
-    } else {
-      ASSERT_FLOAT_EQ(i + 1, (*Output)[0][i * 2]);
-    }
-    ASSERT_FLOAT_EQ(0.25f, (*Output)[0][i * 2 + 1]);
+  ASSERT_FLOAT_EQ(10, (*Output)[0][0]);
+  for (int i = 0; i < Size - 1; i++) {
+    ASSERT_FLOAT_EQ(i + 1, (*Output)[0][i * 2 + 1]);
+    ASSERT_NEAR(0.25f, (*Output)[0][i * 2 + 2], 0.001f);
   }
+  ASSERT_FLOAT_EQ(1, (*Output)[0][(Size - 1) * 2 + 1]);
+  ASSERT_NEAR(0.25f, (*Output)[0][(Size - 1) * 2 + 2], 0.002f);
 }
