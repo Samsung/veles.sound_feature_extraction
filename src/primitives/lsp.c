@@ -97,6 +97,7 @@ Original copyright
 
 #include "src/primitives/lsp.h"
 #define _XOPEN_SOURCE
+#include <assert.h>
 #include <math.h>
 #include <simd/arithmetic-inl.h>
 #include <simd/mathfun.h>
