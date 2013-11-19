@@ -19,6 +19,7 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 class ComplexToReal : public OmpUniformFormatTransform<formats::ArrayFormatF> {
+  friend class Subsampling;
  public:
   TRANSFORM_INTRO("C2R", "Converts each complex number to corresponding "
                          "real numbers.",
@@ -27,8 +28,7 @@ class ComplexToReal : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override;
 
-  virtual void Do(const float* in,
-                  float* out) const noexcept override;
+  virtual void Do(const float* in, float* out) const noexcept override;
 
   static void Do(bool simd, const float* input, int length,
                  float* output) noexcept;

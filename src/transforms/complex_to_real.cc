@@ -26,8 +26,7 @@ size_t ComplexToReal::OnFormatChanged(size_t buffersCount) {
   return buffersCount;
 }
 
-void ComplexToReal::Do(const float* in,
-    float* out) const noexcept {
+void ComplexToReal::Do(const float* in, float* out) const noexcept {
   Do(use_simd(), in, input_format_->Size(), out);
 }
 
@@ -56,7 +55,7 @@ void ComplexToReal::Do(bool simd, const float* input, int length,
       float32x4x2_t result = vld2q_f32(input + i);
       vst1q_f32(output + i / 2, result.val[0]);
     }
-    for (int i = ((length >> 3) << 3); i < length; i += 2) {
+    for (int i = (length & ~0x7); i < length; i += 2) {
       output[i / 2] = input[i];
     }
   } else {
