@@ -70,7 +70,7 @@ class FilterBase : public OmpUniformFormatTransform<formats::ArrayFormatF> {
   }
 
   static constexpr int kMinFilterLength = 8;
-  static constexpr int kMaxFilterLength = 1000000;
+  static constexpr int kMaxFilterLength = 10000;
   static constexpr int kDefaultFilterLength = 256;
   static constexpr int kMinFilterFrequency = 1;
   static constexpr int kMaxFilterFrequency = 24000;
