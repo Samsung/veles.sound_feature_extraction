@@ -168,22 +168,11 @@ void FrequencyBands::SetupFilter(size_t index, int frequency,
 
 void FrequencyBands::Do(const BuffersBase<float*>& in,
                         BuffersBase<float*>* out) const noexcept {
-  auto rem = in.Count() % filters_.size();
-  if (rem != 0) {
-    WRN("Warning: the number of windows (%zu) is not a multiple "
-        "of bands number (%zu). The remainder is discarded.",
-        in.Count(), filters_.size());
-  }
-
 #ifdef HAVE_OPENMP
   #pragma omp parallel for num_threads(this->threads_number())
 #endif
-  for (size_t i = 0; i < in.Count(); i += filters_.size()) {
-    for (int j = 0;
-         j < static_cast<int>(filters_.size()) && (i + j) < in.Count();
-         j++) {
-      filters_[j]->Do(in[i + j], (*out)[i + j]);
-    }
+  for (size_t i = 0; i < in.Count(); i++) {
+    filters_[i % filters_.size()]->Do(in[i], (*out)[i]);
   }
 }
 
