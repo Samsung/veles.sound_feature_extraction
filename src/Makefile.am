@@ -58,7 +58,6 @@ libDSPFilters_la_SOURCES =../DSPFilters/shared/DSPFilters/source/Bessel.cpp \
 ../DSPFilters/shared/DSPFilters/source/ChebyshevII.cpp \
 ../DSPFilters/shared/DSPFilters/source/Custom.cpp \
 ../DSPFilters/shared/DSPFilters/source/Design.cpp \
-../DSPFilters/shared/DSPFilters/source/Documentation.cpp \
 ../DSPFilters/shared/DSPFilters/source/Elliptic.cpp \
 ../DSPFilters/shared/DSPFilters/source/Filter.cpp \
 ../DSPFilters/shared/DSPFilters/source/Legendre.cpp \
