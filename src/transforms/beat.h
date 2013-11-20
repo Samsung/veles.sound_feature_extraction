@@ -13,6 +13,7 @@
 #ifndef SRC_TRANSFORMS_BEAT_H_
 #define SRC_TRANSFORMS_BEAT_H_
 
+#include <mutex>
 #include <tuple>
 #include <vector>
 #include "src/formats/fixed_array.h"
@@ -23,8 +24,8 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 class Beat
-    : public TransformBase<formats::ArrayFormatF,
-                           formats::ArrayFormat<formats::FixedArray<2>>>,
+    : public OmpAwareTransform<formats::ArrayFormatF,
+                               formats::ArrayFormat<formats::FixedArray<2>>>,
       public TransformLogger<Beat> {
  public:
   Beat();
@@ -43,10 +44,14 @@ class Beat
      "The number of the most significant peaks to record.")
   TP(debug, bool, kDefaultDebug, "Dump the resulting energy vectors.")
 
- protected:
-  virtual size_t OnInputFormatChanged(size_t buffersCount) override;
+  virtual bool BufferInvariant() const noexcept override final {
+    return false;
+  }
 
   virtual void Initialize() const override;
+
+ protected:
+  virtual size_t OnInputFormatChanged(size_t buffersCount) override;
 
   virtual void Do(const BuffersBase<float*>& in,
                   BuffersBase<formats::FixedArray<2>*>* out)
@@ -72,7 +77,18 @@ class Beat
   static constexpr int kDefaultPeaks = 3;
   static constexpr bool kDefaultDebug = false;
 
-  mutable FloatPtr buffer_;
+  struct ThreadSafeBuffer {
+    ThreadSafeBuffer() : data(nullptr, std::free) {
+    }
+
+    ThreadSafeBuffer(const ThreadSafeBuffer&) : data(nullptr, std::free) {
+    }
+
+    FloatPtr data;
+    std::mutex mutex;
+  };
+
+  mutable std::vector<ThreadSafeBuffer> buffers_;
 };
 
 }  // namespace transforms

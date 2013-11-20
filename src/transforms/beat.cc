@@ -37,8 +37,7 @@ Beat::Beat()
       resolution1_(kDefaultResolution1),
       resolution2_(kDefaultResolution2),
       peaks_(kDefaultPeaks),
-      debug_(kDefaultDebug),
-      buffer_(nullptr, std::free) {
+      debug_(kDefaultDebug) {
 }
 
 ALWAYS_VALID_TP(Beat, debug)
@@ -83,9 +82,14 @@ size_t Beat::OnInputFormatChanged(size_t buffersCount) {
 void Beat::Initialize() const {
   float max_period = floorf(60 * input_format_->SamplingRate() / min_bpm_);
   size_t max_pulses_length = PulsesLength(pulses_, max_period);
-  buffer_ = std::uniquify(mallocf(
-      (this->input_format_->Size() + max_pulses_length - 1) * sizeof(float)),
-      std::free);
+
+  int count = threads_number();
+  buffers_.resize(count);
+  for (int i = 0; i < count; i++) {
+    buffers_[i].data = std::uniquify(mallocf(
+        (this->input_format_->Size() + max_pulses_length - 1) * sizeof(float)),
+        std::free);
+  }
 }
 
 void Beat::CombConvolve(const float* in, size_t size, int pulses,
@@ -119,6 +123,9 @@ void Beat::CombConvolve(const float* in, size_t size, int pulses,
 void Beat::Do(const BuffersBase<float*>& in,
               BuffersBase<formats::FixedArray<2>*>* out)
     const noexcept {
+#ifdef HAVE_OPENMP
+  #pragma omp parallel for num_threads(threads_number())
+#endif
   for (size_t ini = 0; ini < in.Count(); ini += bands_) {
     std::vector<float> energies;
 
@@ -183,28 +190,42 @@ void Beat::CalculateBeatEnergies(const BuffersBase<float*>& in, size_t inIndex,
                                  float* max_energy_bpm_found,
                                  float* max_energy_found) const noexcept {
   auto size = this->input_format_->Size();
-  auto buffer = buffer_.get();
   int search_size = floorf((max_bpm - min_bpm) / step);
   energies->resize(search_size);
   float max_energy = 0;
   float max_energy_bpm = min_bpm;
-  for (int i = 0; i < search_size; i++) {
-    float bpm = min_bpm + step * i;
-    // 60 is the number of seconds in one minute
-    int period = floorf(60 * input_format_->SamplingRate() / bpm);
-    float current_energy = 0;
-    size_t conv_length = size + PulsesLength(pulses_, period) - 1;
-    for (size_t i = inIndex; i < inIndex + bands_ && i < in.Count(); i++) {
-      CombConvolve(in[i], size, pulses_, period, buffer);
-      current_energy += calculate_energy(Beat::use_simd(), buffer,
-                                         conv_length) * conv_length;
-    }
-    (*energies)[i] = current_energy;
-    if (current_energy > max_energy) {
-      max_energy = current_energy;
-      max_energy_bpm = bpm;
+
+  bool executed = false;
+  while (!executed) {
+    for (auto& tsbuf : buffers_) {
+      if (tsbuf.mutex.try_lock()) {
+        auto buffer = tsbuf.data.get();
+        for (int i = 0; i < search_size; i++) {
+          float bpm = min_bpm + step * i;
+          // 60 is the number of seconds in one minute
+          int period = floorf(60 * input_format_->SamplingRate() / bpm);
+          float current_energy = 0;
+          size_t conv_length = size + PulsesLength(pulses_, period) - 1;
+          for (size_t i = inIndex;
+              i < inIndex + bands_ && i < in.Count();
+              i++) {
+            CombConvolve(in[i], size, pulses_, period, buffer);
+            current_energy += calculate_energy(Beat::use_simd(), buffer,
+                                               conv_length) * conv_length;
+          }
+          (*energies)[i] = current_energy;
+          if (current_energy > max_energy) {
+            max_energy = current_energy;
+            max_energy_bpm = bpm;
+          }
+        }
+        tsbuf.mutex.unlock();
+        executed = true;
+        break;
+      }
     }
   }
+
   if (max_energy_bpm_found != nullptr) {
     *max_energy_bpm_found = max_energy_bpm;
   }
