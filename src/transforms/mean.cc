@@ -13,16 +13,12 @@
 #include "src/transforms/mean.h"
 #include <algorithm>
 #include <limits>
-#ifdef __AVX__
-#include <simd/avx_mathfun.h>
-#elif defined(__ARM_NEON__)
-#include <simd/neon_mathfun.h>
-#endif
+#include <simd/arithmetic-inl.h>
+#include <simd/mathfun.h>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <boost/regex.hpp>
 #pragma GCC diagnostic pop
-#include <simd/arithmetic-inl.h>
 
 namespace sound_feature_extraction {
 namespace transforms {
@@ -123,7 +119,7 @@ float Mean::Do(bool simd, const float* input, size_t length,
 #pragma GCC diagnostic pop
         }
         for (int i = 0; i < 8; i++) {
-          if (ElementAt(tmp, i) == 0) {
+          if (_mm256_get_ps(tmp, i) == 0) {
             return 0;
           }
         }
@@ -135,7 +131,7 @@ float Mean::Do(bool simd, const float* input, size_t length,
         }
         float scres = powf(sctmp, power);
         for (int j = 0; j < 8; j++) {
-          scres *= ElementAt(res, j);
+          scres *= _mm256_get_ps(res, j);
         }
         return scres;
       } else {

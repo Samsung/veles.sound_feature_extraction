@@ -11,11 +11,7 @@
  */
 
 #include "src/transforms/mix_stereo.h"
-#ifdef __AVX__
-#include <immintrin.h>  // NOLINT(build/include_order)
-#elif defined(__ARM_NEON__)
-#include <arm_neon.h>  // NOLINT(build/include_order)
-#endif
+#include <simd/instruction_set.h>
 
 namespace sound_feature_extraction {
 namespace transforms {

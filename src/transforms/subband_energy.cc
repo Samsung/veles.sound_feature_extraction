@@ -12,12 +12,7 @@
 
 #include "src/transforms/subband_energy.h"
 #include <cmath>
-#ifdef __AVX__
-#include <immintrin.h>
-#include <simd/avx_extra.h>
-#elif defined(__ARM_NEON__)
-#include <arm_neon.h>  // NOLINT(build/include_order)
-#endif
+#include <simd/instruction_set.h>
 #include "src/primitives/energy.h"
 
 namespace sound_feature_extraction {

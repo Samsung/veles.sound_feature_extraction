@@ -11,12 +11,7 @@
  */
 
 #include "src/transforms/centroid.h"
-#ifdef __AVX__
-#include <immintrin.h>
-#elif defined(__ARM_NEON__)
-#include <arm_neon.h>
-#endif
-#include <simd/avx_extra.h>
+#include <simd/instruction_set.h>
 
 namespace sound_feature_extraction {
 namespace transforms {
@@ -49,8 +44,8 @@ float Centroid::Do(bool simd, const float* input, size_t length)
     }
     __m256 sums = _mm256_hadd_ps(lowerSums, upperSums);
     sums = _mm256_hadd_ps(sums, sums);
-    float lowerSum = ElementAt(sums, 0) + ElementAt(sums, 4),
-        upperSum = ElementAt(sums, 1) + ElementAt(sums, 5);
+    float lowerSum = _mm256_get_ps(sums, 0) + _mm256_get_ps(sums, 4),
+        upperSum = _mm256_get_ps(sums, 1) + _mm256_get_ps(sums, 5);
     for (int i = ((ilength >> 4) << 4); i < ilength; i++) {
       float val = input[i];
       lowerSum += val;

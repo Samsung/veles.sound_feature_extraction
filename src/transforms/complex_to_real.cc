@@ -12,11 +12,7 @@
 
 #define __STDC_LIMIT_MACROS
 #include "src/transforms/complex_to_real.h"
-#ifdef __AVX__
-#include <immintrin.h>
-#elif defined(__ARM_NEON__)
-#include <arm_neon.h>
-#endif
+#include <simd/instruction_set.h>
 
 namespace sound_feature_extraction {
 namespace transforms {

@@ -11,11 +11,6 @@
  */
 
 #include "src/transforms/rolloff.h"
-#ifdef __AVX__
-#include <immintrin.h>
-#elif defined(__ARM_NEON__)
-#include <arm_neon.h>
-#endif
 #include <simd/arithmetic-inl.h>
 
 namespace sound_feature_extraction {
@@ -50,7 +45,7 @@ int Rolloff::Do(bool simd, const float* input, size_t length,
       __m256 psumvec = _mm256_hadd_ps(vec1, vec2);
       psumvec = _mm256_hadd_ps(psumvec, psumvec);
       psumvec = _mm256_hadd_ps(psumvec, psumvec);
-      psum += ElementAt(psumvec, 0) + ElementAt(psumvec, 4);
+      psum += _mm256_get_ps(psumvec, 0) + _mm256_get_ps(psumvec, 4);
     }
     if (j < max_index) {
       int i;

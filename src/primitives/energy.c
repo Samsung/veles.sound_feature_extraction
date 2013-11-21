@@ -11,11 +11,7 @@
  */
 
 #include "src/primitives/energy.h"
-#ifdef __AVX__
-#include <immintrin.h>
-#elif defined(__ARM_NEON__)
-#include <arm_neon.h>
-#endif
+#include <simd/instruction_set.h>
 #include <simd/memory.h>
 
 float calculate_energy(int simd, const float *signal, size_t length) {
@@ -23,7 +19,7 @@ float calculate_energy(int simd, const float *signal, size_t length) {
   int ilength = (int)length;
   if (simd) {
 #ifdef __AVX__
-    __m256 accum = { 0.f };
+    __m256 accum = _mm256_setzero_ps();
     int startIndex = align_complement_f32(signal);
     for (int j = 0; j < startIndex; j++) {
       float val = signal[j];
@@ -37,7 +33,7 @@ float calculate_energy(int simd, const float *signal, size_t length) {
     }
     accum = _mm256_hadd_ps(accum, accum);
     accum = _mm256_hadd_ps(accum, accum);
-    energy += accum[0] + accum[4];
+    energy += _mm256_get_ps(accum, 0) + _mm256_get_ps(accum, 4);
 
     for (int j = startIndex + ((ilength - startIndex) & ~0x7);
         j < ilength; j++) {

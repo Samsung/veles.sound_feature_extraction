@@ -11,12 +11,7 @@
  */
 
 #include "src/transforms/zerocrossings.h"
-#ifdef __AVX__
-#include <immintrin.h>
-#elif defined(__ARM_NEON__)
-#include <arm_neon.h>
-#endif
-#include <simd/avx_extra.h>
+#include <simd/instruction_set.h>
 
 namespace sound_feature_extraction {
 namespace transforms {
@@ -44,7 +39,7 @@ int ZeroCrossingsF::DoInternal(bool simd, const float* input,
     }
     crossings = _mm256_hadd_ps(crossings, crossings);
     crossings = _mm256_hadd_ps(crossings, crossings);
-    int res = ElementAt(crossings, 0) + ElementAt(crossings, 4);
+    int res = _mm256_get_ps(crossings, 0) + _mm256_get_ps(crossings, 4);
     int startIndex = (ilength - 1) & ~0x7;
     float valpre = input[startIndex];
     for (int i = startIndex + 1; i < ilength; i++) {

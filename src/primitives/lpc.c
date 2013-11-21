@@ -15,11 +15,7 @@
 #include "src/primitives/lpc.h"
 #include <assert.h>
 #include <math.h>
-#ifdef __AVX__
-#include <immintrin.h>
-#elif defined(__ARM_NEON__)
-#include <arm_neon.h>
-#endif
+#include <simd/instruction_set.h>
 
 float ldr_lpc(int simd, const float *ac, int length, float *lpc) {
 #if !defined(__AVX__) && !defined(__ARM_NEON__)
@@ -61,7 +57,7 @@ float ldr_lpc(int simd, const float *ac, int length, float *lpc) {
         }
         accum = _mm256_hadd_ps(accum, accum);
         accum = _mm256_hadd_ps(accum, accum);
-        rr -= accum[0] + accum[4];
+        rr -= _mm256_get_ps(accum, 0) + _mm256_get_ps(accum, 4);
         for (int j = (i & ~0x7); j < i; j++) {
            rr -= lpc[j] * ac[i - j];
         }

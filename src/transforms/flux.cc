@@ -12,12 +12,7 @@
 
 #include "src/transforms/flux.h"
 #include <cmath>
-#ifdef __AVX__
-#include <immintrin.h>
-#elif defined(__ARM_NEON__)
-#include <arm_neon.h>
-#endif
-#include <simd/avx_extra.h>
+#include <simd/instruction_set.h>
 #include <simd/normalize.h>
 
 namespace sound_feature_extraction {
@@ -67,7 +62,7 @@ float Flux::Do(bool simd, const float* input, size_t length,
     }
     diff = _mm256_hadd_ps(diff, diff);
     diff = _mm256_hadd_ps(diff, diff);
-    float sqr = ElementAt(diff, 0) + ElementAt(diff, 4);
+    float sqr = _mm256_get_ps(diff, 0) + _mm256_get_ps(diff, 4);
     for (int i = (ilength & ~0xF); i < ilength; i++) {
       float val = input[i] * imax_input - prev[i] * imax_prev;
       sqr += val * val;

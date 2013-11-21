@@ -11,11 +11,6 @@
  */
 
 #include "src/transforms/shc.h"
-#ifdef __AVX__
-#include <immintrin.h>
-#elif defined(__ARM_NEON__)
-#include <arm_neon.h>
-#endif
 #include <simd/normalize.h>
 #include <simd/arithmetic-inl.h>
 
@@ -96,7 +91,7 @@ void SHC::Do(const float* in, float* out) const noexcept {
       }
       sum_vec = _mm256_hadd_ps(sum_vec, sum_vec);
       sum_vec = _mm256_hadd_ps(sum_vec, sum_vec);
-      sum += ElementAt(sum_vec, 0) + ElementAt(sum_vec, 4);
+      sum += _mm256_get_ps(sum_vec, 0) + _mm256_get_ps(sum_vec, 4);
     } else {
 #elif defined(__ARM_NEON__)
       float32x4_t sum_vec = vdupq_n_f32(0);

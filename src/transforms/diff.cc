@@ -11,11 +11,7 @@
  */
 
 #include "src/transforms/diff.h"
-#ifdef __AVX__
-#include <immintrin.h>
-#elif defined(__ARM_NEON__)
-#include <arm_neon.h>
-#endif
+#include <simd/instruction_set.h>
 #include <simd/wavelet.h>
 #include "src/make_unique.h"
 

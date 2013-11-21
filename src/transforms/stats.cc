@@ -16,11 +16,7 @@
 #include <boost/regex.hpp>
 #pragma GCC diagnostic pop
 #include <cmath>
-#ifdef __AVX__
-#include <simd/avx_extra.h>
-#elif defined(__ARM_NEON__)
-#include <arm_neon.h>
-#endif
+#include <simd/instruction_set.h>
 
 namespace sound_feature_extraction {
 namespace transforms {
@@ -140,20 +136,20 @@ void Stats::CalculateRawMoments(bool simd, const float* in, int startIndex,
     }
     avg1vec = _mm256_hadd_ps(avg1vec, avg1vec);
     avg1vec = _mm256_hadd_ps(avg1vec, avg1vec);
-    avg1 += ElementAt(avg1vec, 0);
-    avg1 += ElementAt(avg1vec, 4);
+    avg1 += _mm256_get_ps(avg1vec, 0);
+    avg1 += _mm256_get_ps(avg1vec, 4);
     avg2vec = _mm256_hadd_ps(avg2vec, avg2vec);
     avg2vec = _mm256_hadd_ps(avg2vec, avg2vec);
-    avg2 += ElementAt(avg2vec, 0);
-    avg2 += ElementAt(avg2vec, 4);
+    avg2 += _mm256_get_ps(avg2vec, 0);
+    avg2 += _mm256_get_ps(avg2vec, 4);
     avg3vec = _mm256_hadd_ps(avg3vec, avg3vec);
     avg3vec = _mm256_hadd_ps(avg3vec, avg3vec);
-    avg3 += ElementAt(avg3vec, 0);
-    avg3 += ElementAt(avg3vec, 4);
+    avg3 += _mm256_get_ps(avg3vec, 0);
+    avg3 += _mm256_get_ps(avg3vec, 4);
     avg4vec = _mm256_hadd_ps(avg4vec, avg4vec);
     avg4vec = _mm256_hadd_ps(avg4vec, avg4vec);
-    avg4 += ElementAt(avg4vec, 0);
-    avg4 += ElementAt(avg4vec, 4);
+    avg4 += _mm256_get_ps(avg4vec, 0);
+    avg4 += _mm256_get_ps(avg4vec, 4);
     for (int i = ((end_index) & ~0x7); i < end_index; i++) {
       float v = in[i];
       avg1 += v;

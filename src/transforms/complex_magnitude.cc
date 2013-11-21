@@ -13,7 +13,7 @@
 #include "src/transforms/complex_magnitude.h"
 #include <cmath>
 #ifdef __AVX__
-#include <immintrin.h>
+#include <simd/instruction_set.h>
 #elif defined(__ARM_NEON__)
 #include <simd/neon_mathfun.h>
 #endif
