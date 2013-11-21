@@ -8,4 +8,4 @@
 	url = ssh://alserver.rnd.samsung.ru:29418/Simd.git
 [submodule "DSPFilters"]
 	path = DSPFilters
-	url = https://github.com/vinniefalco/DSPFilters
+	url = https://github.com/vmarkovtsev/DSPFilters
