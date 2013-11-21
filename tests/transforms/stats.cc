@@ -34,7 +34,7 @@ class StatsTest : public TransformTest<Stats> {
   }
 };
 
-#define EPSILON 0.1f
+#define EPSILON 0.15f
 
 #define ASSERT_EQF(a, b) ASSERT_NEAR(a, b, EPSILON)
 
