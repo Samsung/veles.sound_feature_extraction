@@ -43,7 +43,7 @@ TEST(LPC, ldr_lpc) {
   }
   memcpy(acopy, array, sizeof(acopy));
   cross_correlate_simd(true, array, length, acopy, length, autocorr);
-  memmove(array, autocorr + length - 1, length * sizeof(float));
+  memmove(array, autocorr + length - 1, length * sizeof(array[0]));
   real_multiply_scalar(array, length, 1 / array[0], array);
   ldr_lpc(false, array, length, vlpc);
   ldr_lpc(true, array, length, plpc);
@@ -62,7 +62,6 @@ TEST(LPC, ldr_lpc) {
   for (int i = 1; i < length - 1; i++) {
     EXPECT_NEAR(0.f, plpc[i], 0.02f);
   }
-
 }
 
 #ifdef BENCHMARK

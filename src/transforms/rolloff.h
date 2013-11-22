@@ -19,7 +19,8 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-/// @brief \f$R: \displaystyle\sum_{f=0}^{f=R}{Value[f]} = ratio \times \displaystyle\sum_{f=0}^{f=N}{Value[f]}\f$.
+/// @brief \f$R: \displaystyle\sum_{f=0}^{f=R}{Value[f]} =
+/// ratio \times \displaystyle\sum_{f=0}^{f=N}{Value[f]}\f$.
 class Rolloff : public OmpTransformBase<formats::ArrayFormatF,
                                         formats::SingleFormatF>  {
  public:

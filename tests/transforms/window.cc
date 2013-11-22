@@ -37,7 +37,7 @@ TEST_F(WindowTest, Do) {
   set_predft(false);
   Initialize();
   Do((*Input)[0], (*Output)[0]);
-  float output_na[Size] __attribute__ ((aligned (32)));
+  float output_na[Size] __attribute__((aligned (32)));
   ApplyWindow(false, window_.get(), Size, (*Input)[0], output_na);
   ASSERT_EQ(0, memcmp((*Output)[0], output_na,
                       sizeof(float) * Size));

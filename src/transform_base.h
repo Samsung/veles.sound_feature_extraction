@@ -188,8 +188,19 @@ class InverseUniformFormatTransform
 template<class T>
 class TransformLogger : public Logger {
  public:
-  TransformLogger() noexcept : Logger(std::demangle(typeid(T).name()),
-                                      EINA_COLOR_LIGHTBLUE) {
+  TransformLogger() noexcept
+      : Logger(RemoveRootNamespace(std::demangle(typeid(T).name())),
+               EINA_COLOR_LIGHTBLUE) {
+  }
+
+ private:
+  static std::string RemoveRootNamespace(std::string&& name) noexcept {
+    const std::string root_ns = "sound_feature_extraction::";
+    if (name.size() > root_ns.size() &&
+        name.substr(0, root_ns.size()) == root_ns) {
+      return name.substr(root_ns.size(), name.size() - root_ns.size());
+    }
+    return name;
   }
 };
 
@@ -198,11 +209,11 @@ class TransformLogger : public Logger {
 /// @brief Internal macros to implement service functions to support
 /// parameters introspection.
 #define TRANSFORM_PARAMETERS_SUPPORT(self)                                     \
- public:                                                                       \
+public:                                                                        \
   typedef self SelfType;                                                       \
   typedef typename std::tr2::direct_bases<self>::type::first::type ParentType; \
                                                                                \
- protected:                                                                    \
+protected:                                                                     \
   virtual const SupportedParametersMap&                                        \
   SupportedParameters() const noexcept override {                              \
     return SupportedParametersPtr()->empty()?                                  \
@@ -254,7 +265,7 @@ class TransformLogger : public Logger {
     return &params;                                                            \
   }                                                                            \
                                                                                \
- private:                                                                      \
+private:                                                                       \
   static void RegisterParameter(                                               \
       const std::string& pname, const std::string& desc,                       \
       const std::string& defv, ParameterSetter&& setter) {                     \
@@ -267,7 +278,6 @@ class TransformLogger : public Logger {
   }                                                                            \
                                                                                \
  public:
-
 /// @brief Adds Name() and Description() implementations, service functions.
 /// @param name The name of the transform (as returned by Name()).
 /// @param description The description of the transform (as returned
@@ -296,7 +306,7 @@ class TransformLogger : public Logger {
 /// @note This macro demands the definition of
 /// static bool validate_##name(const type& value) noexcept.
 #define TP(name, type, defv, desc)                                             \
- private:                                                                      \
+private:                                                                       \
   static bool validate_##name(const type& value) noexcept;                     \
   static void set_##name##_raw(void* pbthis, const std::string& value) {       \
     type parsed_value =                                                        \
@@ -307,7 +317,7 @@ class TransformLogger : public Logger {
   }                                                                            \
                                                                                \
   class name##_registration_class {                                            \
-   public:                                                                     \
+  public:                                                                      \
     name##_registration_class() {                                              \
       SelfType::RegisterParameter(#name, desc, std::to_string(defv),           \
                                   &SelfType::set_##name##_raw);                \
@@ -319,7 +329,7 @@ class TransformLogger : public Logger {
   static const name##_registration_class name##_registration_;                 \
   type name##_;                                                                \
                                                                                \
- public:                                                                       \
+public:                                                                        \
   __attribute__((used)) type name() const noexcept {                           \
     name##_registration_.Ref();                                                \
     return name##_;                                                            \

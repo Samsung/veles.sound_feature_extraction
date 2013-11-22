@@ -45,7 +45,7 @@ TEST(Features, MFCC) {
 TEST(Features, MFCCTrivial) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
   tt.set_validate_after_each_transform(true);
-  //tt.SetDumpBuffersAfterEachTransform(true);
+  // tt.SetDumpBuffersAfterEachTransform(true);
   // We have to apply FilterBank twice since Energy results in
   // squared magnitude
   tt.AddFeature("MFCC", { { "Window", "length=512" }, { "RDFT", "" },

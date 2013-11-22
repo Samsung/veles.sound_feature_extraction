@@ -45,5 +45,4 @@ TEST_F(HighpassFilterTest, CalculateHighpassFilter) {
     fs << (*Output)[0][i] << ", ";
   }
   fs << "]\n";
-
 }

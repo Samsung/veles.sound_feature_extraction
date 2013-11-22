@@ -345,7 +345,7 @@ void TransformTree::AddTransform(const std::string& name,
       try {
         AddTransform(convName, "", relatedFeature, currentNode);
       }
-      catch (const TransformNotRegisteredException&) {
+      catch(const TransformNotRegisteredException&) {
         continue;
       }
       ctor = ctoritfmt.second;
