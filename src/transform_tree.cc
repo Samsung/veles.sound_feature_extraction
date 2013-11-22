@@ -148,8 +148,8 @@ void TransformTree::Node::ActionOnEachImmediateChild(
 
 void TransformTree::Node::ActionOnEachImmediateChild(
     const std::function<void(const Node&)> action) const {
-  for (const auto& subnodes : Children) {
-    for (const auto& inode : subnodes.second) {
+  for (const auto& subnodes : Children) {  // NOLINT(*)
+    for (const auto& inode : subnodes.second) {  // NOLINT(*)
       action(*inode);
     }
   }

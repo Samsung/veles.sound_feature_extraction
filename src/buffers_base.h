@@ -117,11 +117,11 @@ class BuffersBase : public Buffers {
   }
 
   T& operator[](int index) noexcept {
-    return *reinterpret_cast<T*>(Buffers::operator [](index));  // NOLINT(*)
+    return *reinterpret_cast<T*>(Buffers::operator[](index));
   }
 
   const T& operator[](int index) const noexcept {
-    return *reinterpret_cast<const T*>(Buffers::operator [](index));  // NOLINT(*)
+    return *reinterpret_cast<const T*>(Buffers::operator[](index));
   }
 
   const std::shared_ptr<BufferFormatBase<T>> Format() const noexcept {
@@ -135,7 +135,7 @@ class BuffersBase : public Buffers {
   void RunConstructors() {
     if (!std::is_pointer<T>::value) {
       for (size_t i = 0; i < this->Count(); i++) {
-        auto mem = reinterpret_cast<T*>(Buffers::operator [](i));
+        auto mem = reinterpret_cast<T*>(Buffers::operator[](i));
         new(mem) T();
       }
     }
@@ -153,11 +153,11 @@ class BuffersBase<T*> : public Buffers {
   }
 
   T* operator[](int index) noexcept {
-    return reinterpret_cast<T*>(Buffers::operator [](index));  // NOLINT(*)
+    return reinterpret_cast<T*>(Buffers::operator[](index));
   }
 
   const T* operator[](int index) const noexcept {
-    return reinterpret_cast<const T*>(Buffers::operator [](index));  // NOLINT(*)
+    return reinterpret_cast<const T*>(Buffers::operator[](index));
   }
 
   const std::shared_ptr<BufferFormatBase<T*>> Format() const noexcept {
@@ -165,7 +165,7 @@ class BuffersBase<T*> : public Buffers {
   }
 
  private:
-  BuffersBase(const BuffersBase<T*>&) = delete;
+  explicit BuffersBase(const BuffersBase<T*>&) = delete;
   BuffersBase& operator=(const BuffersBase<T*>&) = delete;
 };
 

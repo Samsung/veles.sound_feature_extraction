@@ -145,7 +145,7 @@ void FrequencyBands::Initialize() const {
   SetupFilter(index, last_freq, filter.get());
   filters_.push_back(filter);
 
-  for (const auto& filter : filters_) {
+  for (const auto& filter : filters_) {  // NOLINT(*)
     filter->SetInputFormat(input_format_, 1);
     filter->Initialize();
   }

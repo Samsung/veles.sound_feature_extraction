@@ -18,7 +18,7 @@
 
 namespace std {
 
-static const auto stoi_function = bind(
+static const auto stoi_function = bind(  // NOLINT(*)
     static_cast<int(*)(const string&, size_t*, int)>(&stoi),
     placeholders::_1, nullptr, 10);
 
