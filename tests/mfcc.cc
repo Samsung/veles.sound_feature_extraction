@@ -22,12 +22,10 @@ using sound_feature_extraction::BuffersBase;
 TEST(Features, MFCC) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
   tt.set_validate_after_each_transform(true);
-  // We have to apply FilterBank twice since Energy results in
-  // squared magnitude
   tt.AddFeature("MFCC", { { "Window", "length=512" }, { "RDFT", "" },
-      { "SpectralEnergy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
-      { "Selector", "length=256" }, { "Log", "" }, { "Square", "" },
-      { "DCT", "" } });
+      { "SpectralEnergy", "" }, { "FilterBank", "squared=true" },
+      { "Log", "" }, { "Square", "" }, { "DCT", "" },
+      { "Selector", "length=16" } });
   int16_t* buffers = new int16_t[48000];
   memcpy(buffers, data, sizeof(data));
   tt.PrepareForExecution();
@@ -46,12 +44,10 @@ TEST(Features, MFCCTrivial) {
   TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
   tt.set_validate_after_each_transform(true);
   // tt.SetDumpBuffersAfterEachTransform(true);
-  // We have to apply FilterBank twice since Energy results in
-  // squared magnitude
   tt.AddFeature("MFCC", { { "Window", "length=512" }, { "RDFT", "" },
-      { "SpectralEnergy", "" }, { "FilterBank", "" }, { "FilterBank", "" },
-      { "Selector", "length=256" }, { "Log", "" }, { "Square", "" },
-      { "DCT", "" } });
+      { "SpectralEnergy", "" }, { "FilterBank", "squared=true" },
+      { "Log", "" }, { "Square", "" }, { "DCT", "" },
+      { "Selector", "length=16" } });
   int16_t* buffers = new int16_t[48000];
   for (int i = 0; i < 48000; i++) {
     buffers[i] = 128;

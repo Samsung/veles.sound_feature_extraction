@@ -23,21 +23,9 @@ void Square::Do(const float* in, float* out) const noexcept {
 void Square::Do(bool simd, const float* input, int length,
                 float* output) noexcept {
   if (simd) {
-#ifdef SIMD
-    for (int j = 0; j < length - FLOAT_STEP + 1; j += FLOAT_STEP) {
-      real_multiply(input + j, input + j, output + j);
-    }
-    for (int j = ((length >> FLOAT_STEP_LOG2) << FLOAT_STEP_LOG2);
-        j < length; j++) {
-      output[j] = input[j] * input[j];
-    }
+    real_multiply_array(input, input, length, output);
   } else {
-#else
-  } {
-#endif
-    for (int j = 0; j < length; j++) {
-      output[j] = input[j] * input[j];
-    }
+    real_multiply_array_na(input, input, length, output);
   }
 }
 

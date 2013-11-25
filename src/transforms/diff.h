@@ -14,7 +14,6 @@
 #define SRC_TRANSFORMS_DIFF_H_
 
 #include "src/transforms/common.h"
-#include <mutex>
 #include <vector>
 
 namespace sound_feature_extraction {

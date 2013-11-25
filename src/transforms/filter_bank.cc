@@ -12,8 +12,11 @@
 
 #include "src/transforms/filter_bank.h"
 #include <cmath>
+#include <sstream>
 #include <simd/arithmetic-inl.h>
 #include "src/transforms/filter_base.h"
+#include "src/primitives/energy.h"
+#include "src/make_unique.h"
 
 namespace sound_feature_extraction {
 namespace transforms {
@@ -37,8 +40,7 @@ FilterBank::FilterBank()
     : type_(kDefaultScale),
       number_(kDefaultNumber),
       frequency_min_(kDefaultMinFrequency),
-      frequency_max_(kDefaultMaxFrequency),
-      filter_bank_(nullptr, free) {
+      frequency_max_(kDefaultMaxFrequency) {
 }
 
 ALWAYS_VALID_TP(FilterBank, type)
@@ -55,7 +57,10 @@ bool FilterBank::validate_frequency_max(const int& value) noexcept {
   return FilterBase<std::nullptr_t>::ValidateFrequency(value);
 }
 
-const FloatPtr& FilterBank::filter_bank() const {
+ALWAYS_VALID_TP(FilterBank, squared)
+ALWAYS_VALID_TP(FilterBank, debug)
+
+const std::vector<FilterBank::Filter>& FilterBank::filter_bank() const {
   return filter_bank_;
 }
 
@@ -88,19 +93,20 @@ float FilterBank::ScaleToLinear(ScaleType type, float value) {
   return 0.0f;
 }
 
-void FilterBank::AddTriangularFilter(float center, float halfWidth) const {
-  float leftFreq = ScaleToLinear(type_, center - halfWidth);
-  float centerFreq = ScaleToLinear(type_, center);
-  float rightFreq = ScaleToLinear(type_, center + halfWidth);
+void FilterBank::CalcTriangularFilter(float center, float halfWidth,
+                                      Filter* out) const {
+  float left_freq = ScaleToLinear(type_, center - halfWidth);
+  float center_freq = ScaleToLinear(type_, center);
+  float right_freq = ScaleToLinear(type_, center + halfWidth);
 
   // The number of frequency points
-  int N = input_format_->Size() / 2;
+  const int N = input_format_->Size();
   // Frequency resolution
-  float df = input_format_->SamplingRate() / (2 * N);
+  const float df = input_format_->SamplingRate() / (2 * N);
 
-  int leftIndex = ceilf(leftFreq / df);
-  int centerIndex = ceilf(centerFreq / df);
-  int rightIndex = ceilf(rightFreq / df);
+  const int left_index = ceilf(left_freq / df);
+  const float center_index = center_freq / df;
+  const int right_index = floorf(right_freq / df);
 /*
           /|\
          / | \
@@ -124,65 +130,109 @@ void FilterBank::AddTriangularFilter(float center, float halfWidth) const {
 ------------------------
   left* center*    right*
 */
-  for (int i = leftIndex; i < rightIndex; i++) {
-    float ratio;
-    if (i <= centerIndex) {
+  out->begin = left_index;
+  out->end = right_index;
+  for (int i = left_index; i <= right_index; i++) {
+    float value = 1.0f;
+    float dist = (center - LinearToScale(type_, i * df)) / halfWidth;
+    if (i <= center_index) {
       // Left slope
-      ratio = (LinearToScale(type_, i * df) - center + halfWidth) /
-              halfWidth;
+      value -= dist;
     } else {
       // Right slope
-      ratio = 1.0f - (LinearToScale(type_, i * df) - center) / halfWidth;
+      value += dist;
     }
-    filter_bank_.get()[i] += ratio;
+    out->data[i - left_index] = value;
   }
+  out->data[roundf(center_index) - left_index] = 1.f;
 }
 
 void FilterBank::Initialize() const {
-  filter_bank_ = std::unique_ptr<float, void(*)(void*)>(
-      mallocf(input_format_->Size()), std::free);
-  memsetf(filter_bank_.get(), 0.f, input_format_->Size());
+  filter_bank_.resize(number_);
+  int count = threads_number();
+  buffers_.resize(count);
+  for (int i = 0; i < count; i++) {
+    buffers_[i].data = std::uniquify(mallocf(input_format_->Size()),
+                                     std::free);
+  }
 
   float scaleMin = LinearToScale(type_, frequency_min_);
   float scaleMax = LinearToScale(type_, frequency_max_);
-  float dsc = (scaleMax - scaleMin) / (number_ - 1);
+  float dsc = (scaleMax - scaleMin) / (number_ + 1);
 
   for (int i = 0; i < number_; i++) {
-    AddTriangularFilter(scaleMin + dsc * i, dsc);
+    filter_bank_[i].data = std::uniquify(mallocf(input_format_->Size()),
+                                         std::free);
+    CalcTriangularFilter(scaleMin + dsc * (i + 1), dsc, &filter_bank_[i]);
   }
 
-  // Avoid zeros in filter since taking a logarithm from 0 is undefined.
-  auto filter = filter_bank_.get();
-  for (size_t i = 0; i < input_format_->Size(); i++) {
-    if (filter[i] == 0.f) {
-      filter[i] = 0.0001f;
+  if (squared_) {
+    for (int i = 0; i < number_; i++) {
+      real_multiply_array(filter_bank_[i].data.get(),
+                          filter_bank_[i].data.get(),
+                          filter_bank_[i].end - filter_bank_[i].begin + 1,
+                          filter_bank_[i].data.get());
     }
-    assert(filter[i] >= 0.f);
+  }
+  if (debug_) {
+    std::stringstream ss;
+    for (int i = 0; i < number_; i++) {
+      ss << "Filter " << (i + 1) << ":\n";
+      for (int j = 0; j < static_cast<int>(input_format_->Size()); j++) {
+        auto val = std::to_string(0.f);
+        if (j >= filter_bank_[i].begin && j <= filter_bank_[i].end) {
+          val = std::to_string(filter_bank_[i].data[j - filter_bank_[i].begin]);
+        }
+        if (val.size() < 10) {
+          val = std::string(10 - val.size(), ' ') + val;
+        }
+        ss << val << (j % 10 == 9? "\n" : "");
+      }
+      ss << "\n\n";
+    }
+    DBG("\n%s", ss.str().c_str());
   }
 }
 
+size_t FilterBank::OnInputFormatChanged(size_t buffersCount) {
+  size_t start = frequency_min_ * 2 * input_format_->Size() /
+      input_format_->SamplingRate();
+  size_t finish = frequency_max_ * 2 * input_format_->Size() /
+      input_format_->SamplingRate();
+  size_t length = finish - start;
+  if (length > input_format_->Size() || length <= 0) {
+    throw InvalidFrequencyRangeException(frequency_min_, frequency_max_);
+  }
+  output_format_->SetSize(number_);
+  return buffersCount;
+}
+
 void FilterBank::Do(const float* in, float* out) const noexcept {
-  auto filter = filter_bank_.get();
-  int length = input_format_->Size();
-#ifdef SIMD
-  for (int i = 0; i < length - FLOAT_STEP + 1; i += FLOAT_STEP) {
-    real_multiply(in + i, filter + i, out + i);
+  bool executed = false;
+  while (!executed) {
+    for (auto& buf : buffers_) {
+      if (buf.mutex.try_lock()) {
+        for (int i = 0; i < number_; i++) {
+          size_t length = filter_bank_[i].end - filter_bank_[i].begin + 1;
+          real_multiply_array(in + filter_bank_[i].begin,
+                              filter_bank_[i].data.get(),
+                              length, buf.data.get());
+          out[i] = calculate_energy(use_simd(), false, buf.data.get(), length);
+        }
+        buf.mutex.unlock();
+        executed = true;
+        break;
+      }
+    }
   }
-  for (int i = (length >> FLOAT_STEP_LOG2) << FLOAT_STEP_LOG2;
-      i < length; i++) {
-    out[i] = in[i] * filter[i];
-  }
-#else
-  for (int i = 0; i < length; i++) {
-    out[i] = in[i] * filter[i];
-  }
-#endif
 }
 
 RTP(FilterBank, type)
 RTP(FilterBank, number)
 RTP(FilterBank, frequency_min)
 RTP(FilterBank, frequency_max)
+RTP(FilterBank, squared)
+RTP(FilterBank, debug)
 REGISTER_TRANSFORM(FilterBank);
 
 }  // namespace transforms

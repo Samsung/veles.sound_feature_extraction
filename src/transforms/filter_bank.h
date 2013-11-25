@@ -14,6 +14,7 @@
 #define SRC_TRANSFORMS_FILTER_BANK_H_
 
 #include "src/transforms/common.h"
+#include <vector>
 
 namespace sound_feature_extraction {
 namespace transforms {
@@ -58,7 +59,17 @@ namespace std {
 namespace sound_feature_extraction {
 namespace transforms {
 
-class FilterBank : public OmpUniformFormatTransform<formats::ArrayFormatF> {
+class InvalidFrequencyRangeException : public ExceptionBase {
+ public:
+  InvalidFrequencyRangeException(size_t min, size_t max)
+  : ExceptionBase("FrequencyBands was set to a wrong frequency interval [" +
+                  std::to_string(min) + ", " + std::to_string(max) + "].") {
+  }
+};
+
+class FilterBank : public OmpTransformBase<formats::ArrayFormatF,
+                                           formats::ArrayFormatF>,
+                   public TransformLogger<FilterBank> {
  public:
   FilterBank();
 
@@ -76,14 +87,29 @@ class FilterBank : public OmpUniformFormatTransform<formats::ArrayFormatF> {
      "Minimal frequency of the filter bank.")
   TP(frequency_max, int, kDefaultMaxFrequency,
      "Maximal frequency of the filter bank.")
+  TP(squared, bool, kDefaultSquared, "Apply the squared filter bank.")
+  TP(debug, bool, false, "Dump the precalculated filter bank.")
 
   virtual void Initialize() const override;
 
  protected:
+  struct Filter {
+    Filter() : data(nullptr, std::free),
+               begin(0), end(0) {
+    }
+
+    FloatPtr data;
+    int begin;
+    int end;
+  };
+
   static constexpr ScaleType kDefaultScale = ScaleType::kMel;
-  static constexpr int kDefaultNumber = 40;
+  static constexpr int kDefaultNumber = 32;
   static constexpr int kDefaultMinFrequency = 130;
   static constexpr int kDefaultMaxFrequency = 6854;
+  static constexpr bool kDefaultSquared = false;
+
+  virtual size_t OnInputFormatChanged(size_t buffersCount) override;
 
   virtual void Do(const float* in,
                   float* out) const noexcept override;
@@ -91,7 +117,7 @@ class FilterBank : public OmpUniformFormatTransform<formats::ArrayFormatF> {
   static float LinearToScale(ScaleType type, float freq);
   static float ScaleToLinear(ScaleType type, float value);
 
-  const FloatPtr& filter_bank() const;
+  const std::vector<Filter>& filter_bank() const;
 
  private:
   /// @brief Adds a triangular filter to the filter bank.
@@ -99,9 +125,11 @@ class FilterBank : public OmpUniformFormatTransform<formats::ArrayFormatF> {
   /// in psychoacoustic scale units.
   /// @param halfWidth The half width of the base of the triangle,
   /// in psychoacoustic scale units.
-  void AddTriangularFilter(float center, float halfWidth) const;
+  /// @param out The resulting filter.
+  void CalcTriangularFilter(float center, float halfWidth, Filter* out) const;
 
-  mutable FloatPtr filter_bank_;
+  mutable std::vector<Filter> filter_bank_;
+  mutable std::vector<ThreadSafeFloatPtr> buffers_;
 };
 
 }  // namespace transforms

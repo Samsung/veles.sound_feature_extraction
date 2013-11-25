@@ -21,7 +21,7 @@ TEST(Energy, calculate_energy) {
   for (int i = 0; i < length; i++) {
     array[i] = i + 1;
   }
-  float result = calculate_energy(true, array, length);
+  float result = calculate_energy(true, true, array, length);
   ASSERT_NEAR((length + 1) * (2 * length + 1.0f) / 6, result, 0.01f);
 }
 

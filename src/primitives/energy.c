@@ -14,7 +14,7 @@
 #include <simd/instruction_set.h>
 #include <simd/memory.h>
 
-float calculate_energy(int simd, const float *signal, size_t length) {
+float calculate_energy(int simd, int norm, const float *signal, size_t length) {
   float energy = 0.f;
   int ilength = (int)length;
   if (simd) {
@@ -62,5 +62,5 @@ float calculate_energy(int simd, const float *signal, size_t length) {
       energy += val * val;
     }
   }
-  return energy / length;
+  return norm? energy / length : energy;
 }

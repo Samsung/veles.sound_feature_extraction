@@ -94,19 +94,8 @@ class PeakDetection : public OmpTransformBase<
   static constexpr int kDefaultSWTLevel = 0;
 
  private:
-  struct SWTBuffer {
-    SWTBuffer() : data(nullptr, std::free) {
-    }
-
-    SWTBuffer(const SWTBuffer&) : data(nullptr, std::free) {
-    }
-
-    FloatPtr data;
-    std::mutex mutex;
-  };
-
   mutable FloatPtr swt_details_buffer_;
-  mutable std::vector<SWTBuffer> swt_buffers_;
+  mutable std::vector<ThreadSafeFloatPtr> swt_buffers_;
 };
 
 }  // namespace transforms

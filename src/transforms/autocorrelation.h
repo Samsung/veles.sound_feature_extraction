@@ -14,13 +14,10 @@
 #define SRC_TRANSFORMS_AUTOCORRELATION_H_
 
 #include <vector>
+#include <mutex>
 #include "src/transforms/common.h"
 
 typedef struct ConvolutionHandle CrossCorrelationHandle;
-
-namespace std {
-  class mutex;
-}
 
 namespace sound_feature_extraction {
 namespace transforms {
@@ -49,8 +46,14 @@ class Autocorrelation
 
  private:
   struct SyncHandle {
+    SyncHandle() : handle(nullptr, std::free) {
+    }
+
+    SyncHandle(const SyncHandle&) : handle(nullptr, std::free) {
+    }
+
     std::shared_ptr<CrossCorrelationHandle> handle;
-    std::shared_ptr<std::mutex> mutex;
+    std::mutex mutex;
   };
 
   mutable std::vector<SyncHandle> correlation_handles_;

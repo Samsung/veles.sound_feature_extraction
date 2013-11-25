@@ -44,10 +44,8 @@ TEST_F(SubbandEnergyTest, Do) {
   Do((*Input)[0], (*Output)[0]);
   float* output = (*Output)[0];
   int quarter = Size / 8;
-  ASSERT_EQF(SumOfSquares(quarter) / quarter, output[0]);
-  ASSERT_EQF((SumOfSquares(quarter * 2) - SumOfSquares(quarter)) / quarter,
-             output[1]);
-  ASSERT_EQF(
-      (SumOfSquares(quarter * 4) - SumOfSquares(quarter * 2)) / (2 * quarter),
-      output[2]);
+  ASSERT_EQF(SumOfSquares(quarter), output[0]);
+  ASSERT_EQF(SumOfSquares(quarter * 2) - SumOfSquares(quarter), output[1]);
+  ASSERT_EQF(SumOfSquares(quarter * 4) - SumOfSquares(quarter * 2),
+             output[2]);
 }

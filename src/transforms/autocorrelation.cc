@@ -40,7 +40,6 @@ void Autocorrelation::Initialize() const {
           cross_correlate_finalize(*ptr);
           delete ptr;
         });
-    correlation_handles_[i].mutex = std::make_shared<std::mutex>();
   }
 }
 
@@ -50,15 +49,19 @@ size_t Autocorrelation::OnFormatChanged(size_t buffersCount) {
 }
 
 void Autocorrelation::Do(const float* in, float* out) const noexcept {
-  for (auto hp : correlation_handles_) {
-    if (hp.mutex->try_lock()) {
-      cross_correlate(*hp.handle, in, in, out);
-      hp.mutex->unlock();
-      if (normalize_) {
-        float norm = 1 / out[input_format_->Size() - 1];
-        real_multiply_scalar(out, output_format_->Size(), norm, out);
+  bool executed = false;
+  while (!executed) {
+    for (auto& hp : correlation_handles_) {
+      if (hp.mutex.try_lock()) {
+        cross_correlate(*hp.handle, in, in, out);
+        hp.mutex.unlock();
+        if (normalize_) {
+          float norm = 1 / out[input_format_->Size() - 1];
+          real_multiply_scalar(out, output_format_->Size(), norm, out);
+        }
+        executed = true;
+        break;
       }
-      break;
     }
   }
 }

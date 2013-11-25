@@ -92,23 +92,23 @@ TEST(Features, All) {
   });
   tt.AddFeature("MFCC", { { "Preemphasis", "value=0.2" },
       { "Window", "type=rectangular" }, { "Window", "" },
-      { "RDFT", "" }, { "SpectralEnergy", "" }, { "FilterBank", "" },
-      { "FilterBank", "" }, { "Log", "" }, { "Square", "" },
+      { "RDFT", "" }, { "SpectralEnergy", "" },
+      { "FilterBank", "squared=true" }, { "Log", "" }, { "Square", "" },
       { "Selector", "length=256, threads_number=1" }, { "DCT", "" },
       { "Selector", "length=16, threads_number=1" }, { "STMSN", "length=25" }
   });
   tt.AddFeature("MFCC_D1", { { "Preemphasis", "value=0.2" },
       { "Window", "type=rectangular" }, { "Window", "" },
-      { "RDFT", "" }, { "SpectralEnergy", "" }, { "FilterBank", "" },
-      { "FilterBank", "" }, { "Log", "" }, { "Square", "" },
+      { "RDFT", "" }, { "SpectralEnergy", "" },
+      { "FilterBank", "squared=true" }, { "Log", "" }, { "Square", "" },
       { "Selector", "length=256, threads_number=1" }, { "DCT", "" },
       { "Selector", "length=16, threads_number=1"}, { "Delta", "" },
       { "STMSN", "length=25" }
   });
   tt.AddFeature("MFCC_D2", { { "Preemphasis", "value=0.2" },
       { "Window", "type=rectangular" }, { "Window", "" },
-      { "RDFT", "" }, { "SpectralEnergy", "" }, { "FilterBank", "" },
-      { "FilterBank", "" }, { "Log", "" }, { "Square", "" },
+      { "RDFT", "" }, { "SpectralEnergy", "" },
+      { "FilterBank", "squared=true" }, { "Log", "" }, { "Square", "" },
       { "Selector", "length=256, threads_number=1" }, { "DCT", "" },
       { "Selector", "length=16, threads_number=1"}, { "Delta", "" },
       { "Delta", "" }, { "STMSN", "length=25" }

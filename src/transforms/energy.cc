@@ -17,10 +17,9 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-void Energy::Do(const float* in,
-                float* out) const noexcept {
+void Energy::Do(const float* in, float* out) const noexcept {
   int length = input_format_->Size();
-  *out = calculate_energy(use_simd(), in, length);
+  *out = calculate_energy(use_simd(), true, in, length);
 }
 
 REGISTER_TRANSFORM(Energy);

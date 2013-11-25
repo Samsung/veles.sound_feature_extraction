@@ -14,6 +14,7 @@
 #define SRC_FORMATS_ARRAY_FORMAT_H_
 
 #include <simd/memory.h>
+#include <sstream>
 #include "src/buffers_base.h"
 
 namespace sound_feature_extraction {
@@ -109,27 +110,28 @@ class ArrayFormat : public BufferFormatBase<T*>,
 
   virtual std::string Dump(const BuffersBase<T*>& buffers, size_t index)
       const noexcept override {
-    std::string ret("----");
-    ret += std::to_string(index) + "----\n";
+    std::stringstream ret;
+    ret << "----";
+    ret << std::to_string(index) << "----\n";
     for (size_t j = 0; j < size_; j++) {
       auto strval = std::to_string(buffers[index][j]);
       int size_limit = 24;
       if (strval[0] != '-') {
-        ret += ' ';
+        ret << ' ';
         size_limit--;
       }
       int skip_size = size_limit - strval.size();
       if (skip_size > 0) {
-        ret += strval + std::string(skip_size, ' ');
+        ret << strval + std::string(skip_size, ' ');
       } else {
-        ret += strval;
+        ret << strval;
       }
       if (((j + 1) % 10) == 0) {
-        ret += "\n";
+        ret << "\n";
       }
     }
-    ret += "\n----------------\n";
-    return ret;
+    ret << "\n----------------\n";
+    return ret.str();
   }
 
   virtual std::string ToString() const noexcept override {
@@ -161,8 +163,5 @@ typedef ArrayFormat<int32_t> ArrayFormat32;
 typedef ArrayFormat<float> ArrayFormatF;
 
 }  // namespace formats
-
-typedef std::unique_ptr<float, decltype(&std::free)> FloatPtr;
-
 }  // namespace sound_feature_extraction
 #endif  // SRC_FORMATS_ARRAY_FORMAT_H_

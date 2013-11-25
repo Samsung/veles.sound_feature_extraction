@@ -77,18 +77,7 @@ class Beat
   static constexpr int kDefaultPeaks = 3;
   static constexpr bool kDefaultDebug = false;
 
-  struct ThreadSafeBuffer {
-    ThreadSafeBuffer() : data(nullptr, std::free) {
-    }
-
-    ThreadSafeBuffer(const ThreadSafeBuffer&) : data(nullptr, std::free) {
-    }
-
-    FloatPtr data;
-    std::mutex mutex;
-  };
-
-  mutable std::vector<ThreadSafeBuffer> buffers_;
+  mutable std::vector<ThreadSafeFloatPtr> buffers_;
 };
 
 }  // namespace transforms

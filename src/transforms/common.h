@@ -15,6 +15,7 @@
 
 #include "src/formats/array_format.h"
 #include "src/omp_transform_base.h"
+#include "src/floatptr.h"
 
 namespace sound_feature_extraction {
 

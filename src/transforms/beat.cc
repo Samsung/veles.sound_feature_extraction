@@ -210,8 +210,8 @@ void Beat::CalculateBeatEnergies(const BuffersBase<float*>& in, size_t inIndex,
               i < inIndex + bands_ && i < in.Count();
               i++) {
             CombConvolve(in[i], size, pulses_, period, buffer);
-            current_energy += calculate_energy(Beat::use_simd(), buffer,
-                                               conv_length) * conv_length;
+            current_energy += calculate_energy(Beat::use_simd(), false, buffer,
+                                               conv_length);
           }
           (*energies)[i] = current_energy;
           if (current_energy > max_energy) {

@@ -23,13 +23,13 @@ std::unique_ptr<T> make_unique(Args&& ...args) {
 }
 
 template<typename T, typename D>
-std::unique_ptr<T, D> uniquify(T* ptr, D destructor) {
-  return std::unique_ptr<T, D>(ptr, destructor);
+std::unique_ptr<T[], D> uniquify(T* ptr, D destructor) {
+  return std::unique_ptr<T[], D>(ptr, destructor);
 }
 
 template<typename T, typename D>
-std::unique_ptr<T, D*> uniquify(T* ptr, D* destructor) {
-  return std::unique_ptr<T, D*>(ptr, *destructor);
+std::unique_ptr<T[], D*> uniquify(T* ptr, D* destructor) {
+  return std::unique_ptr<T[], D*>(ptr, *destructor);
 }
 
 }  // namespace std

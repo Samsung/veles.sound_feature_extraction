@@ -54,7 +54,7 @@ void SubbandEnergy::Initialize() const {
 void SubbandEnergy::Do(const float* in,
                        float* out) const noexcept {
   for (int i = 0; i < static_cast<int>(offsets_.size()) - 1; i++) {
-    out[i] = calculate_energy(use_simd(), in + offsets_[i],
+    out[i] = calculate_energy(use_simd(), false, in + offsets_[i],
                               offsets_[i + 1] - offsets_[i]);
   }
 }
