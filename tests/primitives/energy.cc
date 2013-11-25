@@ -27,7 +27,10 @@ TEST(Energy, calculate_energy) {
 
 #define TEST_NAME Energy
 #define ITER_COUNT 500000
-#define BENCH_FUNC calculate_energy
+#define CUSTOM_FUNC_BASELINE(input, length) calculate_energy(false, true, \
+                                                             input, length)
+#define CUSTOM_FUNC_PEAK(input, length) calculate_energy(true, true, input, \
+                                                         length)
 #define NO_OUTPUT
 #include "tests/transforms/benchmark.inc"
 

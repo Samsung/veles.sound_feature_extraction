@@ -67,7 +67,7 @@ TEST(LPC, ldr_lpc) {
 #ifdef BENCHMARK
 class LPCTest : public ::testing::TestWithParam<bool> {
  public:
-  typedef std::unique_ptr<float, decltype(&std::free)> FloatPtr;
+  typedef std::unique_ptr<float[], decltype(&std::free)> FloatPtr;
 
  protected:
   LPCTest() : length_(256), iterations_(10000),
