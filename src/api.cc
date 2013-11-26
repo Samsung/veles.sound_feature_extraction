@@ -38,9 +38,13 @@ using sound_feature_extraction::Buffers;
 using sound_feature_extraction::SimdAware;
 
 extern "C" {
+
 struct FeaturesConfiguration {
   std::unique_ptr<TransformTree> Tree;
+  size_t InputSize;
 };
+
+size_t chunk_size = 60 * 44100;
 
 #define BLAME(x) EINA_LOG_ERR("Error: " #x " is null (function %s, " \
                               "line %i)\n", \
@@ -56,7 +60,7 @@ struct FeaturesConfiguration {
     return ret; \
 } } while (0)
 
-void copy_string(const std::string& str, char **ptr) {
+static void copy_string(const std::string& str, char **ptr) {
   size_t size = str.size() + 1;
   *ptr = new char[size];
   memcpy(*ptr, str.c_str(), size);
@@ -260,10 +264,12 @@ FeaturesConfiguration *setup_features_extraction(
     return nullptr;
   }
 
-  auto format = std::make_shared<ArrayFormat16>(bufferSize, samplingRate);
+  auto format = std::make_shared<ArrayFormat16>(
+      std::min(bufferSize, chunk_size), samplingRate);
   auto config = new FeaturesConfiguration();
   config->Tree = std::make_unique<TransformTree>(format);
-  for (auto featpair : featmap) {
+  config->InputSize = bufferSize;
+  for (auto& featpair : featmap) {
     try {
       config->Tree->AddFeature(featpair.first, featpair.second);
     }
@@ -303,30 +309,44 @@ FeatureExtractionResult extract_speech_features(
   CHECK_NULL_RET(results, FEATURE_EXTRACTION_RESULT_ERROR);
 
   std::unordered_map<std::string, std::shared_ptr<Buffers>> retmap;
-  try {
-    retmap = fc->Tree->Execute(buffer);
-  }
-  catch(const std::exception& ex) {
-    EINA_LOG_ERR("Caught an exception with message \"%s\".\n", ex.what());
-    return FEATURE_EXTRACTION_RESULT_ERROR;
-  }
-  *featureNames = new char*[retmap.size()];
-  *results = new void*[retmap.size()];
-  *resultLengths = new int[retmap.size()];
-
-  int i = 0;
-  for (auto res : retmap) {
-    copy_string(res.first, *featureNames + i);
-    size_t size_each = res.second->Format()->UnalignedSizeInBytes();
-    assert(size_each > 0);
-    size_t size = size_each * res.second->Count();
-    (*resultLengths)[i] = size;
-    (*results)[i] = new char[size];
-    for (size_t j = 0; j < res.second->Count(); j++) {
-      memcpy(reinterpret_cast<char *>((*results)[i]) + j * size_each,
-             (*res.second)[j], size_each);
+  for (size_t i = 0; i < fc->InputSize; i += chunk_size) {
+    try {
+      retmap = fc->Tree->Execute(buffer + i);
     }
-    i++;
+    catch(const std::exception& ex) {
+      EINA_LOG_ERR("Caught an exception with message \"%s\".\n", ex.what());
+      return FEATURE_EXTRACTION_RESULT_ERROR;
+    }
+    if (i == 0) {
+      *featureNames = new char*[retmap.size()];
+      *results = new void*[retmap.size()];
+      *resultLengths = new int[retmap.size()];
+    }
+
+    int j = 0;
+    for (auto& res : retmap) {
+      if (i == 0) {
+        copy_string(res.first, *featureNames + j);
+      }
+      size_t size_each = res.second->Format()->UnalignedSizeInBytes();
+      assert(size_each > 0);
+      size_t size = size_each * res.second->Count();
+      if (i == 0) {
+        (*resultLengths)[j] = 0;
+        if (fc->InputSize % chunk_size != 0) {
+          (*results)[j] = new char[size * (fc->InputSize / chunk_size + 1)];
+        } else {
+          (*results)[j] = new char[size * fc->InputSize / chunk_size];
+        }
+      }
+      for (size_t k = 0; k < res.second->Count(); k++) {
+        memcpy(reinterpret_cast<char *>((*results)[j]) +
+                   (*resultLengths)[j] + k * size_each,
+               (*res.second)[k], size_each);
+      }
+      (*resultLengths)[j] += size;
+      j++;
+    }
   }
   return FEATURE_EXTRACTION_RESULT_OK;
 }
@@ -455,6 +475,21 @@ size_t get_cpu_cache_size() {
 void set_cpu_cache_size(size_t value) {
   if (value > 0) {
     cpu_cache_size = value;
+  } else {
+    EINA_LOG_ERR("CPU cache size must be greater than zero.");
   }
 }
+
+size_t get_chunk_size(void) {
+  return chunk_size;
+}
+
+void set_chunk_size(size_t value) {
+  if (value > 0) {
+    chunk_size = value;
+  } else {
+    EINA_LOG_ERR("Cache size must be greater than zero.");
+  }
+}
+
 }  // extern "C"

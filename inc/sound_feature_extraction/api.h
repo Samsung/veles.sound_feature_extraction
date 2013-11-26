@@ -117,6 +117,10 @@ size_t get_cpu_cache_size(void);
 
 void set_cpu_cache_size(size_t value);
 
+size_t get_chunk_size(void);
+
+void set_chunk_size(size_t value);
+
 #if __GNUC__ >= 4
 #pragma GCC visibility pop
 #endif
