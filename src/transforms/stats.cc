@@ -56,7 +56,7 @@ std::set<StatsType> Parse(const std::string& value,
 const std::unordered_map<int, Stats::CalculateFunc> Stats::kStatsFuncs {
   { kStatsTypeAverage, Stats::CalculateAverage },
   { kStatsTypeStdDeviation, Stats::CalculateStdDeviation },
-  { kStatsTypeSkewness, Stats::CalculateSkew },
+  { kStatsTypeSkewness, Stats::CalculateSkewness },
   { kStatsTypeKurtosis, Stats::CalculateKurtosis }
 };
 
@@ -240,7 +240,7 @@ float Stats::CalculateStdDeviation(const float* rawMoments) noexcept {
   return value;
 }
 
-float Stats::CalculateSkew(const float* rawMoments) noexcept {
+float Stats::CalculateSkewness(const float* rawMoments) noexcept {
   float avg1 = rawMoments[0];
   float avg2 = rawMoments[1];
   float avg3 = rawMoments[2];
@@ -260,7 +260,7 @@ float Stats::CalculateKurtosis(const float* rawMoments) noexcept {
   float avg4 = rawMoments[3];
   double u2 = avg2 - avg1 * avg1;
   if (u2 == 0) {
-    return 1e10f;
+    return 0.f;
   }
   double u4 = avg4 - 4 * avg3 * avg1 + 6 * avg2 * avg1 * avg1
       - 3 * avg1 * avg1 * avg1 * avg1;

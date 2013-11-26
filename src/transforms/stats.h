@@ -117,7 +117,7 @@ class Stats : public OmpTransformBase<formats::ArrayFormatF,
                                   int length, float* rawMoments) noexcept;
   static float CalculateAverage(const float* rawMoments) noexcept;
   static float CalculateStdDeviation(const float* rawMoments) noexcept;
-  static float CalculateSkew(const float* rawMoments) noexcept;
+  static float CalculateSkewness(const float* rawMoments) noexcept;
   static float CalculateKurtosis(const float* rawMoments) noexcept;
 };
 
