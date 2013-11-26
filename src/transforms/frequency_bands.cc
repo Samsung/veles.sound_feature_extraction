@@ -169,7 +169,7 @@ void FrequencyBands::SetupFilter(size_t index, int frequency,
 void FrequencyBands::Do(const BuffersBase<float*>& in,
                         BuffersBase<float*>* out) const noexcept {
 #ifdef HAVE_OPENMP
-  #pragma omp parallel for num_threads(this->threads_number())
+  #pragma omp parallel for num_threads(threads_number())
 #endif
   for (size_t i = 0; i < in.Count(); i++) {
     filters_[i % filters_.size()]->Do(in[i], (*out)[i]);

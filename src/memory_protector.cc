@@ -57,9 +57,9 @@ MemoryProtector::~MemoryProtector() noexcept {
   if (page_ != nullptr) {
     int res = mprotect(page_, size_, PROT_READ | PROT_WRITE);
     if (res != 0) {
-    fprintf(stderr, "mprotect(%p, %zu, PROT_READ | PROT_WRITE) failed with "
-                    "errno %d\n",
-            page_, size_, errno);
+      fprintf(stderr, "mprotect(%p, %zu, PROT_READ | PROT_WRITE) failed with "
+                      "errno %d\n",
+              page_, size_, errno);
     }
   }
 }
