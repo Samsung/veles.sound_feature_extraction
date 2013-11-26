@@ -20,10 +20,9 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-using FluxBase = TransformBase<formats::ArrayFormatF, formats::SingleFormatF>;
-
 /// @brief \f$||\overrightarrow{Value(f)}-\overrightarrow{Value_pre(f)}||\f$.
-class Flux : public FluxBase {
+class Flux
+    : public TransformBase<formats::ArrayFormatF, formats::SingleFormatF> {
  public:
   TRANSFORM_INTRO("Flux", "Measure of spectral change.", Flux)
 
