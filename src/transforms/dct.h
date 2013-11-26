@@ -25,6 +25,10 @@ class DCT : public UniformFormatTransform<formats::ArrayFormatF> {
                          "on the signal.",
                   DCT)
 
+  virtual bool BufferInvariant() const noexcept override final {
+    return true;
+  }
+
  protected:
   virtual void Do(const BuffersBase<float*>& in,
                   BuffersBase<float*>* out) const noexcept override;

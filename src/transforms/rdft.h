@@ -25,6 +25,10 @@ class RDFT : public UniformFormatTransform<formats::ArrayFormatF> {
                           "on the input signal (using real FFT).",
                   RDFT)
 
+  virtual bool BufferInvariant() const noexcept override final {
+    return true;
+  }
+
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override;
 
