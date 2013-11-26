@@ -157,6 +157,8 @@ class TransformTree : public Logger {
   void set_dump_buffers_after_each_transform(bool value) noexcept;
   bool cache_optimization() const noexcept;
   void set_cache_optimization(bool value) noexcept;
+  bool memory_protection() const noexcept;
+  void set_memory_protection(bool value) noexcept;
 
  private:
   class Node : public Logger {
@@ -226,15 +228,19 @@ class TransformTree : public Logger {
 
   static constexpr const char* kDumpEnvPrefix = "SFE_DUMP_";
 
+  /// @brief The continuous memory block containing all the buffers. It MUST
+  /// go before root_ because of the memory protection scheme (mprotect).
+  std::shared_ptr<void> allocated_memory_;
+  /// @brief The transform tree to extract the features.
   std::shared_ptr<Node> root_;
   std::shared_ptr<formats::ArrayFormat16> root_format_;
   bool tree_is_prepared_;
   std::unordered_map<std::string, std::shared_ptr<Node>> features_;
   std::unordered_map<std::string, TransformCacheItem> transforms_cache_;
   bool cache_optimization_;
+  bool memory_protection_;
   bool validate_after_each_transform_;
   bool dump_buffers_after_each_transform_;
-  std::shared_ptr<void> allocated_memory_;
 };
 
 }  // namespace sound_feature_extraction

@@ -37,6 +37,7 @@
 									<listOptionValue builtIn="false" value="__MMX__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
 									<listOptionValue builtIn="false" value="VALGRIND=1"/>
+									<listOptionValue builtIn="false" value="DEBUG=1"/>
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.1369339968" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -61,6 +62,7 @@
 									<listOptionValue builtIn="false" value="__MMX__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
 									<listOptionValue builtIn="false" value="VALGRIND=1"/>
+									<listOptionValue builtIn="false" value="DEBUG=1"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.1495967515" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -112,6 +114,7 @@
 									<listOptionValue builtIn="false" value="__OPTIMIZE__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
 									<listOptionValue builtIn="false" value="VALGRIND=1"/>
+									<listOptionValue builtIn="false" value="DEBUG=1"/>
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.1856500846" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -130,6 +133,7 @@
 									<listOptionValue builtIn="false" value="__GXX_EXPERIMENTAL_CXX0X__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
 									<listOptionValue builtIn="false" value="VALGRIND=1"/>
+									<listOptionValue builtIn="false" value="DEBUG=1"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.328182911" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -187,6 +191,7 @@
 									<listOptionValue builtIn="false" value="__MMX__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
 									<listOptionValue builtIn="false" value="VALGRIND=1"/>
+									<listOptionValue builtIn="false" value="DEBUG=1"/>
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.1960410207" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -212,6 +217,7 @@
 									<listOptionValue builtIn="false" value="__GXX_EXPERIMENTAL_CXX0X__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
 									<listOptionValue builtIn="false" value="VALGRIND=1"/>
+									<listOptionValue builtIn="false" value="DEBUG=1"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.1606621278" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -263,6 +269,7 @@
 									<listOptionValue builtIn="false" value="__OPTIMIZE__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
 									<listOptionValue builtIn="false" value="VALGRIND=1"/>
+									<listOptionValue builtIn="false" value="DEBUG=1"/>
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.108918691" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -281,6 +288,7 @@
 									<listOptionValue builtIn="false" value="__GXX_EXPERIMENTAL_CXX0X__"/>
 									<listOptionValue builtIn="false" value="EINA"/>
 									<listOptionValue builtIn="false" value="VALGRIND=1"/>
+									<listOptionValue builtIn="false" value="DEBUG=1"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.1346521497" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>

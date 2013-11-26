@@ -232,7 +232,7 @@ void TransformTree::Node::Execute() noexcept {
     *ElapsedTime += checkPointFinish - checkPointStart;
     Host->transforms_cache_[BoundTransform->Name()].ElapsedTime += *ElapsedTime;
 
-    if (ChildrenCount() == 0) {
+    if (Host->memory_protection() && ChildrenCount() == 0) {
       // This is a leaf, disable any further writing to the corr. memory block
       auto ptr = std::const_pointer_cast<const Buffers>(BoundBuffers)->Data();
       DBG("Enabling write protection on %p:%zu",
@@ -305,6 +305,11 @@ TransformTree::TransformTree(formats::ArrayFormat16&& rootFormat) noexcept
       root_format_(std::make_shared<formats::ArrayFormat16>(rootFormat)),
       tree_is_prepared_(false),
       cache_optimization_(true),
+#ifdef DEBUG
+      memory_protection_(true),
+#else
+      memory_protection_(false),
+#endif
       validate_after_each_transform_(false),
       dump_buffers_after_each_transform_(false) {
 }
@@ -317,6 +322,11 @@ TransformTree::TransformTree(
       root_format_(rootFormat),
       tree_is_prepared_(false),
       cache_optimization_(true),
+#ifdef DEBUG
+      memory_protection_(true),
+#else
+      memory_protection_(false),
+#endif
       validate_after_each_transform_(false),
       dump_buffers_after_each_transform_(false) {
 }
@@ -546,9 +556,7 @@ void TransformTree::PrepareForExecution() {
 #endif
   // Allocate the buffers
   allocated_memory_ = std::shared_ptr<void>(malloc_aligned(neededMemory),
-                                           [](void* ptr) {
-                                             free(ptr);
-                                           });
+                                            std::free);
   if (allocated_memory_.get() == nullptr) {
     throw FailedToAllocateBuffersException(std::string("Failed to allocate ") +
                                            std::to_string(neededMemory) +
@@ -748,6 +756,11 @@ void TransformTree::Dump(const std::string& dotFileName) const {
     }
     std::string nodeName = node.BoundTransform->SafeName() +
         std::to_string(node_counters[&node]);
+    if (node.Next && !node.Next->BelongsToSlice) {
+      fw << "\t" << nodeName << " -> " << node.Next->BoundTransform->SafeName()
+          << node_counters[node.Next] << "[color=\"red\" constraint=false "
+          "weight=0]" << std::endl;
+    }
     node.ActionOnEachImmediateChild([&](const Node& child) {
       if (child.BelongsToSlice) {
         return;
@@ -789,6 +802,14 @@ bool TransformTree::cache_optimization() const noexcept {
 
 void TransformTree::set_cache_optimization(bool value) noexcept {
   cache_optimization_ = value;
+}
+
+bool TransformTree::memory_protection() const noexcept {
+  return memory_protection_;
+}
+
+void TransformTree::set_memory_protection(bool value) noexcept {
+  memory_protection_ = value;
 }
 
 float TransformTree::ConvertDuration(
