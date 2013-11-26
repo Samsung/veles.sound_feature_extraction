@@ -45,8 +45,7 @@ size_t Selector::OnFormatChanged(size_t buffersCount) {
   return buffersCount;
 }
 
-void Selector::Do(const float* in,
-                  float* out) const noexcept {
+void Selector::Do(const float* in, float* out) const noexcept {
   int length = output_format_->Size();
   int offset = (from_ == Anchor::kLeft?
       0 : input_format_->Size() - length);

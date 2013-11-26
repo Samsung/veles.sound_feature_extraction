@@ -60,8 +60,7 @@ class Selector : public OmpUniformFormatTransform<formats::ArrayFormatF> {
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override;
 
-  virtual void Do(const float* in,
-                  float* out) const noexcept override;
+  virtual void Do(const float* in, float* out) const noexcept override;
 
   static constexpr int kDefaultLength = 12;
   static constexpr Anchor kDefaultAnchor = Anchor::kLeft;
