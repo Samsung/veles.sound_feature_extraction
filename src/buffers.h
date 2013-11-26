@@ -27,6 +27,7 @@ class Buffers {
   virtual ~Buffers() {
   }
 
+  const void* Data() const noexcept;
   size_t Count() const noexcept;
   size_t SizeInBytes() const noexcept;
 
@@ -42,9 +43,9 @@ class Buffers {
   std::string Dump(size_t index) const noexcept;
   std::string ToString() const noexcept;
 
+
  protected:
   void* Data() noexcept;
-  const void* Data() const noexcept;
 
  private:
   std::shared_ptr<BufferFormat> format_;

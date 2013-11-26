@@ -15,7 +15,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <algorithm>
-#include <fstream>  // NOLINT(*)
+#include <fstream>
 #include <iomanip>
 #include <string>
 #include <utility>
@@ -23,6 +23,7 @@
 #include "src/formats/array_format.h"
 #include "src/format_converter.h"
 #include "src/transform_registry.h"
+#include "src/memory_protector.h"
 #include "src/transforms/identity.h"
 
 /// @brief Temporary fix for a buggy system_clock implementation in libstdc++.
@@ -111,6 +112,7 @@ TransformTree::Node::Node(Node* parent,
       BoundTransform(boundTransform),
       BoundBuffers(nullptr),
       BuffersCount(buffersCount),
+      Protection(nullptr),
       Next(nullptr),
       BelongsToSlice(false),
       HasClones(false),
@@ -195,9 +197,9 @@ void TransformTree::Node::BuildAllocationTree(
 void TransformTree::Node::ApplyAllocationTree(
     const memory_allocation::Node& node,
     void* allocatedMemory) noexcept {
+  auto mem_ptr = reinterpret_cast<char*>(allocatedMemory) + node.Address;
   BoundBuffers = BoundTransform->CreateOutputBuffers(
-      BuffersCount,
-      reinterpret_cast<char*>(allocatedMemory) + node.Address);
+      BuffersCount, mem_ptr);
   if (node.Next != nullptr) {
     Next = reinterpret_cast<TransformTree::Node*>(node.Next->Item);
   }
@@ -209,18 +211,19 @@ void TransformTree::Node::ApplyAllocationTree(
   }
 }
 
-void TransformTree::Node::Execute() {
+void TransformTree::Node::Execute() noexcept {
   if (Parent != nullptr) {
     DBG("Executing %s on %zu buffers -> %zu...",
         BoundTransform->Name().c_str(),
         Parent->BoundBuffers->Count(), BoundBuffers->Count());
     auto checkPointStart = std::chrono::high_resolution_clock::now();
     std::shared_ptr<Buffers> parent_buffers;
-    if (Parent->Slices.size() == 0) {
+    if (Parent->Slices.size() == 0 || !BelongsToSlice) {
       parent_buffers = Parent->BoundBuffers;
     } else {
       size_t index, length;
       std::tie(index, length) = Parent->Slices[this];
+      assert(length > 0);
       parent_buffers = std::make_shared<Buffers>(
           Parent->BoundBuffers->Slice(index, length));
     }
@@ -228,6 +231,15 @@ void TransformTree::Node::Execute() {
     auto checkPointFinish = std::chrono::high_resolution_clock::now();
     *ElapsedTime += checkPointFinish - checkPointStart;
     Host->transforms_cache_[BoundTransform->Name()].ElapsedTime += *ElapsedTime;
+
+    if (ChildrenCount() == 0) {
+      // This is a leaf, disable any further writing to the corr. memory block
+      auto ptr = std::const_pointer_cast<const Buffers>(BoundBuffers)->Data();
+      DBG("Enabling write protection on %p:%zu",
+          ptr, BoundBuffers->SizeInBytes());
+      Protection = std::make_shared<MemoryProtector>(
+          ptr, BoundBuffers->SizeInBytes());
+    }
 
     if (Host->validate_after_each_transform()) {
       try {
@@ -430,9 +442,11 @@ void TransformTree::AddFeature(
 int TransformTree::BuildSlicedCycles() noexcept {
   int ret = 0;  // the resulting number of built cycles
   auto node = root_.get();
+  decltype(node) prev_node = nullptr;
   while (node != nullptr) {
     // Search for the next cycle entry candidate
     do {
+      prev_node = node;
       node = node->Next;
     }
     while (node != nullptr && (!node->BoundTransform->BufferInvariant() ||
@@ -471,7 +485,7 @@ int TransformTree::BuildSlicedCycles() noexcept {
     }
     assert(max_size > 0);
     size_t slice_buffers_count = get_cpu_cache_size() / max_size;
-    if (slice_buffers_count == 0) {
+    if (slice_buffers_count == 0 || bufs_count <= slice_buffers_count) {
       continue;
     }
     // Clone those nodes, connecting each slice's end to the next slice's
@@ -480,8 +494,7 @@ int TransformTree::BuildSlicedCycles() noexcept {
     assert(head != nullptr);
     Node* tail = head;
     for (size_t i = 0; i < bufs_count; i += slice_buffers_count) {
-      auto my_bufs_count = i + slice_buffers_count > bufs_count?
-          bufs_count - i : slice_buffers_count;
+      auto my_bufs_count = std::min(slice_buffers_count, bufs_count - i);
       for (size_t j = 0; j < current_cycle.size(); j++) {
         auto cn = current_cycle[j];
         auto cloned = std::make_shared<Node>(j == 0? head : tail,
@@ -497,24 +510,31 @@ int TransformTree::BuildSlicedCycles() noexcept {
         cloned->BelongsToSlice = true;
         cloned->ElapsedTime = cn->ElapsedTime;
         tail->Children[cloned->BoundTransform->Name()].push_back(cloned);
-        tail->Next = cloned.get();
-        tail = tail->Next;
+        if (head == tail) {
+          // The very first iteration
+          prev_node->Next = cloned.get();
+        } else {
+          tail->Next = cloned.get();
+        }
+        tail = cloned.get();
       }
     }
+    tail->Children = current_cycle.back()->Children;
     tail->Next = current_cycle.back()->Next;
   }
   return ret;
 }
 
 void TransformTree::PrepareForExecution() {
-  DBG("Entered");
   if (tree_is_prepared_) {
     throw TreeAlreadyPreparedException();
   }
+  DBG("Initializing the transforms...");
   // Run Initialize() on all transforms
   root_->ActionOnEachTransformInSubtree([](const Transform& t) {
     t.Initialize();
   });
+  DBG("Finished. Baking the allocation plan...");
   // Solve the allocation problem
   memory_allocation::Node allocation_tree_root(0, nullptr, root_.get());
   root_->BuildAllocationTree(&allocation_tree_root);
@@ -549,7 +569,6 @@ void TransformTree::PrepareForExecution() {
 
 std::unordered_map<std::string, std::shared_ptr<Buffers>>
 TransformTree::Execute(const int16_t* in) {
-  DBG("Entered");
   if (!tree_is_prepared_) {
     throw TreeIsNotPreparedException();
   }
@@ -572,6 +591,7 @@ TransformTree::Execute(const int16_t* in) {
     }
   }
 
+  DBG("Executing the tree...");
   // Run the transforms, measuring the elapsed time
   auto checkPointStart = std::chrono::high_resolution_clock::now();
   root_->Execute();

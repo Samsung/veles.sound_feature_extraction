@@ -128,6 +128,8 @@ class FailedToAllocateBuffersException : public std::bad_alloc {
   std::string message_;
 };
 
+class MemoryProtector;
+
 class TransformTree : public Logger {
  public:
   explicit TransformTree(formats::ArrayFormat16&& rootFormat) noexcept;
@@ -181,7 +183,7 @@ class TransformTree : public Logger {
     void ApplyAllocationTree(const memory_allocation::Node& node,
                              void* allocatedMemory) noexcept;
 
-    void Execute();
+    void Execute() noexcept;
 
     size_t ChildrenCount() const noexcept;
     std::shared_ptr<Node> SelfPtr() const noexcept;
@@ -191,6 +193,7 @@ class TransformTree : public Logger {
     const std::shared_ptr<Transform> BoundTransform;
     std::shared_ptr<Buffers> BoundBuffers;
     size_t BuffersCount;
+    std::shared_ptr<MemoryProtector> Protection;
     std::unordered_map<std::string, std::vector<std::shared_ptr<Node>>>
     Children;
     /// @brief The next executed node in the pipeline.
