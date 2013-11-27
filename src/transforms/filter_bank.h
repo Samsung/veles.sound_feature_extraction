@@ -22,13 +22,15 @@ namespace transforms {
 enum class ScaleType {
   kLinear,
   kMel,
-  kBark
+  kBark,
+  kMidi
 };
 
 namespace internal {
 constexpr const char* kScaleTypeLinearStr = "linear";
 constexpr const char* kScaleTypeMelStr = "mel";
 constexpr const char* kScaleTypeBarkStr = "bark";
+constexpr const char* kScaleTypeMidiStr = "midi";
 }
 
 ScaleType Parse(const std::string& value, identity<ScaleType>);
@@ -51,6 +53,9 @@ namespace std {
       case ScaleType::kBark:
         return sound_feature_extraction::transforms::internal::
             kScaleTypeBarkStr;
+      case ScaleType::kMidi:
+        return sound_feature_extraction::transforms::internal::
+            kScaleTypeMidiStr;
     }
     return "";
   }
@@ -80,9 +85,8 @@ class FilterBank : public OmpTransformBase<formats::ArrayFormatF,
 
   TP(type, ScaleType, kDefaultScale,
      "The type of the scale. Supported values are \"linear\","
-     "\"mel\" and \"bark\".")
-  TP(number, int, kDefaultNumber,
-     "The number of triangular filters.")
+     "\"mel\", \"bark\" and \"midi\".")
+  TP(number, int, kDefaultNumber, "The number of triangular filters.")
   TP(frequency_min, int, kDefaultMinFrequency,
      "Minimal frequency of the filter bank.")
   TP(frequency_max, int, kDefaultMaxFrequency,
@@ -108,6 +112,11 @@ class FilterBank : public OmpTransformBase<formats::ArrayFormatF,
   static constexpr int kDefaultMinFrequency = 130;
   static constexpr int kDefaultMaxFrequency = 6854;
   static constexpr bool kDefaultSquared = false;
+  static constexpr float kMidiFreqs[] {
+    8.1757989156, 8.6619572180, 9.1770239974, 9.722718241, 10.3008611535,
+    10.9133822323, 11.5623257097, 12.2498573744, 12.9782717994, 13.7500000000,
+    14.5676175474, 15.4338531643
+  };
 
   virtual size_t OnInputFormatChanged(size_t buffersCount) override;
 

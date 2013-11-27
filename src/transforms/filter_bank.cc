@@ -35,6 +35,7 @@ ScaleType Parse(const std::string& value, identity<ScaleType>) {
 }
 
 constexpr ScaleType FilterBank::kDefaultScale;
+constexpr float FilterBank::kMidiFreqs[];
 
 FilterBank::FilterBank()
     : type_(kDefaultScale),
@@ -75,6 +76,38 @@ float FilterBank::LinearToScale(ScaleType type, float freq) {
       return 8.96f * logf(0.978f +
                           5.0f * logf(0.994f +
                                       powf((freq + 75.4f) / 2173.0f, 1.347f)));
+    case ScaleType::kMidi: {
+      assert(freq >= kMidiFreqs[0]);
+      int oct = 0;
+      float oct_value = freq;
+      for (; oct <= log2f(FilterBase<std::nullptr_t>::kMaxFilterFrequency);
+           oct++) {
+        if (oct_value >= kMidiFreqs[0] / 2 + kMidiFreqs[11] / 4 &&
+            oct_value < kMidiFreqs[0] + kMidiFreqs[11] / 2) {
+          break;
+        }
+        oct_value /= 2;
+      }
+      float base_freq = 1 << oct;
+      float ret = 12 * oct;
+      float low_border = kMidiFreqs[0] * base_freq;
+      if (freq < low_border) {
+        ret -= (low_border - freq) /
+            (low_border - kMidiFreqs[11] * base_freq / 2);
+        return ret;
+      }
+      float high_border = kMidiFreqs[11] * base_freq;
+      if (freq >= high_border) {
+        ret += 11 + (freq - high_border) /
+            (kMidiFreqs[0] * base_freq * 2 - high_border);
+        return ret;
+      }
+      int note = 0;
+      for (; note < 12 && freq > kMidiFreqs[note] * base_freq;
+           note++) {}
+      return ret + note - 1 + (freq - kMidiFreqs[note - 1] * base_freq) /
+          (base_freq * (kMidiFreqs[note] - kMidiFreqs[note - 1]));
+    }
   }
   return 0.0f;
 }
@@ -89,6 +122,17 @@ float FilterBank::ScaleToLinear(ScaleType type, float value) {
       // see http://depository.bas-net.by/EDNI/Periodicals/Articles/Details.aspx?Key_Journal=32&Id=681
       return 2173.0f * powf(expf((expf(value / 8.96f) - 0.978f) / 5.0f) -
                             0.994f, 1.0f / 1.347f) - 75.4f;
+    case ScaleType::kMidi: {
+      assert(value >= 0);
+      int oct = floorf(value / 12);
+      float exact_note = fmodf(value, 12);
+      int note = floorf(exact_note);
+      float base_freq = kMidiFreqs[note];
+      float dist = modff(exact_note, &value);
+      float high_note = note < 11? kMidiFreqs[note + 1] : kMidiFreqs[0] * 2;
+      float delta = (high_note - kMidiFreqs[note]) * dist;
+      return (base_freq + delta) * (1 << oct);
+    }
   }
   return 0.0f;
 }

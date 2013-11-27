@@ -18,6 +18,7 @@
 using sound_feature_extraction::formats::ArrayFormatF;
 using sound_feature_extraction::BuffersBase;
 using sound_feature_extraction::transforms::FilterBank;
+using sound_feature_extraction::transforms::ScaleType;
 
 class FilterBankTest : public TransformTest<FilterBank> {
  public:
@@ -112,3 +113,26 @@ TEST_F(FilterBankTest, Do) {
     ASSERT_NEAR(sum, (*Output)[0][i], sum / 100000) << i;
   }
 }
+
+
+class ScaleTest : public ::testing::TestWithParam<std::tuple<ScaleType, float>>,
+                  public FilterBank {
+ protected:
+  virtual void SetUp() override {
+  }
+};
+
+TEST_P(ScaleTest, Identity) {
+  float to = LinearToScale(std::get<0>(GetParam()), std::get<1>(GetParam()));
+  float from2 = ScaleToLinear(std::get<0>(GetParam()), to);
+  ASSERT_NEAR(std::get<1>(GetParam()), from2, std::get<1>(GetParam()) / 100000);
+}
+
+INSTANTIATE_TEST_CASE_P(
+    Identity, ScaleTest,
+    ::testing::Combine(
+    ::testing::Values(ScaleType::kLinear, ScaleType::kMel, ScaleType::kBark,
+                      ScaleType::kMidi),
+    ::testing::Values(29.1352350949, 100, 200, 300, 500, 520, 800, 1000,
+                      3364, 9000))
+    );
