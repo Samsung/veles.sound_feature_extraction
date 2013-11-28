@@ -35,7 +35,7 @@ size_t SlidingBlocksImpl::Solve(Node* root) noexcept {
     EliminateLeafBranchesRecursive(treeRoot);
     DBG("Generating traversal variants...");
     GenerateTreeTraversalVariants(treeRoot, &traversalVariants);
-    INF("Solving %zu traversal variants...", traversalVariants.size());
+    DBG("Solving %zu traversal variants...", traversalVariants.size());
   }
   size_t min_height = 0;
   std::vector<Block> solution;
