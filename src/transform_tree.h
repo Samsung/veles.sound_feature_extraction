@@ -170,6 +170,7 @@ class TransformTree : public Logger {
         const std::function<void(const Transform&)> action) const;
     void ActionOnSubtree(
         const std::function<void(const Node&)> action) const;
+    void ActionOnSubtree(const std::function<void(Node&)> action);
     void ActionOnEachImmediateChild(
         const std::function<void(Node&)> action);
     void ActionOnEachImmediateChild(
@@ -217,16 +218,20 @@ class TransformTree : public Logger {
     bool Dump;
   };
 
+  static constexpr const char* kDumpEnvPrefix = "SFE_DUMP_";
+
   void AddTransform(const std::string& name,
                     const std::string& parameters,
                     const std::string& relatedFeature,
                     std::shared_ptr<Node>* currentNode);
+
   int BuildSlicedCycles() noexcept;
+
+  void DismantleMemoryProtection() noexcept;
+  void ResetTimers() noexcept;
 
   static float ConvertDuration(
       const std::chrono::high_resolution_clock::duration& d) noexcept;
-
-  static constexpr const char* kDumpEnvPrefix = "SFE_DUMP_";
 
   /// @brief The continuous memory block containing all the buffers. It MUST
   /// go before root_ because of the memory protection scheme (mprotect).

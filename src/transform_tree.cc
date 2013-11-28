@@ -26,9 +26,13 @@
 #include "src/memory_protector.h"
 #include "src/transforms/identity.h"
 
+#if (__GNUC__ == 4 && __GNUC_MINOR__ < 8)
 /// @brief Temporary fix for a buggy system_clock implementation in libstdc++.
 /// @see http://gcc.1065356.n5.nabble.com/patch-Default-to-enable-libstdcxx-time-auto-td940166i40.html
 #define BUGGY_SYSTEM_CLOCK_FIX 1000.f
+#else
+#define BUGGY_SYSTEM_CLOCK_FIX 1.f
+#endif
 
 extern "C" {
 extern size_t get_cpu_cache_size(void);
@@ -131,6 +135,17 @@ void TransformTree::Node::ActionOnEachTransformInSubtree(
 
 void TransformTree::Node::ActionOnSubtree(
     const std::function<void(const Node&)> action) const {
+  action(*this);
+  for (auto& subnodes : Children) {
+    for (const auto& inode : subnodes.second) {
+      const Node* ptr = inode.get();
+      ptr->ActionOnSubtree(action);
+    }
+  }
+}
+
+void TransformTree::Node::ActionOnSubtree(
+    const std::function<void(Node&)> action) {
   action(*this);
   for (auto& subnodes : Children) {
     for (auto& inode : subnodes.second) {
@@ -305,11 +320,7 @@ TransformTree::TransformTree(formats::ArrayFormat16&& rootFormat) noexcept
       root_format_(std::make_shared<formats::ArrayFormat16>(rootFormat)),
       tree_is_prepared_(false),
       cache_optimization_(true),
-#ifdef DEBUG
       memory_protection_(true),
-#else
-      memory_protection_(false),
-#endif
       validate_after_each_transform_(false),
       dump_buffers_after_each_transform_(false) {
 }
@@ -322,11 +333,7 @@ TransformTree::TransformTree(
       root_format_(rootFormat),
       tree_is_prepared_(false),
       cache_optimization_(true),
-#ifdef DEBUG
       memory_protection_(true),
-#else
-      memory_protection_(false),
-#endif
       validate_after_each_transform_(false),
       dump_buffers_after_each_transform_(false) {
 }
@@ -535,6 +542,22 @@ int TransformTree::BuildSlicedCycles() noexcept {
   return ret;
 }
 
+void TransformTree::DismantleMemoryProtection() noexcept {
+  root_->ActionOnSubtree([](Node& node) {
+    node.Protection.reset();
+  });
+}
+
+void TransformTree::ResetTimers() noexcept {
+  root_->ActionOnSubtree([](Node& node) {
+    *node.ElapsedTime = std::chrono::high_resolution_clock::duration::zero();
+  });
+  for (auto& ci : transforms_cache_) {
+    ci.second.ElapsedTime =
+        std::chrono::high_resolution_clock::duration::zero();
+  }
+}
+
 void TransformTree::PrepareForExecution() {
   if (tree_is_prepared_) {
     throw TreeAlreadyPreparedException();
@@ -573,6 +596,9 @@ void TransformTree::PrepareForExecution() {
   }
   tree_is_prepared_ = true;
   INF("Prepared to extract %zu features", features_.size());
+#if DEBUG
+  Dump("/tmp/last_nodes.dot");
+#endif
 }
 
 std::unordered_map<std::string, std::shared_ptr<Buffers>>
@@ -583,9 +609,8 @@ TransformTree::Execute(const int16_t* in) {
   if (features_.size() == 0) {
     throw TreeIsEmptyException();
   }
-#if DEBUG
-  Dump("/tmp/last_nodes.dot");
-#endif
+  DismantleMemoryProtection();
+  ResetTimers();
   // Initialize input. We have to const_cast here, but "in" is not going
   // to be overwritten anyway.
   root_->BoundBuffers = root_->BoundTransform->CreateOutputBuffers(
@@ -601,17 +626,17 @@ TransformTree::Execute(const int16_t* in) {
 
   DBG("Executing the tree...");
   // Run the transforms, measuring the elapsed time
-  auto checkPointStart = std::chrono::high_resolution_clock::now();
+  auto check_point_start = std::chrono::high_resolution_clock::now();
   root_->Execute();
-  auto checkPointFinish = std::chrono::high_resolution_clock::now();
-  auto allDuration = checkPointFinish - checkPointStart;
-  INF("Finished. Execution took %f s", ConvertDuration(allDuration));
-  auto otherDuration = allDuration;
+  auto check_point_finish = std::chrono::high_resolution_clock::now();
+  auto all_duration = check_point_finish - check_point_start;
+  INF("Finished. Execution took %f s", ConvertDuration(all_duration));
+  auto other_duration = all_duration;
   for (auto& cit : transforms_cache_) {
-    otherDuration -= cit.second.ElapsedTime;
+    other_duration -= cit.second.ElapsedTime;
   }
-  transforms_cache_["All"].ElapsedTime = allDuration;
-  transforms_cache_["Other"].ElapsedTime = otherDuration;
+  transforms_cache_["All"].ElapsedTime = all_duration;
+  transforms_cache_["Other"].ElapsedTime = other_duration;
 
   // Populate the results
   std::unordered_map<std::string, std::shared_ptr<Buffers>> results;
@@ -628,14 +653,14 @@ TransformTree::ExecutionTimeReport() const noexcept {
   if (allIt == transforms_cache_.end()) {
     return ret;
   }
-  auto allTime = allIt->second.ElapsedTime;
+  auto all_time = allIt->second.ElapsedTime;
   for (auto& cit : transforms_cache_) {
     if (cit.first != "All") {
       ret.insert(std::make_pair(
-          cit.first, (cit.second.ElapsedTime.count() + 0.f) / allTime.count()));
+          cit.first, (cit.second.ElapsedTime.count() + 0.f) / all_time.count()));
     } else {
       ret.insert(std::make_pair(
-          cit.first, ConvertDuration(allTime)));
+          cit.first, ConvertDuration(all_time)));
     }
   }
   return ret;
