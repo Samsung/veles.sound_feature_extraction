@@ -25,7 +25,7 @@ transforms/window.cc transforms/lowpass_filter.cc \
 transforms/highpass_filter.cc transforms/bandpass_filter.cc \
 transforms/convolve.cc transforms/fir_filter_base.cc transforms/square.cc \
 transforms/rdft.cc transforms/dct.cc transforms/complex_magnitude.cc \
-transforms/spectral_energy.cc transforms/filter_bank.cc \
+transforms/spectral_energy.cc transforms/filter_bank.cc transforms/reorder.cc \
 transforms/log.cc transforms/real_to_complex.cc transforms/unpack_rdft.cc \
 transforms/dwpt.cc transforms/subband_energy.cc transforms/rotate.cc \
 transforms/zero_padding.cc transforms/selector.cc transforms/shc.cc \
