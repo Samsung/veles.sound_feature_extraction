@@ -118,7 +118,8 @@ TransformTree::Node::Node(Node* parent,
       BuffersCount(buffersCount),
       Protection(nullptr),
       Next(nullptr),
-      BelongsToSlice(false),
+      OriginalNode(nullptr),
+      CycleId(0),
       HasClones(false),
       ElapsedTime(new std::chrono::high_resolution_clock::duration()) {
 }
@@ -233,7 +234,7 @@ void TransformTree::Node::Execute() noexcept {
         Parent->BoundBuffers->Count(), BoundBuffers->Count());
     auto checkPointStart = std::chrono::high_resolution_clock::now();
     std::shared_ptr<Buffers> parent_buffers;
-    if (Parent->Slices.size() == 0 || !BelongsToSlice) {
+    if (Parent->Slices.size() == 0 || OriginalNode == nullptr) {
       parent_buffers = Parent->BoundBuffers;
     } else {
       size_t index, length;
@@ -394,6 +395,7 @@ void TransformTree::AddTransform(const std::string& name,
     auto tparams = Transform::Parse(parameters);
     t->SetParameters(tparams);
   }
+  // Try to reuse an existing node
   auto reused_node = (*currentNode)->FindIdenticalChildTransform(*t);
   if (reused_node != nullptr) {
     *currentNode = reused_node;
@@ -407,11 +409,8 @@ void TransformTree::AddTransform(const std::string& name,
       return el.second == reused_node;
     });
     if (related_feature != features_.end()) {
-      DBG("Appending an extra Identity to %s",
-          reused_node->BoundTransform->Name().c_str());
       std::shared_ptr<Node> identity_node = reused_node;
-      AddTransform(transforms::Identity::kName, "", related_feature->first,
-                   &identity_node);
+      AddIdentityTransform(related_feature->first, &identity_node);
       related_feature->second = identity_node;
     }
   } else {
@@ -435,6 +434,13 @@ void TransformTree::AddTransform(const std::string& name,
   }
 }
 
+void TransformTree::AddIdentityTransform(const std::string& feature,
+                                         std::shared_ptr<Node>* parent) {
+  DBG("Appending an extra Identity to %s",
+      (*parent)->BoundTransform->Name().c_str());
+  AddTransform(transforms::Identity::kName, "", feature, parent);
+}
+
 void TransformTree::AddFeature(
     const std::string& name,
     const std::vector<std::pair<std::string, std::string>>& transforms) {
@@ -446,14 +452,17 @@ void TransformTree::AddFeature(
     throw ChainNameAlreadyExistsException(name);
   }
 
-  auto currentNode = root_;
+  auto current_node = root_;
   root_->RelatedFeatures.push_back(name);
   for (auto& tpair : transforms) {
     auto tname = tpair.first;
-    AddTransform(tpair.first, tpair.second, name, &currentNode);
+    AddTransform(tpair.first, tpair.second, name, &current_node);
+  }
+  if (current_node->ChildrenCount() > 0) {
+    AddIdentityTransform(name, &current_node);
   }
 
-  features_.insert(std::make_pair(name, currentNode));
+  features_.insert(std::make_pair(name, current_node));
 }
 
 int TransformTree::BuildSlicedCycles() noexcept {
@@ -487,13 +496,11 @@ int TransformTree::BuildSlicedCycles() noexcept {
     if (current_cycle.size() == 1) {
       continue;
     }
-    ret++;
     // We have found a cache optimization friendly subpath.
     // Determine the size bottleneck and mark all the nodes in that subpath.
     size_t max_size = 0;
     size_t bufs_count = current_cycle[0]->BoundBuffers->Count();
     for (auto cn : current_cycle) {
-      cn->HasClones = true;
       auto size = cn->BoundTransform->InputFormat()->SizeInBytes();
       if (size > max_size) {
         max_size = size;
@@ -504,6 +511,13 @@ int TransformTree::BuildSlicedCycles() noexcept {
     size_t slice_buffers_count = get_cpu_cache_size() / max_size;
     if (slice_buffers_count == 0 || bufs_count <= slice_buffers_count) {
       continue;
+    }
+
+    ret++;
+    // Mark the nodes as cloned
+    for (auto cn : current_cycle) {
+      cn->HasClones = true;
+      cn->CycleId = ret;
     }
     // Clone those nodes, connecting each slice's end to the next slice's
     // beginning.
@@ -524,7 +538,8 @@ int TransformTree::BuildSlicedCycles() noexcept {
         cloned->BoundBuffers = std::make_shared<Buffers>(
             cn->BoundBuffers->Slice(i, my_bufs_count));
         cloned->BuffersCount = my_bufs_count;
-        cloned->BelongsToSlice = true;
+        cloned->OriginalNode = cn;
+        cloned->CycleId = ret;
         cloned->ElapsedTime = cn->ElapsedTime;
         tail->Children[cloned->BoundTransform->Name()].push_back(cloned);
         if (head == tail) {
@@ -536,14 +551,17 @@ int TransformTree::BuildSlicedCycles() noexcept {
         tail = cloned.get();
       }
     }
-    tail->Children = current_cycle.back()->Children;
     tail->Next = current_cycle.back()->Next;
   }
   return ret;
 }
 
 void TransformTree::DismantleMemoryProtection() noexcept {
-  root_->ActionOnSubtree([](Node& node) {
+  root_->ActionOnSubtree([this](Node& node) {
+    if (node.Protection) {
+      DBG("Disabling write protection on %p:%zu", node.Protection->page(),
+          node.Protection->size());
+    }
     node.Protection.reset();
   });
 }
@@ -609,7 +627,9 @@ TransformTree::Execute(const int16_t* in) {
   if (features_.size() == 0) {
     throw TreeIsEmptyException();
   }
-  DismantleMemoryProtection();
+  if (memory_protection()) {
+    DismantleMemoryProtection();
+  }
   ResetTimers();
   // Initialize input. We have to const_cast here, but "in" is not going
   // to be overwritten anyway.
@@ -691,7 +711,7 @@ void TransformTree::Dump(const std::string& dotFileName) const {
   std::unordered_map<std::string, int> counters;
   std::unordered_map<const Node*, int> node_counters;
   root_->ActionOnSubtree([&](const Node& node) {
-    if (node.BelongsToSlice) {
+    if (node.OriginalNode != nullptr) {
       return;
     }
     auto t = node.BoundTransform;
@@ -776,29 +796,42 @@ void TransformTree::Dump(const std::string& dotFileName) const {
   fw << ">]" << std::endl << std::endl;
   // Output the node connections
   root_->ActionOnSubtree([&](const Node& node) {
-    if (node.BelongsToSlice) {
+    auto node_name = node.OriginalNode == nullptr?
+        node.BoundTransform->SafeName() + std::to_string(node_counters[&node])
+        : node.OriginalNode->BoundTransform->SafeName() +
+          std::to_string(node_counters[node.OriginalNode]);
+    if (node.Next) {
+      if (node.OriginalNode == nullptr && node.Next->OriginalNode == nullptr) {
+        fw << "\t" << node_name << " -> "
+            << node.Next->BoundTransform->SafeName()
+            << node_counters[node.Next] << "[color=\"red\" constraint=false "
+            "weight=0]" << std::endl;
+      }
+      if (node.Next->OriginalNode != nullptr &&
+          (node.OriginalNode == nullptr ||
+              node.CycleId != node.Next->CycleId)) {
+        fw << "\t" << node_name << " -> "
+            << node.Next->OriginalNode->BoundTransform->SafeName()
+            << node_counters[node.Next->OriginalNode]
+            << "[color=\"red\" constraint=false weight=0]" << std::endl;
+      }
+    }
+    if (node.OriginalNode != nullptr) {
       return;
     }
-    std::string nodeName = node.BoundTransform->SafeName() +
-        std::to_string(node_counters[&node]);
-    if (node.Next && !node.Next->BelongsToSlice) {
-      fw << "\t" << nodeName << " -> " << node.Next->BoundTransform->SafeName()
-          << node_counters[node.Next] << "[color=\"red\" constraint=false "
-          "weight=0]" << std::endl;
-    }
     node.ActionOnEachImmediateChild([&](const Node& child) {
-      if (child.BelongsToSlice) {
+      if (child.OriginalNode != nullptr) {
         return;
       }
-      fw << "\t" << nodeName << " -> " << child.BoundTransform->SafeName()
+      fw << "\t" << node_name << " -> " << child.BoundTransform->SafeName()
           << node_counters[&child];
-      if (node.HasClones && child.HasClones) {
+      if (node.HasClones && child.HasClones && node.CycleId == child.CycleId) {
         fw << "[color=\"green\"]";
       }
       fw << std::endl;
     });
     if (node.Children.size() == 0) {
-      fw << "\t" << nodeName << " -> " << *node.RelatedFeatures.begin()
+      fw << "\t" << node_name << " -> " << *node.RelatedFeatures.begin()
           << std::endl;
     }
   });

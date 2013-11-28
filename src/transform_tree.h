@@ -202,7 +202,8 @@ class TransformTree : public Logger {
     /// @brief The next executed node in the pipeline.
     Node* Next;
     std::unordered_map<Node*, std::tuple<size_t, size_t>> Slices;
-    bool BelongsToSlice;
+    Node* OriginalNode;
+    int CycleId;
     bool HasClones;
 
     std::shared_ptr<std::chrono::high_resolution_clock::duration> ElapsedTime;
@@ -224,6 +225,8 @@ class TransformTree : public Logger {
                     const std::string& parameters,
                     const std::string& relatedFeature,
                     std::shared_ptr<Node>* currentNode);
+  void AddIdentityTransform(const std::string& feature,
+                            std::shared_ptr<Node>* currentNode);
 
   int BuildSlicedCycles() noexcept;
 

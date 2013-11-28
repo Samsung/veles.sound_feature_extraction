@@ -48,6 +48,14 @@ MemoryProtector::MemoryProtector(const void* cptr, size_t size) noexcept
   page_ = ptr;
 }
 
+void* MemoryProtector::page() const noexcept {
+  return page_;
+}
+
+size_t MemoryProtector::size() const noexcept {
+  return size_;
+}
+
 long int MemoryProtector::PageSize() noexcept {
   static auto page_size = sysconf(_SC_PAGE_SIZE);
   return page_size;

@@ -22,6 +22,9 @@ class MemoryProtector {
   MemoryProtector(const void* cptr, size_t size) noexcept;
   ~MemoryProtector() noexcept;
 
+  void* page() const noexcept;
+  size_t size() const noexcept;
+
  protected:
   static long int PageSize() noexcept;
 
