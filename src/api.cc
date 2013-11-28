@@ -42,9 +42,11 @@ extern "C" {
 struct FeaturesConfiguration {
   std::unique_ptr<TransformTree> Tree;
   size_t InputSize;
+  int Chunks;
 };
 
-size_t chunk_size = 60 * 44100;
+/// @brief One second of standard 2-channel 44100Hz audio
+size_t chunk_size = 60 * 44100 * 2;
 
 #define BLAME(x) EINA_LOG_ERR("Error: " #x " is null (function %s, " \
                               "line %i)\n", \
@@ -264,11 +266,16 @@ FeaturesConfiguration *setup_features_extraction(
     return nullptr;
   }
 
+  int chunks = 1;
+  while (bufferSize / chunks > chunk_size) {
+    chunks++;
+  }
   auto format = std::make_shared<ArrayFormat16>(
-      std::min(bufferSize, chunk_size), samplingRate);
+      std::min(bufferSize, bufferSize / chunks), samplingRate);
   auto config = new FeaturesConfiguration();
   config->Tree = std::make_unique<TransformTree>(format);
   config->InputSize = bufferSize;
+  config->Chunks = chunks;
   for (auto& featpair : featmap) {
     try {
       config->Tree->AddFeature(featpair.first, featpair.second);
@@ -309,7 +316,12 @@ FeatureExtractionResult extract_speech_features(
   CHECK_NULL_RET(results, FEATURE_EXTRACTION_RESULT_ERROR);
 
   std::unordered_map<std::string, std::shared_ptr<Buffers>> retmap;
-  for (size_t i = 0; i < fc->InputSize; i += chunk_size) {
+  size_t step = fc->InputSize / fc->Chunks;
+  size_t length = step * fc->Chunks;
+  for (size_t i = 0; i < length; i += step) {
+    EINA_LOG_INFO("Evaluating [%d%%, %d%%]...",
+                  static_cast<int>(i * 100 / length),
+                  static_cast<int>((i + step) * 100 / length));
     try {
       retmap = fc->Tree->Execute(buffer + i);
     }
@@ -333,11 +345,7 @@ FeatureExtractionResult extract_speech_features(
       size_t size = size_each * res.second->Count();
       if (i == 0) {
         (*resultLengths)[j] = 0;
-        if (fc->InputSize % chunk_size != 0) {
-          (*results)[j] = new char[size * (fc->InputSize / chunk_size + 1)];
-        } else {
-          (*results)[j] = new char[size * fc->InputSize / chunk_size];
-        }
+        (*results)[j] = new char[size * fc->Chunks];
       }
       for (size_t k = 0; k < res.second->Count(); k++) {
         memcpy(reinterpret_cast<char *>((*results)[j]) +
