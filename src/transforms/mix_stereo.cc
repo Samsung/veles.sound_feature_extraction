@@ -25,7 +25,13 @@ void MixStereo::Do(const int16_t* in, int16_t* out) const noexcept {
   int length = input_format_->Size();
   if (use_simd()) {
 #ifdef __AVX__
-    for (int i = 0; i < length - 15; i += 16) {
+    int offset = align_complement_i16(in);
+    for (int i = 0; i < offset; i += 2) {
+      int16_t l = in[i] / 2;
+      int16_t r = in[i + 1] / 2;
+      out[i / 2] = l + r;
+    }
+    for (int i = offset; i < length - offset - 15; i += 16) {
       __m128i vec1 = _mm_load_si128(
           reinterpret_cast<const __m128i*>(in + i));
       __m128i vec2 = _mm_load_si128(
@@ -33,9 +39,9 @@ void MixStereo::Do(const int16_t* in, int16_t* out) const noexcept {
       vec1 = _mm_srai_epi16(vec1, 1);
       vec2 = _mm_srai_epi16(vec2, 1);
       __m128i res = _mm_hadd_epi16(vec1, vec2);
-      _mm_store_si128(reinterpret_cast<__m128i*>(out + i / 2), res);
+      _mm_storeu_si128(reinterpret_cast<__m128i*>(out + i / 2), res);
     }
-    for (int i = (length & ~0xF); i < length; i += 2) {
+    for (int i = ((length - offset) & ~0xF); i < length; i += 2) {
       int16_t l = in[i] / 2;
       int16_t r = in[i + 1] / 2;
       out[i / 2] = l + r;
