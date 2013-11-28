@@ -46,7 +46,7 @@ float Centroid::Do(bool simd, const float* input, size_t length)
     sums = _mm256_hadd_ps(sums, sums);
     float lowerSum = _mm256_get_ps(sums, 0) + _mm256_get_ps(sums, 4),
         upperSum = _mm256_get_ps(sums, 1) + _mm256_get_ps(sums, 5);
-    for (int i = ((ilength >> 4) << 4); i < ilength; i++) {
+    for (int i = (ilength & ~0xF); i < ilength; i++) {
       float val = input[i];
       lowerSum += val;
       upperSum += i * val;
@@ -80,7 +80,7 @@ float Centroid::Do(bool simd, const float* input, size_t length)
             vget_lane_f32(lowerSums2, 0) + vget_lane_f32(lowerSums2, 1),
         upperSum =
             vget_lane_f32(upperSums2, 0) + vget_lane_f32(upperSums2, 1);
-    for (int i = ((ilength >> 3) << 3); i < ilength; i++) {
+    for (int i = (ilength & ~0x7); i < ilength; i++) {
       float val = input[i];
       lowerSum += val;
       upperSum += i * val;

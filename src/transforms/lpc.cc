@@ -17,8 +17,6 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-RTP(LPC, error)
-
 LPC::LPC() : error_(kDefaultError) {
 }
 
@@ -41,6 +39,7 @@ void LPC::Do(const float* in, float* out) const noexcept {
   }
 }
 
+RTP(LPC, error)
 REGISTER_TRANSFORM(LPC);
 
 }  // namespace transforms

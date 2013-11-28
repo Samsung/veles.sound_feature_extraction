@@ -17,9 +17,6 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-RTP(LSP, intervals)
-RTP(LSP, bisects)
-
 LSP::LSP() : intervals_(kDefaultIntervals), bisects_(kDefaultBisects) {
 }
 
@@ -36,6 +33,8 @@ void LSP::Do(const float* in, float* out) const noexcept {
              2.f / intervals_, out);
 }
 
+RTP(LSP, intervals)
+RTP(LSP, bisects)
 REGISTER_TRANSFORM(LSP);
 
 }  // namespace transforms
