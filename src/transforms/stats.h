@@ -14,9 +14,7 @@
 #define SRC_TRANSFORMS_STATS_H_
 
 #include <set>
-#include "src/formats/fixed_array.h"
 #include "src/formats/array_format.h"
-#include "src/formats/single_format.h"
 #include "src/omp_transform_base.h"
 
 namespace sound_feature_extraction {
@@ -31,6 +29,7 @@ enum StatsType {
 };
 
 namespace internal {
+constexpr const char* kStatsTypeAllStr = "all";
 constexpr const char* kStatsTypeAverageStr = "average";
 constexpr const char* kStatsTypeStdDeviationStr = "stddev";
 constexpr const char* kStatsTypeSkewnessStr = "skewness";
@@ -82,11 +81,8 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 class Stats : public OmpTransformBase<formats::ArrayFormatF,
-                              formats::ArrayFormat<
-                                  formats::FixedArray<kStatsTypeCount>>>  {
+                                      formats::ArrayFormatF>  {
  public:
-  typedef formats::FixedArray<kStatsTypeCount> StatsArray;
-
   Stats();
 
   TRANSFORM_INTRO("Stats", "Calculate statistical measures, such as skew "
@@ -97,6 +93,10 @@ class Stats : public OmpTransformBase<formats::ArrayFormatF,
      "Stats types to calculate (names separated with spaces, \"all\" for all).")
   TP(interval, int, kDefaultInterval,
      "\"Texture\" interval, must be bigger than 1. Zero means all buffers.")
+  TP(overlap, int, kDefaultOverlap,
+     "Overlap value, cannot be greater than (interval - 1).")
+
+  virtual void Initialize() const override;
 
  protected:
   typedef float(*CalculateFunc)(const float*);
@@ -106,13 +106,14 @@ class Stats : public OmpTransformBase<formats::ArrayFormatF,
              kStatsTypeSkewness, kStatsTypeKurtosis };
   }
   static constexpr int kDefaultInterval = 0;
+  static constexpr int kDefaultOverlap = 0;
   static const std::unordered_map<int, CalculateFunc> kStatsFuncs;
 
   virtual size_t OnInputFormatChanged(size_t buffersCount) override;
 
-  virtual void Do(const float* in, StatsArray* out) const noexcept override;
+  virtual void Do(const float* in, float* out) const noexcept override;
 
-  void Calculate(const float* rawMoments, StatsArray* out) const noexcept;
+  void Calculate(const float* rawMoments, float* out) const noexcept;
   static void CalculateRawMoments(bool simd, const float* in, int startIndex,
                                   int length, float* rawMoments) noexcept;
   static float CalculateAverage(const float* rawMoments) noexcept;

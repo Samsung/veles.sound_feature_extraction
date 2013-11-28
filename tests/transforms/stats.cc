@@ -15,9 +15,10 @@
 #include "src/transforms/stats.h"
 #include "tests/transforms/transform_test.h"
 
-using sound_feature_extraction::formats::SingleFormatF;
+using sound_feature_extraction::formats::ArrayFormatF;
 using sound_feature_extraction::BuffersBase;
 using sound_feature_extraction::transforms::Stats;
+using sound_feature_extraction::transforms::StatsType;
 
 class StatsTest : public TransformTest<Stats> {
  public:
@@ -40,10 +41,10 @@ class StatsTest : public TransformTest<Stats> {
 
 TEST_F(StatsTest, DoAll) {
   Do((*Input)[0], (*Output)[0]);
-  ASSERT_EQF(1, (*Output)[0][0][0]);
-  ASSERT_EQF(2, (*Output)[0][0][1]);
-  ASSERT_EQF(0, (*Output)[0][0][2]);
-  ASSERT_EQF(0, (*Output)[0][0][3]);
+  ASSERT_EQF(1, (*Output)[0][0]);
+  ASSERT_EQF(2, (*Output)[0][1]);
+  ASSERT_EQF(0, (*Output)[0][2]);
+  ASSERT_EQF(0, (*Output)[0][3]);
 }
 
 TEST_F(StatsTest, DoInterval) {
@@ -51,10 +52,35 @@ TEST_F(StatsTest, DoInterval) {
   RecreateOutputBuffers();
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < 2; i++) {
-    ASSERT_EQF(1, (*Output)[0][i][0]);
-    ASSERT_EQF(2, (*Output)[0][i][1]);
-    ASSERT_EQF(0, (*Output)[0][i][2]);
-    ASSERT_EQF(0, (*Output)[0][i][3]);
+    ASSERT_EQF(1, (*Output)[0][i * 4]);
+    ASSERT_EQF(2, (*Output)[0][i * 4 + 1]);
+    ASSERT_EQF(0, (*Output)[0][i * 4 + 2]);
+    ASSERT_EQF(0, (*Output)[0][i * 4 + 3]);
+  }
+}
+
+TEST_F(StatsTest, DoIntervalAverageOnly) {
+  set_interval(25000);
+  set_types({ StatsType::kStatsTypeAverage });
+  RecreateOutputBuffers();
+  ASSERT_EQ(2, output_format_->Size());
+  Do((*Input)[0], (*Output)[0]);
+  for (int i = 0; i < 2; i++) {
+    ASSERT_EQF(1, (*Output)[0][i]);
+  }
+}
+
+TEST_F(StatsTest, DoIntervalOverlap) {
+  set_interval(25000);
+  set_overlap(12500);
+  RecreateOutputBuffers();
+  ASSERT_EQ(3 * 4, output_format_->Size());
+  Do((*Input)[0], (*Output)[0]);
+  for (int i = 0; i < 3; i++) {
+    ASSERT_EQF(1, (*Output)[0][i * 4]) << i;
+    ASSERT_EQF(2, (*Output)[0][i * 4 + 1]) << i;
+    ASSERT_EQF(0, (*Output)[0][i * 4 + 2]) << i;
+    ASSERT_EQF(0, (*Output)[0][i * 4 + 3]) << i;
   }
 }
 

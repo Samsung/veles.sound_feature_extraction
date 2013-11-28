@@ -36,6 +36,10 @@ std::set<StatsType> Parse(const std::string& value,
     throw InvalidParameterValueException();
   }
 
+  if (value == internal::kStatsTypeAllStr) {
+    return { kStatsTypeAverage, kStatsTypeStdDeviation, kStatsTypeSkewness,
+             kStatsTypeKurtosis };
+  }
   std::set<StatsType> ret;
   std::transform(boost::sregex_token_iterator(value.begin(), value.end(),
                                             boost::regex("\\s*(\\w+)\\s*"),
@@ -62,7 +66,8 @@ const std::unordered_map<int, Stats::CalculateFunc> Stats::kStatsFuncs {
 
 Stats::Stats()
     : types_(kDefaultStatsTypes()),
-      interval_(kDefaultInterval) {
+      interval_(kDefaultInterval),
+      overlap_(kDefaultOverlap) {
 }
 
 ALWAYS_VALID_TP(Stats, types)
@@ -71,46 +76,60 @@ bool Stats::validate_interval(const int& value) noexcept {
   return value >= 2;
 }
 
+bool Stats::validate_overlap(const int& value) noexcept {
+  return value >= 0;
+}
+
+void Stats::Initialize() const {
+  if (interval_ > 0 && overlap_ >= interval_) {
+    throw InvalidParameterValueException("overlap", std::to_string(overlap_),
+                                         HostName());
+  }
+}
+
 size_t Stats::OnInputFormatChanged(size_t buffersCount) {
   if (interval_ != 0) {
-    auto ratio = input_format_->Size() / interval_;
-    if ((input_format_->Size() % interval_) == 0) {
-      output_format_->SetSize(ratio);
+    int step = interval_ - overlap_;
+    auto ratio = (input_format_->Size() - interval_) / step + 1;
+    if (((input_format_->Size() - interval_) % step) == 0) {
+      output_format_->SetSize(ratio * types_.size());
     } else {
-      output_format_->SetSize(ratio + 1);
+      output_format_->SetSize((ratio + 1) * types_.size());
     }
   } else {
-    output_format_->SetSize(1);
+    output_format_->SetSize(types_.size());
   }
   return buffersCount;
 }
 
-void Stats::Do(const float* in, StatsArray* out) const noexcept {
-  float rawMoments[4];
+void Stats::Do(const float* in, float* out) const noexcept {
+  float rawMoments[kStatsTypeCount];
   if (interval_ == 0) {
     CalculateRawMoments(true, in, 0, input_format_->Size(), rawMoments);
     Calculate(rawMoments, out);
   } else {
     size_t i;
-    for (i = 0; i < input_format_->Size() - interval_ + 1; i+= interval_) {
+    size_t step = interval_ - overlap_;
+    for (i = 0; i < input_format_->Size() - interval_ + 1; i += step) {
       CalculateRawMoments(true, in, i, interval_, rawMoments);
-      Calculate(rawMoments, out + i / interval_);
+      Calculate(rawMoments, out + i / step * types_.size());
     }
-    if (input_format_->Size() % interval_ != 0) {
-      CalculateRawMoments(true, in, i, input_format_->Size() - i, rawMoments);
-      Calculate(rawMoments, out + i / interval_);
+    if ((input_format_->Size() - interval_) % step != 0) {
+      int index = input_format_->Size() - interval_;
+      CalculateRawMoments(true, in, index, interval_, rawMoments);
+      Calculate(rawMoments, out + i / step * types_.size());
     }
   }
 }
 
-void Stats::Calculate(const float* rawMoments, StatsArray* out) const noexcept {
+void Stats::Calculate(const float* rawMoments, float* out) const noexcept {
   for (auto stat : types_) {
     int sind = 0;
     int istat = stat;
     while (istat >>= 1) {
       sind++;
     }
-    (*out)[sind] = kStatsFuncs.find(stat)->second(rawMoments);
+    out[sind] = kStatsFuncs.find(stat)->second(rawMoments);
   }
 }
 
@@ -120,10 +139,10 @@ void Stats::CalculateRawMoments(bool simd, const float* in, int startIndex,
   auto end_index = startIndex + length;
   if (simd) {
 #ifdef __AVX__
-    __m256 avg1vec = _mm256_set1_ps(0);
-    __m256 avg2vec = _mm256_set1_ps(0);
-    __m256 avg3vec = _mm256_set1_ps(0);
-    __m256 avg4vec = _mm256_set1_ps(0);
+    __m256 avg1vec = _mm256_setzero_ps();
+    __m256 avg2vec = _mm256_setzero_ps();
+    __m256 avg3vec = _mm256_setzero_ps();
+    __m256 avg4vec = _mm256_setzero_ps();
     for (int i = startIndex; i < end_index - 7; i+=8) {
       __m256 val = _mm256_loadu_ps(in + i);
       avg1vec = _mm256_add_ps(avg1vec, val);
@@ -260,17 +279,17 @@ float Stats::CalculateKurtosis(const float* rawMoments) noexcept {
   float avg4 = rawMoments[3];
   double u2 = avg2 - avg1 * avg1;
   if (u2 == 0) {
-    return 0.f;
+    return -2.f;
   }
   double u4 = avg4 - 4 * avg3 * avg1 + 6 * avg2 * avg1 * avg1
       - 3 * avg1 * avg1 * avg1 * avg1;
   auto value = u4 / (u2 * u2) - 3;
-  // assert(value >= -2);
   return value;
 }
 
 RTP(Stats, types)
 RTP(Stats, interval)
+RTP(Stats, overlap)
 REGISTER_TRANSFORM(Stats);
 
 }  // namespace transforms
