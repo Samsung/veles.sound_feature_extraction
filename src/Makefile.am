@@ -36,7 +36,7 @@ transforms/centroid.cc transforms/zerocrossings.cc transforms/rolloff.cc \
 transforms/flux.cc transforms/beat.cc transforms/autocorrelation.cc \
 transforms/delta.cc transforms/short_time_msn.cc transforms/preemphasis.cc \
 transforms/stats.cc transforms/window_splitter.cc transforms/common.cc \
-transforms/single_to_raw.cc transforms/iir_filter_base.cc \
+transforms/singles_to_array.cc transforms/iir_filter_base.cc \
 transforms/mix_stereo.cc transforms/peak_detection.cc transforms/identity.cc \
 transforms/peak_analysis.cc transforms/peak_dynamic_programming.cc \
 transforms/lpc.cc transforms/lsp.cc transforms/lpc_cc.cc

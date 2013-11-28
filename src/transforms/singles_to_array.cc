@@ -1,4 +1,4 @@
-/*! @file single_to_raw.cc
+/*! @file singles_to_array.cc
  *  @brief Merge all single-s to one solid array.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -10,14 +10,14 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#include "src/transforms/single_to_raw.h"
+#include "src/transforms/singles_to_array.h"
 
 namespace sound_feature_extraction {
 namespace transforms {
 
-using SingleToRawF = SingleToRaw<float>;
+using SinglesToArrayF = SinglesToArray<float>;
 
-REGISTER_TRANSFORM(SingleToRawF);
+REGISTER_TRANSFORM(SinglesToArrayF);
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction

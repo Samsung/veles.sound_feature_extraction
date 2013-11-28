@@ -1,4 +1,4 @@
-/*! @file single_to_raw.h
+/*! @file singles_to_array.h
  *  @brief Merge all single-s to one solid array.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -10,8 +10,8 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#ifndef SRC_TRANSFORMS_SINGLE_TO_RAW_H_
-#define SRC_TRANSFORMS_SINGLE_TO_RAW_H_
+#ifndef SRC_TRANSFORMS_SINGLES_TO_ARRAY_H_
+#define SRC_TRANSFORMS_SINGLES_TO_ARRAY_H_
 
 #include "src/transform_base.h"
 #include "src/formats/single_format.h"
@@ -21,11 +21,11 @@ namespace sound_feature_extraction {
 namespace transforms {
 
 template <class T>
-class SingleToRaw : public TransformBase<formats::SingleFormat<T>,
+class SinglesToArray : public TransformBase<formats::SingleFormat<T>,
                                          formats::ArrayFormat<T>> {
  public:
   TRANSFORM_INTRO("Merge", "Merge all single-s to one solid array.",
-                  SingleToRaw)
+                  SinglesToArray)
 
  protected:
   virtual size_t OnInputFormatChanged(size_t buffersCount) override final {
@@ -43,4 +43,4 @@ class SingleToRaw : public TransformBase<formats::SingleFormat<T>,
 
 }  // namespace transforms
 }  // namespace sound_feature_extraction
-#endif  // SRC_TRANSFORMS_SINGLE_TO_RAW_H_
+#endif  // SRC_TRANSFORMS_SINGLES_TO_ARRAY_H_
