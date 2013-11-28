@@ -25,6 +25,10 @@ class Rotate : public UniformFormatOmpAwareTransform<formats::ArrayFormat<T>> {
                   "same index get to the same buffer.",
                   Rotate)
 
+  virtual bool BufferInvariant() const noexcept override {
+    return false;
+  }
+
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override final {
     this->output_format_->SetSize(buffersCount);
