@@ -63,7 +63,7 @@ TEST_F(StatsTest, DoIntervalAverageOnly) {
   set_interval(25000);
   set_types({ StatsType::kStatsTypeAverage });
   RecreateOutputBuffers();
-  ASSERT_EQ(2, output_format_->Size());
+  ASSERT_EQ(2U, output_format_->Size());
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < 2; i++) {
     ASSERT_EQF(1, (*Output)[0][i]);
@@ -74,7 +74,7 @@ TEST_F(StatsTest, DoIntervalOverlap) {
   set_interval(25000);
   set_overlap(12500);
   RecreateOutputBuffers();
-  ASSERT_EQ(3 * 4, output_format_->Size());
+  ASSERT_EQ(3 * 4U, output_format_->Size());
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < 3; i++) {
     ASSERT_EQF(1, (*Output)[0][i * 4]) << i;
