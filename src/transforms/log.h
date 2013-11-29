@@ -59,14 +59,25 @@ namespace transforms {
 template <class F>
 class LogBase : public virtual OmpUniformFormatTransform<F> {
  public:
-  LogBase() : base_(kDefaultLogBase) {
+  LogBase() : base_(kDefaultLogBase), add1_(kDefaultAdd1),
+              scale_(kDefaultScale) {
   }
-  TRANSFORM_PARAMETERS_SUPPORT(LogBase<F>)
+
+  TRANSFORM_INTRO("Log",
+                  "Takes the logarithm from each real value of the signal.",
+                  LogBase<F>)
 
   TP(base, LogarithmBase, kDefaultLogBase, "Logarithm base (2, 10 or e).")
+  TP(add1, bool, kDefaultAdd1,
+     "Add 1 to values before taking the logarithm. This trick avoids getting "
+     "NaNs on zeros.")
+  TP(scale, float, kDefaultScale,
+     "The number to multiply each value by before taking the logarithm.")
 
  protected:
   static constexpr LogarithmBase kDefaultLogBase = LogarithmBase::kE;
+  static constexpr bool kDefaultAdd1 = true;
+  static constexpr float kDefaultScale = 1.f;
 };
 
 template <class F>
@@ -78,17 +89,25 @@ bool LogBase<F>::validate_base(const LogarithmBase&) noexcept {
 }
 
 template <class F>
+bool LogBase<F>::validate_add1(const bool&) noexcept {
+  return true;
+}
+
+template <class F>
+bool LogBase<F>::validate_scale(const float& val) noexcept {
+  return val > 0;
+}
+
+template <class F>
 RTP(LogBase<F>, base)
 
 template <class F>
-class Log : public LogBase<F> {
- public:
-  TRANSFORM_INTRO("Log",
-                  "Takes the logarithm from each real value of the signal.",
-                  LogBase<F>)
-};
+RTP(LogBase<F>, add1)
 
-class LogRaw : public Log<formats::ArrayFormatF> {
+template <class F>
+RTP(LogBase<F>, scale)
+
+class LogRaw : public LogBase<formats::ArrayFormatF> {
  protected:
   virtual void Do(const float* in, float* out) const noexcept override;
 
@@ -96,8 +115,7 @@ class LogRaw : public Log<formats::ArrayFormatF> {
           float* output) const noexcept;
 };
 
-class LogRawInverse : public OmpInverseUniformFormatTransform<LogRaw>,
-                      public LogBase<formats::ArrayFormatF> {
+class LogRawInverse : public OmpInverseUniformFormatTransform<LogRaw> {
  protected:
   virtual void Do(const float* in, float* out) const noexcept override;
 
@@ -105,13 +123,12 @@ class LogRawInverse : public OmpInverseUniformFormatTransform<LogRaw>,
           float* output) const noexcept;
 };
 
-class LogSingle : public Log<formats::SingleFormatF> {
+class LogSingle : public LogBase<formats::SingleFormatF> {
  protected:
   virtual void Do(const float& in, float* out) const noexcept override;
 };
 
-class LogSingleInverse : public OmpInverseUniformFormatTransform<LogSingle>,
-                         public LogBase<formats::SingleFormatF> {
+class LogSingleInverse : public OmpInverseUniformFormatTransform<LogSingle> {
  protected:
   virtual void Do(const float& in, float* out) const noexcept override;
 };

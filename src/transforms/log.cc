@@ -36,47 +36,61 @@ LogarithmBase Parse(const std::string& value, identity<LogarithmBase>) {
 
 void LogRaw::Do(bool simd, const float* input, int length,
                 float* output) const noexcept {
+  bool vadd1 = add1();
+  float vscale = scale();
   switch (base()) {
     case LogarithmBase::kE: {
       if (simd) {
 #ifdef __AVX__
         for (int j = 0; j < length - 7; j += 8) {
           __m256 vec = _mm256_load_ps(input + j);
+          if (vscale != 1.f) {
+            vec = _mm256_mul_ps(vec, _mm256_set1_ps(vscale));
+          }
+          if (vadd1) {
+            vec = _mm256_add_ps(vec, _mm256_set1_ps(1.f));
+          }
           vec = log256_ps(vec);
           _mm256_store_ps(output + j, vec);
         }
-        for (int j = ((length >> 3) << 3); j < length; j++) {
-          output[j] = logf(input[j]);
+        for (int j = (length & ~0x7); j < length; j++) {
+          output[j] = logf(input[j] * vscale + vadd1);
         }
       } else {
 #elif defined(__ARM_NEON__)
         int length = input_format_->Size();
         for (int j = 0; j < length - 3; j += 4) {
           float32x4_t vec = vld1q_f32(input + j);
+          if (vscale != 1.f) {
+            vec = vmulq_f32(vec, vdupq_n_f32(vscale));
+          }
+          if (vadd1) {
+            vec = vaddq_f32(vec, vdupq_n_f32(1.f));
+          }
           vec = log_ps(vec);
           vst1q_f32(output + j, vec);
         }
-        for (int j = ((length >> 2) << 2); j < length; j++) {
-          output[j] = logf(input[j]);
+        for (int j = (length & ~0x3); j < length; j++) {
+          output[j] = logf(input[j] * vscale + vadd1);
         }
       } else {
 #else
       } {
 #endif
         for (int j = 0; j < length; j++) {
-          output[j] = logf(input[j]);
+          output[j] = logf(input[j] * vscale + vadd1);
         }
       }
       break;
     }
     case LogarithmBase::k2:
       for (int j = 0; j < length; j++) {
-        output[j] = log2f(input[j]);
+        output[j] = log2f(input[j] * vscale + vadd1);
       }
       break;
     case LogarithmBase::k10:
       for (int j = 0; j < length; j++) {
-        output[j] = log10f(input[j]);
+        output[j] = log10f(input[j] * vscale + vadd1);
       }
       break;
   }
@@ -92,15 +106,18 @@ void LogRawInverse::Do(const float* in UNUSED, float* out UNUSED)
 }
 
 void LogSingle::Do(const float& in, float* out) const noexcept {
+  float val = in;
+  val *= scale();
+  val += add1();
   switch (base()) {
     case LogarithmBase::kE:
-      *out = logf(in);
+      *out = logf(val);
       break;
     case LogarithmBase::k2:
-      *out = log2f(in);
+      *out = log2f(val);
       break;
     case LogarithmBase::k10:
-      *out = log10f(in);
+      *out = log10f(val);
       break;
   }
 }

@@ -39,8 +39,28 @@ TEST_F(LogTest, Do) {
   Do((*Input)[0], (*Output)[0]);
   for (int i = 0; i < Size; i++) {
     float log = (*Output)[0][i];
+    float vlog = logf((i + Size / 2.0f) / Size + 1);
+    ASSERT_EQF(vlog, log) << i;
+  }
+}
+
+TEST_F(LogTest, DoScale) {
+  set_scale(1000);
+  Do((*Input)[0], (*Output)[0]);
+  for (int i = 0; i < Size; i++) {
+    float log = (*Output)[0][i];
+    float vlog = logf((i + Size / 2.0f) / Size * 1000 + 1);
+    ASSERT_EQF(vlog, log) << i;
+  }
+}
+
+TEST_F(LogTest, DoBare) {
+  set_add1(false);
+  Do((*Input)[0], (*Output)[0]);
+  for (int i = 0; i < Size; i++) {
+    float log = (*Output)[0][i];
     float vlog = logf((i + Size / 2.0f) / Size);
-    ASSERT_EQF(vlog, log);
+    ASSERT_EQF(vlog, log) << i;
   }
 }
 
