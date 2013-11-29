@@ -20,11 +20,13 @@ namespace transforms {
 
 size_t RDFT::OnFormatChanged(size_t buffersCount) {
   output_format_->SetSize(input_format_->Size() + 2);
+  fftf_ensure_is_supported(FFTF_TYPE_REAL, input_format_->Size());
   return buffersCount;
 }
 
 size_t RDFTInverse::OnFormatChanged(size_t buffersCount) {
   output_format_->SetSize(input_format_->Size() - 2);
+  fftf_ensure_is_supported(FFTF_TYPE_REAL, output_format_->Size());
   return buffersCount;
 }
 
@@ -37,7 +39,7 @@ void RDFT::Do(const BuffersBase<float*>& in,
     inputs[i] = in[i];
     outputs[i] = (*out)[i];
   }
-  auto fftPlan = std::unique_ptr<FFTFInstance, void (*)(FFTFInstance *)>(
+  auto fft_plan = std::unique_ptr<FFTFInstance, void (*)(FFTFInstance *)>(
       fftf_init_batch(
           FFTF_TYPE_REAL,
           FFTF_DIRECTION_FORWARD,
@@ -48,7 +50,7 @@ void RDFT::Do(const BuffersBase<float*>& in,
           &inputs[0], &outputs[0]),
       fftf_destroy);
 
-  fftf_calc(fftPlan.get());
+  fftf_calc(fft_plan.get());
 }
 
 void RDFTInverse::Do(const BuffersBase<float*>& in,
@@ -60,7 +62,7 @@ void RDFTInverse::Do(const BuffersBase<float*>& in,
     inputs[i] = in[i];
     outputs[i] = (*out)[i];
   }
-  auto fftPlan = std::unique_ptr<FFTFInstance, void (*)(FFTFInstance *)>(
+  auto fft_plan = std::unique_ptr<FFTFInstance, void (*)(FFTFInstance *)>(
       fftf_init_batch(
           FFTF_TYPE_REAL,
           FFTF_DIRECTION_BACKWARD,
@@ -71,7 +73,7 @@ void RDFTInverse::Do(const BuffersBase<float*>& in,
           &inputs[0], &outputs[0]),
       fftf_destroy);
 
-  fftf_calc(fftPlan.get());
+  fftf_calc(fft_plan.get());
   for (size_t i = 0; i < in.Count(); i++) {
     real_multiply_scalar(outputs[i], length, 1.0f / length, outputs[i]);
   }

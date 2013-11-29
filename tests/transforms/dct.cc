@@ -36,7 +36,7 @@ class DCTInverseTest : public TransformTest<DCTInverse> {
   int Size;
 
   virtual void SetUp() {
-    Size = 512;
+    Size = 500;
     SetUpTransform(1, Size, 16000);
     for (int i = 0; i < Size; i++) {
       (*Input)[0][i] = (i - Size / 2.0f) / Size;

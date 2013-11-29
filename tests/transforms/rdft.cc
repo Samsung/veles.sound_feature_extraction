@@ -61,7 +61,7 @@ TEST(RDFT, Multiple) {
   tt.set_validate_after_each_transform(true);
   // We have to apply FilterBank twice since Energy results in
   // squared magnitude
-  tt.AddFeature("3RDFT", { { "Window", "length=512, type=rectangular" },
+  tt.AddFeature("3RDFT", { { "Window", "length=500, type=rectangular" },
       { "RDFT", "" }, { "IRDFT", "" }, { "RDFT", "" }, { "IRDFT", "" },
       { "RDFT", "" }, { "IRDFT", "" }
   });

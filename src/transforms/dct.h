@@ -30,6 +30,8 @@ class DCT : public UniformFormatTransform<formats::ArrayFormatF> {
   }
 
  protected:
+  virtual size_t OnFormatChanged(size_t buffersCount) override;
+
   virtual void Do(const BuffersBase<float*>& in,
                   BuffersBase<float*>* out) const noexcept override;
 };
@@ -41,6 +43,8 @@ class DCTInverse : public InverseUniformFormatTransform<DCT> {
   }
 
  protected:
+  virtual size_t OnFormatChanged(size_t buffersCount) override;
+
   virtual void Do(const BuffersBase<float*>& in,
                   BuffersBase<float*>* out) const noexcept override;
 };
