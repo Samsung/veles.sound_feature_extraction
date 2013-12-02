@@ -77,7 +77,7 @@ float FilterBank::LinearToScale(ScaleType type, float freq) {
                           5.0f * logf(0.994f +
                                       powf((freq + 75.4f) / 2173.0f, 1.347f)));
     case ScaleType::kMidi: {
-      assert(freq >= kMidiFreqs[0]);
+      assert(freq >= kMidiFreqs[0] / 2 + kMidiFreqs[11] / 4);
       int oct = 0;
       float oct_value = freq;
       for (; oct <= log2f(FilterBase<std::nullptr_t>::kMaxFilterFrequency);
@@ -123,15 +123,18 @@ float FilterBank::ScaleToLinear(ScaleType type, float value) {
       return 2173.0f * powf(expf((expf(value / 8.96f) - 0.978f) / 5.0f) -
                             0.994f, 1.0f / 1.347f) - 75.4f;
     case ScaleType::kMidi: {
-      assert(value >= 0);
-      int oct = floorf(value / 12);
-      float exact_note = fmodf(value, 12);
-      int note = floorf(exact_note);
-      float base_freq = kMidiFreqs[note];
-      float dist = modff(exact_note, &value);
-      float high_note = note < 11? kMidiFreqs[note + 1] : kMidiFreqs[0] * 2;
-      float delta = (high_note - kMidiFreqs[note]) * dist;
-      return (base_freq + delta) * (1 << oct);
+      assert(value >= -0.5);
+      if (value >= 0) {
+        int oct = floorf(value / 12);
+        float exact_note = fmodf(value, 12);
+        int note = floorf(exact_note);
+        float base_freq = kMidiFreqs[note];
+        float dist = modff(exact_note, &value);
+        float high_note = note < 11? kMidiFreqs[note + 1] : kMidiFreqs[0] * 2;
+        float delta = (high_note - kMidiFreqs[note]) * dist;
+        return (base_freq + delta) * (1 << oct);
+      }
+      return kMidiFreqs[0] + value * (kMidiFreqs[0] - kMidiFreqs[11] / 2);
     }
   }
   return 0.0f;
