@@ -53,7 +53,11 @@ class Selector : public OmpUniformFormatTransform<formats::ArrayFormatF> {
   TRANSFORM_INTRO("Selector", "Selects the specified part of input.",
                   Selector)
 
-  TP(length, int, kDefaultLength, "The number of values to pass through.")
+  TP(length, int, kDefaultLength,
+     "The resulting vector length. 0 means the length of the input.")
+  TP(select, int, kDefaultSelect,
+     "The length of picked up input values, The rest will be set to zero. "
+     "0 means the length of the output.")
   TP(from, Anchor, kDefaultAnchor,
      "The anchor of the selection. Can be either \"left\" or \"right\".")
 
@@ -62,7 +66,8 @@ class Selector : public OmpUniformFormatTransform<formats::ArrayFormatF> {
 
   virtual void Do(const float* in, float* out) const noexcept override;
 
-  static constexpr int kDefaultLength = 12;
+  static constexpr int kDefaultLength = 0;
+  static constexpr int kDefaultSelect = 0;
   static constexpr Anchor kDefaultAnchor = Anchor::kLeft;
 };
 

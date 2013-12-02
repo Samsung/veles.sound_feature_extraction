@@ -11,7 +11,7 @@
  */
 
 #include "src/transforms/selector.h"
-#include <algorithm>
+#include <simd/memory.h>
 
 namespace sound_feature_extraction {
 namespace transforms {
@@ -30,34 +30,52 @@ constexpr Anchor Selector::kDefaultAnchor;
 
 Selector::Selector()
     : length_(kDefaultLength),
+      select_(kDefaultSelect),
       from_(kDefaultAnchor) {
 }
 
 bool Selector::validate_length(const int& value) noexcept {
-  return value >= 1;
+  return value >= 0;
+}
+
+bool Selector::validate_select(const int& value) noexcept {
+  return value >= 0;
 }
 
 ALWAYS_VALID_TP(Selector, from)
 
 size_t Selector::OnFormatChanged(size_t buffersCount) {
-  output_format_->SetSize(std::min(static_cast<size_t>(length_),
-                                   input_format_->Size()));
+  if (length_ == 0) {
+    length_ = input_format_->Size();
+  }
+  if (select_ == 0) {
+    select_ = length_;
+  }
+  output_format_->SetSize(length_);
+  if (select_ > static_cast<int>(input_format_->Size())) {
+    throw InvalidParameterValueException("select", std::to_string(select_),
+                                         HostName());
+  }
   return buffersCount;
 }
 
 void Selector::Do(const float* in, float* out) const noexcept {
-  int length = output_format_->Size();
-  int offset = (from_ == Anchor::kLeft?
-      0 : input_format_->Size() - length);
-  if (in != out) {
-    memcpy(out, in + offset, length * sizeof(in[0]));
-  } else if (from_ == Anchor::kRight) {
-    memmove(out, in + offset, length * sizeof(in[0]));
+  switch (from_) {
+    case Anchor::kLeft:
+      memcpy(out, in, select_ * sizeof(in[0]));
+      memsetf(out + select_, 0.f, length_ - select_);
+      break;
+    case Anchor::kRight:
+      memcpy(out + length_ - select_, in + input_format_->Size() - select_,
+             select_ * sizeof(in[0]));
+      memsetf(out, 0.f, length_ - select_);
+      break;
   }
 }
 
 RTP(Selector, from)
 RTP(Selector, length)
+RTP(Selector, select)
 REGISTER_TRANSFORM(Selector);
 
 }  // namespace transforms

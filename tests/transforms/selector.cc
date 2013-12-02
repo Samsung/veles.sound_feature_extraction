@@ -19,20 +19,19 @@ using sound_feature_extraction::transforms::Selector;
 
 class SelectorTest : public TransformTest<Selector> {
  public:
-  int Size;
+  int Size = 512;
 
   virtual void SetUp() {
-    set_from(sound_feature_extraction::transforms::Anchor::kLeft);
-    set_length(6);
-    Size = 512;
-    SetUpTransform(1, Size, 16000);
-    for (int i = 0; i < Size; i++) {
-      (*Input)[0][i] = i;
-    }
   }
 };
 
 TEST_F(SelectorTest, Do) {
+  set_from(sound_feature_extraction::transforms::Anchor::kLeft);
+  set_length(6);
+  SetUpTransform(1, Size, 16000);
+  for (int i = 0; i < Size; i++) {
+    (*Input)[0][i] = i;
+  }
   ASSERT_EQ(6U, output_format_->Size());
   Do((*Input)[0], (*Output)[0]);
   ASSERT_EQ(0, memcmp((*Input)[0],
@@ -43,4 +42,30 @@ TEST_F(SelectorTest, Do) {
   ASSERT_EQ(0, memcmp((*Input)[0] + 512 - 6,
                       (*Output)[0],
                       6 * sizeof(float)));  // NOLINT(*)
+}
+
+TEST_F(SelectorTest, DoSelect) {
+  set_from(sound_feature_extraction::transforms::Anchor::kLeft);
+  set_length(120);
+  set_select(80);
+  SetUpTransform(1, Size, 16000);
+  for (int i = 0; i < Size; i++) {
+    (*Input)[0][i] = i;
+  }
+  ASSERT_EQ(120U, output_format_->Size());
+  Do((*Input)[0], (*Output)[0]);
+  ASSERT_EQ(0, memcmp((*Input)[0],
+                      (*Output)[0],
+                      80 * sizeof(float)));  // NOLINT(*)
+  for (int i = 80; i < 120; i++) {
+    ASSERT_FLOAT_EQ(0, (*Output)[0][i]) << i;
+  }
+  set_from(sound_feature_extraction::transforms::Anchor::kRight);
+  Do((*Input)[0], (*Output)[0]);
+  ASSERT_EQ(0, memcmp((*Input)[0] + 512 - 80,
+                      (*Output)[0] + 40,
+                      80 * sizeof(float)));  // NOLINT(*)
+  for (int i = 0; i < 40; i++) {
+    ASSERT_FLOAT_EQ(0, (*Output)[0][i]) << i;
+  }
 }
