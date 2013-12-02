@@ -23,7 +23,7 @@ TEST(Features, CRP) {
   TransformTree tt( { 48000, 22050 } );
   tt.set_validate_after_each_transform(true);
   tt.AddFeature("CRP", { { "Window", "length=4096,step=2048" },{ "RDFT", "" },
-      { "SpectralEnergy", "" }, { "FilterBank", "type=midi,number=100,"
+      { "SpectralEnergy", "" }, { "FilterBank", "type=midi,number=108,"
           "frequency_min=7.946364,frequency_max=8137.0754,squared=true" },
       { "Log", "add1=true,scale=1000" }, { "DCT", "" },
       { "Selector", "select=70,from=right" }, { "IDCT", "" },
