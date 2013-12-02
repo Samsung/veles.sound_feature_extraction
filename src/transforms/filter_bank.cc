@@ -25,7 +25,8 @@ ScaleType Parse(const std::string& value, identity<ScaleType>) {
   static const std::unordered_map<std::string, ScaleType> map = {
     { internal::kScaleTypeLinearStr, ScaleType::kLinear },
     { internal::kScaleTypeMelStr, ScaleType::kMel },
-    { internal::kScaleTypeBarkStr, ScaleType::kBark }
+    { internal::kScaleTypeBarkStr, ScaleType::kBark },
+    { internal::kScaleTypeMidiStr, ScaleType::kMidi }
   };
   auto tit = map.find(value);
   if (tit == map.end()) {
@@ -50,11 +51,11 @@ bool FilterBank::validate_number(const int& value) noexcept {
   return value <= 2048;
 }
 
-bool FilterBank::validate_frequency_min(const int& value) noexcept {
+bool FilterBank::validate_frequency_min(const float& value) noexcept {
   return FilterBase<std::nullptr_t>::ValidateFrequency(value);
 }
 
-bool FilterBank::validate_frequency_max(const int& value) noexcept {
+bool FilterBank::validate_frequency_max(const float& value) noexcept {
   return FilterBase<std::nullptr_t>::ValidateFrequency(value);
 }
 
@@ -151,9 +152,12 @@ void FilterBank::CalcTriangularFilter(float center, float halfWidth,
   // Frequency resolution
   const float df = input_format_->SamplingRate() / (2 * N);
 
-  const int left_index = ceilf(left_freq / df);
-  const float center_index = center_freq / df;
-  const int right_index = floorf(right_freq / df);
+  int left_index = ceilf(left_freq / df);
+  float center_index = center_freq / df;
+  int right_index = floorf(right_freq / df);
+  if (right_index < left_index) {
+    left_index = right_index = center_index = roundf(center_index);
+  }
 /*
           /|\
          / | \

@@ -67,8 +67,9 @@ namespace transforms {
 class InvalidFrequencyRangeException : public ExceptionBase {
  public:
   InvalidFrequencyRangeException(size_t min, size_t max)
-  : ExceptionBase("FrequencyBands was set to a wrong frequency interval [" +
-                  std::to_string(min) + ", " + std::to_string(max) + "].") {
+  : ExceptionBase("Frequency range [" +
+                  std::to_string(min) + ", " + std::to_string(max) +
+                  "] is wrong.") {
   }
 };
 
@@ -87,9 +88,9 @@ class FilterBank : public OmpTransformBase<formats::ArrayFormatF,
      "The type of the scale. Supported values are \"linear\","
      "\"mel\", \"bark\" and \"midi\".")
   TP(number, int, kDefaultNumber, "The number of triangular filters.")
-  TP(frequency_min, int, kDefaultMinFrequency,
+  TP(frequency_min, float, kDefaultMinFrequency,
      "Minimal frequency of the filter bank.")
-  TP(frequency_max, int, kDefaultMaxFrequency,
+  TP(frequency_max, float, kDefaultMaxFrequency,
      "Maximal frequency of the filter bank.")
   TP(squared, bool, kDefaultSquared, "Apply the squared filter bank.")
   TP(debug, bool, false, "Dump the precalculated filter bank.")
@@ -109,8 +110,8 @@ class FilterBank : public OmpTransformBase<formats::ArrayFormatF,
 
   static constexpr ScaleType kDefaultScale = ScaleType::kMel;
   static constexpr int kDefaultNumber = 32;
-  static constexpr int kDefaultMinFrequency = 130;
-  static constexpr int kDefaultMaxFrequency = 6854;
+  static constexpr float kDefaultMinFrequency = 130;
+  static constexpr float kDefaultMaxFrequency = 6854;
   static constexpr bool kDefaultSquared = false;
   static constexpr float kMidiFreqs[] {
     8.1757989156, 8.6619572180, 9.1770239974, 9.722718241, 10.3008611535,
