@@ -28,7 +28,7 @@ TEST(Features, CRP) {
       { "Log", "add1=true,scale=1000" }, { "DCT", "" },
       { "Selector", "select=70,from=right" }, { "IDCT", "" },
       { "Reorder", "algorithm=chroma" },
-      { "Stats", "types=average,interval=10" }
+      { "Stats", "types=average,interval=9" }
   });
   int16_t* buffers = new int16_t[48000];
   memcpy(buffers, data, sizeof(data));
