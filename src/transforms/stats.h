@@ -80,6 +80,14 @@ namespace std {
 namespace sound_feature_extraction {
 namespace transforms {
 
+class UnableToCalculateStatsException : public ExceptionBase {
+ public:
+  UnableToCalculateStatsException(int inputSize, int interval)
+  : ExceptionBase("Interval " + std::to_string(interval) +
+                  " is bigger than the input size " +
+                  std::to_string(inputSize) + ".") {}
+};
+
 class Stats : public OmpTransformBase<formats::ArrayFormatF,
                                       formats::ArrayFormatF>  {
  public:

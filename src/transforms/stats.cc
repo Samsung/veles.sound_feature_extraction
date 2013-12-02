@@ -85,6 +85,9 @@ void Stats::Initialize() const {
     throw InvalidParameterValueException("overlap", std::to_string(overlap_),
                                          HostName());
   }
+  if (input_format_->Size() < static_cast<size_t>(interval_)) {
+    throw UnableToCalculateStatsException(input_format_->Size(), interval_);
+  }
 }
 
 size_t Stats::OnInputFormatChanged(size_t buffersCount) {
