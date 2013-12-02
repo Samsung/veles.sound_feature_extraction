@@ -196,14 +196,14 @@ TransformTree::Node::FindIdenticalChildTransform(
 
 void TransformTree::Node::BuildAllocationTree(
     memory_allocation::Node* node) const noexcept {
+  DBG("Requires %zu bytes",
+      BuffersCount * BoundTransform->OutputFormat()->SizeInBytes());
   node->Children.reserve(ChildrenCount());
   for (auto& subnodes : Children) {
     for (auto& inode : subnodes.second) {
-      memory_allocation::Node child(
-          inode->BuffersCount *
-              inode->BoundTransform->OutputFormat()->SizeInBytes(),
-          node,
-          inode.get());
+      size_t size =  inode->BuffersCount *
+          inode->BoundTransform->OutputFormat()->SizeInBytes();
+      memory_allocation::Node child(size, node, inode.get());
       node->Children.push_back(child);
       inode->BuildAllocationTree(&node->Children.back());
     }
