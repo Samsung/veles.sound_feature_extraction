@@ -17,7 +17,7 @@
 
 TEST(Energy, calculate_energy) {
   const int length = 510;
-  float array[length] __attribute__((aligned(64)));
+  alignas(std::alignment_of<__m256>::value) float array[length];
   for (int i = 0; i < length; i++) {
     array[i] = i + 1;
   }
