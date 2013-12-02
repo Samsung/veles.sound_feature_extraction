@@ -20,13 +20,11 @@ namespace transforms {
 
 size_t RDFT::OnFormatChanged(size_t buffersCount) {
   output_format_->SetSize(input_format_->Size() + 2);
-  fftf_ensure_is_supported(FFTF_TYPE_REAL, input_format_->Size());
   return buffersCount;
 }
 
 size_t RDFTInverse::OnFormatChanged(size_t buffersCount) {
   output_format_->SetSize(input_format_->Size() - 2);
-  fftf_ensure_is_supported(FFTF_TYPE_REAL, output_format_->Size());
   return buffersCount;
 }
 
@@ -39,6 +37,8 @@ void RDFT::Do(const BuffersBase<float*>& in,
     inputs[i] = in[i];
     outputs[i] = (*out)[i];
   }
+  fftf_set_backend(FFTF_BACKEND_NONE);
+  fftf_ensure_is_supported(FFTF_TYPE_REAL, input_format_->Size());
   auto fft_plan = std::unique_ptr<FFTFInstance, void (*)(FFTFInstance *)>(
       fftf_init_batch(
           FFTF_TYPE_REAL,
@@ -62,6 +62,8 @@ void RDFTInverse::Do(const BuffersBase<float*>& in,
     inputs[i] = in[i];
     outputs[i] = (*out)[i];
   }
+  fftf_set_backend(FFTF_BACKEND_NONE);
+  fftf_ensure_is_supported(FFTF_TYPE_REAL, output_format_->Size());
   auto fft_plan = std::unique_ptr<FFTFInstance, void (*)(FFTFInstance *)>(
       fftf_init_batch(
           FFTF_TYPE_REAL,

@@ -18,11 +18,6 @@
 namespace sound_feature_extraction {
 namespace transforms {
 
-size_t DCT::OnFormatChanged(size_t buffersCount) {
-  fftf_ensure_is_supported(FFTF_TYPE_DCT, input_format_->Size());
-  return buffersCount;
-}
-
 void DCT::Do(const BuffersBase<float*>& in,
              BuffersBase<float*>* out) const noexcept {
   int length = output_format_->Size();
@@ -32,6 +27,8 @@ void DCT::Do(const BuffersBase<float*>& in,
     inputs[i] = in[i];
     outputs[i] = (*out)[i];
   }
+  fftf_set_backend(FFTF_BACKEND_NONE);
+  fftf_ensure_is_supported(FFTF_TYPE_DCT, input_format_->Size());
   auto fft_plan = std::unique_ptr<FFTFInstance, void (*)(FFTFInstance *)>(
       fftf_init_batch(
           FFTF_TYPE_DCT,
@@ -46,11 +43,6 @@ void DCT::Do(const BuffersBase<float*>& in,
   fftf_calc(fft_plan.get());
 }
 
-size_t DCTInverse::OnFormatChanged(size_t buffersCount) {
-  fftf_ensure_is_supported(FFTF_TYPE_DCT, input_format_->Size());
-  return buffersCount;
-}
-
 void DCTInverse::Do(const BuffersBase<float*>& in,
                     BuffersBase<float*>* out) const noexcept {
   int length = output_format_->Size();
@@ -60,6 +52,8 @@ void DCTInverse::Do(const BuffersBase<float*>& in,
     inputs[i] = in[i];
     outputs[i] = (*out)[i];
   }
+  fftf_set_backend(FFTF_BACKEND_NONE);
+  fftf_ensure_is_supported(FFTF_TYPE_DCT, input_format_->Size());
   auto fft_plan = std::unique_ptr<FFTFInstance, void (*)(FFTFInstance *)>(
       fftf_init_batch(
           FFTF_TYPE_DCT,
