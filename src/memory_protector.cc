@@ -33,19 +33,19 @@ MemoryProtector::MemoryProtector(const void* cptr, size_t size) noexcept
     ptr += offset;
     size -= offset;
   }
+  page_ = ptr;
   auto num_pages = size / PageSize();
   if (num_pages < 1) {
     // too small memory block, cannot protect
     return;
   }
   size_ = num_pages * PageSize();
-  int res = mprotect(ptr, size_, PROT_READ);
+  int res = mprotect(page_, size_, PROT_READ);
   if (res != 0) {
     fprintf(stderr, "mprotect(%p, %zu, PROT_READ) failed with errno %d\n",
-            ptr, size_, errno);
+            page_, size_, errno);
     size_ = 0;
   }
-  page_ = ptr;
 }
 
 void* MemoryProtector::page() const noexcept {

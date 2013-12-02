@@ -248,7 +248,8 @@ void TransformTree::Node::Execute() noexcept {
     *ElapsedTime += checkPointFinish - checkPointStart;
     Host->transforms_cache_[BoundTransform->Name()].ElapsedTime += *ElapsedTime;
 
-    if (Host->memory_protection() && ChildrenCount() == 0) {
+    if (Host->memory_protection() && ChildrenCount() == 0 &&
+        OriginalNode == nullptr) {
       // This is a leaf, disable any further writing to the corr. memory block
       auto ptr = std::const_pointer_cast<const Buffers>(BoundBuffers)->Data();
       DBG("Enabling write protection on %p:%zu",
