@@ -97,7 +97,7 @@ class WindowSplitterTemplate
     int excess = realSize % this->step();
     if (excess != 0) {
       WRN("(input buffer size %zu - window length %zu) = %i is not "
-          "divisible by step %i. It's excess (%i samples) will not be "
+          "divisible by step %i. Its excess (%i samples) will not be "
           "processed.",
           this->input_format_->Size(), this->output_format_->Size(),
           realSize, this->step(), excess);
