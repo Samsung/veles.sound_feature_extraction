@@ -656,6 +656,9 @@ TransformTree::Execute(const int16_t* in) {
   for (auto& cit : transforms_cache_) {
     other_duration -= cit.second.ElapsedTime;
   }
+  if (other_duration.count() < 0) {
+    other_duration = std::chrono::high_resolution_clock::duration::zero();
+  }
   transforms_cache_["All"].ElapsedTime = all_duration;
   transforms_cache_["Other"].ElapsedTime = other_duration;
 
@@ -690,13 +693,15 @@ TransformTree::ExecutionTimeReport() const noexcept {
 void TransformTree::Dump(const std::string& dotFileName) const {
   // I am very sorry for such a complicated code. Please forgive me.
   // It just has to be here.
+  DBG("Writing %s...", dotFileName.c_str());
+
   const float redThreshold = 0.25f;
 
-  auto timeReport = ExecutionTimeReport();
-  bool includeTime = timeReport.size() > 0;
+  auto time_report = ExecutionTimeReport();
+  bool include_time = time_report.size() > 0;
   float maxTimeRatio = 0.0f;
-  if (includeTime) {
-    for (auto& tr : timeReport) {
+  if (include_time) {
+    for (auto& tr : time_report) {
       if (tr.second > maxTimeRatio && tr.first != "All") {
         maxTimeRatio = tr.second;
       }
@@ -704,7 +709,7 @@ void TransformTree::Dump(const std::string& dotFileName) const {
   }
   float redShift = redThreshold * maxTimeRatio;
   const int initialLight = 0x30;
-  auto allTime = timeReport["All"];
+  auto allTime = time_report["All"];
   std::ofstream fw;
   fw.exceptions(std::ifstream::failbit | std::ifstream::badbit);
   fw.open(dotFileName);
@@ -718,9 +723,9 @@ void TransformTree::Dump(const std::string& dotFileName) const {
     auto t = node.BoundTransform;
     node_counters[&node] = counters[t->Name()];
     fw << "\t" << t->SafeName() << counters[t->Name()]++ << " [";
-    if (includeTime && timeReport[t->Name()] > redShift) {
+    if (include_time && time_report[t->Name()] > redShift) {
       fw << "style=\"filled\", fillcolor=\"#";
-      int light = 255 - (timeReport[t->Name()] - redShift) /
+      int light = 255 - (time_report[t->Name()] - redShift) /
           (maxTimeRatio - redShift) * (255 - initialLight);
       // crazy printing of smth like ff4040
       fw << "ff" << std::hex << std::setw(2) << std::setfill('0') << light
@@ -728,12 +733,12 @@ void TransformTree::Dump(const std::string& dotFileName) const {
     }
     fw << "label=<" << t->HtmlEscapedName()
         << "<br /><font point-size=\"10\">";
-    if (includeTime) {
+    if (include_time) {
       auto cur_percent = static_cast<int>(
           (roundf(ConvertDuration(*node.ElapsedTime) * 100.f / allTime)));
       assert(cur_percent >=0 && cur_percent <= 100);
       auto all_percent = static_cast<int>(
-          roundf(timeReport[t->Name()] * 100.f));
+          roundf(time_report[t->Name()] * 100.f));
       assert(all_percent >=0 && all_percent <= 100);
       fw << "<b>" << std::to_string(cur_percent) << "% ("
           << std::to_string(all_percent) << "%)</b>";
@@ -763,7 +768,7 @@ void TransformTree::Dump(const std::string& dotFileName) const {
       std::string feature = *node.RelatedFeatures.begin();
       fw << feature << " [style=\"filled\", "
           "fillcolor=\"#85b3de\", label=<" << feature;
-      if (includeTime) {
+      if (include_time) {
         fw << "<br /><font point-size=\"10\">";
         auto featureTime = *node.ElapsedTime;
         node.ActionOnEachParent([&](const Node& parent) {
@@ -779,17 +784,17 @@ void TransformTree::Dump(const std::string& dotFileName) const {
   });
   // Output "Other"
   fw << "\tOther [";
-  if (includeTime && timeReport["Other"] > redShift) {
+  if (include_time && time_report["Other"] > redShift) {
     fw << "style=\"filled\", fillcolor=\"#";
-    int light = 255 - (timeReport["Other"] - redShift) /
+    int light = 255 - (time_report["Other"] - redShift) /
         (maxTimeRatio - redShift) * (255 - initialLight);
     // this is crazy printing of smth like ff4040
     fw << "ff" << std::hex << std::setw(2) << std::setfill('0') << light
        << std::setw(2) << std::setfill('0') << light << "\", ";
   }
   fw << "label=<Other";
-  if (includeTime) {
-    auto cur_percent = static_cast<int>(roundf(timeReport["Other"] * 100.f));
+  if (include_time) {
+    auto cur_percent = static_cast<int>(roundf(time_report["Other"] * 100.f));
     assert(cur_percent >=0 && cur_percent <= 100);
     fw << "<br /><font point-size=\"10\"><b>"
         << std::to_string(cur_percent) << "%</b></font>";
@@ -837,6 +842,7 @@ void TransformTree::Dump(const std::string& dotFileName) const {
     }
   });
   fw << "}" << std::endl;
+  INF("Successfully wrote %s", dotFileName.c_str());
 }
 
 bool TransformTree::validate_after_each_transform() const noexcept {
