@@ -1,5 +1,5 @@
-/*! @file highpass_filter.cc
- *  @brief Tests for sound_feature_extraction::transforms::HighpassFilter.
+/*! @file bandpass_filter.cc
+ *  @brief Tests for sound_feature_extraction::transforms::BandpassFilter.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
