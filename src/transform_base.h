@@ -15,7 +15,9 @@
 
 #include <assert.h>
 #include <string>
+#ifndef __clang__
 #include <tr2/type_traits>
+#endif
 #include "src/buffers_base.h"
 #include "src/logger.h"
 #include "src/parameterizable_base.h"
@@ -24,6 +26,12 @@
 
 namespace sound_feature_extraction {
 
+template <typename F, typename S>
+struct TypePair {
+  typedef F First;
+  typedef S Second;
+};
+
 template <typename FIN, typename FOUT>
 class TransformBase : public virtual Transform,
                       public virtual SimdAware,
@@ -31,6 +39,7 @@ class TransformBase : public virtual Transform,
  public:
   typedef FIN InFormat;
   typedef FOUT OutFormat;
+  typedef TypePair<TransformBase<FIN, FOUT>, std::nullptr_t> Family;
 
   TransformBase() noexcept
       : input_format_(std::make_shared<FIN>()),
@@ -206,12 +215,27 @@ class TransformLogger : public Logger {
 
 #define FORWARD_MACROS(...) __VA_ARGS__
 
+// Because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=59383
+// we cannot use the same method for both gcc and clang
+#ifndef __clang__
+#define DECLARE_PARENT_TYPE(self)                                              \
+public:                                                                        \
+  typedef self SelfType;                                                       \
+  typedef typename std::tr2::direct_bases<self>::type::first::type ParentType;
+#else
+#define DECLARE_PARENT_TYPE(self)                                              \
+public:                                                                        \
+  typedef self SelfType;                                                       \
+  typedef TypePair<self, typename self::Family::First> Family;                 \
+  typedef typename Family::Second ParentType;
+#endif
+
 /// @brief Internal macros to implement service functions to support
 /// parameters introspection.
 #define TRANSFORM_PARAMETERS_SUPPORT(self)                                     \
-public:                                                                        \
-  typedef self SelfType;                                                       \
-  typedef typename std::tr2::direct_bases<self>::type::first::type ParentType; \
+  DECLARE_PARENT_TYPE(FORWARD_MACROS(self))                                    \
+  static_assert(!std::is_same<self, ParentType>::value,                        \
+                "http://gcc.gnu.org/bugzilla/show_bug.cgi?id=59383");          \
                                                                                \
 protected:                                                                     \
   virtual const SupportedParametersMap&                                        \
@@ -295,7 +319,7 @@ private:                                                                       \
     return str;                                                                \
   }                                                                            \
                                                                                \
-  TRANSFORM_PARAMETERS_SUPPORT(self)
+  TRANSFORM_PARAMETERS_SUPPORT(FORWARD_MACROS(self))
 
 /// @brief Adds a new transform parameter.
 /// @brief name The name of the parameter.
