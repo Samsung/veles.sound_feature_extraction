@@ -88,7 +88,8 @@ namespace sound_feature_extraction {
 
 class Logger {
  public:
-  Logger(const std::string &domain, const std::string &color,
+  Logger(const std::string &domain = "default",
+         const std::string &color = kDefaultLoggerColor,
          bool suppressLoggingInitialized = true) noexcept;
 
   Logger(const Logger& other) noexcept;
@@ -112,15 +113,19 @@ class Logger {
   void set_color(const std::string &value) noexcept;
 
  private:
-  int log_domain_;
-  std::string domain_str_;
-  std::string color_;
-  bool suppressLoggingInitialized_;
+  static constexpr const char* kDefaultLoggerColor = EINA_COLOR_WHITE;
+  static constexpr const char* kCommonDomain = "";
+  static constexpr int kUnintializedLogDomain = -1;
 
 #ifdef EINA
   void InitializeEina() noexcept;
   void DisposeEina() noexcept;
 #endif
+
+  int log_domain_;
+  std::string domain_str_;
+  std::string color_;
+  bool suppressLoggingInitialized_;
 };
 
 }  // namespace sound_feature_extraction

@@ -17,16 +17,10 @@
 
 namespace sound_feature_extraction {
 
-// The following defines must not be converted to static const members of Logger
-// due to the undefined order in which static constructors are invoked.
-#define kDefaultLoggerColor EINA_COLOR_WHITE
-#define kCommonDomain ""
-#define kUnintializedLogDomain_ (-1)
-
-Logger::Logger(const std::string &domain = "default",
-               const std::string &color = kDefaultLoggerColor,
+Logger::Logger(const std::string &domain,
+               const std::string &color,
                bool suppressLoggingInitialized) noexcept
-    : log_domain_(kUnintializedLogDomain_)
+    : log_domain_(kUnintializedLogDomain)
     , domain_str_(domain)
     , color_(color)
     , suppressLoggingInitialized_(suppressLoggingInitialized) {
@@ -36,7 +30,7 @@ Logger::Logger(const std::string &domain = "default",
 }
 
 Logger::Logger(const Logger& other) noexcept
-    : log_domain_(kUnintializedLogDomain_)
+    : log_domain_(kUnintializedLogDomain)
     , domain_str_(other.domain_str_)
     , color_(other.color_)
     , suppressLoggingInitialized_(other.suppressLoggingInitialized_) {
@@ -46,7 +40,7 @@ Logger::Logger(const Logger& other) noexcept
 }
 
 Logger::Logger(Logger&& other) noexcept
-    : log_domain_(kUnintializedLogDomain_)
+    : log_domain_(kUnintializedLogDomain)
     , domain_str_(std::move(std::forward<std::string>(
         other.domain_str_)))
     , color_(std::move(std::forward<std::string>(other.color_)))
@@ -59,7 +53,7 @@ Logger::Logger(Logger&& other) noexcept
 }
 
 Logger& Logger::operator=(const Logger& other) noexcept {
-  log_domain_ = (kUnintializedLogDomain_);
+  log_domain_ = (kUnintializedLogDomain);
   domain_str_ = (other.domain_str_);
   color_ = (other.color_);
   suppressLoggingInitialized_ = (other.suppressLoggingInitialized_);
@@ -70,7 +64,7 @@ Logger& Logger::operator=(const Logger& other) noexcept {
 }
 
 Logger& Logger::operator=(Logger&& other) noexcept {
-  log_domain_ = (kUnintializedLogDomain_);
+  log_domain_ = (kUnintializedLogDomain);
   domain_str_ = (std::move(std::forward<std::string>(
         other.domain_str_)));
   color_ = (std::move(std::forward<std::string>(other.color_)));
@@ -116,13 +110,13 @@ void Logger::InitializeEina() noexcept {
 }
 
 void Logger::DisposeEina() noexcept {
-  if (log_domain_ != kUnintializedLogDomain_ &&
+  if (log_domain_ != kUnintializedLogDomain &&
       log_domain_ != EINA_LOG_DOMAIN_GLOBAL) {
     if (!suppressLoggingInitialized_) {
       DBG("Domain %i is not registered now", log_domain_);
     }
     eina_log_domain_unregister(log_domain_);
-    log_domain_ = kUnintializedLogDomain_;
+    log_domain_ = kUnintializedLogDomain;
   }
 }
 
@@ -130,7 +124,7 @@ void Logger::DisposeEina() noexcept {
 
 int Logger::log_domain() const noexcept {
 #ifdef EINA
-  assert(log_domain_ != kUnintializedLogDomain_);
+  assert(log_domain_ != kUnintializedLogDomain);
 #endif
   return log_domain_;
 }
