@@ -17,7 +17,11 @@
 
 TEST(Energy, calculate_energy) {
   const int length = 510;
+#if (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
   alignas(std::alignment_of<__m256>::value) float array[length];
+#else
+  __attribute__((aligned(64))) float array[length];
+#endif
   for (int i = 0; i < length; i++) {
     array[i] = i + 1;
   }
