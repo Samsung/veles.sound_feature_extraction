@@ -22,7 +22,7 @@ using sound_feature_extraction::BuffersBase;
 
 TEST(Features, All) {
   fftf_available_backends(nullptr, nullptr);
-  TransformTree tt( { 48000, 16000 } );  // NOLINT(*)
+  TransformTree tt( { 48000, 22050 } );  // NOLINT(*)
   tt.AddFeature("Energy", { { "Window", "type=rectangular" }, { "Window", "" },
       { "Energy", "" }
   });
@@ -114,12 +114,20 @@ TEST(Features, All) {
   tt.AddFeature("F0_HPS", { { "Window", "type=rectangular" }, { "Window", "" },
       { "RDFT", "" }, { "ComplexMagnitude", "" }, { "SHC", "" }, { "Peaks", "" }
   });
+  tt.AddFeature("CRP", { { "Window", "length=4096,step=2048" },{ "RDFT", "" },
+      { "SpectralEnergy", "" }, { "FilterBank", "type=midi,number=108,"
+          "frequency_min=7.946364,frequency_max=8137.0754,squared=true" },
+      { "Log", "add1=true,scale=1000" }, { "DCT", "" },
+      { "Selector", "select=70,from=right" }, { "IDCT", "" },
+      { "Reorder", "algorithm=chroma" },
+      { "Stats", "types=average,interval=9" }
+  });
   int16_t* buffers = new int16_t[48000];
   memcpy(buffers, data, sizeof(data));
   tt.PrepareForExecution();
   auto res = tt.Execute(buffers);
   delete[] buffers;
-  ASSERT_EQ(17U, res.size());
+  ASSERT_EQ(18U, res.size());
   printf("Validating Energy\n");
   res["Energy"]->Validate();
   printf("Validating Centroid\n");
@@ -152,6 +160,8 @@ TEST(Features, All) {
   res["MFCC_D2"]->Validate();
   printf("Validating F0_HPS\n");
   res["F0_HPS"]->Validate();
+  printf("Validating CRP\n");
+  res["CRP"]->Validate();
   tt.Dump("/tmp/all.dot");
   auto report = tt.ExecutionTimeReport();
   for (auto r : report) {
