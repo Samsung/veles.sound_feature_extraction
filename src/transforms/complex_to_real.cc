@@ -10,7 +10,6 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#define __STDC_LIMIT_MACROS
 #include "src/transforms/complex_to_real.h"
 #include <simd/instruction_set.h>
 

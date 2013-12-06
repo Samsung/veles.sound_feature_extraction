@@ -10,7 +10,6 @@
  *  Copyright 2013 Samsung R&D Institute Russia
  */
 
-#define __STDC_LIMIT_MACROS
 #include <gtest/gtest.h>
 #include <cmath>
 #include <sound_feature_extraction/api.h>
