@@ -30,14 +30,12 @@ class Test(unittest.TestCase):
                                              parameters={"length": "512"}),
                                    Transform("RDFT"),
                                    Transform("SpectralEnergy"),
-                                   Transform("FilterBank"),
-                                   Transform("FilterBank"),
+                                   Transform("FilterBank",
+					     parameters={"squared": "true"}),
                                    Transform("Log"),
-                                   Transform("Selector",
-                                             parameters={"length": "256"}),
                                    Transform("DCT"),
                                    Transform("Selector",
-                                             parameters={"length": "24"})]
+                                             parameters={"length": "16"})]
                                   )],
                          48000, 16000)
         buffer = numpy.ones(48000, dtype=numpy.int16)
