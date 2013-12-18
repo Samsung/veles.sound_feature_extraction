@@ -1,5 +1,5 @@
 /*! @file subsampling.cc
- *  @brief Find the cross-correlation of a signal with itself.
+ *  @brief Subsample the signal by an integer factor.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *

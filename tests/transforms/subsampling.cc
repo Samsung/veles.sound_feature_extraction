@@ -1,4 +1,4 @@
-/*! @file autocorrelation.cc
+/*! @file subsampling.cc
  *  @brief Tests for sound_feature_extraction::transforms::Subsampling.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
@@ -13,7 +13,6 @@
 
 #include "src/transforms/subsampling.h"
 #include "tests/transforms/transform_test.h"
-#include <fftf/api.h>
 
 using sound_feature_extraction::formats::ArrayFormatF;
 using sound_feature_extraction::BuffersBase;
