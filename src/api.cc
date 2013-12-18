@@ -316,9 +316,10 @@ FeatureExtractionResult extract_speech_features(
   CHECK_NULL_RET(results, FEATURE_EXTRACTION_RESULT_ERROR);
 
   fftf_set_openmp_num_threads(get_omp_transforms_max_threads_num());
-  EINA_LOG_DBG("OpenMP threads number is %d, SIMD is %s\n",
+  EINA_LOG_DBG("OpenMP threads number is %d, SIMD is %s, FFTF backend is %d\n",
                get_omp_transforms_max_threads_num(),
-               get_use_simd()? "enabled" : "disabled");
+               get_use_simd()? "enabled" : "disabled",
+               fftf_current_backend());
   std::unordered_map<std::string, std::shared_ptr<Buffers>> retmap;
   size_t step = fc->InputSize / fc->Chunks;
   size_t length = step * fc->Chunks;
