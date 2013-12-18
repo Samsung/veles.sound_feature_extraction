@@ -14,16 +14,14 @@
 #define SRC_SAFE_OMP_H_
 
 #ifdef __clang__
-#if __has_include("omp.h")
+#if __has_include("omp.h") && defined(_OPENMP)
 #define HAVE_OPENMP
 #endif
 #else
 // GCC
+#ifdef _OPENMP
 #define HAVE_OPENMP
 #endif
-
-#ifdef DEBUG
-#undef HAVE_OPENMP
 #endif
 
 #ifdef HAVE_OPENMP
