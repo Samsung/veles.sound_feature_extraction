@@ -67,8 +67,9 @@ void Stretch::Do(const float* in, float* out) const noexcept {
     return;
   #endif
   for (int i = 0; i < static_cast<int>(input_format_->Size()); i++) {
-    memsetf(out + static_cast<int>(floorf(i * ilen + ilen / 2)),
-            in[i], static_cast<int>(floorf((i + 1) * ilen - i * ilen)));
+    int index = i * ilen + ilen / 2;
+    int next_index = (i + 1) * ilen + ilen / 2;
+    memsetf(out + index, in[i], next_index - index);
   }
   memsetf(out, in[0], ilen / 2);
   int last_index = input_format_->Size() * ilen + ilen / 2;

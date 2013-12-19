@@ -24,8 +24,12 @@ class StretchTest : public TransformTest<Stretch> {
   int Size;
 
   virtual void SetUp() {
-    Size = 6;
+    Size = 12;
     set_center(false);
+    Reinitialize();
+  }
+
+  void Reinitialize() {
     SetUpTransform(1, Size, 18000);
     for (int i = 0; i < Size; i++) {
       (*Input)[0][i] = i;
@@ -40,16 +44,22 @@ TEST_F(StretchTest, Do) {
     ASSERT_FLOAT_EQ((*Input)[0][i], (*Output)[0][i]) << i;
   }
   set_factor(2);
-  SetUpTransform(1, Size, 18000);
+  Reinitialize();
   Do((*Input)[0], (*Output)[0]);
-  for (int i = 0; i < Size; i++) {
-    ASSERT_FLOAT_EQ((*Input)[0][i], (*Output)[0][i * 2]) << i;
+  for (int i = 0; i < Size * 2; i++) {
+    ASSERT_FLOAT_EQ((*Input)[0][i / 2], (*Output)[0][i]) << i;
   }
   set_factor(10);
-  SetUpTransform(1, Size, 18000);
+  Reinitialize();
   Do((*Input)[0], (*Output)[0]);
-  for (int i = 0; i < Size; i++) {
-    ASSERT_FLOAT_EQ((*Input)[0][i], (*Output)[0][i * 10]) << i;
+  for (int i = 0; i < Size * 10; i++) {
+    ASSERT_FLOAT_EQ((*Input)[0][i / 10], (*Output)[0][i]) << i;
+  }
+  set_factor(250);
+  Reinitialize();
+  Do((*Input)[0], (*Output)[0]);
+  for (int i = 0; i < Size * 250; i++) {
+    ASSERT_FLOAT_EQ((*Input)[0][i / 250], (*Output)[0][i]) << i;
   }
 }
 
@@ -61,24 +71,25 @@ TEST_F(StretchTest, DoCenter) {
     ASSERT_FLOAT_EQ((*Input)[0][i], (*Output)[0][i]) << i;
   }
   set_factor(2);
-  SetUpTransform(1, Size, 18000);
+  Reinitialize();
   Do((*Input)[0], (*Output)[0]);
-  for (int i = 0; i < Size; i++) {
-    ASSERT_FLOAT_EQ((*Input)[0][i], (*Output)[0][i * 2]) << i;
+  for (int i = 0; i < Size * 2; i++) {
+    ASSERT_FLOAT_EQ((*Input)[0][i / 2], (*Output)[0][i]) << i;
   }
-  set_factor(20);
-  SetUpTransform(1, Size, 18000);
+  set_factor(250);
+  Reinitialize();
   Do((*Input)[0], (*Output)[0]);
-  float ilen = 20.f * Size / (Size + 1);
-  for (int i = ilen / 2; i < Size * 20 - ilen / 2; i++) {
-    ASSERT_FLOAT_EQ(
-        (*Input)[0][static_cast<int>(floorf((i - ilen / 2) / ilen))],
-        (*Output)[0][i]) << i;
+  float ilen = 250.f * Size / (Size + 1);
+  for (int i = 0; i < Size; i++) {
+    for (int j = i * ilen + ilen / 2;
+        j < static_cast<int>((i + 1) * ilen + ilen / 2); j++) {
+      ASSERT_FLOAT_EQ((*Input)[0][i], (*Output)[0][j]) << j;
+    }
   }
   for (int i = 0; i < ilen / 2; i++) {
     ASSERT_FLOAT_EQ((*Input)[0][0], (*Output)[0][i]) << i;
   }
-  for (int i = Size * 20 - ilen / 2; i < Size * 20; i++) {
+  for (int i = Size * 250 - ilen / 2; i < Size * 250; i++) {
     ASSERT_FLOAT_EQ((*Input)[0][Size - 1], (*Output)[0][i]) << i;
   }
 }
