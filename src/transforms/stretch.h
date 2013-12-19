@@ -25,15 +25,19 @@ class Stretch : public OmpUniformFormatTransform<formats::ArrayFormatF> {
   TRANSFORM_INTRO("Stretch", "Stretch the signal by an integer factor.",
                   Stretch)
 
-  TP(factor, int, kDefaultFactor,
+  TP(factor, float, kDefaultFactor,
      "Stretch the signal by duplicating its values.")
+  TP(center, bool, kDefaultCenter,
+     "Center the intervals, extending the corners (useful for stretching after "
+     "splitting into windows.).")
 
  protected:
   virtual size_t OnFormatChanged(size_t buffersCount) override;
 
   virtual void Do(const float* in, float* out) const noexcept override;
 
-  static constexpr int kDefaultFactor = 1;
+  static constexpr float kDefaultFactor = 1;
+  static constexpr bool kDefaultCenter = false;
 };
 
 }  // namespace transforms
