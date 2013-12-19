@@ -37,7 +37,7 @@ void Stretch::Do(const float* in, float* out) const noexcept {
     return;
   }
   float ilen = factor_ * input_format_->Size() / (input_format_->Size() + 1);
-  if (!center_ || static_cast<int>(ceilf(ilen)) == factor_ || factor_ < 4) {
+  if (!center_ || floorf(factor_ - ilen) == 0 || factor_ < 4) {
     if (factor_ < 4) {
       for (int i = 0; i < static_cast<int>(output_format_->Size()); i++) {
         out[i] = in[static_cast<int>(floorf(i / factor_))];
