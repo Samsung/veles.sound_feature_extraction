@@ -93,3 +93,15 @@ TEST_F(StretchTest, DoCenter) {
     ASSERT_FLOAT_EQ((*Input)[0][Size - 1], (*Output)[0][i]) << i;
   }
 }
+
+TEST_F(StretchTest, CRPCase) {
+  set_center(true);
+  set_factor(9.31677);
+  Size = 322;
+  Reinitialize();
+  Do((*Input)[0], (*Output)[0]);
+  for (int i = 0; i < Size; i++) {
+    ASSERT_FLOAT_EQ((*Input)[0][i],
+                    (*Output)[0][static_cast<int>(i * factor())]) << i;
+  }
+}

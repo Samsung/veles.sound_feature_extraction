@@ -40,12 +40,14 @@ void Stretch::Do(const float* in, float* out) const noexcept {
   if (!center_ || floorf(factor_ - ilen) == 0 || factor_ < 4) {
     if (factor_ < 4) {
       for (int i = 0; i < static_cast<int>(output_format_->Size()); i++) {
-        out[i] = in[static_cast<int>(floorf(i / factor_))];
+        out[i] = in[static_cast<int>(i / factor_)];
       }
       return;
     }
     for (int i = 0; i < static_cast<int>(input_format_->Size()); i++) {
-      memsetf(out + static_cast<int>(floorf(i * factor_)), in[i], factor_);
+      int index = i * factor_;
+      int next_index = (i + 1) * factor_;
+      memsetf(out + index, in[i], next_index - index);
     }
     return;
   }
@@ -54,7 +56,7 @@ void Stretch::Do(const float* in, float* out) const noexcept {
     for (int i = ilen / 2;
          i < static_cast<int>(output_format_->Size()) - ilen / 2;
          i++) {
-      out[i] = in[static_cast<int>(floorf((i - ilen / 2) / ilen))];
+      out[i] = in[static_cast<int>((i - ilen / 2) / ilen)];
     }
     for (int i = 0; i < ilen / 2; i++) {
       out[i] = in[0];
