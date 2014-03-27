@@ -7,8 +7,8 @@ Created on Mar 25, 2013
 
 import logging
 import re
-from sound_feature_extraction.transform import Transform
-from sound_feature_extraction.explorer import Explorer
+from libSoundFeatureExtraction.python.sound_feature_extraction.transform import Transform
+from libSoundFeatureExtraction.python.sound_feature_extraction.explorer import Explorer
 
 
 class ParsingFeatureFailedException(Exception):

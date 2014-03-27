@@ -9,9 +9,9 @@ import logging
 from ctypes import c_char_p, c_int16, c_byte, c_void_p, c_int, \
                    POINTER, byref, cast
 import numpy
-from sound_feature_extraction.library import Library
-from sound_feature_extraction.formatters import Formatters
-from sound_feature_extraction.explorer import Explorer
+from libSoundFeatureExtraction.python.sound_feature_extraction.library import Library
+from libSoundFeatureExtraction.python.sound_feature_extraction.formatters import Formatters
+from libSoundFeatureExtraction.python.sound_feature_extraction.explorer import Explorer
 
 
 class SetupFeaturesFailedException(Exception):
