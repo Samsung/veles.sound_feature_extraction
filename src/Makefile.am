@@ -39,7 +39,7 @@ transforms/stats.cc transforms/window_splitter.cc transforms/common.cc \
 transforms/singles_to_array.cc transforms/iir_filter_base.cc \
 transforms/mix_stereo.cc transforms/peak_detection.cc transforms/identity.cc \
 transforms/peak_analysis.cc transforms/peak_dynamic_programming.cc \
-transforms/lpc.cc transforms/lsp.cc transforms/lpc_cc.cc
+transforms/lpc.cc transforms/lsp.cc transforms/lpc_cc.cc transforms/rasta.cc
 
 libSoundFeatureExtraction_la_LIBADD = @SIMD_LIBS@ @FFTF_LIBS@ -lboost_regex \
 	@EINA_LIBS@ libDSPFilters.la
@@ -65,7 +65,8 @@ libDSPFilters_la_SOURCES =../DSPFilters/shared/DSPFilters/source/Bessel.cpp \
 ../DSPFilters/shared/DSPFilters/source/PoleFilter.cpp \
 ../DSPFilters/shared/DSPFilters/source/RBJ.cpp \
 ../DSPFilters/shared/DSPFilters/source/RootFinder.cpp \
-../DSPFilters/shared/DSPFilters/source/State.cpp
+../DSPFilters/shared/DSPFilters/source/State.cpp \
+../DSPFilters/shared/DSPFilters/source/RASTA.cpp
 
 libDSPFilters_la_CXXFLAGS = $(AM_CXXFLAGS) -Wno-old-style-cast \
 	-Wno-unused-parameter -Wno-ignored-qualifiers -Wno-unused-but-set-variable \

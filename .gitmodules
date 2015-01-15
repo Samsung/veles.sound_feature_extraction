@@ -1,12 +1,12 @@
 [submodule "fftf"]
-	path = fftf
-	branch = master
-	url = ssh://alserver.rnd.samsung.ru:29418/FFTF.git
+  path = fftf
+  branch = master
+  url = ssh://alserver.rnd.samsung.ru:29418/FFTF.git
 [submodule "simd"]
-	path = simd
-	branch = master
-	url = ssh://alserver.rnd.samsung.ru:29418/Simd.git
+  path = simd
+  branch = master
+  url = ssh://alserver.rnd.samsung.ru:29418/Simd.git
 [submodule "DSPFilters"]
-	path = DSPFilters
-        branch = master
-	url = https://github.com/vmarkovtsev/DSPFilters
+  path = DSPFilters
+  branch = master
+  url = https://github.com/vmarkovtsev/DSPFilters

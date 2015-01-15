@@ -5,6 +5,6 @@ PARALLEL_SUBDIRS = primitives transforms allocators
 
 DEPENDENCY_SUBDIRS = google
 
-TIMEOUT=60
+TIMEOUT = 300
 
 include $(top_srcdir)/tests/Tests.make

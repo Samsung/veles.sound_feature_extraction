@@ -21,16 +21,17 @@ using sound_feature_extraction::transforms::FrequencyBands;
 class FrequencyBandsTest : public TransformTest<FrequencyBands> {
  public:
   int Size;
+  int Buffers;
 
   virtual void SetUp() {
     Size = 512;
-    set_number(4);
-    SetUpTransform(4, Size, 16000);
+    Buffers = 2;
+    set_number(Buffers);
+    SetUpTransform(Buffers, Size, 16000);
     for (int i = 0; i < Size; i++) {
-      (*Input)[0][i] = sinf(i / 10.f);
-      (*Input)[1][i] = sinf(i / 10.f);
-      (*Input)[2][i] = sinf(i / 10.f);
-      (*Input)[3][i] = sinf(i / 10.f);
+      for (int j = 0; j < Buffers; j++) {
+        (*Input)[j][i] = sinf(i / 10.f);
+      }
     }
   }
 };
