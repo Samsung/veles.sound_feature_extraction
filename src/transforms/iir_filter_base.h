@@ -80,7 +80,7 @@ namespace std {
 namespace sound_feature_extraction {
 namespace transforms {
 
-typedef Dsp::PoleFilterBase2 IIRFilter;
+typedef Dsp::Cascade IIRFilter;
 
 class IIRFilterBase : public FilterBase<IIRFilter> {
  public:
