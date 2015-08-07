@@ -18,12 +18,14 @@ There are Python bindings.
 TODO - tons of
 
 ### Building
+```
 ./autogen.sh
 mkdir build && cd build
 ../configure
 make -j$(getconf _NPROCESSORS_ONLN)
 make test
 make install DESTDIR=...
+```
 
 ### Copyright
 Copyright © 2013 Samsung R&D Institute Russia
