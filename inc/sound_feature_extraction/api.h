@@ -1,5 +1,5 @@
 /*! @file api.h
- *  @brief Speech Feature Extraction interface.
+ *  @brief Sound Feature Extraction interface.
  *  @author Markovtsev Vadim <v.markovtsev@samsung.com>
  *  @version 1.0
  *
@@ -103,7 +103,7 @@ FeaturesConfiguration *setup_features_extraction(
     const char *const *features, int featuresCount,
     size_t bufferSize, int samplingRate) NOTNULL(1) WARN_UNUSED_RESULT MALLOC;
 
-FeatureExtractionResult extract_speech_features(
+FeatureExtractionResult extract_sound_features(
     const FeaturesConfiguration *fc, int16_t *buffer,
     char ***featureNames, void ***results, int **resultLengths)
     NOTNULL(1, 2, 3, 4, 5);

@@ -273,6 +273,10 @@ FeaturesConfiguration *setup_features_extraction(
       EINA_LOG_ERR("Error: features[%i] is null\n", i);
       return nullptr;
     }
+    if (strlen(features[i]) == 0) {
+      EINA_LOG_ERR("Error: features[%i] is empty\n", i);
+      return nullptr;
+    }
     lines.push_back(features[i]);
   }
   RawFeaturesMap featmap;
@@ -326,7 +330,7 @@ FeaturesConfiguration *setup_features_extraction(
   return config;
 }
 
-FeatureExtractionResult extract_speech_features(
+FeatureExtractionResult extract_sound_features(
     const FeaturesConfiguration *fc, int16_t *buffer,
     char ***featureNames, void ***results, int **resultLengths) {
   CHECK_NULL_RET(fc, FEATURE_EXTRACTION_RESULT_ERROR);

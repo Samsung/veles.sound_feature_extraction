@@ -28,76 +28,70 @@ under the License.
 
 import collections
 import logging
-from ctypes import POINTER, c_char_p, c_int, byref
-from libSoundFeatureExtraction.python.sound_feature_extraction.library import Library
-from libSoundFeatureExtraction.python.sound_feature_extraction.transform import Transform, TransformParameter
+from .library import Library
+from .transform import Transform, TransformParameter
 
 
 class Explorer(object):
     '''
     Provides information about implemented transforms.
     '''
+    logger = logging.getLogger("sfm.Explorer")
 
     def __init__(self):
         if not self.transforms:
-            names = POINTER(c_char_p)()
-            list_size = c_int()
-            logging.debug("query_transforms_list()")
-            Library().query_transforms_list(byref(names), byref(list_size))
-            logging.debug("Got the list of " + str(list_size.value) + \
-                          " transforms")
+            names = Library().new("char***")
+            list_size = Library().new("int*")
+            self.logger.debug("query_transforms_list()")
+            Library().query_transforms_list(names, list_size)
+            self.logger.debug("Got the list of %d transforms", list_size[0])
             self.transforms = {}
-            for i in range(0, list_size.value):
-                description = c_char_p()
-                input_format = c_char_p()
-                output_format = c_char_p()
-                p_names = POINTER(c_char_p)()
-                p_descs = POINTER(c_char_p)()
-                p_defs = POINTER(c_char_p)()
-                p_count = c_int()
-                transform_name = names[i].decode()
-                logging.debug("query_transform_details(" + \
-                              transform_name + ")")
-                Library().query_transform_details(names[i], byref(description),
-                                                  byref(input_format),
-                                                  byref(output_format),
-                                                  byref(p_names),
-                                                  byref(p_descs),
-                                                  byref(p_defs),
-                                                  byref(p_count))
+            for i in range(list_size[0]):
+                description = Library().new("char**")
+                input_format = Library().new("char**")
+                output_format = Library().new("char**")
+                p_names = Library().new("char***")
+                p_descs = Library().new("char***")
+                p_defs = Library().new("char***")
+                p_count = Library().new("int*")
+                transform_name = Library().string(names[0][i]).decode()
+                self.logger.debug("query_transform_details(%s)",
+                                  transform_name)
+                Library().query_transform_details(
+                    names[0][i], description, input_format, output_format,
+                    p_names, p_descs, p_defs, p_count)
                 parameters = {}
-                for j in range(0, p_count.value):
-                    p_name = p_names[j].decode()
+                for j in range(p_count[0]):
+                    p_name = Library().string(p_names[0][j]).decode()
                     parameters[p_name] = TransformParameter(
-                        p_names[j].decode(), p_descs[j].decode(),
-                        p_defs[j].decode())
+                        Library().string(p_names[0][j]).decode(),
+                        Library().string(p_descs[0][j]).decode(),
+                        Library().string(p_defs[0][j]).decode())
                 self.transforms[transform_name] = Transform(
                     transform_name,
-                    description.value.decode(),
-                    parameters, None,
-                    input_format.value.decode(),
-                    output_format.value.decode())
-                Library().destroy_transform_details(description, input_format,
-                                                    output_format, p_names,
-                                                    p_descs, p_defs, p_count)
-            Library().destroy_transforms_list(names, list_size)
-            logging.debug("Done with getting transforms")
-            input_formats = POINTER(c_char_p)()
-            output_formats = POINTER(c_char_p)()
-            logging.debug("query_format_converters_list()")
-            Library().query_format_converters_list(byref(input_formats),
-                                                   byref(output_formats),
-                                                   byref(list_size))
-            logging.debug("Got the list of " + str(list_size.value) + \
-                          " format converters")
+                    Library().string(description[0]).decode(), parameters,
+                    Library().string(input_format[0]).decode(),
+                    Library().string(output_format[0]).decode())
+                Library().destroy_transform_details(
+                    description[0], input_format[0], output_format[0],
+                    p_names[0], p_descs[0], p_defs[0], p_count[0])
+            Library().destroy_transforms_list(names[0], list_size[0])
+            self.logger.debug("Done with getting transforms")
+            input_formats = Library().new("char***")
+            output_formats = Library().new("char***")
+            self.logger.debug("query_format_converters_list()")
+            Library().query_format_converters_list(
+                input_formats, output_formats, list_size)
+            self.logger.debug("Got the list of %d format converters",
+                              list_size[0])
             self.format_converters = collections.defaultdict(list)
-            for i in range(0, list_size.value):
-                self.format_converters[input_formats[i].decode()].append(
-                    output_formats[i].decode())
-            Library().destroy_format_converters_list(input_formats,
-                                                     output_formats,
-                                                     list_size)
-            logging.debug("Done with getting format converters")
+            for i in range(list_size[0]):
+                self.format_converters[
+                    Library().string(input_formats[0][i]).decode()] \
+                    .append(Library().string(output_formats[0][i]).decode())
+            Library().destroy_format_converters_list(
+                input_formats[0], output_formats[0], list_size[0])
+            self.logger.debug("Done with getting format converters")
 
     def __new__(cls):
         if not cls._instance:

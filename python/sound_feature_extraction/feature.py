@@ -28,8 +28,8 @@ under the License.
 
 import logging
 import re
-from libSoundFeatureExtraction.python.sound_feature_extraction.transform import Transform
-from libSoundFeatureExtraction.python.sound_feature_extraction.explorer import Explorer
+from .transform import Transform
+from .explorer import Explorer
 
 
 class ParsingFeatureFailedException(Exception):

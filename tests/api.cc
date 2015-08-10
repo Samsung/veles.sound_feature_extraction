@@ -88,7 +88,7 @@ TEST(API, query_format_converters_list) {
   }
 }
 
-TEST(API, extract_speech_features) {
+TEST(API, extract_sound_features) {
   const char *feature = "MFCC [Window(length=512), RDFT, SpectralEnergy,"
       "FilterBank(squared=true), Log, Square, DCT, Selector(length=16)]";
   auto config = setup_features_extraction(&feature, 1, 48000, 16000);
@@ -100,7 +100,7 @@ TEST(API, extract_speech_features) {
   char **featureNames = nullptr;
   float **results = nullptr;
   int *lengths = nullptr;
-  extract_speech_features(config, buffer, &featureNames,
+  extract_sound_features(config, buffer, &featureNames,
                           reinterpret_cast<void ***>(&results), &lengths);
   ASSERT_NE(nullptr, featureNames);
   ASSERT_NE(nullptr, results);
@@ -125,7 +125,7 @@ FeaturesConfiguration* test_calculate_features() {
   char **featureNames = nullptr;
   float **results = nullptr;
   int *lengths = nullptr;
-  extract_speech_features(config, buffer, &featureNames,
+  extract_sound_features(config, buffer, &featureNames,
                           reinterpret_cast<void ***>(&results), &lengths);
   free_results(1, featureNames, reinterpret_cast<void **>(results), lengths);
   delete[] buffer;

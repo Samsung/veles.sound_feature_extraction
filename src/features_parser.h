@@ -57,10 +57,16 @@ namespace features {
 
 class ParseFeaturesException : public ExceptionBase {
  public:
-  explicit ParseFeaturesException(size_t index)
-  : ExceptionBase("Syntax error on feature at index " + std::to_string(index) +
-                  ".") {}
+  ParseFeaturesException(const std::string& name, size_t index,
+                         const char* file = nullptr, int line = -1)
+  : ExceptionBase("Syntax error on feature \"" + name + "\" at index " +
+                  std::to_string(index) +
+                  " (file " + (file? file : "<unknown>") +
+                  ", line " + std::to_string(line) + ").") {}
 };
+
+#define THROW_PFE(name, index) \
+  throw ParseFeaturesException(name, index, __FILE__, __LINE__)
 
 /// @brief Splits a list of feature text descriptions to
 /// the name-parameters table. The syntax is as follows:

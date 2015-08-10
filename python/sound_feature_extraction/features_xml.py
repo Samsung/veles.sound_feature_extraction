@@ -39,9 +39,9 @@ class FeaturesXml(object):
     def node_to_str(node):
         ret = node.attrib["name"]
         if "parameters" in node.attrib:
-            ret += "(" + node.attrib["parameters"] + ")"
+            ret += "(%s)" % node.attrib["parameters"]
         if "condition" in node.attrib:
-            ret += "{" + node.attrib["condition"] + "}"
+            ret += "{%s}" % node.attrib["condition"]
         return ret
 
     @staticmethod
@@ -53,8 +53,8 @@ class FeaturesXml(object):
                 inner_path.append(FeaturesXml.node_to_str(child))
                 features += FeaturesXml.add_children(child, inner_path)
             if child.tag == "feature":
-                features.append(child.attrib["name"] + " [" +
-                                ','.join(path) + "]")
+                features.append("%s [%s]" % (
+                    child.attrib["name"], ','.join(path)))
         return features
 
     @staticmethod

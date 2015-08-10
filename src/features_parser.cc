@@ -47,22 +47,21 @@ void AddToTransformsList(const std::string& str, size_t featureIndex,
   boost::sregex_token_iterator name_iterator(
       str.begin(), str.end(), name_regex, 1);
   if (name_iterator == empty) {
-    throw ParseFeaturesException(featureIndex);
+    THROW_PFE(str, featureIndex);
   }
-  transforms->push_back(std::make_pair(
-      *name_iterator++, ""));
+  transforms->push_back(std::make_pair(*name_iterator++, ""));
   if (name_iterator != empty) {
-    throw ParseFeaturesException(featureIndex);
+    THROW_PFE(transforms->back().first, featureIndex);
   }
   boost::sregex_token_iterator parameters_iterator(
       str.begin(), str.end(), parameters_regex, 1);
   if (parameters_iterator != empty) {
     std::string pvalue = *parameters_iterator++;
     if (pvalue.size() > 0) {
-      (*transforms)[transforms->size() - 1].second = pvalue;
+      transforms->back().second = pvalue;
     }
     if (parameters_iterator != empty) {
-      throw ParseFeaturesException(featureIndex);
+      THROW_PFE(transforms->back().first, featureIndex);
     }
   }
 }
@@ -84,22 +83,22 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures) {
     boost::sregex_token_iterator feature_name_iterator(
         str.begin(), str.end(), featureRegex, 1);
     if (feature_name_iterator == empty) {
-      throw ParseFeaturesException(index);
+      THROW_PFE(str, index);
     }
     std::string fname = *feature_name_iterator++;
     if (feature_name_iterator != empty) {
-      throw ParseFeaturesException(index);
+      THROW_PFE(str, index);
     }
     ret.insert(std::make_pair(fname, RawTransformsList()));
 
     boost::sregex_token_iterator feature_transforms_iterator(
         str.begin(), str.end(), featureRegex, 2);
     if (feature_transforms_iterator == empty) {
-      throw ParseFeaturesException(index);
+      THROW_PFE(str, index);
     }
     auto transformsStr = std::string(",") + *feature_transforms_iterator++;
     if (feature_transforms_iterator != empty) {
-      throw ParseFeaturesException(index);
+      THROW_PFE(str, index);
     }
 
     boost::sregex_token_iterator feature_each_transform_iterator(
@@ -112,13 +111,13 @@ RawFeaturesMap Parse(const std::vector<std::string>& rawFeatures) {
     boost::sregex_token_iterator feature_transforms_end_iterator(
         transformsStr.begin(), transformsStr.end(), transformsEndRegex, 1);
     if (feature_transforms_end_iterator == empty) {
-      throw ParseFeaturesException(index);
+      THROW_PFE(str, index);
     }
     AddToTransformsList(*feature_transforms_end_iterator++,
                         index,
                         &ret[fname]);
     if (feature_transforms_end_iterator != empty) {
-      throw ParseFeaturesException(index);
+      THROW_PFE(str, index);
     }
   }
   return ret;
