@@ -60,19 +60,31 @@ class Transform(object):
         self.condition = condition
 
     def __str__(self):
-        result = "\n%s\n%s\n\n%s\n\n" % (self.name, "=" * len(self.name),
-                                         self.description_str)
+        result = self._header
         result += "Input format: %s\n" % self.input_format
         result += "Output format: %s\n" % self.output_format
         if self.supported_parameters:
             result += "Supported parameters:\n"
-            for _, pvalue in sorted(self.supported_parameters.items()):
-                result += "\t%s\n" % str(pvalue).replace("\n", "\n\t")
+            result += self._get_supported_parameters_string()
         if self.parameters:
             result += "Parameters:\n"
-            for pname, pvalue in sorted(self.parameters.items()):
-                result += "\t%s = %s\n" % (pname, pvalue)
-        result += "\n"
+            result += self._get_parameters_string()
+        return result
+
+    @property
+    def markdown_description(self):
+        """
+        Returns the information about this transform in Markdown format.
+        """
+        result = self._header
+        result += "###Input format\n%s\n" % self.input_format
+        result += "###Output format\n%s\n" % self.output_format
+        if self.supported_parameters:
+            result += "###Supported parameters\n"
+            result += self._get_supported_parameters_string()
+        if self.parameters:
+            result += "###Parameters\n"
+            result += self._get_parameters_string()
         return result
 
     def __repr__(self):
@@ -83,13 +95,32 @@ class Transform(object):
             self.input_format == other.input_format and \
             self.output_format == other.output_format
 
-    def description(self):
+    @property
+    def native_description(self):
         """
         Constructs a string which describes this transform and it's parameters.
+        The format is understood by the native library.
         """
         res = self.name
         if self.parameters:
             res += "(%s)" % ", ".join(
                 "%s=%s" % p for p in sorted(self.parameters.items()))
-        logging.debug("Constructed transform string: %s", res)
+        logging.debug("Constructed string in library format: %s", res)
         return res
+
+    @property
+    def _header(self):
+        return "\n%s\n%s\n\n%s\n\n" % (self.name, "=" * len(self.name),
+                                       self.description_str)
+
+    def _get_supported_parameters_string(self):
+        result = ""
+        for _, pvalue in sorted(self.supported_parameters.items()):
+            result += "\t%s\n\n" % str(pvalue).replace("\n", "\n\t")
+        return result
+
+    def _get_parameters_string(self):
+        result = ""
+        for pname, pvalue in sorted(self.parameters.items()):
+            result += "\t%s = %s\n\n" % (pname, pvalue)
+        return result

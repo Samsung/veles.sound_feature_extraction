@@ -69,7 +69,7 @@ class Feature(object):
             if transform.condition:
                 add = eval(transform.condition, cond_locals)
             if add:
-                result += transform.description() + ", "
+                result += transform.native_description + ", "
         result = result[:-2] + "]"
         logging.debug("Constructed feature description: " + result)
         return result

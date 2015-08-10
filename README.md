@@ -15,7 +15,11 @@ There are Python bindings.
 
 ### Implemented features
 
-TODO - tons of
+The list of available transforms is at [TRANSFORMS.md](https://github.com/Samsung/veles.sound_feature_extraction/blob/master/TRANSFORMS.md).
+Using them, it is possible to construct many algorithms, such as speech pitch detection similar to [YAAPT](http://www.ws.binghamton.edu/zahorian/yaapt.htm),
+speech features extraction, from MFCC and PLP to complex wavelet packets, prosodic features calculation, FIR and IIR filtering, song tempo detection, etc.
+
+Some of the examples are in tests.
 
 ### Building
 ```
@@ -32,3 +36,4 @@ Copyright © 2013 Samsung R&D Institute Russia
 
 ### License
 [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+

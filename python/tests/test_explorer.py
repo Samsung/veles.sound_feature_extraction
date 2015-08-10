@@ -28,25 +28,18 @@ under the License.
 
 import logging
 import unittest
-from sound_feature_extraction.library import Library
 from sound_feature_extraction.explorer import Explorer
 
 
 class Test(unittest.TestCase):
-
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         logging.basicConfig(level=logging.DEBUG)
 
-    def tearDown(self):
-        pass
-
     def testExplorer(self):
-        Library("/home/markhor/Development/SoundFeatureExtraction/build/src/"
-                ".libs/libSoundFeatureExtraction.so")
         explorer = Explorer()
-        for name in explorer.transforms:
-            print(str(explorer.transforms[name]))
-            print("")
+        for _, value in sorted(explorer.transforms.items()):
+            print(value.markdown_description)
 
 
 if __name__ == "__main__":
